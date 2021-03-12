@@ -2,7 +2,11 @@
 // Make sure any keys changed here are adjusted in the setup_config.sh script
 export const APP_VERSION_KEY = "app_version"
 export const SERVER_BASE_URL_KEY = "server_base_url"
-type ConfigKey = typeof APP_VERSION_KEY | typeof SERVER_BASE_URL_KEY
+export const IMAGES_BASE_URL_KEY = "images_base_url"
+type ConfigKey =
+  | typeof APP_VERSION_KEY
+  | typeof SERVER_BASE_URL_KEY
+  | typeof IMAGES_BASE_URL_KEY
 
 class Config {
   appConfig: {[key: string]: any}
@@ -19,6 +23,13 @@ class Config {
         this.appConfig[SERVER_BASE_URL_KEY] = apiUrl
       } else {
         throw Error("Environment variable missing: REACT_APP_API_URL")
+      }
+
+      let imagesUrl = process.env.REACT_APP_IMAGES_URL
+      if (imagesUrl) {
+        this.appConfig[IMAGES_BASE_URL_KEY] = imagesUrl
+      } else {
+        throw Error("Environment variable missing: REACT_APP_IMAGES_URL")
       }
       Object.keys(process.env).forEach((envVar) => {
         if (envVar.toLowerCase().startsWith("react_app_")) {

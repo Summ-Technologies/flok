@@ -1,16 +1,16 @@
-import { ThemeProvider } from "@material-ui/styles";
-import { ConnectedRouter } from "connected-react-router";
-import React, { useEffect } from "react";
-import { Provider } from "react-redux";
-import { polyfill as seamlessScrollPolyfill } from "seamless-scroll-polyfill";
-import Stack from "./Stack";
-import store, { history } from "./store";
-import { theme } from "./styles";
+import {ThemeProvider} from "@material-ui/styles"
+import {ConnectedRouter} from "connected-react-router"
+import React, {useEffect} from "react"
+import {Provider} from "react-redux"
+import {polyfill as seamlessScrollPolyfill} from "seamless-scroll-polyfill"
+import Stack from "./Stack"
+import store, {history} from "./store"
+import {theme} from "./theme"
 
 export default function App() {
   useEffect(() => {
-    seamlessScrollPolyfill();
-  }, []);
+    seamlessScrollPolyfill()
+  }, [])
 
   return (
     <Provider store={store}>
@@ -20,5 +20,5 @@ export default function App() {
         </ConnectedRouter>
       </ThemeProvider>
     </Provider>
-  );
+  )
 }
