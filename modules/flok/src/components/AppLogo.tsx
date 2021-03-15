@@ -1,15 +1,16 @@
-import {Box, makeStyles, PaperProps, StandardProps} from "@material-ui/core"
+import {Box, makeStyles, StandardProps} from "@material-ui/core"
 import {ImageUtils} from "../utils/imageUtils"
 
 const useStyles = makeStyles((theme) => ({
   img: {
     maxHeight: "100%",
     maxWidth: "100%",
-    height: "100%",
+    height: (props: AppLogoProps) => (props.height ? props.height : "100%"),
   },
 }))
 
-interface AppLogoProps extends StandardProps<PaperProps, "root" | "img"> {
+interface AppLogoProps extends StandardProps<{}, "img"> {
+  height?: number | string
   size?: "sm" | "md" | "lg" | "xl"
   withText?: boolean
   noBackground?: boolean
@@ -17,13 +18,14 @@ interface AppLogoProps extends StandardProps<PaperProps, "root" | "img"> {
 }
 
 export default function AppLogo(props: AppLogoProps) {
-  const classes = useStyles()
+  const classes = useStyles(props)
+  const {height, size, withText, noBackground, rounded, ...extraProps} = props
   const path = `branding/logos/${props.withText ? "icon_text" : "icon"}-${
-    props.noBackground ? "empty_bg" : "white_bg"
-  }${!props.withText && props.rounded ? "-rounded" : ""}`
-  const imgProps = ImageUtils.getImageProps(path, "Flok Logo", props.size)
+    noBackground ? "empty_bg" : "white_bg"
+  }${!withText && rounded ? "-rounded" : ""}`
+  const imgProps = ImageUtils.getImageProps(path, "Flok Logo", size)
   return (
-    <Box {...props}>
+    <Box {...extraProps}>
       <img src={imgProps.src} alt={imgProps.alt} className={classes.img} />
     </Box>
   )

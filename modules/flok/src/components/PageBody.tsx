@@ -33,7 +33,7 @@ export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
           <PageNav />
         </Grid>
       )}
-      <Grid item md={11} lg={10} xs={8} className={classes.body}>
+      <Grid item md={10} className={classes.body}>
         {props.children}
       </Grid>
     </Grid>

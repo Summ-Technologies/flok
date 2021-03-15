@@ -18,7 +18,12 @@ export class AppRoutes {
     {
       name: "SigninPage",
       component: <AuthPage />,
-      path: ["/auth/signin", "/auth/signup"],
+      path: ["/auth/signin"],
+    },
+    {
+      name: "SignupPage",
+      component: <AuthPage />,
+      path: ["/auth/signup"],
     },
   ]
   static commonRoutes: FlokRoute[] = [
