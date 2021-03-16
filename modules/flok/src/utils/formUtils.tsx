@@ -6,14 +6,17 @@ export class FormUtils<FormFieldNames extends string> {
     }
   }
 
-  static validatePassword(password: string): FormFieldValidationResponse {
-    if (password.length < 5) {
-      return "Password is too short"
-    } else if (
-      password.toLowerCase() === password ||
-      password.toUpperCase() === password
-    ) {
-      return "Password needs at least one lower and one upper case character"
+  static passwordValidator(authType: "signup" | "signin") {
+    return (password: string): FormFieldValidationResponse => {
+      if (password.length < 5) {
+        return "Password is too short"
+      } else if (
+        (password.toLowerCase() === password ||
+          password.toUpperCase() === password) &&
+        authType === "signup"
+      ) {
+        return "Password needs at least one lower and one upper case character"
+      }
     }
   }
 
@@ -59,3 +62,9 @@ type FormField<
 // if 'undefined', validation passed
 // if 'string', validation failed and 'string' is the reasons
 type FormFieldValidationResponse = string | undefined
+
+export type TextFormField<FormFieldNames extends string> = FormField<
+  FormFieldNames,
+  "text",
+  string
+>

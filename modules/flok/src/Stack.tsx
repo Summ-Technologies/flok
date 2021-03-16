@@ -2,7 +2,9 @@ import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
 import AuthPage from "./pages/AuthPage"
+import HomePage from "./pages/HomePage"
 import NotFound404Page from "./pages/NotFound404Page"
+import RedirectPage from "./pages/RedirectPage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
 
@@ -13,7 +15,14 @@ type FlokRoute = {
 }
 
 export class AppRoutes {
-  static loggedInRoutes: FlokRoute[] = []
+  static loggedInRoutes: FlokRoute[] = [
+    {name: "HomePage", component: <HomePage />, path: "/"},
+    {
+      name: "RedirectLoggedOutPaths",
+      component: <RedirectPage pageName="HomePage" />,
+      path: ["/auth/signup", "/auth/signin"],
+    },
+  ]
   static loggedOutRoutes: FlokRoute[] = [
     {
       name: "SigninPage",
@@ -24,6 +33,11 @@ export class AppRoutes {
       name: "SignupPage",
       component: <AuthPage />,
       path: ["/auth/signup"],
+    },
+    {
+      name: "RedirectSignup",
+      component: <RedirectPage pageName="SignupPage" />,
+      path: "*",
     },
   ]
   static commonRoutes: FlokRoute[] = [

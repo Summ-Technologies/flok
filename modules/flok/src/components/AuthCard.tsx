@@ -5,12 +5,14 @@ import {
   makeStyles,
   StandardProps,
   TextField,
+  TextFieldProps,
   Typography,
 } from "@material-ui/core"
-import {useState} from "react"
+import {SyntheticEvent, useState} from "react"
 import {Link} from "react-router-dom"
 import {AppRoutes} from "../Stack"
-import {Form, FormUtils} from "../utils/formUtils"
+import {RequestState} from "../store/reducers/api"
+import {Form, FormUtils, TextFormField} from "../utils/formUtils"
 import AppLogo from "./AppLogo"
 
 const useStyles = makeStyles((theme) => ({
@@ -34,115 +36,149 @@ const useStyles = makeStyles((theme) => ({
   footer: {},
 }))
 
-export type AuthForm = Form<"email" | "password" | "confirmPassword">
+export interface AuthForm
+  extends Form<"email" | "password" | "confirmPassword"> {
+  email: TextFormField<keyof AuthForm>
+  password: TextFormField<keyof AuthForm>
+  confirmPassword: TextFormField<keyof AuthForm>
+}
+
 interface AuthCardProps
   extends StandardProps<{}, "root" | "header" | "body" | "footer"> {
   authType: "signup" | "signin"
+  submitAuthForm: () => void
   form: AuthForm
   setForm: (form: AuthForm) => void
-  formError: string
-  setFormError: (val: string) => void
+  request: RequestState | undefined
 }
 export default function AuthCard(props: AuthCardProps) {
   const classes = useStyles()
-  let authFormUtils = new FormUtils<keyof AuthForm>()
 
   let [validateEmail, setValidateEmail] = useState(false)
   let [validatePassword, setValidatePassword] = useState(false)
   let [validateConfirmPw, setValidateConfirmPw] = useState(false)
 
-  var EmailInput = (
-    <TextField
-      value={props.form.email.value}
-      onChange={(e) =>
-        props.setForm({
-          ...props.form,
-          email: {...props.form.email, value: e.target.value},
-        })
-      }
-      onBlur={() => setValidateEmail(true)}
-      {...(validateEmail
-        ? authFormUtils.getTextErrorProps(props.form, "email")
-        : {})}
-      variant="standard"
-      label="Email"
-      type="email"
-      fullWidth
-      required
-      autoFocus
-    />
-  )
+  let authFormUtils = new FormUtils<keyof AuthForm>()
 
-  var PasswordInput = (
-    <TextField
-      value={props.form.password.value}
-      onChange={(e) =>
-        props.setForm({
-          ...props.form,
-          password: {...props.form.password, value: e.target.value},
-        })
-      }
-      onBlur={() => setValidatePassword(true)}
-      {...(validatePassword
-        ? authFormUtils.getTextErrorProps(props.form, "password")
-        : {})}
-      variant="standard"
-      label="Password"
-      type="password"
-      fullWidth
-      required
-    />
-  )
+  function submitAuthForm(event: SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault()
+    props.submitAuthForm()
+  }
 
-  var ConfirmPasswordInput =
-    props.authType === "signup" ? (
-      <TextField
-        value={props.form.confirmPassword.value}
-        onChange={(e) =>
-          props.setForm({
-            ...props.form,
-            confirmPassword: {
-              ...props.form.confirmPassword,
-              value: e.target.value,
-            },
-          })
-        }
-        onFocus={() => setValidateConfirmPw(true)}
-        {...(validateConfirmPw
-          ? authFormUtils.getTextErrorProps(props.form, "confirmPassword")
-          : {})}
-        variant="standard"
-        label="Confirm password"
-        type="password"
-        fullWidth
-        required
-      />
-    ) : undefined
+  function disableSubmit(): boolean {
+    switch (props.authType) {
+      case "signup":
+        return !(
+          props.form.email.validator(props.form.email.value, props.form) ===
+            undefined &&
+          props.form.password.validator(
+            props.form.password.value,
+            props.form
+          ) === undefined &&
+          props.form.confirmPassword.validator(
+            props.form.confirmPassword.value,
+            props.form
+          ) === undefined
+        )
+      case "signin":
+        return !(
+          props.form.email.validator(props.form.email.value, props.form) ===
+            undefined &&
+          props.form.password.validator(
+            props.form.password.value,
+            props.form
+          ) === undefined
+        )
+      default:
+        return false
+    }
+  }
 
-  var AuthButton = (
-    <Button type="submit" variant="contained" color="primary">
-      {props.authType === "signup" ? "Sign Up" : "Sign In"}
-    </Button>
-  )
-
-  var FormError = (
-    <Typography variant="body2" color="error">
-      {props.formError}
-    </Typography>
-  )
-
+  const commonTextFieldProps: TextFieldProps = {
+    variant: "outlined",
+    fullWidth: true,
+  }
   return (
     <Card className={classes.root}>
       <Box className={classes.header}>
         <AppLogo height={50} noBackground withText />
         <Typography variant="h6">Bring your team together (finally)</Typography>
       </Box>
-      <form className={classes.body} autoComplete="off">
-        {EmailInput}
-        {PasswordInput}
-        {ConfirmPasswordInput}
-        {FormError}
-        {AuthButton}
+      <form
+        className={classes.body}
+        autoComplete="off"
+        onSubmit={submitAuthForm}>
+        <TextField
+          value={props.form.email.value}
+          onChange={(e) =>
+            props.setForm({
+              ...props.form,
+              email: {...props.form.email, value: e.target.value},
+            })
+          }
+          onBlur={() => setValidateEmail(true)}
+          {...(validateEmail
+            ? authFormUtils.getTextErrorProps(props.form, "email")
+            : {})}
+          label="Email"
+          type="email"
+          {...commonTextFieldProps}
+          required
+          autoFocus
+        />
+        <TextField
+          value={props.form.password.value}
+          onChange={(e) =>
+            props.setForm({
+              ...props.form,
+              password: {...props.form.password, value: e.target.value},
+            })
+          }
+          onBlur={() => setValidatePassword(true)}
+          {...(validatePassword
+            ? authFormUtils.getTextErrorProps(props.form, "password")
+            : {})}
+          label="Password"
+          type="password"
+          {...commonTextFieldProps}
+          required
+        />
+        {props.authType === "signup" ? (
+          <TextField
+            value={props.form.confirmPassword.value}
+            onChange={(e) =>
+              props.setForm({
+                ...props.form,
+                confirmPassword: {
+                  ...props.form.confirmPassword,
+                  value: e.target.value,
+                },
+              })
+            }
+            onFocus={() => setValidateConfirmPw(true)}
+            {...(validateConfirmPw
+              ? authFormUtils.getTextErrorProps(props.form, "confirmPassword")
+              : {})}
+            label="Confirm password"
+            type="password"
+            {...commonTextFieldProps}
+            required
+          />
+        ) : undefined}
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={disableSubmit()}>
+          {props.authType === "signup" ? "Sign Up" : "Sign In"}
+        </Button>
+        <Typography variant="body2" color="error">
+          {props.request && props.request.error
+            ? props.request.errorText
+              ? props.request.errorText
+              : "There was an authentication error"
+            : undefined}
+        </Typography>
       </form>
       <Box className={classes.footer}>
         {props.authType === "signup" ? (
