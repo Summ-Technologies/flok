@@ -1,3 +1,4 @@
+import {CssBaseline} from "@material-ui/core"
 import {ThemeProvider} from "@material-ui/styles"
 import {ConnectedRouter} from "connected-react-router"
 import React, {useEffect} from "react"
@@ -12,10 +13,12 @@ export default function App() {
     seamlessScrollPolyfill()
   }, [])
 
+  console.log(theme)
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <ConnectedRouter history={history}>
+          <CssBaseline />
           <Stack />
         </ConnectedRouter>
       </ThemeProvider>

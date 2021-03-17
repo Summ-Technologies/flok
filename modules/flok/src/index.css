@@ -2,5 +2,14 @@ html,
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   color: #434343; /* Match "black" in defaultStyles.colors*/
-  margin: 0;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  /* border: solid 1px black; */
 }

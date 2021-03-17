@@ -33,7 +33,7 @@ export default function userReducer(
       return {...state, loginStatus: "LOGGED_OUT"}
     case GET_USER_HOME_SUCCESS:
       payload = (action as ApiAction).payload
-      return {...state, user: payload}
+      return {...state, user: payload.user}
     default:
       return state
   }

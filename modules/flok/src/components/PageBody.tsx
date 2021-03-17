@@ -9,9 +9,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: "100vh",
   },
   body: {
+    width: "100%",
+    minHeight: "100%",
     marginLeft: "auto",
     marginRight: "auto",
-    flexGrow: 1,
   },
 }))
 
