@@ -20,7 +20,7 @@ type RetreatPageProps = RouteComponentProps<{}>
 function RetreatPage(props: RetreatPageProps) {
   const classes = useStyles()
   return (
-    <PageBody>
+    <PageBody fullWidth>
       <Grid item container spacing={4} className={classes.container}>
         <Hidden xsDown>
           <Grid item sm={5} md={4} lg={3} className={classes.sidebar}>

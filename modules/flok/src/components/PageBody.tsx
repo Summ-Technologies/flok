@@ -15,16 +15,26 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: "100%",
     marginLeft: "auto",
     marginRight: "auto",
+
+    [theme.breakpoints.down("sm")]: {
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
+    paddingLeft: (props: PageBodyProps) =>
+      props.fullWidth ? theme.spacing(1) : undefined,
+    paddingRight: (props: PageBodyProps) =>
+      props.fullWidth ? theme.spacing(1) : undefined,
   },
 }))
 
 type PageBodyProps = {
   hideNav?: boolean
+  fullWidth?: boolean
 }
 export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
   let height100vh = use100vh()
   let userEmail = useSelector(UserGetters.getUserEmail)
-  const classes = useStyles()
+  const classes = useStyles(props)
   return (
     <Grid
       container
@@ -37,7 +47,7 @@ export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
           <PageNav userEmail={userEmail} userCompany={"Flok"} />
         </Grid>
       )}
-      <Grid item md={10} className={classes.body}>
+      <Grid item md={props.fullWidth ? 12 : 10} className={classes.body}>
         {props.children}
       </Grid>
     </Grid>
