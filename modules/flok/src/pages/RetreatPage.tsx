@@ -20,7 +20,7 @@ type RetreatPageProps = RouteComponentProps<{}>
 function RetreatPage(props: RetreatPageProps) {
   const classes = useStyles()
   return (
-    <PageBody hideNav>
+    <PageBody>
       <Grid item container spacing={4} className={classes.container}>
         <Hidden xsDown>
           <Grid item sm={5} md={4} lg={3} className={classes.sidebar}>
@@ -30,7 +30,6 @@ function RetreatPage(props: RetreatPageProps) {
         <Grid item xs={12} sm={7} md={8} lg={9} className={classes.body}>
           <Box paddingTop={4} height="100%">
             {/* <RetreatOnboardingCall /> */}
-
             <RetreatEmployeeOnboarding />
           </Box>
         </Grid>
