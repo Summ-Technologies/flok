@@ -32,6 +32,13 @@ export const theme = createMuiTheme({
       fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',
     },
   },
+  overrides: {
+    MuiSvgIcon: {
+      root: {
+        verticalAlign: "middle",
+      },
+    },
+  },
   mixins: {
     toolbar: {
       // Give the nav bar a defined height so that

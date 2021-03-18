@@ -1,7 +1,7 @@
 import {Box, Grid, Hidden, makeStyles} from "@material-ui/core"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import PageBody from "../components/PageBody"
-import RetreatOnboardingCall from "../components/RetreatOnboardingCall"
+import RetreatEmployeeOnboarding from "../components/RetreatEmployeeOnboarding"
 import RetreatTimeline from "../components/RetreatTimeline"
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +29,9 @@ function RetreatPage(props: RetreatPageProps) {
         </Hidden>
         <Grid item xs={12} sm={7} md={8} lg={9} className={classes.body}>
           <Box paddingTop={4} height="100%">
-            <RetreatOnboardingCall />
+            {/* <RetreatOnboardingCall /> */}
+
+            <RetreatEmployeeOnboarding />
           </Box>
         </Grid>
       </Grid>
