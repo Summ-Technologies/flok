@@ -1,7 +1,6 @@
 import {
   Box,
   Divider,
-  Hidden,
   IconButton,
   List,
   ListItem,
@@ -110,11 +109,7 @@ export default function AppLocationList(
               # of people
             </Box>
           </Typography>
-          <ListItemSecondaryAction>
-            <Hidden xsUp>
-              <DeleteRounded />
-            </Hidden>
-          </ListItemSecondaryAction>
+          <ListItemSecondaryAction />
         </ListItem>
         <Divider />
         {props.locations.map((location, i) => {

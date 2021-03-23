@@ -1,6 +1,8 @@
 import {
+  Box,
   Button,
   Grid,
+  ListItem,
   makeStyles,
   StandardProps,
   TextField,
@@ -9,6 +11,7 @@ import {
 import clsx from "clsx"
 import {useState} from "react"
 import {EmployeeLocation} from "../../data/locations"
+import AppList from "../AppList"
 import AppLocationFinder from "../AppLocationFinder"
 import AppLocationList from "../AppLocationList"
 
@@ -40,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: "column",
     },
   },
+  textFieldNoOutline: {},
 }))
 
 interface RetreatEmployeeOnboardingProps extends StandardProps<{}, "root"> {}
@@ -96,7 +100,27 @@ export default function RetreatEmployeeOnboarding(
               onRemoveLocation={removeEmployeeLocation}
               onSetLocationNumber={setEmployeeLocationNumber}
             />
-            <TextField type="textarea" />
+            <Box marginTop={2}>
+              <AppList>
+                <ListItem>
+                  <Typography variant="body1">
+                    <Box fontWeight="fontWeightMedium">
+                      (Optional) provide additional details
+                    </Box>
+                  </Typography>
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    multiline
+                    fullWidth
+                    variant="outlined"
+                    rows={3}
+                    rowsMax={8}
+                    placeholder="E.g. we still aren’t sure if 2 people from NY and 1 person from SF can make it. We are giving them a deadline of [2 weeks from now] to decide"
+                  />
+                </ListItem>
+              </AppList>
+            </Box>
             <Button
               className={classes.submitButton}
               variant="outlined"
