@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-interface AppTimelineItemProps
+export interface AppTimelineItemProps
   extends StandardProps<{}, "root" | "missingOppositeContent"> {
   title: string
   body?: string
@@ -67,9 +67,12 @@ export default function AppTimelineItem(props: AppTimelineItemProps) {
       </TimelineSeparator>
       <TimelineContent>
         <Typography variant="body1">
-          <Box fontWeight="fontWeightBold">{props.title}</Box>
+          <Box
+            fontWeight={state === "in-progress" ? "fontWeightBold" : undefined}>
+            {props.title}
+          </Box>
         </Typography>
-        <Typography variant="body1">{props.body}</Typography>
+        <Typography variant="body2">{props.body}</Typography>
       </TimelineContent>
     </TimelineItem>
   )

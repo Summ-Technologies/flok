@@ -3,13 +3,14 @@ import {
   Grid,
   makeStyles,
   StandardProps,
+  TextField,
   Typography,
 } from "@material-ui/core"
 import clsx from "clsx"
 import {useState} from "react"
-import {EmployeeLocation} from "../data/locations"
-import AppLocationFinder from "./AppLocationFinder"
-import AppLocationList from "./AppLocationList"
+import {EmployeeLocation} from "../../data/locations"
+import AppLocationFinder from "../AppLocationFinder"
+import AppLocationList from "../AppLocationList"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,6 +96,7 @@ export default function RetreatEmployeeOnboarding(
               onRemoveLocation={removeEmployeeLocation}
               onSetLocationNumber={setEmployeeLocationNumber}
             />
+            <TextField type="textarea" />
             <Button
               className={classes.submitButton}
               variant="outlined"

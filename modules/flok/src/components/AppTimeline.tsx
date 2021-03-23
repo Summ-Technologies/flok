@@ -1,7 +1,7 @@
-import {makeStyles, StandardProps} from "@material-ui/core"
+import {makeStyles, StandardProps, Typography} from "@material-ui/core"
 import {Timeline} from "@material-ui/lab"
 import clsx from "clsx"
-import AppTimelineItem from "./AppTimelineItem"
+import AppTimelineItem, {AppTimelineItemProps} from "./AppTimelineItem"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,73 +20,39 @@ const useStyles = makeStyles((theme) => ({
       flex: "none",
     },
   },
+  lastItem: {
+    minHeight: 50,
+  },
 }))
 
-interface AppTimelineProps extends StandardProps<{}, "root"> {}
+interface AppTimelineProps extends StandardProps<{}, "root"> {
+  items: AppTimelineItemProps[]
+}
 
 export default function AppTimeline(props: AppTimelineProps) {
+  let {items, ...otherProps} = props
   const classes = useStyles(props)
   return (
     <Timeline
       align="left"
-      {...props}
+      {...otherProps}
       classes={{...props.classes, alignLeft: classes.alignLeft}}
       className={clsx(classes.root, props.className)}>
+      {items.map((item) => {
+        return <AppTimelineItem {...item} />
+      })}
       <AppTimelineItem
-        order={1}
-        state="completed"
-        title="Flok onboarding call"
-      />
-      <AppTimelineItem
-        order={2}
-        state="in-progress"
-        title="Enter employee locations"
-      />
-      <AppTimelineItem
-        order={3}
-        state="todo"
-        title="Receive proposals (free)"
-      />
-      <AppTimelineItem
-        order={4}
-        state="todo"
-        title="Confirm your destination"
-      />
-      <AppTimelineItem
-        order={5}
-        state="todo"
-        title="Flok helps you plan your retreat"
-      />
-      <AppTimelineItem
-        order={5}
-        state="todo"
-        title="Flok helps you plan your retreat"
-      />
-      <AppTimelineItem
-        order={5}
-        state="todo"
-        title="Flok helps you plan your retreat"
-      />
-      <AppTimelineItem
-        order={5}
-        state="todo"
-        title="Flok helps you plan your retreat"
-      />
-      <AppTimelineItem
-        order={5}
-        state="todo"
-        title="Flok helps you plan your retreat"
-      />
-      <AppTimelineItem
-        order={5}
-        state="todo"
-        title="Flok helps you plan your retreat"
-      />
-      <AppTimelineItem
+        classes={{root: classes.lastItem}}
         order={6}
         state="todo"
         title="Enjoy retreat! 🎊 🏠 🦅"
-        customIcon={<>🤗</>}
+        customIcon={
+          <Typography variant="body1">
+            <span role="img" aria-label="happy-face">
+              🤗
+            </span>
+          </Typography>
+        }
         lastItem
       />
     </Timeline>

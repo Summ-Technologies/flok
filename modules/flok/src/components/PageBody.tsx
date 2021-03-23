@@ -2,6 +2,7 @@ import {Grid, makeStyles, Theme} from "@material-ui/core"
 import React, {PropsWithChildren} from "react"
 import {use100vh} from "react-div-100vh"
 import {useSelector} from "react-redux"
+import CompanyGetters from "../store/getters/company"
 import UserGetters from "../store/getters/user"
 import PageNav from "./PageNav"
 
@@ -9,6 +10,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: "100vw",
     height: "100vh",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    paddingTop: (props) =>
+      props.hideNav ? undefined : theme.mixins.toolbar.height,
   },
   body: {
     width: "100%",
@@ -34,6 +39,7 @@ type PageBodyProps = {
 export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
   let height100vh = use100vh()
   let userEmail = useSelector(UserGetters.getUserEmail)
+  let userCompany = useSelector(CompanyGetters.getCompany)
   const classes = useStyles(props)
   return (
     <Grid
@@ -41,10 +47,14 @@ export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
       direction="column"
       wrap="nowrap"
       className={classes.root}
+      spacing={0}
       style={height100vh ? {height: height100vh} : undefined}>
       {props.hideNav ? undefined : (
         <Grid item>
-          <PageNav userEmail={userEmail} userCompany={"Flok"} />
+          <PageNav
+            userEmail={userEmail}
+            userCompany={userCompany ? userCompany.name : undefined}
+          />
         </Grid>
       )}
       <Grid item md={props.fullWidth ? 12 : 10} className={classes.body}>

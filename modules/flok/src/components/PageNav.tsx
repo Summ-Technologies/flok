@@ -26,8 +26,8 @@ type PageNavProps = {
 export default function PageNav(props: PropsWithChildren<PageNavProps>) {
   const classes = useStyles()
   return (
-    <Paper elevation={2} className={`${classes.root}`}>
-      <AppBar variant="outlined" color="inherit" position="fixed">
+    <AppBar variant="outlined" color="inherit" position="fixed">
+      <Paper elevation={2} className={`${classes.root}`}>
         <Toolbar>
           <AppLogo className={classes.logo} noBackground withText size="sm" />
           {props.userEmail ? (
@@ -41,8 +41,7 @@ export default function PageNav(props: PropsWithChildren<PageNavProps>) {
             </Typography>
           ) : undefined}
         </Toolbar>
-      </AppBar>
-      <Toolbar />
-    </Paper>
+      </Paper>
+    </AppBar>
   )
 }

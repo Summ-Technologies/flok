@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
 import AuthPage from "./pages/AuthPage"
+import HomePage from "./pages/HomePage"
 import NotFound404Page from "./pages/NotFound404Page"
 import RedirectPage from "./pages/RedirectPage"
 import RetreatPage from "./pages/RetreatPage"
@@ -16,7 +17,8 @@ type FlokRoute = {
 
 export class AppRoutes {
   static loggedInRoutes: FlokRoute[] = [
-    {name: "RetreatPage", component: <RetreatPage />, path: "/"},
+    {name: "HomePage", component: <HomePage />, path: "/"},
+    {name: "RetreatPage", component: <RetreatPage />, path: "/retreat"},
     {
       name: "RedirectLoggedOutPaths",
       component: <RedirectPage pageName="RetreatPage" />,

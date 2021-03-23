@@ -36,9 +36,9 @@ function AppLocationListRowItem(
     <ListItem className={`${props.classes.row}`}>
       <ListItemText
         secondary={
-          props.secondary ? (
-            <Typography variant="body2">{props.secondary}</Typography>
-          ) : undefined
+          <Typography variant="body2">
+            {props.secondary ? props.secondary : "\u200B"}
+          </Typography>
         }>
         <Typography variant="body1">{props.header}</Typography>
       </ListItemText>
