@@ -5,6 +5,13 @@ export const theme = createMuiTheme({
     background: {
       default: "#F9F9F9",
     },
+    primary: {
+      main: "#4456FC",
+    },
+    success: {
+      main: "#57C17A",
+      contrastText: "#FFFFFF",
+    },
   },
   typography: {
     h1: {

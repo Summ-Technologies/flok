@@ -13,7 +13,6 @@ export default function App() {
     seamlessScrollPolyfill()
   }, [])
 
-  console.log(theme)
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>

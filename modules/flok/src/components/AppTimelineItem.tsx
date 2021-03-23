@@ -68,6 +68,7 @@ export default function AppTimelineItem(props: AppTimelineItemProps) {
       <TimelineContent>
         <Typography variant="body1">
           <Box
+            component="span"
             fontWeight={state === "in-progress" ? "fontWeightBold" : undefined}>
             {props.title}
           </Box>

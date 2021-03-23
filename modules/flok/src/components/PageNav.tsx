@@ -32,9 +32,11 @@ export default function PageNav(props: PropsWithChildren<PageNavProps>) {
           <AppLogo className={classes.logo} noBackground withText size="sm" />
           {props.userEmail ? (
             <Typography variant="body1">
-              <Box lineHeight="1.1rem">
+              <Box component="span" lineHeight="1.1rem">
                 {props.userCompany ? (
-                  <Box fontWeight="fontWeightMedium">{props.userCompany}</Box>
+                  <Box component="span" fontWeight="fontWeightMedium">
+                    {props.userCompany}
+                  </Box>
                 ) : undefined}
                 {props.userEmail}
               </Box>

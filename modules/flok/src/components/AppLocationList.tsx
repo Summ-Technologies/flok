@@ -17,7 +17,7 @@ import {
   IndeterminateCheckBoxOutlined,
 } from "@material-ui/icons"
 import React, {PropsWithChildren} from "react"
-import {EmployeeLocation} from "../data/locations"
+import {GooglePlaceType} from "../models"
 
 type AppLocationListRowProps = {
   classes: {row: any; employeeCount: any}
@@ -84,9 +84,9 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 interface AppLocationListProps extends StandardProps<{}, "root"> {
-  locations: {location: EmployeeLocation; number: number}[]
-  onRemoveLocation: (location: EmployeeLocation) => void
-  onSetLocationNumber: (location: EmployeeLocation, val: number) => void
+  locations: {location: GooglePlaceType; number: number}[]
+  onRemoveLocation: (location: GooglePlaceType) => void
+  onSetLocationNumber: (location: GooglePlaceType, val: number) => void
 }
 
 export default function AppLocationList(
@@ -99,11 +99,14 @@ export default function AppLocationList(
         <ListItem className={`${classes.row}`}>
           <ListItemText>
             <Typography variant="body1">
-              <Box fontWeight="fontWeightMedium">Locations</Box>
+              <Box component="span" fontWeight="fontWeightMedium">
+                Locations
+              </Box>
             </Typography>
           </ListItemText>
           <Typography variant="body1">
             <Box
+              component="span"
               fontWeight="fontWeightMedium"
               className={classes.employeeCount}>
               # of people
@@ -113,29 +116,22 @@ export default function AppLocationList(
         </ListItem>
         <Divider />
         {props.locations.map((location, i) => {
-          let header = location.location.name
-            ? location.location.name
-            : location.location.city
-          let subheader = ""
-          if (!header) {
-            header = location.location.country
-          } else {
-            subheader = location.location.country
-          }
           return (
-            <>
+            <React.Fragment key={location.location.place_id}>
               <AppLocationListRowItem
                 onUpdateCount={(count) =>
                   props.onSetLocationNumber(location.location, count)
                 }
                 onRemoveItem={() => props.onRemoveLocation(location.location)}
-                header={header}
-                secondary={subheader}
+                header={location.location.structured_formatting.main_text}
+                secondary={
+                  location.location.structured_formatting.secondary_text
+                }
                 count={location.number}
                 classes={classes}
               />
               {i < props.locations.length - 1 ? <Divider /> : undefined}
-            </>
+            </React.Fragment>
           )
         })}
       </List>

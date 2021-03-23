@@ -38,12 +38,12 @@ export default function AppTimeline(props: AppTimelineProps) {
       {...otherProps}
       classes={{...props.classes, alignLeft: classes.alignLeft}}
       className={clsx(classes.root, props.className)}>
-      {items.map((item) => {
-        return <AppTimelineItem {...item} />
+      {items.map((item, i) => {
+        return <AppTimelineItem key={item.order} {...item} order={i} />
       })}
       <AppTimelineItem
         classes={{root: classes.lastItem}}
-        order={6}
+        order={items.length + 1}
         state="todo"
         title="Enjoy retreat! 🎊 🏠 🦅"
         customIcon={

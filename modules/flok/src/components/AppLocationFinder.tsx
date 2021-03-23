@@ -7,11 +7,17 @@ import {
 } from "@material-ui/core"
 import Grid from "@material-ui/core/Grid"
 import TextField from "@material-ui/core/TextField"
-import {FlightRounded, Search} from "@material-ui/icons"
+import {Search} from "@material-ui/icons"
 import LocationOnIcon from "@material-ui/icons/LocationOn"
 import Autocomplete from "@material-ui/lab/Autocomplete"
-import React, {useEffect, useState} from "react"
-import {EmployeeLocation, EMPLOYEE_LOCATIONS, getLabel} from "../data/locations"
+import parse from "autosuggest-highlight/parse"
+import throttle from "lodash/throttle"
+import React, {useEffect, useMemo} from "react"
+import config, {GOOGLE_API_KEY} from "../config"
+import {GooglePlaceType} from "../models"
+import {useScript} from "../utils"
+
+let autocompleteService = {current: undefined}
 
 const useStyles = makeStyles((theme) => ({
   root: {marginBottom: theme.spacing(2)},
@@ -22,37 +28,77 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 interface AppLocationFinderProps extends StandardProps<{}, "root"> {
-  onSelectLocation: (location: EmployeeLocation) => void
+  onSelectLocation: (location: GooglePlaceType) => void
 }
 export default function AppLocationFinder(props: AppLocationFinderProps) {
   const classes = useStyles()
-  const [value, setValue] = useState<EmployeeLocation | null>(null)
-  const [inputValue, setInputValue] = useState("")
-  const [options, setOptions] = useState<EmployeeLocation[]>([])
+
+  const [value, setValue] = React.useState<GooglePlaceType | null>(null)
+  const [inputValue, setInputValue] = React.useState("")
+  const [options, setOptions] = React.useState<GooglePlaceType[]>([])
+  let [googleMapScript] = useScript(
+    `https://maps.googleapis.com/maps/api/js?key=${config.get(
+      GOOGLE_API_KEY
+    )}&libraries=places`
+  )
+
+  function getLabel(place: GooglePlaceType) {
+    return place.description
+  }
+
+  const fetch = useMemo(
+    () =>
+      throttle(
+        (
+          request: {input: string},
+          callback: (results?: GooglePlaceType[]) => void
+        ) => {
+          ;(autocompleteService.current as any).getPlacePredictions(
+            {...request, types: ["(cities)"]},
+            callback
+          )
+        },
+        500
+      ),
+    []
+  )
 
   useEffect(() => {
-    let newOptions: EmployeeLocation[] = []
-
-    if (value) {
-      newOptions = [value]
+    let active = true
+    if (!autocompleteService.current && googleMapScript) {
+      let google: any = (window as any).google
+      autocompleteService.current = new google.maps.places.AutocompleteService()
     }
 
-    let results = EMPLOYEE_LOCATIONS.filter((loc) => {
-      const inputLower = inputValue.toLowerCase()
-      let valid = false
-      valid = loc.country.toLowerCase().includes(inputLower)
-      valid = loc.city ? loc.city.toLowerCase().includes(inputLower) : valid
-      valid = loc.name ? loc.name.toLowerCase().includes(inputLower) : valid
-      valid = getLabel(loc).toLowerCase().includes(inputLower) ? true : valid
-      return valid
+    if (!autocompleteService.current) {
+      return undefined
+    }
+
+    if (inputValue === "") {
+      setOptions(value ? [value] : [])
+      return undefined
+    }
+
+    fetch({input: inputValue}, (results?: GooglePlaceType[]) => {
+      if (active) {
+        let newOptions = [] as GooglePlaceType[]
+
+        if (value) {
+          newOptions = [value]
+        }
+
+        if (results) {
+          newOptions = [...newOptions, ...results]
+        }
+
+        setOptions(newOptions)
+      }
     })
 
-    if (results) {
-      newOptions = [...newOptions, ...results]
+    return () => {
+      active = false
     }
-
-    setOptions(newOptions)
-  }, [value, inputValue])
+  }, [value, inputValue, fetch, googleMapScript])
 
   return (
     <Autocomplete
@@ -61,6 +107,7 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
       options={options}
       autoComplete
       filterSelectedOptions
+      filterOptions={(x) => x}
       inputValue={inputValue}
       value={value}
       onChange={(event, newValue, reason) => {
@@ -89,36 +136,38 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
         </Paper>
       )}
       renderOption={(option) => {
-        let labelStr = getLabel(option)
-        let highlightIndex = getLabel(option)
-          .toLowerCase()
-          .indexOf(inputValue.toLowerCase())
+        const matches =
+          option.structured_formatting.main_text_matched_substrings
+        const parts = parse(
+          option.structured_formatting.main_text,
+          matches.map((match: any) => [
+            match.offset,
+            match.offset + match.length,
+          ])
+        )
         let label = (
           <Typography component="span" variant="body1">
-            {highlightIndex !== -1
-              ? labelStr.substring(0, highlightIndex)
-              : undefined}
-            <Box component="span" fontWeight="fontWeightMedium">
-              {labelStr.substring(
-                highlightIndex,
-                highlightIndex + inputValue.length
-              )}
-            </Box>
-            {labelStr.substring(highlightIndex + inputValue.length)}
+            {parts.map((part: any, i) => (
+              <Box
+                component="span"
+                key={i}
+                fontWeight={part.highlight ? "fontWeightMedium" : undefined}>
+                {part.text}
+              </Box>
+            ))}
           </Typography>
         )
 
         return (
           <Grid container alignItems="center">
             <Grid item>
-              {option.type === "AIRPORT" ? (
-                <FlightRounded className={classes.icon} />
-              ) : (
-                <LocationOnIcon className={classes.icon} />
-              )}
+              <LocationOnIcon className={classes.icon} />
             </Grid>
             <Grid item xs>
               {label}
+              <Typography variant="body2" color="textSecondary">
+                {option.structured_formatting.secondary_text}
+              </Typography>
             </Grid>
           </Grid>
         )
