@@ -281,7 +281,7 @@ export default function RetreatInitalProposals(
             variant="contained"
             color="primary"
             fullWidth>
-            Continue to retreat proposals
+            Update team
           </Button>
         ) : undefined}
       </Grid>
