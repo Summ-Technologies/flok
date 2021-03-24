@@ -15,7 +15,10 @@ export type RetreatController = {
   retreat: RetreatModelApi
 }
 
-// User
+// User auth
+export type UserAuthResponse = {
+  user: UserModelApi
+}
 
 export type UserModelApi = {
   id: number

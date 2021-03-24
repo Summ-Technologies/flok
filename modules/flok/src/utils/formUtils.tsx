@@ -53,6 +53,8 @@ type FormField<
 > = {
   type: type
   value: ValueType
+  label?: string
+  required?: boolean
   validator: (
     val: ValueType,
     form: Form<FormFieldNames>

@@ -7,4 +7,7 @@ export default class ApiGetters {
   static getSigninRequest(state: RootState) {
     return state.api.auth.signin
   }
+  static getAuthResetTokenRequest(loginToken: string) {
+    return (state: RootState) => state.api.auth.resetTokens[loginToken]
+  }
 }

@@ -12,4 +12,11 @@ export default class UserGetters {
       ? state.user.user.first_name + " " + state.user.user.last_name
       : undefined
   }
+  static getUserForLoginToken(loginToken: string) {
+    return (state: RootState) => {
+      return state.user.auth.tokens[loginToken]
+        ? state.user.auth.tokens[loginToken].email
+        : undefined
+    }
+  }
 }

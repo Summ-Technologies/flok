@@ -1,6 +1,8 @@
+import querystring from "querystring"
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
-import {ApiAction, createApiAction} from "./api"
+import {modelToApi} from "../../utils/apiUtils"
+import {ApiAction, ApiUtils, createApiAction} from "./api"
 
 // Authentication
 export const POST_USER_SIGNUP_REQUEST = "POST_USER_SIGNUP_REQUEST"
@@ -50,6 +52,53 @@ export function postUserSignin(email: string, password: string) {
           POST_USER_SIGNIN_REQUEST,
           POST_USER_SIGNIN_SUCCESS,
           POST_USER_SIGNIN_FAILURE,
+        ],
+      })
+    )) as unknown) as ApiAction
+    if (!signupResponse.error) {
+      dispatch(setUserLoggedIn())
+    }
+  }
+}
+
+export const GET_USER_RESET_REQUEST = "GET_USER_RESET_REQUEST"
+export const GET_USER_RESET_SUCCESS = "GET_USER_RESET_SUCCESS"
+export const GET_USER_RESET_FAILURE = "GET_USER_RESET_FAILURE"
+
+export function getUserResetToken(loginToken: string) {
+  let endpoint = `/v1.0/auth/reset?${querystring.stringify(
+    modelToApi({loginToken})
+  )}`
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [
+      ApiUtils.typeWithMeta(GET_USER_RESET_REQUEST, {loginToken}),
+      ApiUtils.typeWithMeta(GET_USER_RESET_SUCCESS, {loginToken}),
+      ApiUtils.typeWithMeta(GET_USER_RESET_FAILURE, {loginToken}),
+    ],
+  })
+}
+
+export const POST_USER_RESET_REQUEST = "POST_USER_RESET_REQUEST"
+export const POST_USER_RESET_SUCCESS = "POST_USER_RESET_SUCCESS"
+export const POST_USER_RESET_FAILURE = "POST_USER_RESET_FAILURE"
+
+export function postUserReset(loginToken: string, password: string) {
+  let endpoint = "/v1.0/auth/reset"
+  return async (
+    dispatch: ThunkDispatch<any, any, any>,
+    getState: () => RootState
+  ) => {
+    let signupResponse = ((await dispatch(
+      createApiAction({
+        endpoint,
+        body: JSON.stringify(modelToApi({loginToken, password})),
+        method: "POST",
+        types: [
+          ApiUtils.typeWithMeta(POST_USER_RESET_REQUEST, {loginToken}),
+          ApiUtils.typeWithMeta(POST_USER_RESET_SUCCESS, {loginToken}),
+          ApiUtils.typeWithMeta(POST_USER_RESET_FAILURE, {loginToken}),
         ],
       })
     )) as unknown) as ApiAction

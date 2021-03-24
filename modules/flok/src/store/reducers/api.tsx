@@ -1,6 +1,7 @@
 import {Action} from "redux"
 import {ApiAction} from "../actions/api"
 import {
+  GET_USER_RESET_FAILURE,
   POST_USER_SIGNIN_FAILURE,
   POST_USER_SIGNUP_FAILURE,
 } from "../actions/user"
@@ -16,6 +17,9 @@ export type ApiState = {
   auth: {
     signup?: RequestState
     signin?: RequestState
+    resetTokens: {
+      [key: string]: RequestState
+    }
   }
   user: {
     home?: RequestState
@@ -23,7 +27,9 @@ export type ApiState = {
 }
 
 const initialState: ApiState = {
-  auth: {},
+  auth: {
+    resetTokens: {},
+  },
   user: {},
 }
 
@@ -33,6 +39,7 @@ export default function userReducer(
 ): ApiState {
   var payload
   var errorText
+  var loginToken
   switch (action.type) {
     case POST_USER_SIGNIN_FAILURE:
       payload = (action as ApiAction).payload
@@ -65,6 +72,28 @@ export default function userReducer(
             loading: false,
             error: true,
             errorText,
+          },
+        },
+      }
+    case GET_USER_RESET_FAILURE:
+      loginToken = ((action as unknown) as {meta: {loginToken: string}}).meta
+        .loginToken
+      payload = (action as ApiAction).payload
+      errorText = payload.response.message
+        ? payload.response.message
+        : "There was an issue with the login_token"
+      return {
+        ...state,
+        auth: {
+          ...state.auth,
+          resetTokens: {
+            ...state.auth.resetTokens,
+            [loginToken]: {
+              success: false,
+              loading: false,
+              error: true,
+              errorText,
+            },
           },
         },
       }
