@@ -7,7 +7,12 @@ import RetreatEmployeeOnboarding from "../components/retreats/RetreatEmployeeOnb
 import RetreatInitialProposals from "../components/retreats/RetreatInitialProposals"
 import RetreatOnboardingCall from "../components/retreats/RetreatOnboardingCall"
 import RetreatTimeline from "../components/retreats/RetreatTimeline"
+import {
+  RetreatEmployeeLocation,
+  RetreatEmployeeLocationSubmission,
+} from "../models/retreat"
 import {AppRoutes} from "../Stack"
+import {postEmployeeLocation} from "../store/actions/retreat"
 import RetreatGetters from "../store/getters/retreat"
 
 const useStyles = makeStyles((theme) => ({
@@ -30,6 +35,25 @@ function RetreatPage(props: RetreatPageProps) {
   let dispatch = useDispatch()
   let userRetreat = useSelector(RetreatGetters.getRetreat)
   let currentRetreatToItem = useSelector(RetreatGetters.getInProgressItem)
+
+  function postRetreatEmployeeLocation(
+    employeeLocations: RetreatEmployeeLocation[],
+    extraInfo?: string
+  ) {
+    if (userRetreat && currentRetreatToItem) {
+      dispatch(
+        postEmployeeLocation(
+          userRetreat.id,
+          currentRetreatToItem.retreatItem.id,
+          {
+            locations: employeeLocations,
+            extraInfo: extraInfo,
+          } as RetreatEmployeeLocationSubmission
+        )
+      )
+    }
+  }
+
   return userRetreat ? (
     <PageBody fullWidth>
       <Grid item container spacing={4} className={classes.container}>
@@ -45,10 +69,14 @@ function RetreatPage(props: RetreatPageProps) {
                 <RetreatOnboardingCall />
               ) : currentRetreatToItem.retreatItem.type ===
                 "EMPLOYEE_LOCATIONS" ? (
-                <RetreatEmployeeOnboarding />
+                <RetreatEmployeeOnboarding
+                  postEmployeeLocations={postRetreatEmployeeLocation}
+                />
               ) : currentRetreatToItem.retreatItem.type ===
                 "INITIAL_PROPOSALS" ? (
-                <RetreatInitialProposals />
+                <RetreatInitialProposals
+                  postEmployeeLocations={postRetreatEmployeeLocation}
+                />
               ) : currentRetreatToItem.retreatItem.type ===
                 "DESTINATION_SELECTION" ? (
                 <>Here's some destinations</>

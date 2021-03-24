@@ -11,6 +11,7 @@ import {
 import clsx from "clsx"
 import {useState} from "react"
 import {GooglePlaceType} from "../../models"
+import {RetreatEmployeeLocation} from "../../models/retreat"
 import AppList from "../AppList"
 import AppLocationFinder from "../AppLocationFinder"
 import AppLocationList from "../AppLocationList"
@@ -46,7 +47,12 @@ const useStyles = makeStyles((theme) => ({
   textFieldNoOutline: {},
 }))
 
-interface RetreatEmployeeOnboardingProps extends StandardProps<{}, "root"> {}
+interface RetreatEmployeeOnboardingProps extends StandardProps<{}, "root"> {
+  postEmployeeLocations: (
+    employeeLocations: RetreatEmployeeLocation[],
+    extraInfo?: string
+  ) => void
+}
 
 export default function RetreatEmployeeOnboarding(
   props: RetreatEmployeeOnboardingProps
@@ -59,6 +65,7 @@ export default function RetreatEmployeeOnboarding(
       number: number
     }[]
   >([])
+  let [extraInfo, setExtraInfo] = useState("")
 
   // Optional form + submit button only show when location is added
   //  they stay stay sticky event when locations are all removed
@@ -126,11 +133,16 @@ export default function RetreatEmployeeOnboarding(
                     rows={3}
                     rowsMax={8}
                     placeholder="E.g. we still aren’t sure if 2 people from NY and 1 person from SF can make it. We are giving them a deadline of [2 weeks from now] to decide"
+                    value={extraInfo}
+                    onChange={(e) => setExtraInfo(e.target.value)}
                   />
                 </ListItem>
               </AppList>
             </Box>
             <Button
+              onClick={() =>
+                props.postEmployeeLocations(employeeLocations, extraInfo)
+              }
               className={classes.submitButton}
               variant="contained"
               color="primary"

@@ -1,4 +1,4 @@
-import {camelCase} from "lodash"
+import {camelCase, snakeCase} from "lodash"
 
 /*
  * All this util does is is turn objects to
@@ -20,4 +20,26 @@ export function apiToModel(obj: any): any {
     return obj
   }
   return camelizeKeys(obj)
+}
+
+export function modelToApi(obj: any): any {
+  function snakeizeKeys(obj: any): any {
+    if (Array.isArray(obj)) {
+      return obj.map((v) => snakeizeKeys(v))
+    } else if (
+      obj !== null &&
+      obj !== undefined &&
+      obj.constructor === Object
+    ) {
+      return Object.keys(obj).reduce(
+        (result, key) => ({
+          ...result,
+          [snakeCase(key)]: snakeizeKeys(obj[key]),
+        }),
+        {}
+      )
+    }
+    return obj
+  }
+  return snakeizeKeys(obj)
 }

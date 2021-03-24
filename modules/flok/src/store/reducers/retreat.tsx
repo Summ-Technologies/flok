@@ -3,6 +3,10 @@ import {UserHomeResponse} from "../../models/api"
 import {RetreatModel} from "../../models/retreat"
 import {apiToModel} from "../../utils/apiUtils"
 import {ApiAction} from "../actions/api"
+import {
+  GET_RETREAT_SUCCESS,
+  POST_EMPLOYEE_LOCATION_SUCCESS,
+} from "../actions/retreat"
 import {GET_USER_HOME_SUCCESS} from "../actions/user"
 
 export type RetreatState = {
@@ -18,6 +22,8 @@ export default function userReducer(
   var payload
   switch (action.type) {
     case GET_USER_HOME_SUCCESS:
+    case POST_EMPLOYEE_LOCATION_SUCCESS:
+    case GET_RETREAT_SUCCESS:
       payload = (action as ApiAction).payload as UserHomeResponse
       return payload.retreat
         ? {

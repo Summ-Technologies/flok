@@ -81,7 +81,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-interface RetreatInitalProposalsProps extends StandardProps<{}, "root"> {}
+interface RetreatInitalProposalsProps extends StandardProps<{}, "root"> {
+  postEmployeeLocations: (
+    employeeLocations: RetreatEmployeeLocation[],
+    extraInfo?: string
+  ) => void
+}
 
 export default function RetreatInitalProposals(
   props: RetreatInitalProposalsProps
@@ -271,6 +276,7 @@ export default function RetreatInitalProposals(
         </Box>
         {editLocations ? (
           <Button
+            onClick={() => props.postEmployeeLocations(employeeLocations)}
             className={classes.submitButton}
             variant="contained"
             color="primary"
