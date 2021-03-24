@@ -67,8 +67,8 @@ export default function RetreatEmployeeOnboarding(
   function addEmployeeLocation(location: GooglePlaceType): void {
     if (
       !employeeLocations
-        .map((loc) => loc.location.place_id)
-        .includes(location.place_id)
+        .map((loc) => loc.location.placeId)
+        .includes(location.placeId)
     ) {
       setEmployeeLocations([
         ...employeeLocations,
@@ -147,23 +147,6 @@ export default function RetreatEmployeeOnboarding(
             ) : undefined}
           </>
         ) : undefined}
-      </Grid>
-      <Grid
-        item
-        container
-        md={5}
-        sm={6}
-        xs={12}
-        className={classes.uploadSection}>
-        <Typography
-          component="span"
-          variant="h2"
-          style={{verticalAlign: "middle"}}>
-          or
-        </Typography>
-        <Button variant="contained" style={{verticalAlign: "middle"}}>
-          Upload CSV
-        </Button>
       </Grid>
     </Grid>
   )

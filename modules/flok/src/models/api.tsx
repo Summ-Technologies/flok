@@ -6,7 +6,13 @@ import {RetreatItemState, RetreatItemType} from "./retreat"
 export type UserHomeResponse = {
   user: UserModelApi
   company?: CompanyModelApi
-  retreat?: RetreatItemModelApi
+  retreat?: RetreatModelApi
+}
+
+// GET v1.0/retreats/<id>
+// POST v1.0/retreats/<id>/<item_id>
+export type RetreatController = {
+  retreat: RetreatModelApi
 }
 
 // User
@@ -43,6 +49,7 @@ export type RetreatToItemModelApi = {
 
 export type RetreatItemModelApi = {
   id: number
+  uid: string
   type: RetreatItemType
   data: any
   title: string

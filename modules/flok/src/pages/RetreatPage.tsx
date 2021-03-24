@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import PageBody from "../components/PageBody"
 import RetreatEmployeeOnboarding from "../components/retreats/RetreatEmployeeOnboarding"
+import RetreatInitialProposals from "../components/retreats/RetreatInitialProposals"
 import RetreatOnboardingCall from "../components/retreats/RetreatOnboardingCall"
 import RetreatTimeline from "../components/retreats/RetreatTimeline"
 import {AppRoutes} from "../Stack"
@@ -47,7 +48,7 @@ function RetreatPage(props: RetreatPageProps) {
                 <RetreatEmployeeOnboarding />
               ) : currentRetreatToItem.retreatItem.type ===
                 "INITIAL_PROPOSALS" ? (
-                <>Working on some proposals</>
+                <RetreatInitialProposals />
               ) : currentRetreatToItem.retreatItem.type ===
                 "DESTINATION_SELECTION" ? (
                 <>Here's some destinations</>

@@ -16,6 +16,7 @@ import React, {useEffect, useMemo} from "react"
 import config, {GOOGLE_API_KEY} from "../config"
 import {GooglePlaceType} from "../models"
 import {useScript} from "../utils"
+import {apiToModel} from "../utils/apiUtils"
 
 let autocompleteService = {current: undefined}
 
@@ -55,7 +56,7 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
         ) => {
           ;(autocompleteService.current as any).getPlacePredictions(
             {...request, types: ["(cities)"]},
-            callback
+            (results: any) => callback(apiToModel(results))
           )
         },
         500
@@ -136,10 +137,9 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
         </Paper>
       )}
       renderOption={(option) => {
-        const matches =
-          option.structured_formatting.main_text_matched_substrings
+        const matches = option.structuredFormatting.mainTextMatchedSubstrings
         const parts = parse(
-          option.structured_formatting.main_text,
+          option.structuredFormatting.mainText,
           matches.map((match: any) => [
             match.offset,
             match.offset + match.length,
@@ -166,7 +166,7 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
             <Grid item xs>
               {label}
               <Typography variant="body2" color="textSecondary">
-                {option.structured_formatting.secondary_text}
+                {option.structuredFormatting.secondaryText}
               </Typography>
             </Grid>
           </Grid>
