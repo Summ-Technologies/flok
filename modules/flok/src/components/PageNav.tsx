@@ -36,6 +36,7 @@ export default function PageNav(props: PropsWithChildren<PageNavProps>) {
                 {props.userCompany ? (
                   <Box component="span" fontWeight="fontWeightMedium">
                     {props.userCompany}
+                    <br />
                   </Box>
                 ) : undefined}
                 {props.userEmail}
