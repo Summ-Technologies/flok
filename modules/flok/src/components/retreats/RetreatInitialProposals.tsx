@@ -19,13 +19,8 @@ import {TimelineDot} from "@material-ui/lab"
 import clsx from "clsx"
 import {useEffect, useState} from "react"
 import {useSelector} from "react-redux"
-import {GooglePlaceType} from "../../models"
-import {
-  RetreatEmployeeLocation,
-  RetreatEmployeeLocationDataModel,
-} from "../../models/retreat"
+import {RetreatEmployeeLocationItem} from "../../models/retreat"
 import RetreatGetters from "../../store/getters/retreat"
-import {apiToModel} from "../../utils/apiUtils"
 import AppList from "../AppList"
 import AppLocationFinder from "../AppLocationFinder"
 import AppLocationList from "../AppLocationList"
@@ -83,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface RetreatInitalProposalsProps extends StandardProps<{}, "root"> {
   postEmployeeLocations: (
-    employeeLocations: RetreatEmployeeLocation[],
+    employeeLocations: RetreatEmployeeLocationItem[],
     extraInfo?: string
   ) => void
 }
@@ -95,63 +90,47 @@ export default function RetreatInitalProposals(
 
   let [editLocations, setEditLocations] = useState(false)
   let [employeeLocations, setEmployeeLocations] = useState<
-    RetreatEmployeeLocation[]
+    RetreatEmployeeLocationItem[]
   >([])
-  let retreat = useSelector(RetreatGetters.getRetreat)
+  let employeeLocationSubmission = useSelector(
+    RetreatGetters.getEmployeeLocationSubmission
+  )
 
   useEffect(() => {
-    if (!editLocations && retreat) {
-      let lastItem: RetreatEmployeeLocationDataModel | undefined = undefined
-      for (var i in retreat.retreatItems) {
-        let item = retreat.retreatItems[i]
-        if (
-          item.savedData &&
-          item.savedData.submissions &&
-          item.savedData.submissions.length
-        ) {
-          lastItem = item.savedData
-            ? (apiToModel(item.savedData) as RetreatEmployeeLocationDataModel)
-            : lastItem
-        }
-      }
-      if (lastItem && lastItem.submissions) {
-        let lastItemLocations = lastItem.submissions.pop()
-        if (lastItemLocations) {
-          setEmployeeLocations(lastItemLocations.locations)
-        }
-      }
+    if (!editLocations && employeeLocationSubmission) {
+      setEmployeeLocations(employeeLocationSubmission.locationItems)
     }
-  }, [retreat, setEmployeeLocations, editLocations])
+  }, [employeeLocationSubmission, setEmployeeLocations, editLocations])
 
   // Optional form + submit button only show when location is added
   //  they stay stay sticky event when locations are all removed
   let [showSubmit, setShowSubmit] = useState(false)
 
-  function addEmployeeLocation(location: GooglePlaceType): void {
+  function addEmployeeLocation(location: RetreatEmployeeLocationItem): void {
     if (
       !employeeLocations
-        .map((loc) => loc.location.placeId)
-        .includes(location.placeId)
+        .map((loc) => loc.googlePlaceId)
+        .includes(location.googlePlaceId)
     ) {
       setEmployeeLocations([
         ...employeeLocations,
-        {location: location, number: 1},
+        {...location, employeeCount: 1},
       ])
     }
     if (!showSubmit) setShowSubmit(true)
   }
-  function removeEmployeeLocation(location: GooglePlaceType): void {
-    setEmployeeLocations(
-      employeeLocations.filter((loc) => location !== loc.location)
-    )
+  function removeEmployeeLocation(location: RetreatEmployeeLocationItem): void {
+    setEmployeeLocations(employeeLocations.filter((loc) => location !== loc))
   }
   function setEmployeeLocationNumber(
-    location: GooglePlaceType,
+    location: RetreatEmployeeLocationItem,
     number: number
   ): void {
     setEmployeeLocations(
       employeeLocations.map((loc) =>
-        location === loc.location ? {...loc, number} : loc
+        location.googlePlaceId === loc.googlePlaceId
+          ? {...loc, employeeCount: number}
+          : loc
       )
     )
   }

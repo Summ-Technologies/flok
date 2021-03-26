@@ -18,7 +18,7 @@ import {
 } from "@material-ui/icons"
 import clsx from "clsx"
 import React, {PropsWithChildren} from "react"
-import {GooglePlaceType} from "../models"
+import {RetreatEmployeeLocationItem} from "../models/retreat"
 
 const useRowStyles = makeStyles((theme) => ({
   root: {
@@ -111,9 +111,12 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 interface AppLocationListProps extends StandardProps<{}, "root"> {
-  locations: {location: GooglePlaceType; number: number}[]
-  onRemoveLocation?: (location: GooglePlaceType) => void
-  onSetLocationNumber?: (location: GooglePlaceType, val: number) => void
+  locations: RetreatEmployeeLocationItem[]
+  onRemoveLocation?: (location: RetreatEmployeeLocationItem) => void
+  onSetLocationNumber?: (
+    location: RetreatEmployeeLocationItem,
+    val: number
+  ) => void
 }
 
 export default function AppLocationList(
@@ -145,13 +148,13 @@ export default function AppLocationList(
         <Divider />
         {locations.map((location, i) => {
           return (
-            <React.Fragment key={location.location.placeId}>
+            <React.Fragment key={location.googlePlaceId}>
               <AppLocationListRowItem
                 onUpdateCount={
                   onSetLocationNumber
                     ? (count) =>
                         onSetLocationNumber
-                          ? onSetLocationNumber(location.location, count)
+                          ? onSetLocationNumber(location, count)
                           : undefined
                     : undefined
                 }
@@ -159,13 +162,13 @@ export default function AppLocationList(
                   onRemoveLocation
                     ? () =>
                         onRemoveLocation
-                          ? onRemoveLocation(location.location)
+                          ? onRemoveLocation(location)
                           : undefined
                     : undefined
                 }
-                header={location.location.structuredFormatting.mainText}
-                secondary={location.location.structuredFormatting.secondaryText}
-                count={location.number}
+                header={location.mainText}
+                secondary={location.secondaryText}
+                count={location.employeeCount ? location.employeeCount : 0}
                 classes={{
                   root: classes.row,
                   employeeCount: classes.employeeCount,

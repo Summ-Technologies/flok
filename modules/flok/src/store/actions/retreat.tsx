@@ -2,25 +2,33 @@ import {RetreatEmployeeLocationSubmission} from "../../models/retreat"
 import {modelToApi} from "../../utils/apiUtils"
 import {createApiAction} from "./api"
 
-// Authentication
-export const POST_EMPLOYEE_LOCATION_REQUEST = "POST_EMPLOYEE_LOCATION_REQUEST"
-export const POST_EMPLOYEE_LOCATION_SUCCESS = "POST_EMPLOYEE_LOCATION_SUCCESS"
-export const POST_EMPLOYEE_LOCATION_FAILURE = "POST_EMPLOYEE_LOCATION_FAILURE"
+export const POST_EMPLOYEE_LOCATION_V2_REQUEST =
+  "POST_EMPLOYEE_LOCATION_V2_REQUEST"
+export const POST_EMPLOYEE_LOCATION_V2_SUCCESS =
+  "POST_EMPLOYEE_LOCATION_V2_SUCCESS"
+export const POST_EMPLOYEE_LOCATION_V2_FAILURE =
+  "POST_EMPLOYEE_LOCATION_V2_FAILURE"
 
-export function postEmployeeLocation(
+export function postEmployeeLocationV2(
   retreatId: number,
-  retreatItemId: number,
   locationDataSubmission: RetreatEmployeeLocationSubmission
 ) {
-  let endpoint = `/v1.0/retreats/${retreatId}/${retreatItemId}`
+  let endpoint = `/v1.0/retreats/${retreatId}/employees-locations`
+  let submission = {
+    locationItems: locationDataSubmission.locationItems,
+    extraInfo: locationDataSubmission.extraInfo,
+  }
+  let submissionBody = {
+    submission,
+  }
   return createApiAction({
     endpoint,
     method: "POST",
-    body: JSON.stringify(modelToApi(locationDataSubmission)),
+    body: JSON.stringify(modelToApi(submissionBody)),
     types: [
-      POST_EMPLOYEE_LOCATION_REQUEST,
-      POST_EMPLOYEE_LOCATION_SUCCESS,
-      POST_EMPLOYEE_LOCATION_FAILURE,
+      POST_EMPLOYEE_LOCATION_V2_REQUEST,
+      POST_EMPLOYEE_LOCATION_V2_SUCCESS,
+      POST_EMPLOYEE_LOCATION_V2_FAILURE,
     ],
   })
 }

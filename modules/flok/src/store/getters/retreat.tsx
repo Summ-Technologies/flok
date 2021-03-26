@@ -1,5 +1,9 @@
 import {RootState} from ".."
-import {RetreatModel, RetreatToItemModel} from "../../models/retreat"
+import {
+  RetreatEmployeeLocationSubmission,
+  RetreatModel,
+  RetreatToItemModel,
+} from "../../models/retreat"
 
 export default class RetreatGetters {
   static getRetreat(state: RootState): RetreatModel | void {
@@ -15,5 +19,12 @@ export default class RetreatGetters {
         ? retreat.retreatItems.filter((item) => item.state === "IN_PROGRESS")
         : []
     return inProgressItems.length ? inProgressItems[0] : undefined
+  }
+
+  static getEmployeeLocationSubmission(
+    state: RootState
+  ): RetreatEmployeeLocationSubmission | void {
+    let retreat = RetreatGetters.getRetreat(state)
+    return retreat ? retreat.employeeLocationSubmission : undefined
   }
 }

@@ -1,4 +1,3 @@
-import {GooglePlaceType} from "."
 import {RetreatItemModelApi} from "./api"
 
 export type RetreatModel = {
@@ -6,6 +5,7 @@ export type RetreatModel = {
   companyId: number
   name?: string
   retreatItems: RetreatToItemModel[]
+  employeeLocationSubmission?: RetreatEmployeeLocationSubmission
 }
 
 export type RetreatItemState = "TODO" | "DONE" | "IN_PROGRESS"
@@ -46,18 +46,23 @@ export class RetreatItemModel {
   }
 }
 
-export type RetreatEmployeeLocation = {
-  number: number
-  location: GooglePlaceType
+export type RetreatEmployeeLocationItem = {
+  id?: number
+  submissionId?: number
+  employeeCount?: number
+  googlePlaceId: string
+  mainText: string
+  secondaryText: string
 }
 
 export type RetreatEmployeeLocationSubmission = {
-  locations: RetreatEmployeeLocation[]
-  createdAt: string
-  version: string
+  id?: number
+  retreatId: number
+  locationItems: RetreatEmployeeLocationItem[]
+  createdAt?: string
   extraInfo?: string
 }
 
 export type RetreatEmployeeLocationDataModel = {
-  submissions: RetreatEmployeeLocationSubmission[]
+  submission: RetreatEmployeeLocationSubmission
 }

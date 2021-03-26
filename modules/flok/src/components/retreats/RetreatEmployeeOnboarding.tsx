@@ -10,8 +10,7 @@ import {
 } from "@material-ui/core"
 import clsx from "clsx"
 import {useState} from "react"
-import {GooglePlaceType} from "../../models"
-import {RetreatEmployeeLocation} from "../../models/retreat"
+import {RetreatEmployeeLocationItem} from "../../models/retreat"
 import AppList from "../AppList"
 import AppLocationFinder from "../AppLocationFinder"
 import AppLocationList from "../AppLocationList"
@@ -49,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface RetreatEmployeeOnboardingProps extends StandardProps<{}, "root"> {
   postEmployeeLocations: (
-    employeeLocations: RetreatEmployeeLocation[],
+    employeeLocations: RetreatEmployeeLocationItem[],
     extraInfo?: string
   ) => void
 }
@@ -60,10 +59,7 @@ export default function RetreatEmployeeOnboarding(
   const classes = useStyles(props)
 
   let [employeeLocations, setEmployeeLocations] = useState<
-    {
-      location: GooglePlaceType
-      number: number
-    }[]
+    RetreatEmployeeLocationItem[]
   >([])
   let [extraInfo, setExtraInfo] = useState("")
 
@@ -71,31 +67,31 @@ export default function RetreatEmployeeOnboarding(
   //  they stay stay sticky event when locations are all removed
   let [showSubmit, setShowSubmit] = useState(false)
 
-  function addEmployeeLocation(location: GooglePlaceType): void {
+  function addEmployeeLocation(location: RetreatEmployeeLocationItem): void {
     if (
       !employeeLocations
-        .map((loc) => loc.location.placeId)
-        .includes(location.placeId)
+        .map((loc) => loc.googlePlaceId)
+        .includes(location.googlePlaceId)
     ) {
       setEmployeeLocations([
         ...employeeLocations,
-        {location: location, number: 1},
+        {...location, employeeCount: 1},
       ])
     }
     if (!showSubmit) setShowSubmit(true)
   }
-  function removeEmployeeLocation(location: GooglePlaceType): void {
-    setEmployeeLocations(
-      employeeLocations.filter((loc) => location !== loc.location)
-    )
+  function removeEmployeeLocation(location: RetreatEmployeeLocationItem): void {
+    setEmployeeLocations(employeeLocations.filter((loc) => location !== loc))
   }
   function setEmployeeLocationNumber(
-    location: GooglePlaceType,
+    location: RetreatEmployeeLocationItem,
     number: number
   ): void {
     setEmployeeLocations(
       employeeLocations.map((loc) =>
-        location === loc.location ? {...loc, number} : loc
+        location.googlePlaceId === loc.googlePlaceId
+          ? {...loc, employeeCount: number}
+          : loc
       )
     )
   }
@@ -152,7 +148,7 @@ export default function RetreatEmployeeOnboarding(
             {employeeLocations.length ? (
               <Typography className={classes.footerText} variant="body1">
                 {employeeLocations
-                  .map((loc) => loc.number)
+                  .map((loc) => (loc.employeeCount ? loc.employeeCount : 0))
                   .reduce((prev, curr) => prev + curr)}{" "}
                 people going on the trip
               </Typography>

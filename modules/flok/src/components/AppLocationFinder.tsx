@@ -15,6 +15,7 @@ import throttle from "lodash/throttle"
 import React, {useEffect, useMemo} from "react"
 import config, {GOOGLE_API_KEY} from "../config"
 import {GooglePlaceType} from "../models"
+import {RetreatEmployeeLocationItem} from "../models/retreat"
 import {useScript} from "../utils"
 import {apiToModel} from "../utils/apiUtils"
 
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 interface AppLocationFinderProps extends StandardProps<{}, "root"> {
-  onSelectLocation: (location: GooglePlaceType) => void
+  onSelectLocation: (location: RetreatEmployeeLocationItem) => void
 }
 export default function AppLocationFinder(props: AppLocationFinderProps) {
   const classes = useStyles()
@@ -63,6 +64,15 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
       ),
     []
   )
+  function googlePlaceTypeToLocationType(
+    place: GooglePlaceType
+  ): RetreatEmployeeLocationItem {
+    return {
+      googlePlaceId: place.placeId,
+      mainText: place.structuredFormatting.mainText,
+      secondaryText: place.structuredFormatting.secondaryText,
+    }
+  }
 
   useEffect(() => {
     let active = true
@@ -114,7 +124,8 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
       onChange={(event, newValue, reason) => {
         switch (reason) {
           case "select-option":
-            if (newValue) props.onSelectLocation(newValue)
+            if (newValue)
+              props.onSelectLocation(googlePlaceTypeToLocationType(newValue))
             setValue(null)
             setInputValue("")
         }

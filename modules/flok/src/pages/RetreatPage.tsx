@@ -7,12 +7,9 @@ import RetreatEmployeeOnboarding from "../components/retreats/RetreatEmployeeOnb
 import RetreatInitialProposals from "../components/retreats/RetreatInitialProposals"
 import RetreatOnboardingCall from "../components/retreats/RetreatOnboardingCall"
 import RetreatTimeline from "../components/retreats/RetreatTimeline"
-import {
-  RetreatEmployeeLocation,
-  RetreatEmployeeLocationSubmission,
-} from "../models/retreat"
+import {RetreatEmployeeLocationItem} from "../models/retreat"
 import {AppRoutes} from "../Stack"
-import {postEmployeeLocation} from "../store/actions/retreat"
+import {postEmployeeLocationV2} from "../store/actions/retreat"
 import RetreatGetters from "../store/getters/retreat"
 
 const useStyles = makeStyles((theme) => ({
@@ -37,19 +34,16 @@ function RetreatPage(props: RetreatPageProps) {
   let currentRetreatToItem = useSelector(RetreatGetters.getInProgressItem)
 
   function postRetreatEmployeeLocation(
-    employeeLocations: RetreatEmployeeLocation[],
+    employeeLocations: RetreatEmployeeLocationItem[],
     extraInfo?: string
   ) {
-    if (userRetreat && currentRetreatToItem) {
+    if (userRetreat) {
       dispatch(
-        postEmployeeLocation(
-          userRetreat.id,
-          currentRetreatToItem.retreatItem.id,
-          {
-            locations: employeeLocations,
-            extraInfo: extraInfo,
-          } as RetreatEmployeeLocationSubmission
-        )
+        postEmployeeLocationV2(userRetreat.id, {
+          retreatId: userRetreat.id,
+          locationItems: employeeLocations,
+          extraInfo: extraInfo,
+        })
       )
     }
   }
