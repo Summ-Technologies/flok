@@ -15,6 +15,7 @@ import {
   WbSunnyRounded,
 } from "@material-ui/icons"
 import React, {PropsWithChildren} from "react"
+import {RetreatInitialProposal} from "../../models/retreat"
 import AppImage from "../AppImage"
 import AppList from "../AppList"
 
@@ -32,12 +33,15 @@ const useStyles = makeStyles((theme) => ({
   img: {},
 }))
 
-type AppRetreatInitialProposalProps = {}
+type AppRetreatInitialProposalProps = {
+  proposal: RetreatInitialProposal
+}
 
 export default function AppRetreatInitialProposal(
   props: PropsWithChildren<AppRetreatInitialProposalProps>
 ) {
   const classes = useStyles()
+
   return (
     <Card elevation={0} className={classes.root}>
       <Grid container spacing={1}>
@@ -53,26 +57,29 @@ export default function AppRetreatInitialProposal(
           <Grid item xs={4} sm={12}>
             <AppImage
               className={`${classes.img}`}
-              alt="Cancun img"
-              img={
-                "https://pictures.tripmasters.com/images/apkg/1821/playa_del_carmen_-_sandy_beach_and_palms-1747603-500.jpg"
-              }
-              isAbsolute
+              alt={`${props.proposal.title} image`}
+              img={props.proposal.imageUrl}
             />
           </Grid>
           <Grid item>
             <AppList className={classes.logisticsList}>
               <ListItem disableGutters>
                 <DateRangeRounded />{" "}
-                <Typography variant="body2">4 - 6 nights</Typography>
+                <Typography variant="body2">
+                  {props.proposal.numNightsEstimate}
+                </Typography>
               </ListItem>
               <ListItem disableGutters>
                 <WbSunnyRounded />{" "}
-                <Typography variant="body2">70 degrees</Typography>
+                <Typography variant="body2">
+                  {props.proposal.weatherPrediction}
+                </Typography>
               </ListItem>
               <ListItem disableGutters>
                 <FlightRounded />{" "}
-                <Typography variant="body2">4.5 hr / person</Typography>
+                <Typography variant="body2">
+                  {props.proposal.flightTimeAvg}
+                </Typography>
               </ListItem>
             </AppList>
           </Grid>
@@ -83,12 +90,11 @@ export default function AppRetreatInitialProposal(
             justifyContent="space-between"
             flexWrap="wrap"
             alignItems="center">
-            <Typography variant="h3">Cancun, Mexico</Typography>
-            <Typography variant="body1">April - March</Typography>
+            <Typography variant="h3">{props.proposal.title}</Typography>
+            <Typography variant="body1">{props.proposal.datesRange}</Typography>
           </Box>
           <Typography variant="body1" color="textSecondary">
-            We think Cancún would be a great option for your team. It’s tropical
-            and cheaper than the other options
+            {props.proposal.body}
           </Typography>
           <AppList>
             <ListItem disableGutters>
@@ -107,12 +113,12 @@ export default function AppRetreatInitialProposal(
               <Box display="flex" width="100%" justifyContent="space-between">
                 <Typography variant="body1">
                   <Box component="span" fontWeight="fontWeightMedium">
-                    <HomeRounded /> Airbnb
+                    <HomeRounded /> Accomodations
                   </Box>
                 </Typography>
                 <Typography variant="body1">
                   <Box component="span" fontWeight="fontWeightMedium">
-                    $400 / person / day
+                    {props.proposal.lodgingEstimate}
                   </Box>
                 </Typography>
               </Box>
@@ -126,7 +132,7 @@ export default function AppRetreatInitialProposal(
                 </Typography>
                 <Typography variant="body1">
                   <Box component="span" fontWeight="fontWeightMedium">
-                    $400 / person
+                    {props.proposal.flightsEstimate}
                   </Box>
                 </Typography>
               </Box>
@@ -142,7 +148,7 @@ export default function AppRetreatInitialProposal(
                 </Typography>
                 <Typography variant="body1">
                   <Box component="span" fontWeight="fontWeightMedium">
-                    $400 / person / day
+                    {props.proposal.totalEstimate}
                   </Box>
                 </Typography>
               </Box>

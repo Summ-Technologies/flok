@@ -1,6 +1,7 @@
 import {RootState} from ".."
 import {
   RetreatEmployeeLocationSubmission,
+  RetreatInitialProposal,
   RetreatModel,
   RetreatToItemModel,
 } from "../../models/retreat"
@@ -26,5 +27,12 @@ export default class RetreatGetters {
   ): RetreatEmployeeLocationSubmission | void {
     let retreat = RetreatGetters.getRetreat(state)
     return retreat ? retreat.employeeLocationSubmission : undefined
+  }
+
+  static getRetreatInitialProposals(
+    state: RootState
+  ): RetreatInitialProposal[] {
+    let retreat = RetreatGetters.getRetreat(state)
+    return retreat ? retreat.initialProposals : []
   }
 }

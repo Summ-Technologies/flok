@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
 
 interface AppImageProps extends StandardProps<{}, "root"> {
   img: KnownImageKey | string
-  isAbsolute?: boolean // if true, do props.img is an absolute URL.
   square?: boolean
   alt: string
   height?: string | number
@@ -25,7 +24,8 @@ interface AppImageProps extends StandardProps<{}, "root"> {
 
 export default function AppImage(props: PropsWithChildren<AppImageProps>) {
   const classes = useStyles(props)
-  let {img, alt, square, isAbsolute, ...otherProps} = props
+  let {img, alt, square, ...otherProps} = props
+  let isAbsolute = img ? img.toLowerCase().startsWith("http") : false
   return (
     <Box {...otherProps} className={`${classes.root} ${otherProps.className}`}>
       <img

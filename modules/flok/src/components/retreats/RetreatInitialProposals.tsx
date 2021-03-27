@@ -16,7 +16,9 @@ import {
 } from "@material-ui/icons"
 import {TimelineDot} from "@material-ui/lab"
 import clsx from "clsx"
+import {useSelector} from "react-redux"
 import {RetreatEmployeeLocationItem} from "../../models/retreat"
+import RetreatGetters from "../../store/getters/retreat"
 import AppRetreatInitialProposal from "./AppRetreatInitialProposal"
 import RetreatEmployeeLocationList from "./RetreatEmployeeLocationList"
 
@@ -73,13 +75,13 @@ export default function RetreatInitalProposals(
   props: RetreatInitalProposalsProps
 ) {
   const classes = useStyles(props)
-  let retreatInitialProposals = true
+  let initialProposals = useSelector(RetreatGetters.getRetreatInitialProposals)
 
   return (
     <Grid item container className={clsx(classes.root, props.className)}>
       <Grid item md={6} xs={10} className={classes.body}>
         <Grid item container alignItems="center" wrap="nowrap">
-          {retreatInitialProposals ? (
+          {initialProposals.length ? (
             <Typography variant="h2">Retreat proposals</Typography>
           ) : (
             <>
@@ -94,7 +96,7 @@ export default function RetreatInitalProposals(
         </Grid>
         <Card elevation={0} className={classes.nextStepsCard}>
           <Grid item container className={classes.nextStepsCardBody}>
-            {retreatInitialProposals ? (
+            {initialProposals.length ? (
               <>
                 <Grid container item alignItems="flex-start" wrap="nowrap">
                   <Typography variant="h3">
@@ -167,17 +169,27 @@ export default function RetreatInitalProposals(
             )}
           </Grid>
         </Card>
-        <Paper elevation={0}>
-          <Box className={classes.nextStepsCard}>
-            <Typography variant="h3">2 proposals</Typography>
-            <Divider />
-            <AppRetreatInitialProposal />
-            <Divider />
-            <AppRetreatInitialProposal />
-            <Divider />
-            <AppRetreatInitialProposal />
-          </Box>
-        </Paper>
+        {initialProposals.length ? (
+          <Paper elevation={0}>
+            <Box className={classes.nextStepsCard}>
+              <Typography variant="h3">
+                {initialProposals.length} proposal
+                {initialProposals.length > 1 ? "s" : undefined}
+              </Typography>
+              <Divider />
+              {initialProposals.map((proposal, i) => {
+                return (
+                  <>
+                    <AppRetreatInitialProposal proposal={proposal} />
+                    {i !== initialProposals.length - 1 ? (
+                      <Divider />
+                    ) : undefined}
+                  </>
+                )
+              })}
+            </Box>
+          </Paper>
+        ) : undefined}
         <RetreatEmployeeLocationList
           postEmployeeLocations={props.postEmployeeLocations}
         />

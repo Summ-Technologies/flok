@@ -6,6 +6,7 @@ export type RetreatModel = {
   name?: string
   retreatItems: RetreatToItemModel[]
   employeeLocationSubmission?: RetreatEmployeeLocationSubmission
+  initialProposals: RetreatInitialProposal[]
 }
 
 export type RetreatItemState = "TODO" | "DONE" | "IN_PROGRESS"
@@ -65,4 +66,23 @@ export type RetreatEmployeeLocationSubmission = {
 
 export type RetreatEmployeeLocationDataModel = {
   submission: RetreatEmployeeLocationSubmission
+}
+
+export type RetreatInitialProposal = {
+  id: number
+  retreatId: number
+  imageUrl: string
+  title: string
+  body: string
+  datesRange: string
+  numNightsEstimate: string
+  flightTimeAvg: string
+  weatherPrediction: string
+  lodgingEstimate: string
+  flightsEstimate: string
+  transportationEstimate?: string
+  miscEstimate?: string
+  totalEstimate?: string
+  extraInfo?: string
+  createdAt: string
 }
