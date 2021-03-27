@@ -1,20 +1,13 @@
-import {Box, makeStyles, StandardProps} from "@material-ui/core"
+import {makeStyles, StandardProps} from "@material-ui/core"
 import clsx from "clsx"
-import {ImageUtils} from "../utils/imageUtils"
+import AppImage from "./AppImage"
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    height: (props: AppLogoProps) => (props.height ? props.height : "100%"),
-  },
-  img: {
-    maxHeight: "100%",
-    maxWidth: "100%",
-  },
+  root: {},
 }))
 
-interface AppLogoProps extends StandardProps<{}, "img"> {
+interface AppLogoProps extends StandardProps<{}, "root"> {
   height?: number | string
-  size?: "sm" | "md" | "lg" | "xl"
   withText?: boolean
   noBackground?: boolean
   rounded?: boolean
@@ -22,14 +15,26 @@ interface AppLogoProps extends StandardProps<{}, "img"> {
 
 export default function AppLogo(props: AppLogoProps) {
   const classes = useStyles(props)
-  const {height, size, withText, noBackground, rounded, ...extraProps} = props
-  const path = `branding/logos/${props.withText ? "icon_text" : "icon"}-${
-    noBackground ? "empty_bg" : "white_bg"
-  }${!withText && rounded ? "-rounded" : ""}`
-  const imgProps = ImageUtils.getImageProps(path, "Flok Logo", size)
+  const {height, withText, noBackground, rounded, ...extraProps} = props
+  const imgKey = withText
+    ? noBackground
+      ? "logoIconTextTrans"
+      : "logoIcon"
+    : noBackground
+    ? rounded
+      ? "logoIconTransRound"
+      : "logoIconTrans"
+    : rounded
+    ? "logoIconRound"
+    : "logoIcon"
+
   return (
-    <Box {...extraProps} className={clsx(classes.root, props.className)}>
-      <img src={imgProps.src} alt={imgProps.alt} className={classes.img} />
-    </Box>
+    <AppImage
+      {...extraProps}
+      className={clsx(classes.root, props.className)}
+      img={imgKey}
+      alt="Flok Logo"
+      height={height}
+    />
   )
 }

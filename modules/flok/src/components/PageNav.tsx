@@ -29,7 +29,7 @@ export default function PageNav(props: PropsWithChildren<PageNavProps>) {
     <AppBar variant="outlined" color="inherit" position="fixed">
       <Paper elevation={2} className={`${classes.root}`}>
         <Toolbar>
-          <AppLogo className={classes.logo} noBackground withText size="sm" />
+          <AppLogo className={classes.logo} noBackground withText height={40} />
           {props.userEmail ? (
             <Typography variant="body1">
               <Box component="span" lineHeight="1.1rem">
