@@ -4,12 +4,15 @@ import {ImageUtils, KnownImageKey} from "../utils/imageUtils"
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100%",
+    display: "flex",
+    maxWidth: "100%",
+    maxHeight: "100%",
   },
   img: {
+    objectFit: "contain",
     height: (props: AppImageProps) => (props.height ? props.height : undefined),
-    maxHeight: "100%",
     maxWidth: "100%",
+    maxHeight: "100%",
     borderRadius: (props: AppImageProps) =>
       props.square ? undefined : theme.shape.borderRadius,
   },

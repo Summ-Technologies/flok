@@ -69,7 +69,7 @@ function AuthResetPage(props: AuthResetPageProps) {
                     value={loginTokenUserEmail}
                     label={"Email"}
                     type="email"
-                    variant="outlined"
+                    variant="standard"
                     fullWidth
                     disabled
                   />

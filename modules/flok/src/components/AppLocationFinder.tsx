@@ -138,7 +138,7 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
           <TextField
             {...params}
             label="Add a location"
-            variant="outlined"
+            variant="standard"
             InputProps={{
               ...params.InputProps,
               endAdornment: <Search className="MuiAutocomplete-endAdornment" />,

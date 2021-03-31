@@ -8,6 +8,9 @@ export class FormUtils<FormFieldNames extends string> {
 
   static passwordValidator(authType: "signup" | "signin") {
     return (password: string): FormFieldValidationResponse => {
+      if (!password) {
+        return "Password is required"
+      }
       if (password.length < 5) {
         return "Password is too short"
       } else if (

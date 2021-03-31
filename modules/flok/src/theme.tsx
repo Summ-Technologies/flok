@@ -50,15 +50,15 @@ export const theme = createMuiTheme({
     toolbar: {
       // Give the nav bar a defined height so that
       //    the app icon img height can use % value
-      height: 56,
-      maxHeight: 56,
+      height: 60,
+      maxHeight: 60,
       "@media (min-width:0px) and (orientation: landscape)": {
-        height: 48,
-        maxHeight: 48,
+        height: 60,
+        maxHeight: 60,
       },
       "@media (min-width:600px)": {
-        maxHeight: 64,
-        height: 64,
+        height: 60,
+        maxHeight: 60,
       },
     },
   },

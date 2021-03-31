@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Grid,
   ListItem,
   makeStyles,
@@ -11,6 +10,7 @@ import {
 import clsx from "clsx"
 import {useState} from "react"
 import {RetreatEmployeeLocationItem} from "../../models/retreat"
+import AppButton from "../AppButton"
 import AppList from "../AppList"
 import AppLocationFinder from "../AppLocationFinder"
 import AppLocationList from "../AppLocationList"
@@ -125,7 +125,7 @@ export default function RetreatEmployeeOnboarding(
                   <TextField
                     multiline
                     fullWidth
-                    variant="outlined"
+                    variant="standard"
                     rows={3}
                     rowsMax={8}
                     placeholder="E.g. we still aren’t sure if 2 people from NY and 1 person from SF can make it. We are giving them a deadline of [2 weeks from now] to decide"
@@ -135,7 +135,7 @@ export default function RetreatEmployeeOnboarding(
                 </ListItem>
               </AppList>
             </Box>
-            <Button
+            <AppButton
               onClick={() =>
                 props.postEmployeeLocations(employeeLocations, extraInfo)
               }
@@ -144,7 +144,7 @@ export default function RetreatEmployeeOnboarding(
               color="primary"
               fullWidth>
               Continue to retreat proposals
-            </Button>
+            </AppButton>
             {employeeLocations.length ? (
               <Typography className={classes.footerText} variant="body1">
                 {employeeLocations

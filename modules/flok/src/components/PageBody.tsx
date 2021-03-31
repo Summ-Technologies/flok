@@ -1,9 +1,6 @@
 import {Grid, makeStyles, Theme} from "@material-ui/core"
 import React, {PropsWithChildren} from "react"
 import {use100vh} from "react-div-100vh"
-import {useSelector} from "react-redux"
-import CompanyGetters from "../store/getters/company"
-import UserGetters from "../store/getters/user"
 import PageNav from "./PageNav"
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -38,8 +35,6 @@ type PageBodyProps = {
 }
 export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
   let height100vh = use100vh()
-  let userEmail = useSelector(UserGetters.getUserEmail)
-  let userCompany = useSelector(CompanyGetters.getCompany)
   const classes = useStyles(props)
   return (
     <Grid
@@ -51,10 +46,7 @@ export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
       style={height100vh ? {height: height100vh} : undefined}>
       {props.hideNav ? undefined : (
         <Grid item>
-          <PageNav
-            userEmail={userEmail}
-            userCompany={userCompany ? userCompany.name : undefined}
-          />
+          <PageNav />
         </Grid>
       )}
       <Grid item md={props.fullWidth ? 12 : 10} className={classes.body}>

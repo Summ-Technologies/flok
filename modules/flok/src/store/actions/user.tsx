@@ -9,7 +9,12 @@ export const POST_USER_SIGNUP_REQUEST = "POST_USER_SIGNUP_REQUEST"
 export const POST_USER_SIGNUP_SUCCESS = "POST_USER_SIGNUP_SUCCESS"
 export const POST_USER_SIGNUP_FAILURE = "POST_USER_SIGNUP_FAILURE"
 
-export function postUserSignup(email: string, password: string) {
+export function postUserSignup(
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string
+) {
   let endpoint = "/v1.0/auth/signup"
   return async (
     dispatch: ThunkDispatch<any, any, any>,
@@ -19,7 +24,13 @@ export function postUserSignup(email: string, password: string) {
       createApiAction({
         endpoint,
         method: "POST",
-        body: JSON.stringify({email, password, loginProvider: "FLOK"}),
+        body: JSON.stringify({
+          email,
+          password,
+          firstName,
+          lastName,
+          loginProvider: "FLOK",
+        }),
         types: [
           POST_USER_SIGNUP_REQUEST,
           POST_USER_SIGNUP_SUCCESS,

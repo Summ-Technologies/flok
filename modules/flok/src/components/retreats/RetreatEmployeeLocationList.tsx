@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Grid,
   ListItem,
   makeStyles,
@@ -13,6 +12,7 @@ import {useEffect, useState} from "react"
 import {useSelector} from "react-redux"
 import {RetreatEmployeeLocationItem} from "../../models/retreat"
 import RetreatGetters from "../../store/getters/retreat"
+import AppButton from "../AppButton"
 import AppList from "../AppList"
 import AppLocationFinder from "../AppLocationFinder"
 import AppLocationList from "../AppLocationList"
@@ -101,13 +101,13 @@ export default function RetreatEmployeeLocationList(
         <Typography variant="h2">Your team locations</Typography>
         <Typography variant="h2">
           {editLocations ? (
-            <Button variant="text" onClick={() => setEditLocations(false)}>
+            <AppButton variant="text" onClick={() => setEditLocations(false)}>
               Cancel
-            </Button>
+            </AppButton>
           ) : (
-            <Button variant="text" onClick={() => setEditLocations(true)}>
+            <AppButton variant="text" onClick={() => setEditLocations(true)}>
               Edit
-            </Button>
+            </AppButton>
           )}
         </Typography>
       </Grid>
@@ -138,7 +138,7 @@ export default function RetreatEmployeeLocationList(
               disabled={!editLocations}
               multiline
               fullWidth
-              variant="outlined"
+              variant="standard"
               rows={3}
               rowsMax={8}
               placeholder="E.g. we still aren’t sure if 2 people from NY and 1 person from SF can make it. We are giving them a deadline of [2 weeks from now] to decide"
@@ -149,14 +149,14 @@ export default function RetreatEmployeeLocationList(
         </AppList>
       </Box>
       {editLocations ? (
-        <Button
+        <AppButton
           onClick={() => postEmployeeLocations(employeeLocations, extraInfo)}
           className={classes.submitButton}
           variant="contained"
           color="primary"
           fullWidth>
           Update team
-        </Button>
+        </AppButton>
       ) : undefined}
     </Box>
   )

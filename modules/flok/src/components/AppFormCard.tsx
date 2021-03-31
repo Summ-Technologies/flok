@@ -1,7 +1,8 @@
-import {Button, Card, makeStyles, TextField} from "@material-ui/core"
+import {Card, makeStyles, TextField} from "@material-ui/core"
 import React, {ReactFragment, SyntheticEvent, useState} from "react"
 import {RequestState} from "../store/reducers/api"
 import {Form, FormUtils} from "../utils/formUtils"
+import AppButton from "./AppButton"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,19 +72,19 @@ export default function AppFormCard(props: AppFormCardProps) {
                 label={formField.label ? formField.label : formField.type}
                 type={formField.type}
                 required={formField.required}
-                variant="outlined"
+                variant="standard"
                 fullWidth
                 autoFocus={i === 0}
               />
             )
           })}
-          <Button
+          <AppButton
             type="submit"
             variant="contained"
             color="primary"
             disabled={disableSubmit()}>
             {props.submitButtonText ? props.submitButtonText : "Submit"}
-          </Button>
+          </AppButton>
         </form>
       )}
     </Card>
