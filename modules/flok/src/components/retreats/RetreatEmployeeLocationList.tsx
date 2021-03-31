@@ -41,6 +41,7 @@ export default function RetreatEmployeeLocationList(
   props: RetreatEmployeeLocationListProps
 ) {
   const classes = useStyles(props)
+  let {postEmployeeLocations, ...otherProps} = props
   let [editLocations, setEditLocations] = useState(false)
   let [employeeLocations, setEmployeeLocations] = useState<
     RetreatEmployeeLocationItem[]
@@ -48,6 +49,7 @@ export default function RetreatEmployeeLocationList(
   let employeeLocationSubmission = useSelector(
     RetreatGetters.getEmployeeLocationSubmission
   )
+  let [extraInfo, setExtraInfo] = useState("")
 
   useEffect(() => {
     if (!editLocations && employeeLocationSubmission) {
@@ -89,7 +91,7 @@ export default function RetreatEmployeeLocationList(
   }
 
   return (
-    <Box {...props} className={clsx(classes.root, props.className)}>
+    <Box {...otherProps} className={clsx(classes.root, props.className)}>
       <Grid
         item
         container
@@ -140,13 +142,15 @@ export default function RetreatEmployeeLocationList(
               rows={3}
               rowsMax={8}
               placeholder="E.g. we still aren’t sure if 2 people from NY and 1 person from SF can make it. We are giving them a deadline of [2 weeks from now] to decide"
+              value={extraInfo}
+              onChange={(e) => setExtraInfo(e.target.value)}
             />
           </ListItem>
         </AppList>
       </Box>
       {editLocations ? (
         <Button
-          onClick={() => props.postEmployeeLocations(employeeLocations)}
+          onClick={() => postEmployeeLocations(employeeLocations, extraInfo)}
           className={classes.submitButton}
           variant="contained"
           color="primary"
