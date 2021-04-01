@@ -36,7 +36,6 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
         order: retreatToItem.order,
         state: state,
         title: retreatToItem.retreatItem.title,
-        body: retreatToItem.retreatItem.subtitle,
       }
       return _item
     })

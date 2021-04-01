@@ -14,13 +14,21 @@ import RetreatGetters from "../store/getters/retreat"
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    minHeight: "100%",
+    height: "100%",
+    maxHeight: "100%",
+    flexWrap: "nowrap",
+    overflow: "hidden",
   },
   sidebar: {
-    minHeight: "100%",
+    maxHeight: "100%",
+    width: 250,
+    minWidth: 250,
   },
   body: {
-    minHeight: "100%",
+    height: "100%",
+    flexGrow: 1,
+    paddingLeft: theme.spacing(2),
+    overflow: "auto",
   },
 }))
 
@@ -50,14 +58,14 @@ function RetreatPage(props: RetreatPageProps) {
 
   return userRetreat ? (
     <PageBody fullWidth>
-      <Grid item container spacing={4} className={classes.container}>
-        <Hidden xsDown>
-          <Grid item sm={5} md={4} lg={3} className={classes.sidebar}>
+      <Grid item container className={classes.container}>
+        <Hidden smDown>
+          <Grid item className={classes.sidebar}>
             <RetreatTimeline retreatItems={userRetreat.retreatItems} />
           </Grid>
         </Hidden>
-        <Grid item xs={12} sm={7} md={8} lg={9} className={classes.body}>
-          <Box paddingTop={4} height="100%">
+        <Grid item className={classes.body}>
+          <Box height="100%" width="100%">
             {currentRetreatToItem ? (
               currentRetreatToItem.retreatItem.type === "INTAKE_CALL" ? (
                 <RetreatOnboardingCall />

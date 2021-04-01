@@ -138,7 +138,7 @@ export default function RetreatEmployeeLocationList(
               disabled={!editLocations}
               multiline
               fullWidth
-              variant="standard"
+              variant="outlined"
               rows={3}
               rowsMax={8}
               placeholder="E.g. we still aren’t sure if 2 people from NY and 1 person from SF can make it. We are giving them a deadline of [2 weeks from now] to decide"

@@ -1,4 +1,4 @@
-import {makeStyles, StandardProps, Typography} from "@material-ui/core"
+import {makeStyles, StandardProps} from "@material-ui/core"
 import {Timeline} from "@material-ui/lab"
 import clsx from "clsx"
 import AppTimelineItem, {AppTimelineItemProps} from "./AppTimelineItem"
@@ -20,9 +20,7 @@ const useStyles = makeStyles((theme) => ({
       flex: "none",
     },
   },
-  lastItem: {
-    minHeight: 50,
-  },
+  lastItem: {},
 }))
 
 interface AppTimelineProps extends StandardProps<{}, "root"> {
@@ -46,13 +44,6 @@ export default function AppTimeline(props: AppTimelineProps) {
         order={items.length + 1}
         state="todo"
         title="Enjoy retreat! 🎊 🏠 🦅"
-        customIcon={
-          <Typography variant="body1">
-            <span role="img" aria-label="happy-face">
-              🤗
-            </span>
-          </Typography>
-        }
         lastItem
       />
     </Timeline>

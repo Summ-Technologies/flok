@@ -5,7 +5,6 @@ import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppFormCard from "../components/AppFormCard"
 import AppLoadingIndicator from "../components/AppLoadingIndicator"
-import AppLogo from "../components/AppLogo"
 import PageBody from "../components/PageBody"
 import {getUserResetToken, postUserReset} from "../store/actions/user"
 import ApiGetters from "../store/getters/api"
@@ -45,15 +44,12 @@ function AuthResetPage(props: AuthResetPageProps) {
     dispatch(postUserReset(loginToken, form["password"].value))
   }
   return (
-    <PageBody hideNav>
-      <Box
-        height="100%"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center">
-        <Box width={450} maxWidth={450}>
+    <PageBody>
+      <Box height="100%" display="flex" flexDirection="column">
+        <Box paddingTop={12}>
           <AppFormCard
+            flat
+            submitButtonText="Reset"
             hideBody={loginTokenUserEmail === undefined}
             form={form}
             setForm={setForm}
@@ -61,7 +57,6 @@ function AuthResetPage(props: AuthResetPageProps) {
             header={
               <>
                 <Box>
-                  <AppLogo height={50} noBackground withText />
                   <Typography variant="h3">Set your password</Typography>
                 </Box>
                 {loginTokenUserEmail ? (

@@ -1,4 +1,12 @@
-import {Card, makeStyles, TextField} from "@material-ui/core"
+import {
+  Box,
+  Card,
+  IconButton,
+  InputAdornment,
+  makeStyles,
+  TextField,
+} from "@material-ui/core"
+import {VisibilityOffRounded, VisibilityRounded} from "@material-ui/icons"
 import React, {ReactFragment, SyntheticEvent, useState} from "react"
 import {RequestState} from "../store/reducers/api"
 import {Form, FormUtils} from "../utils/formUtils"
@@ -6,7 +14,9 @@ import AppButton from "./AppButton"
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    maxWidth: 450,
+    marginLeft: "auto",
+    marginRight: "auto",
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     paddingLeft: theme.spacing(2),
@@ -24,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 type AppFormCardProps = {
   hideBody?: boolean
+  flat?: boolean // use a div, not a card element
   form: Form<any>
   submitForm: () => void
   setForm: (form: Form<any>) => void
@@ -35,6 +46,7 @@ type AppFormCardProps = {
 export default function AppFormCard(props: AppFormCardProps) {
   const classes = useStyles()
   let [validate, setValidate] = useState<{[key: string]: boolean}>({})
+  let [showPasswords, setShowPasswords] = useState<{[key: string]: boolean}>({})
   let authFormUtils = new FormUtils<any>()
   function submitForm(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -48,8 +60,17 @@ export default function AppFormCard(props: AppFormCardProps) {
       }).length > 0
     )
   }
+
+  function togglePasswordVisibility(key: string) {
+    setShowPasswords({
+      ...showPasswords,
+      [key]: !showPasswords[key] === true,
+    })
+  }
+
+  let Container = props.flat ? Box : Card
   return (
-    <Card className={`${classes.root}`}>
+    <Container className={`${classes.root}`}>
       {props.header}
       {props.hideBody ? undefined : (
         <form className={classes.body} onSubmit={submitForm}>
@@ -70,23 +91,51 @@ export default function AppFormCard(props: AppFormCardProps) {
                   ? authFormUtils.getTextErrorProps(props.form, key)
                   : {})}
                 label={formField.label ? formField.label : formField.type}
-                type={formField.type}
+                type={
+                  formField.type !== "password"
+                    ? formField.type
+                    : showPasswords[key]
+                    ? "text"
+                    : formField.type
+                }
                 required={formField.required}
                 variant="standard"
                 fullWidth
                 autoFocus={i === 0}
+                InputProps={
+                  formField.type === "password"
+                    ? {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              size="small"
+                              aria-label="toggle password visibility"
+                              onClick={() => togglePasswordVisibility(key)}>
+                              {showPasswords[key] ? (
+                                <VisibilityRounded />
+                              ) : (
+                                <VisibilityOffRounded />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }
+                    : undefined
+                }
               />
             )
           })}
-          <AppButton
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={disableSubmit()}>
-            {props.submitButtonText ? props.submitButtonText : "Submit"}
-          </AppButton>
+          <Box display="flex" justifyContent="flex-end">
+            <AppButton
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={disableSubmit()}>
+              {props.submitButtonText ? props.submitButtonText : "Submit"}
+            </AppButton>
+          </Box>
         </form>
       )}
-    </Card>
+    </Container>
   )
 }

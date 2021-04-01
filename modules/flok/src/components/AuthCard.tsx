@@ -1,6 +1,8 @@
 import {
   Box,
   Grid,
+  IconButton,
+  InputAdornment,
   Link,
   makeStyles,
   StandardProps,
@@ -8,6 +10,7 @@ import {
   TextFieldProps,
   Typography,
 } from "@material-ui/core"
+import {VisibilityOffRounded, VisibilityRounded} from "@material-ui/icons"
 import {push} from "connected-react-router"
 import {SyntheticEvent, useState} from "react"
 import {useDispatch} from "react-redux"
@@ -77,6 +80,7 @@ export default function AuthCard(props: AuthCardProps) {
   let [validateLast, setValidateLast] = useState(false)
   let [validateEmail, setValidateEmail] = useState(false)
   let [validatePassword, setValidatePassword] = useState(false)
+  let [showPassword, setShowPassword] = useState(false)
   let form = props.authType === "signup" ? props.signupForm : props.signinForm
   let request =
     props.authType === "signup" ? props.signupRequest : props.signinRequest
@@ -234,9 +238,25 @@ export default function AuthCard(props: AuthCardProps) {
           onBlur={() => setValidatePassword(true)}
           {...(validatePassword ? getErrorTextProps("password") : {})}
           label="Password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           {...commonTextFieldProps}
           required
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  size="small"
+                  aria-label="toggle password visibility"
+                  onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? (
+                    <VisibilityRounded />
+                  ) : (
+                    <VisibilityOffRounded />
+                  )}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
         />
         <Box display="flex" justifyContent="flex-end">
           <AppButton

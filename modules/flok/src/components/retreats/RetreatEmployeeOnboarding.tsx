@@ -19,9 +19,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     paddingTop: theme.spacing(4),
+    paddingLeft: theme.spacing(2),
     flexDirection: "row",
     alignItems: "center",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("xs")]: {
       flexDirection: "column",
       alignItems: "center",
     },
@@ -32,16 +33,6 @@ const useStyles = makeStyles((theme) => ({
   footerText: {
     marginTop: theme.spacing(1),
     textAlign: "center",
-  },
-  uploadSection: {
-    textAlign: "center",
-    width: "100%",
-    justifyContent: "space-around",
-    [theme.breakpoints.down("sm")]: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-    },
   },
   textFieldNoOutline: {},
 }))
@@ -98,7 +89,7 @@ export default function RetreatEmployeeOnboarding(
 
   return (
     <Grid item container className={clsx(classes.root, props.className)}>
-      <Grid item md={6} xs={10}>
+      <Grid item sm={6} xs={12}>
         <Typography variant="h3">
           Where are your team members located?
         </Typography>

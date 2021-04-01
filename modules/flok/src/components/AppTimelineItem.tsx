@@ -12,19 +12,19 @@ import {ReactFragment} from "react"
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    minHeight: 100,
+    minHeight: "inherit",
   },
   dot: {
-    height: 50,
-    width: 50,
+    borderColor: theme.palette.common.black,
+    height: 30,
+    width: 30,
+    marginTop: 0,
+    marginBottom: 0,
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
     textAlign: "center",
-    fontSize: 20,
-    lineHeight: 20,
-    fontWeight: 700,
     color: (props: AppTimelineItemProps) =>
       props.state === "completed"
         ? theme.palette.common.white
@@ -32,19 +32,22 @@ const useStyles = makeStyles((theme) => ({
         ? theme.palette.common.white
         : theme.palette.common.black,
     backgroundColor: (props: AppTimelineItemProps) =>
-      props.state === "completed"
-        ? theme.palette.success.main
-        : props.state === "in-progress"
+      props.state === "in-progress"
+        ? theme.palette.common.black
+        : props.state === "completed"
         ? theme.palette.common.black
         : theme.palette.common.white,
-    border: "none",
+  },
+  connector: {
+    height: 20,
+    backgroundColor: theme.palette.common.black,
+    width: 3,
   },
 }))
 
 export interface AppTimelineItemProps
   extends StandardProps<{}, "root" | "missingOppositeContent"> {
   title: string
-  body?: string
   state: "todo" | "in-progress" | "completed"
   order: number
   customIcon?: ReactFragment
@@ -53,27 +56,40 @@ export interface AppTimelineItemProps
 
 export default function AppTimelineItem(props: AppTimelineItemProps) {
   const classes = useStyles(props)
-  const {title, body, state, order, customIcon, lastItem, ...muiProps} = props
+  const {title, state, order, customIcon, lastItem, ...muiProps} = props
   var timelineDotBody: ReactFragment = <>{order}</>
-  timelineDotBody = state === "completed" ? <CheckRounded /> : timelineDotBody
+  timelineDotBody =
+    state === "completed" ? (
+      <CheckRounded fontSize="inherit" />
+    ) : (
+      timelineDotBody
+    )
   timelineDotBody = customIcon ? customIcon : timelineDotBody
   return (
     <TimelineItem {...muiProps} className={clsx(classes.root, props.className)}>
       <TimelineSeparator>
         <TimelineDot className={classes.dot} variant="outlined">
-          {timelineDotBody}
+          <Typography variant="body2">
+            <Box
+              component="span"
+              fontWeight="fontWeightMedium"
+              textAlign="center">
+              {timelineDotBody}
+            </Box>
+          </Typography>
         </TimelineDot>
-        {lastItem ? undefined : <TimelineConnector />}
+        {lastItem ? undefined : (
+          <TimelineConnector className={`${classes.connector}`} />
+        )}
       </TimelineSeparator>
-      <TimelineContent>
-        <Typography variant="body1">
+      <TimelineContent style={{paddingTop: 0}}>
+        <Typography variant="body2">
           <Box
             component="span"
             fontWeight={state === "in-progress" ? "fontWeightBold" : undefined}>
             {props.title}
           </Box>
         </Typography>
-        <Typography variant="body2">{props.body}</Typography>
       </TimelineContent>
     </TimelineItem>
   )

@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
   },
   checkIcon: {
     backgroundColor: theme.palette.success.main,
+    marginRight: theme.spacing(2),
   },
   footerText: {
     marginTop: theme.spacing(1),
@@ -79,19 +80,17 @@ export default function RetreatInitalProposals(
 
   return (
     <Grid item container className={clsx(classes.root, props.className)}>
-      <Grid item md={6} xs={10} className={classes.body}>
-        <Grid item container alignItems="center" wrap="nowrap">
+      <Grid item container md={6} xs={10} className={classes.body}>
+        <Grid item alignItems="center" wrap="nowrap">
           {initialProposals.length ? (
             <Typography variant="h2">Retreat proposals</Typography>
           ) : (
-            <>
-              <Box paddingRight={2} paddingLeft={2}>
-                <TimelineDot className={classes.checkIcon}>
-                  <CheckRounded />
-                </TimelineDot>
-              </Box>
+            <Box display="flex" alignItems="center" flexWrap="nowrap">
+              <TimelineDot className={classes.checkIcon}>
+                <CheckRounded />
+              </TimelineDot>
               <Typography variant="h2">Enter team locations</Typography>
-            </>
+            </Box>
           )}
         </Grid>
         <Card elevation={0} className={classes.nextStepsCard}>
