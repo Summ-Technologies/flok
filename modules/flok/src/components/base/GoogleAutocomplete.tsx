@@ -1,38 +1,38 @@
-import {
-  Box,
-  makeStyles,
-  Paper,
-  StandardProps,
-  Typography,
-} from "@material-ui/core"
-import Grid from "@material-ui/core/Grid"
-import TextField from "@material-ui/core/TextField"
-import {Search} from "@material-ui/icons"
-import LocationOnIcon from "@material-ui/icons/LocationOn"
-import Autocomplete from "@material-ui/lab/Autocomplete"
+import {Box, Grid, makeStyles, Typography} from "@material-ui/core"
+import {LocationOn} from "@material-ui/icons"
+import Autocomplete, {
+  AutocompleteProps,
+  AutocompleteRenderInputParams,
+} from "@material-ui/lab/Autocomplete"
 import parse from "autosuggest-highlight/parse"
 import throttle from "lodash/throttle"
-import React, {useEffect, useMemo} from "react"
-import config, {GOOGLE_API_KEY} from "../config"
-import {GooglePlaceType} from "../models"
-import {RetreatEmployeeLocationItem} from "../models/retreat"
-import {useScript} from "../utils"
-import {apiToModel} from "../utils/apiUtils"
+import React, {ReactNode, useEffect, useMemo} from "react"
+import config, {GOOGLE_API_KEY} from "../../config"
+import {GooglePlaceType} from "../../models"
+import {useScript} from "../../utils"
+import {apiToModel} from "../../utils/apiUtils"
 
 let autocompleteService = {current: undefined}
 
 const useStyles = makeStyles((theme) => ({
-  root: {marginBottom: theme.spacing(2)},
+  root: {},
   icon: {
     color: theme.palette.text.secondary,
     marginRight: theme.spacing(2),
   },
 }))
 
-interface AppLocationFinderProps extends StandardProps<{}, "root"> {
-  onSelectLocation: (location: RetreatEmployeeLocationItem) => void
+interface GoogleAutocompleteProps
+  extends Omit<
+    AutocompleteProps<GooglePlaceType, false, undefined, undefined>,
+    "options"
+  > {
+  onSelectLocation: (location: GooglePlaceType) => boolean | void // return true if clear input on select
+  renderInput: (params: AutocompleteRenderInputParams) => ReactNode
+  placesType?: string
+  value?: GooglePlaceType
 }
-export default function AppLocationFinder(props: AppLocationFinderProps) {
+export default function GoogleAutocomplete(props: GoogleAutocompleteProps) {
   const classes = useStyles()
 
   const [value, setValue] = React.useState<GooglePlaceType | null>(null)
@@ -56,23 +56,23 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
           callback: (results?: GooglePlaceType[]) => void
         ) => {
           ;(autocompleteService.current as any).getPlacePredictions(
-            {...request, types: ["(cities)"]},
+            {
+              ...request,
+              types: [
+                props.placesType !== undefined ? props.placesType : "(cities)",
+              ],
+            },
             (results: any) => callback(apiToModel(results))
           )
         },
         500
       ),
-    []
+    [props.placesType]
   )
-  function googlePlaceTypeToLocationType(
-    place: GooglePlaceType
-  ): RetreatEmployeeLocationItem {
-    return {
-      googlePlaceId: place.placeId,
-      mainText: place.structuredFormatting.mainText,
-      secondaryText: place.structuredFormatting.secondaryText,
-    }
-  }
+
+  useEffect(() => {
+    if (props.value) setValue(props.value)
+  }, [props.value])
 
   useEffect(() => {
     let active = true
@@ -117,34 +117,36 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
       getOptionLabel={getLabel}
       options={options}
       autoComplete
+      filterSelectedOptions
+      filterOptions={(x) => x}
       inputValue={inputValue}
       value={value}
       onChange={(event, newValue, reason) => {
         switch (reason) {
           case "select-option":
-            if (newValue)
-              props.onSelectLocation(googlePlaceTypeToLocationType(newValue))
-            setValue(null)
-            setInputValue("")
+            if (newValue) {
+              let clearInput = props.onSelectLocation(newValue)
+              if (clearInput) {
+                setInputValue("")
+                setValue(null)
+              }
+            }
         }
       }}
-      onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue)
+      onInputChange={(event, newInputValue, reason) => {
+        if ("input" === reason) {
+          setInputValue(newInputValue)
+        } else if ("reset" === reason) {
+          if (newInputValue) {
+            setInputValue(newInputValue)
+          } else {
+            if (value) {
+              setInputValue(getLabel(value))
+            }
+          }
+        }
       }}
-      renderInput={(params) => (
-        <Paper elevation={0}>
-          <TextField
-            {...params}
-            label="Add a location"
-            variant="standard"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: <Search className="MuiAutocomplete-endAdornment" />,
-            }}
-            fullWidth
-          />
-        </Paper>
-      )}
+      renderInput={props.renderInput}
       renderOption={(option) => {
         const matches = option.structuredFormatting.mainTextMatchedSubstrings
         const parts = parse(
@@ -170,9 +172,9 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
         return (
           <Grid container alignItems="center">
             <Grid item>
-              <LocationOnIcon className={classes.icon} />
+              <LocationOn className={classes.icon} />
             </Grid>
-            <Grid item xs>
+            <Grid item>
               {label}
               <Typography variant="body2" color="textSecondary">
                 {option.structuredFormatting.secondaryText}

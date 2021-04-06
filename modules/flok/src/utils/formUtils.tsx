@@ -23,6 +23,15 @@ export class FormUtils<FormFieldNames extends string> {
     }
   }
 
+  validateForm(form: Form<FormFieldNames>): FormFieldValidationResponse[] {
+    return Object.keys(form)
+      .map((fieldName) => {
+        let field = form[fieldName as FormFieldNames]
+        if (field.required) return field.validator(field.value, form)
+      })
+      .filter((x) => x)
+  }
+
   getTextErrorProps(
     form: Form<FormFieldNames>,
     key: FormFieldNames
@@ -73,3 +82,15 @@ export type TextFormField<FormFieldNames extends string> = FormField<
   "text",
   string
 >
+
+// Validators
+
+export function formValidatorNonEmpty(
+  n: number = 0,
+  customMessage?: string
+): (val: string) => FormFieldValidationResponse {
+  let errMessage = customMessage ? customMessage : "Input too short"
+  return (val: string) => {
+    return val && val.length > n ? undefined : errMessage
+  }
+}

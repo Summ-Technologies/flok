@@ -6,6 +6,7 @@ import PageBody from "../components/PageBody"
 import RetreatEmployeeOnboarding from "../components/retreats/RetreatEmployeeOnboarding"
 import RetreatInitialProposals from "../components/retreats/RetreatInitialProposals"
 import RetreatOnboardingCall from "../components/retreats/RetreatOnboardingCall"
+import RetreatPayment from "../components/retreats/RetreatPayment"
 import RetreatTimeline from "../components/retreats/RetreatTimeline"
 import {RetreatEmployeeLocationItem} from "../models/retreat"
 import {AppRoutes} from "../Stack"
@@ -81,7 +82,7 @@ function RetreatPage(props: RetreatPageProps) {
                 />
               ) : currentRetreatToItem.retreatItem.type ===
                 "DESTINATION_SELECTION" ? (
-                <>Here's some destinations</>
+                <RetreatPayment />
               ) : currentRetreatToItem.retreatItem.type === "POST_PAYMENT" ? (
                 <>You paid sucker</>
               ) : undefined
