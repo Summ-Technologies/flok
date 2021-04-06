@@ -16,9 +16,11 @@ import {
 } from "@material-ui/icons"
 import {TimelineDot} from "@material-ui/lab"
 import clsx from "clsx"
+import {useState} from "react"
 import {useSelector} from "react-redux"
 import {RetreatEmployeeLocationItem} from "../../models/retreat"
 import RetreatGetters from "../../store/getters/retreat"
+import AppNumberFilter from "../base/AppNumberFilter"
 import AppRetreatInitialProposal from "./AppRetreatInitialProposal"
 import RetreatEmployeeLocationList from "./RetreatEmployeeLocationList"
 
@@ -63,6 +65,18 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: "column",
     },
   },
+  proposalHeader: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  proposalFilter: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
 }))
 
 interface RetreatInitalProposalsProps extends StandardProps<{}, "root"> {
@@ -77,6 +91,9 @@ export default function RetreatInitalProposals(
 ) {
   const classes = useStyles(props)
   let initialProposals = useSelector(RetreatGetters.getRetreatInitialProposals)
+
+  let [nights, setNights] = useState(5)
+  let [people, setPeople] = useState(12)
 
   return (
     <Grid item container className={clsx(classes.root, props.className)}>
@@ -171,10 +188,24 @@ export default function RetreatInitalProposals(
         {initialProposals.length ? (
           <Paper elevation={0}>
             <Box className={classes.nextStepsCard}>
-              <Typography variant="h3">
-                {initialProposals.length} proposal
-                {initialProposals.length > 1 ? "s" : undefined}
-              </Typography>
+              <Box className={classes.proposalHeader}>
+                <Typography variant="h3">
+                  {initialProposals.length} proposal
+                  {initialProposals.length > 1 ? "s" : undefined}
+                </Typography>
+                <Box className={classes.proposalFilter}>
+                  <AppNumberFilter
+                    count={nights}
+                    setCount={setNights}
+                    icon="nights"
+                  />
+                  <AppNumberFilter
+                    count={people}
+                    setCount={setPeople}
+                    icon="people"
+                  />
+                </Box>
+              </Box>
               <Divider />
               {initialProposals.map((proposal, i) => {
                 return (
