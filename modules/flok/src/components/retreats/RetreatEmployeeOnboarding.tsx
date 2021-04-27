@@ -10,10 +10,10 @@ import {
 import clsx from "clsx"
 import {useState} from "react"
 import {RetreatEmployeeLocationItem} from "../../models/retreat"
-import AppButton from "../AppButton"
-import AppList from "../AppList"
 import AppLocationFinder from "../AppLocationFinder"
 import AppLocationList from "../AppLocationList"
+import AppButton from "../base/AppButton"
+import AppList from "../base/AppList"
 
 const useStyles = makeStyles((theme) => ({
   root: {

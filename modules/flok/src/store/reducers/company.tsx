@@ -18,13 +18,13 @@ export default function userReducer(
   var payload
   switch (action.type) {
     case GET_USER_HOME_SUCCESS:
-      payload = (action as ApiAction).payload as UserHomeResponse
+      payload = apiToModel((action as ApiAction).payload) as UserHomeResponse
       return payload.company
         ? {
             ...state,
             companies: {
               ...state.companies,
-              [payload.company.id]: apiToModel(payload.company),
+              [payload.company.id]: payload.company,
             },
           }
         : {...state}

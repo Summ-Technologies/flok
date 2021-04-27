@@ -14,10 +14,10 @@ import {VisibilityOffRounded, VisibilityRounded} from "@material-ui/icons"
 import {push} from "connected-react-router"
 import {SyntheticEvent, useState} from "react"
 import {useDispatch} from "react-redux"
-import {AppRoutes} from "../Stack"
-import {RequestState} from "../store/reducers/api"
-import {Form, FormUtils, TextFormField} from "../utils/formUtils"
-import AppButton from "./AppButton"
+import {AppRoutes} from "../../Stack"
+import {RequestState} from "../../store/reducers/api"
+import {Form, FormUtils, TextFormField} from "../../utils/formUtils"
+import AppButton from "../base/AppButton"
 
 const useStyles = makeStyles((theme) => ({
   root: {

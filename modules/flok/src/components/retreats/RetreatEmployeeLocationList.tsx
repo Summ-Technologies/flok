@@ -12,13 +12,13 @@ import {useEffect, useState} from "react"
 import {useSelector} from "react-redux"
 import {RetreatEmployeeLocationItem} from "../../models/retreat"
 import RetreatGetters from "../../store/getters/retreat"
-import AppButton from "../AppButton"
-import AppList from "../AppList"
 import AppLocationFinder from "../AppLocationFinder"
 import AppLocationList from "../AppLocationList"
+import AppButton from "../base/AppButton"
+import AppList from "../base/AppList"
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: {width: "100%"},
   textField: {
     "& *:disabled": {
       cursor: "not-allowed",

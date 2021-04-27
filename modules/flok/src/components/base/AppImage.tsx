@@ -1,6 +1,6 @@
 import {Box, makeStyles, StandardProps} from "@material-ui/core"
 import React, {PropsWithChildren} from "react"
-import {ImageUtils, KnownImageKey} from "../utils/imageUtils"
+import {ImageUtils, KnownImageKey} from "../../utils/imageUtils"
 
 const useStyles = makeStyles((theme) => ({
   root: {

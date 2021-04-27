@@ -1,25 +1,14 @@
-import {
-  Box,
-  ClickAwayListener,
-  IconButton,
-  ListItem,
-  Paper,
-  Typography,
-} from "@material-ui/core"
+import {Box, ClickAwayListener, Paper, Typography} from "@material-ui/core"
 import Popper from "@material-ui/core/Popper"
-import {createStyles, makeStyles} from "@material-ui/core/styles"
 import {
-  AddBoxOutlined,
   GroupRounded,
-  IndeterminateCheckBoxOutlined,
   KeyboardArrowDownRounded,
   NightsStayRounded,
 } from "@material-ui/icons"
 import React from "react"
-import AppButton from "../AppButton"
-import AppList from "../AppList"
-
-const useStyles = makeStyles((theme) => createStyles({}))
+import AppList, {AppListItem} from "../base/AppList"
+import AppButton from "./AppButton"
+import AppNumberCounter from "./AppNumberCounter"
 
 type AppNumberFilterProps = {
   count: number
@@ -27,8 +16,10 @@ type AppNumberFilterProps = {
   icon: "nights" | "people" | JSX.Element
 }
 
+/**
+ * Displays the icon + count in icon button. On click displays pop up with AppNumberCounter element
+ */
 export default function AppNumberFilter(props: AppNumberFilterProps) {
-  const classes = useStyles()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
   let Icon =
@@ -64,22 +55,14 @@ export default function AppNumberFilter(props: AppNumberFilterProps) {
         <ClickAwayListener onClickAway={closePopper}>
           <Paper elevation={1}>
             <AppList>
-              <ListItem>
-                <Box display="flex" alignItems="center">
-                  <IconButton
-                    size="small"
-                    onClick={() => props.setCount(props.count - 1)}
-                    disabled={props.count <= 1}>
-                    <IndeterminateCheckBoxOutlined />
-                  </IconButton>
-                  <Typography variant="body1">{props.count}</Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => props.setCount(props.count + 1)}>
-                    <AddBoxOutlined />
-                  </IconButton>
-                </Box>
-              </ListItem>
+              <AppListItem
+                body={
+                  <AppNumberCounter
+                    count={props.count}
+                    onUpdateCount={props.setCount}
+                  />
+                }
+              />
             </AppList>
           </Paper>
         </ClickAwayListener>

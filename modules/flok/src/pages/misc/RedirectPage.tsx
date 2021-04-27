@@ -1,6 +1,6 @@
 import querystring from "querystring"
 import {Redirect} from "react-router-dom"
-import {AppRoutes} from "../Stack"
+import {AppRoutes} from "../../Stack"
 
 type RedirectPageProps = {
   pageName: string

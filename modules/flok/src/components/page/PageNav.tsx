@@ -2,9 +2,9 @@ import {AppBar, Box, Toolbar, Typography} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
 import React, {PropsWithChildren} from "react"
 import {useSelector} from "react-redux"
-import CompanyGetters from "../store/getters/company"
-import UserGetters from "../store/getters/user"
-import AppLogo from "./AppLogo"
+import CompanyGetters from "../../store/getters/company"
+import UserGetters from "../../store/getters/user"
+import AppLogo from "../base/AppLogo"
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -27,7 +27,11 @@ export class FormUtils<FormFieldNames extends string> {
     return Object.keys(form)
       .map((fieldName) => {
         let field = form[fieldName as FormFieldNames]
-        if (field.required) return field.validator(field.value, form)
+        if (field.required) {
+          return field.validator(field.value, form)
+        } else {
+          return undefined
+        }
       })
       .filter((x) => x)
   }

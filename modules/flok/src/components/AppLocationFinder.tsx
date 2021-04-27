@@ -68,6 +68,9 @@ export default function AppLocationFinder(props: AppLocationFinderProps) {
     place: GooglePlaceType
   ): RetreatEmployeeLocationItem {
     return {
+      id: -1,
+      submissionId: -1,
+      employeeCount: 1,
       googlePlaceId: place.placeId,
       mainText: place.structuredFormatting.mainText,
       secondaryText: place.structuredFormatting.secondaryText,

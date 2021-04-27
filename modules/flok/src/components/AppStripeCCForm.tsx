@@ -14,7 +14,7 @@ import config, {GOOGLE_API_KEY} from "../config"
 import {StripeCheckoutForm} from "../models/forms"
 import {useScript} from "../utils"
 import {FormUtils} from "../utils/formUtils"
-import AppButton from "./AppButton"
+import AppButton from "./base/AppButton"
 import GoogleAutocomplete from "./base/GoogleAutocomplete"
 
 const STRIPE_STYLE = {

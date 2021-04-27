@@ -9,8 +9,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     maxWidth: "100vw",
     height: "100vh",
     maxHeight: "100vh",
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
+    display: "flex",
     paddingTop: (props) =>
       props.hideNav ? undefined : theme.mixins.toolbar.height,
   },
@@ -35,6 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 type PageBodyProps = {
   hideNav?: boolean
+  sideNav?: JSX.Element
   fullWidth?: boolean
 }
 export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
@@ -45,6 +45,7 @@ export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
       className={classes.root}
       height={height100vh ? height100vh : undefined}>
       {props.hideNav ? undefined : <PageNav />}
+      {props.sideNav}
       <Box className={classes.body}>{props.children}</Box>
     </Box>
   )

@@ -1,4 +1,4 @@
-import {Box, makeStyles, StandardProps} from "@material-ui/core"
+import {Box, StandardProps} from "@material-ui/core"
 import {
   CardNumberElement,
   Elements,
@@ -10,19 +10,15 @@ import {StripeCheckoutForm} from "../../models/forms"
 import {useStripePromise} from "../../utils/stripeUtils"
 import AppStripeCCForm from "../AppStripeCCForm"
 
-const useStyles = makeStyles((theme) => ({
-  root: {},
-}))
-
 interface RetreatPaymentProps extends StandardProps<{}, "root"> {}
 
 function RetreatPaymentBody(props: RetreatPaymentProps) {
-  let classes = useStyles()
   let stripe = useStripe()
   let elements = useElements()
   let [form, setForm] = useState<typeof StripeCheckoutForm>(StripeCheckoutForm)
 
-  let clientSecret = ""
+  let clientSecret =
+    "pi_1IbLKLKlwU4zujMbXWllllUV_secret_w4CgE3SXk0w0gyAh5dUXjzSLl"
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     // Block native form submission.

@@ -1,5 +1,5 @@
 import {Action} from "redux"
-import {UserHomeResponse} from "../../models/api"
+import {RetreatResponse} from "../../models/api"
 import {RetreatModel} from "../../models/retreat"
 import {apiToModel} from "../../utils/apiUtils"
 import {ApiAction} from "../actions/api"
@@ -24,13 +24,13 @@ export default function userReducer(
     case GET_USER_HOME_SUCCESS:
     case POST_EMPLOYEE_LOCATION_V2_SUCCESS:
     case GET_RETREAT_SUCCESS:
-      payload = (action as ApiAction).payload as UserHomeResponse
+      payload = apiToModel((action as ApiAction).payload) as RetreatResponse
       return payload.retreat
         ? {
             ...state,
             retreats: {
               ...state.retreats,
-              [payload.retreat.id]: apiToModel(payload.retreat),
+              [payload.retreat.id]: payload.retreat,
             },
           }
         : {...state}
