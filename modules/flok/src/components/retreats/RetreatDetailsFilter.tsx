@@ -57,8 +57,7 @@ const useStyles = makeStyles((theme) => ({
 type RetreatDetailsFilterProps = {
   guests: number
   nights?: number
-  setGuests: (val: number) => void
-  setNights?: (val: number) => void
+  onUpdate: (guests: number, nights?: number) => void
   size?: "large" | "small"
 }
 
@@ -190,8 +189,9 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
           color="primary"
           variant="contained"
           onClick={() => {
-            props.setGuests(guests)
-            if (props.setNights && nights) props.setNights(nights)
+            if (guests !== props.guests || nights !== props.nights) {
+              props.onUpdate(guests, nights)
+            }
           }}
           disabled={props.guests === guests && props.nights === nights}>
           <Typography variant={props.size === "small" ? "caption" : "body1"}>

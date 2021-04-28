@@ -5,6 +5,8 @@ export type RetreatModel = {
   employeeLocationSubmission?: RetreatEmployeeLocationSubmission
   proposals: RetreatProposal[]
   selectedProposalId?: number
+  numEmployees: number
+  numNights: number
 }
 
 export type RetreatEmployeeLocationItem = {

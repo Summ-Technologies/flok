@@ -8,6 +8,7 @@ import {
   GET_RETREAT_SUCCESS,
   POST_EMPLOYEE_LOCATION_V2_SUCCESS,
   POST_SELECTED_PROPOSAL_REQUEST,
+  PUT_RETREAT_DETAILS_REQUEST,
 } from "../actions/retreat"
 import {GET_USER_HOME_SUCCESS} from "../actions/user"
 
@@ -37,6 +38,22 @@ export default function userReducer(
             },
           }
         : {...state}
+    case PUT_RETREAT_DETAILS_REQUEST:
+      meta = ((action as unknown) as {
+        meta: {retreatId: number; numEmployees: number; numNights?: number}
+      }).meta
+      return {
+        ...state,
+        retreats: {
+          ...state.retreats,
+          [meta.retreatId]: {
+            ...state.retreats[meta.retreatId],
+            numEmployees: meta.numEmployees,
+            ...(meta.numNights ? {numNights: meta.numNights} : {}),
+          },
+        },
+      }
+
     case POST_SELECTED_PROPOSAL_REQUEST:
       meta = ((action as unknown) as {
         meta: {retreatId: number; proposalId: number}

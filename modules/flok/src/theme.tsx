@@ -2,7 +2,6 @@ import {createMuiTheme} from "@material-ui/core/styles"
 
 export const theme = createMuiTheme({
   palette: {
-    tonalOffset: 0.9,
     background: {
       default: "#F5F5F5", //grey[100]
     },

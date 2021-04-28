@@ -1,4 +1,5 @@
 import {Box, Divider, makeStyles, Paper} from "@material-ui/core"
+import {blue} from "@material-ui/core/colors"
 import {InfoRounded, KeyboardArrowLeftRounded} from "@material-ui/icons"
 import {useDispatch, useSelector} from "react-redux"
 import {RetreatProposal} from "../../models/retreat"
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   note: {
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: blue[50],
   },
 }))
 
@@ -79,7 +80,7 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
                 <Box flex={1}>
                   <RetreatDetailsFilter
                     guests={props.numEmployees}
-                    setGuests={props.updateNumEmployees}
+                    onUpdate={props.updateNumEmployees}
                     size="small"
                   />
                 </Box>

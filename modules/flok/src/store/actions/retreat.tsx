@@ -91,3 +91,30 @@ export function deleteSelectedProposal(retreatId: number) {
     ],
   })
 }
+
+// PUT retreat filter details
+export const PUT_RETREAT_DETAILS_REQUEST = "PUT_RETREAT_DETAILS_REQUEST"
+export const PUT_RETREAT_DETAILS_SUCCESS = "PUT_RETREAT_DETAILS_SUCCESS"
+export const PUT_RETREAT_DETAILS_FAILURE = "PUT_RETREAT_DETAILS_FAILURE"
+
+export function putRetreatDetails(
+  retreatId: number,
+  numEmployees: number,
+  numNights?: number
+) {
+  let endpoint = `/v1.0/retreats/${retreatId}/details`
+  let body = {numEmployees, ...(numNights ? {numNights} : {})}
+  return createApiAction({
+    endpoint,
+    method: "PUT",
+    body: JSON.stringify(modelToApi(body)),
+    types: [
+      ApiUtils.typeWithMeta(PUT_RETREAT_DETAILS_REQUEST, {
+        retreatId,
+        ...body,
+      }),
+      PUT_RETREAT_DETAILS_SUCCESS,
+      PUT_RETREAT_DETAILS_FAILURE,
+    ],
+  })
+}

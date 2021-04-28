@@ -1,6 +1,7 @@
 import {Box, Collapse, makeStyles, Paper, Typography} from "@material-ui/core"
+import {blue} from "@material-ui/core/colors"
 import {ChatBubbleOutlineRounded} from "@material-ui/icons"
-import React, {useState} from "react"
+import React from "react"
 import {useDispatch} from "react-redux"
 import AppTimeline from "../../components/base/AppTimeline"
 import AppTypography from "../../components/base/AppTypography"
@@ -10,6 +11,7 @@ import {RetreatModel, RetreatProposal} from "../../models/retreat"
 import {
   deleteSelectedProposal,
   postSelectedProposal,
+  putRetreatDetails,
 } from "../../store/actions/retreat"
 import AppButton from "../base/AppButton"
 import {AppTimelineItemState} from "../base/AppTimeline/AppTimelineItem"
@@ -23,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   note: {
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: blue[50],
     color: theme.palette.common.black,
   },
 }))
@@ -36,8 +38,6 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let {retreat, selectedProposal} = {...props}
-  let [guests, setGuests] = useState(5)
-  let [nights, setNights] = useState(5)
 
   return (
     <AppTimeline
@@ -83,16 +83,17 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
                     </Box>
                     {/* </Paper> */}
                     <AppRetreatDetailsFilter
-                      guests={guests}
-                      nights={nights}
-                      setGuests={(val) => setGuests(val)}
-                      setNights={(val) => setNights(val)}
+                      guests={retreat.numEmployees}
+                      nights={retreat.numNights}
+                      onUpdate={(g, n) => {
+                        dispatch(putRetreatDetails(retreat.id, g, n))
+                      }}
                     />
 
                     <Box>
                       <RetreatProposalCardList
-                        numEmployees={guests}
-                        numNights={nights}
+                        numEmployees={retreat.numEmployees}
+                        numNights={retreat.numNights}
                         proposals={retreat ? retreat.proposals : []}
                         selectProposal={(proposalId) => {
                           dispatch(postSelectedProposal(retreat.id, proposalId))
@@ -114,9 +115,11 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
                     <Collapse in={true}>
                       <Box marginTop={2}>
                         <RetreatPaymentReview
-                          numEmployees={guests}
+                          numEmployees={retreat.numEmployees}
                           proposal={selectedProposal}
-                          updateNumEmployees={() => undefined}
+                          updateNumEmployees={(n) => {
+                            dispatch(putRetreatDetails(retreat.id, n))
+                          }}
                         />
                       </Box>
                     </Collapse>
