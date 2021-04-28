@@ -30,6 +30,7 @@ type RetreatProposalCardListProps = {
   proposals: RetreatProposal[]
   numNights: number
   numEmployees: number
+  selectProposal: (proposalId: number) => void
 }
 
 export default function RetreatProposalCardList(
@@ -40,9 +41,10 @@ export default function RetreatProposalCardList(
   return (
     <Box className={classes.root}>
       <Box className={classes.list}>
-        {props.proposals.map((proposal) => {
+        {props.proposals.map((proposal, i) => {
           return (
             <AppRetreatProposalCard
+              key={i}
               title={proposal.title}
               subtitle={`${proposal.flightTimeAvg} hr travel average`}
               imgUrl={proposal.imageUrl}
@@ -51,7 +53,7 @@ export default function RetreatProposalCardList(
               flightCost={proposal.flightsCost}
               accomodationCost={proposal.lodgingCost}
               otherCost={proposal.otherCost}
-              onSelect={() => undefined}
+              onSelect={() => props.selectProposal(proposal.id)}
             />
           )
         })}

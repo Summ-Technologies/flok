@@ -23,7 +23,7 @@ export default function AppPageIntro(props: AppPageIntroProps) {
       py={1}
       {...boxProps}
       className={clsx(classes.root, boxProps.className)}>
-      <Typography variant="h2">{props.title}</Typography>
+      <Typography variant="h1">{props.title}</Typography>
       <Typography variant="body1">{props.body}</Typography>
     </Box>
   )

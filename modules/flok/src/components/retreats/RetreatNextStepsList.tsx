@@ -153,9 +153,13 @@ export default function RetreatNextStepsList(props: RetreatNextStepsListProps) {
         onEntered={scrollBottomList}>
         {NEXT_STEPS_LIST.map((item, i) =>
           i !== NEXT_STEPS_LIST.length - 1 ? (
-            <RetreatNextStepsListItem leftIcon={item.icon} text={item.text} />
+            <RetreatNextStepsListItem
+              key={i}
+              leftIcon={item.icon}
+              text={item.text}
+            />
           ) : (
-            <div ref={listRef}>
+            <div ref={listRef} key={i}>
               <RetreatNextStepsListItem leftIcon={item.icon} text={item.text} />
             </div>
           )

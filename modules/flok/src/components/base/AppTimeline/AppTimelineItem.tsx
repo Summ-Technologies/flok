@@ -1,4 +1,4 @@
-import {Box, makeStyles, StandardProps, Typography} from "@material-ui/core"
+import {makeStyles, StandardProps} from "@material-ui/core"
 import {CheckRounded} from "@material-ui/icons"
 import {
   TimelineConnector,
@@ -8,6 +8,7 @@ import {
   TimelineSeparator,
 } from "@material-ui/lab"
 import clsx from "clsx"
+import AppTypography from "../AppTypography"
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -63,15 +64,13 @@ export default function AppTimelineItem(props: AppTimelineItemProps) {
             state === "completed" ? classes.dotCompleted : undefined
           )}
           variant="outlined">
-          <Typography variant="body2">
+          <AppTypography bold variant="body2">
             {state === "completed" ? (
               <CheckRounded fontSize="inherit" />
             ) : (
-              <Typography variant="body2">
-                <Box fontWeight="fontWeightMedium">{order}</Box>
-              </Typography>
+              order
             )}
-          </Typography>
+          </AppTypography>
         </TimelineDot>
         {!lastItem ? (
           <TimelineConnector className={`${classes.connector}`} />

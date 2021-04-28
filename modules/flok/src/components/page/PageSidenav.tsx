@@ -58,8 +58,12 @@ export default function PageSidenav(
   let [closed, setClosed] = useState(false)
   let dispatch = useDispatch()
 
-  function sidenavListItem(itemType: SidenavItemType) {
-    let selected = itemType === props.activeItem
+  function SidenavListItem(props: {
+    itemType: SidenavItemType
+    activeItem?: SidenavItemType
+  }) {
+    let {itemType, activeItem} = {...props}
+    let selected = itemType === activeItem
     let disabled = itemType !== "onboarding"
     let onClick = () => {
       if (!selected) {
@@ -83,7 +87,7 @@ export default function PageSidenav(
         onClick={onClick}
         disabled={disabled}
         button
-        key={itemType[0]}>
+        key={itemType}>
         <Box marginRight={1}>{sidenavItems[itemType][1]}</Box>
         {sidenavItems[itemType][0]}
         {disabled ? (
@@ -103,11 +107,17 @@ export default function PageSidenav(
     )
   }
 
-  function sidenavList() {
+  function SidenavList() {
     return (
       <List className={classes.root}>
-        {Object.keys(sidenavItems).map((item) => {
-          return sidenavListItem(item as SidenavItemType)
+        {Object.keys(sidenavItems).map((item, i) => {
+          return (
+            <SidenavListItem
+              itemType={item as SidenavItemType}
+              activeItem={props.activeItem}
+              key={i}
+            />
+          )
         })}
       </List>
     )
@@ -119,14 +129,14 @@ export default function PageSidenav(
         <Drawer className={classes.root} variant="permanent">
           <div className={classes.toolbar}></div>
           <ClearRounded style={{opacity: 0}} />
-          {sidenavList()}
+          {<SidenavList />}
         </Drawer>
       </Hidden>
       <Hidden mdUp>
         <Drawer className={classes.root} variant="temporary" open={!closed}>
           <div className={classes.toolbar}></div>
           <ClearRounded onClick={() => setClosed(true)} />
-          {sidenavList()}
+          {<SidenavList />}
         </Drawer>
       </Hidden>
     </>

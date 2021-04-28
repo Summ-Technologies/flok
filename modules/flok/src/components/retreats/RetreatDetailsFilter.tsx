@@ -5,6 +5,7 @@ import {
   makeStyles,
   Paper,
   Popper,
+  Typography,
 } from "@material-ui/core"
 import clsx from "clsx"
 import {useEffect, useRef, useState} from "react"
@@ -14,15 +15,20 @@ import AppNumberCounter from "../base/AppNumberCounter"
 import AppTypography from "../base/AppTypography"
 
 const FILTER_HEIGHT_PX = 70
+const FILTER_HEIGHT_SM = 50
 const useStyles = makeStyles((theme) => ({
   root: {
     background: theme.palette.background.paper,
+    display: "flex",
+    width: "100%",
+    height: (props: RetreatDetailsFilterProps) =>
+      props.size === "small" ? FILTER_HEIGHT_SM : FILTER_HEIGHT_PX,
+    borderRadius: (props: RetreatDetailsFilterProps) =>
+      props.size === "small" ? FILTER_HEIGHT_SM / 2 : FILTER_HEIGHT_PX / 2,
   },
   filters: {
     "& > *:not(:first-child)": {
-      "& > $filterButtonBody": {
-        borderLeft: "solid thin black",
-      },
+      "& > $filterButtonBody": {},
     },
   },
   filterButtonFocused: {},
@@ -31,7 +37,8 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
     display: "flex",
     justifyContent: "flex-start",
-    borderRadius: FILTER_HEIGHT_PX / 2,
+    borderRadius: (props: RetreatDetailsFilterProps) =>
+      props.size === "small" ? FILTER_HEIGHT_SM / 2 : FILTER_HEIGHT_PX / 2,
     height: "100%",
     "&:hover, &$filterButtonFocused, &.active": {
       boxShadow: theme.shadows[2],
@@ -42,15 +49,17 @@ const useStyles = makeStyles((theme) => ({
   },
   updateButton: {
     height: "100%",
-    borderRadius: FILTER_HEIGHT_PX / 2,
+    borderRadius: (props: RetreatDetailsFilterProps) =>
+      props.size === "small" ? FILTER_HEIGHT_SM / 2 : FILTER_HEIGHT_PX / 2,
   },
 }))
 
 type RetreatDetailsFilterProps = {
   guests: number
-  nights: number
+  nights?: number
   setGuests: (val: number) => void
-  setNights: (val: number) => void
+  setNights?: (val: number) => void
+  size?: "large" | "small"
 }
 
 export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
@@ -73,6 +82,7 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
     value: number
     setValue: (newVal: number) => void
     anchorEl: React.MutableRefObject<any>
+    size?: "large" | "small"
   }
   function RetreatDetailsFilterItem(props: RetreatDetailsFilterItemProps) {
     let [open, setOpen] = useState(false)
@@ -95,11 +105,18 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
             display="flex"
             flexDirection="column"
             textAlign="left"
-            paddingLeft={`${FILTER_HEIGHT_PX / 2}px`}>
-            <AppTypography bold variant="body1">
+            paddingLeft={`${
+              props.size === "small"
+                ? FILTER_HEIGHT_SM / 2
+                : FILTER_HEIGHT_PX / 2
+            }px`}>
+            <AppTypography
+              bold
+              variant={props.size === "small" ? "caption" : "body1"}>
               {props.title}
             </AppTypography>
-            <AppTypography variant="body1">
+            <AppTypography
+              variant={props.size === "small" ? "caption" : "body1"}>
               {props.value} {props.label}
             </AppTypography>
           </Box>
@@ -110,7 +127,12 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
           anchorEl={props.anchorEl.current}
           placement="bottom-start">
           <ClickAwayListener onClickAway={closePopper}>
-            <Box marginLeft={`${FILTER_HEIGHT_PX / 2}px`}>
+            <Box
+              marginLeft={`${
+                props.size === "small"
+                  ? FILTER_HEIGHT_SM / 2
+                  : FILTER_HEIGHT_PX / 2
+              }px`}>
               <Paper elevation={1}>
                 <AppList>
                   <AppListItem
@@ -130,28 +152,29 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
     )
   }
   return (
-    <Box
-      className={classes.root}
-      display="flex"
-      border="solid thin black"
-      width="100%"
-      height={FILTER_HEIGHT_PX}
-      borderRadius={FILTER_HEIGHT_PX / 2}>
-      <Box flex={2} display="flex" className={classes.filters}>
+    <Paper className={classes.root} variant="outlined">
+      <Box
+        flex={nights !== undefined ? 2 : 1}
+        display="flex"
+        className={classes.filters}>
         <RetreatDetailsFilterItem
           title="Guests"
           value={guests}
           label="people"
           setValue={setGuests}
           anchorEl={guestsRef}
+          size={props.size}
         />
-        <RetreatDetailsFilterItem
-          title="Nights"
-          value={nights}
-          label="nights"
-          setValue={setNights}
-          anchorEl={nightsRef}
-        />
+        {nights !== undefined ? (
+          <RetreatDetailsFilterItem
+            title="Nights"
+            value={nights}
+            label="nights"
+            setValue={setNights}
+            anchorEl={nightsRef}
+            size={props.size}
+          />
+        ) : undefined}
       </Box>
       <Box display="flex" flexDirection="column" flex={1} padding={"4px"}>
         <AppButton
@@ -159,9 +182,9 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
           color="primary"
           variant="contained"
           disabled={props.guests === guests && props.nights === nights}>
-          Update
+          <Typography variant="body2">Update</Typography>
         </AppButton>
       </Box>
-    </Box>
+    </Paper>
   )
 }

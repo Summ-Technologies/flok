@@ -19,8 +19,16 @@ export default class RetreatGetters {
     return retreat ? retreat.employeeLocationSubmission : undefined
   }
 
-  static getRetreatInitialProposals(state: RootState): RetreatProposal[] {
+  static getRetreatProposals(
+    state: RootState
+  ): {[key: number]: RetreatProposal} {
     let retreat = RetreatGetters.getRetreat(state)
-    return retreat ? retreat.proposals : []
+    let _ret: {[key: number]: RetreatProposal} = {}
+    if (retreat) {
+      retreat.proposals.forEach((proposal) => {
+        _ret[proposal.id] = proposal
+      })
+    }
+    return _ret
   }
 }
