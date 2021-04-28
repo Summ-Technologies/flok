@@ -21,9 +21,6 @@ import AppTypography from "../base/AppTypography"
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    "& > *:not(:last-child)": {
-      marginBottom: theme.spacing(2),
-    },
   },
   collapse: {
     "& > *:not(:last-child)": {
@@ -128,25 +125,26 @@ export default function RetreatNextStepsList(props: RetreatNextStepsListProps) {
   }
   return (
     <Box className={classes.root}>
-      <div>
-        <RetreatNextStepsListItem
-          header
-          text="Flok next steps"
-          rightIcon={
-            <Typography variant="h3">
-              <IconButton
-                size="small"
-                onClick={expanded ? collapseList : expandList}>
-                {expanded ? (
-                  <ExpandLessRounded fontSize="inherit" />
-                ) : (
-                  <ExpandMoreRounded fontSize="inherit" />
-                )}
-              </IconButton>
-            </Typography>
-          }
-        />
-      </div>
+      <Box
+        width="100%"
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center">
+        <Box display="flex">
+          <AppTypography variant="h3">Flok next steps</AppTypography>
+          <Typography variant="h3">
+            <IconButton
+              size="small"
+              onClick={expanded ? collapseList : expandList}>
+              {expanded ? (
+                <ExpandLessRounded fontSize="inherit" />
+              ) : (
+                <ExpandMoreRounded fontSize="inherit" />
+              )}
+            </IconButton>
+          </Typography>
+        </Box>
+      </Box>
       <Collapse
         in={expanded}
         classes={{wrapperInner: classes.collapse}}

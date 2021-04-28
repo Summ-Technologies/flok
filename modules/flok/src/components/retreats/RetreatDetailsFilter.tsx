@@ -2,6 +2,7 @@ import {
   Box,
   ButtonBase,
   ClickAwayListener,
+  Divider,
   makeStyles,
   Paper,
   Popper,
@@ -18,7 +19,7 @@ const FILTER_HEIGHT_PX = 70
 const FILTER_HEIGHT_SM = 50
 const useStyles = makeStyles((theme) => ({
   root: {
-    background: theme.palette.background.paper,
+    backgroundColor: theme.palette.grey[200],
     display: "flex",
     width: "100%",
     height: (props: RetreatDetailsFilterProps) =>
@@ -26,22 +27,21 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: (props: RetreatDetailsFilterProps) =>
       props.size === "small" ? FILTER_HEIGHT_SM / 2 : FILTER_HEIGHT_PX / 2,
   },
-  filters: {
-    "& > *:not(:first-child)": {
-      "& > $filterButtonBody": {},
-    },
-  },
   filterButtonFocused: {},
   filterButtonBody: {},
   filterButton: {
     flex: 1,
     display: "flex",
     justifyContent: "flex-start",
+    marginTop: "4px",
+    marginBottom: "4px",
+    "&:first-child": {
+      marginLeft: "4px",
+    },
     borderRadius: (props: RetreatDetailsFilterProps) =>
       props.size === "small" ? FILTER_HEIGHT_SM / 2 : FILTER_HEIGHT_PX / 2,
-    height: "100%",
     "&:hover, &$filterButtonFocused, &.active": {
-      boxShadow: theme.shadows[2],
+      boxShadow: theme.shadows[1],
       "& > $filterButtonBody": {
         borderLeft: "none",
       },
@@ -64,8 +64,8 @@ type RetreatDetailsFilterProps = {
 
 export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
   const classes = useStyles(props)
-  let [guests, setGuests] = useState(() => props.guests)
-  let [nights, setNights] = useState(() => props.nights)
+  let [guests, setGuests] = useState(props.guests)
+  let [nights, setNights] = useState(props.nights)
   let guestsRef = useRef(null)
   let nightsRef = useRef(null)
 
@@ -112,7 +112,7 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
             }px`}>
             <AppTypography
               bold
-              variant={props.size === "small" ? "caption" : "body1"}>
+              variant={props.size === "small" ? "caption" : "body2"}>
               {props.title}
             </AppTypography>
             <AppTypography
@@ -153,10 +153,7 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
   }
   return (
     <Paper className={classes.root} variant="outlined">
-      <Box
-        flex={nights !== undefined ? 2 : 1}
-        display="flex"
-        className={classes.filters}>
+      <Box flex={nights !== undefined ? 2 : 1} display="flex">
         <RetreatDetailsFilterItem
           title="Guests"
           value={guests}
@@ -166,23 +163,40 @@ export default function RetreatDetailsFilter(props: RetreatDetailsFilterProps) {
           size={props.size}
         />
         {nights !== undefined ? (
-          <RetreatDetailsFilterItem
-            title="Nights"
-            value={nights}
-            label="nights"
-            setValue={setNights}
-            anchorEl={nightsRef}
-            size={props.size}
-          />
+          <>
+            <Box height="100%" display="flex" alignItems="center">
+              <Box marginLeft={1} marginRight={1} height="80%">
+                <Divider orientation="vertical" />
+              </Box>
+            </Box>
+            <RetreatDetailsFilterItem
+              title="Nights"
+              value={nights}
+              label="nights"
+              setValue={setNights}
+              anchorEl={nightsRef}
+              size={props.size}
+            />
+          </>
         ) : undefined}
       </Box>
-      <Box display="flex" flexDirection="column" flex={1} padding={"4px"}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        flex={props.size === "small" ? undefined : 1}
+        padding={"4px"}>
         <AppButton
           className={classes.updateButton}
           color="primary"
           variant="contained"
+          onClick={() => {
+            props.setGuests(guests)
+            if (props.setNights && nights) props.setNights(nights)
+          }}
           disabled={props.guests === guests && props.nights === nights}>
-          <Typography variant="body2">Update</Typography>
+          <Typography variant={props.size === "small" ? "caption" : "body1"}>
+            Update
+          </Typography>
         </AppButton>
       </Box>
     </Paper>

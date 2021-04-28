@@ -59,9 +59,11 @@ export default function AppTimelineItem(props: AppTimelineItemProps) {
         <TimelineDot
           className={clsx(
             classes.dot,
-            state === "todo" ? classes.dotTodo : undefined,
-            state === "in-progress" ? classes.dotInProgress : undefined,
-            state === "completed" ? classes.dotCompleted : undefined
+            state === "todo"
+              ? classes.dotTodo
+              : state === "in-progress"
+              ? classes.dotInProgress
+              : classes.dotCompleted
           )}
           variant="outlined">
           <AppTypography bold variant="body2">

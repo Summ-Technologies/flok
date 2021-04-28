@@ -1,26 +1,43 @@
-import {Box, Collapse, Paper, Typography} from "@material-ui/core"
+import {Box, Collapse, makeStyles, Paper, Typography} from "@material-ui/core"
 import {ChatBubbleOutlineRounded} from "@material-ui/icons"
-import React from "react"
+import React, {useState} from "react"
 import {useDispatch} from "react-redux"
 import AppTimeline from "../../components/base/AppTimeline"
 import AppTypography from "../../components/base/AppTypography"
 import AppRetreatDetailsFilter from "../../components/retreats/RetreatDetailsFilter"
 import RetreatProposalCardList from "../../components/retreats/RetreatProposalCardList"
 import {RetreatModel, RetreatProposal} from "../../models/retreat"
-import {getUserHome} from "../../store/actions/user"
+import {
+  deleteSelectedProposal,
+  postSelectedProposal,
+} from "../../store/actions/retreat"
+import AppButton from "../base/AppButton"
 import {AppTimelineItemState} from "../base/AppTimeline/AppTimelineItem"
 import RetreatNextStepsList from "./RetreatNextStepsList"
 import RetreatPaymentReview from "./RetreatPaymentReview"
+
+const useStyles = makeStyles((theme) => ({
+  chooseProposalBody: {
+    "& > *:not(:last-child)": {
+      marginBottom: theme.spacing(3),
+    },
+  },
+  note: {
+    backgroundColor: theme.palette.primary.light,
+    color: theme.palette.common.black,
+  },
+}))
 
 type RetreatTimelineProps = {
   retreat: RetreatModel
   selectedProposal?: RetreatProposal
 }
 export default function RetreatTimeline(props: RetreatTimelineProps) {
+  let classes = useStyles(props)
   let dispatch = useDispatch()
   let {retreat, selectedProposal} = {...props}
-  let guests = 5
-  let nights = 5
+  let [guests, setGuests] = useState(5)
+  let [nights, setNights] = useState(5)
 
   return (
     <AppTimeline
@@ -29,45 +46,61 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
           state: selectedProposal ? "completed" : "in-progress",
           body: (
             <Box>
-              <Typography variant="h3">
-                Choose proposal
-                {selectedProposal ? ` (${selectedProposal.title})` : undefined}
-              </Typography>
-              <Collapse in={selectedProposal ? false : true}>
-                <AppRetreatDetailsFilter
-                  guests={guests}
-                  nights={nights}
-                  setGuests={() => undefined}
-                  setNights={() => undefined}
-                />
-                <Paper>
-                  <Box
-                    width="100%"
-                    display="flex"
-                    padding={1}
-                    borderRadius="borderRadius">
-                    <Box marginRight={1}>
-                      <ChatBubbleOutlineRounded fontSize="small" />
-                    </Box>
-                    <AppTypography variant="body1">
-                      <Box component="span" fontWeight="fontWeightMedium">
-                        Note from Flok:{" "}
+              <Box>
+                <Typography variant="h3">
+                  Choose proposal
+                  {selectedProposal ? (
+                    <>
+                      <Box component="span" fontWeight="fontWeightRegular">
+                        {" "}
+                        ({selectedProposal.title})
                       </Box>
-                      Based on your preferences and timeline, we think Miami
-                      makes the most sense for your retreat
-                    </AppTypography>
+                      <AppButton
+                        onClick={() => {
+                          dispatch(deleteSelectedProposal(retreat.id))
+                        }}
+                        variant="text"
+                        color="primary">
+                        Edit
+                      </AppButton>
+                    </>
+                  ) : undefined}
+                </Typography>
+              </Box>
+              <Collapse in={selectedProposal ? false : true}>
+                <Paper variant="outlined">
+                  <Box padding={4} className={classes.chooseProposalBody}>
+                    {/* <Paper elevation={1} className={classes.note}> */}
+                    <Box width="100%" display="flex" padding={0}>
+                      <Box marginRight={1}>
+                        <ChatBubbleOutlineRounded fontSize="small" />
+                      </Box>
+                      <AppTypography variant="body1">
+                        <Box component="span" fontWeight="fontWeightMedium">
+                          Note from Flok:{" "}
+                        </Box>
+                      </AppTypography>
+                    </Box>
+                    {/* </Paper> */}
+                    <AppRetreatDetailsFilter
+                      guests={guests}
+                      nights={nights}
+                      setGuests={(val) => setGuests(val)}
+                      setNights={(val) => setNights(val)}
+                    />
+
+                    <Box>
+                      <RetreatProposalCardList
+                        numEmployees={guests}
+                        numNights={nights}
+                        proposals={retreat ? retreat.proposals : []}
+                        selectProposal={(proposalId) => {
+                          dispatch(postSelectedProposal(retreat.id, proposalId))
+                        }}
+                      />
+                    </Box>
                   </Box>
                 </Paper>
-                <Box>
-                  <RetreatProposalCardList
-                    numEmployees={guests}
-                    numNights={nights}
-                    proposals={retreat ? retreat.proposals : []}
-                    selectProposal={(proposalId) => {
-                      dispatch(getUserHome())
-                    }}
-                  />
-                </Box>
               </Collapse>
             </Box>
           ),
@@ -79,11 +112,13 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
                   <Box>
                     <Typography variant="h3">Review payment</Typography>
                     <Collapse in={true}>
-                      <RetreatPaymentReview
-                        numEmployees={guests}
-                        proposal={selectedProposal}
-                        updateNumEmployees={() => undefined}
-                      />
+                      <Box marginTop={2}>
+                        <RetreatPaymentReview
+                          numEmployees={guests}
+                          proposal={selectedProposal}
+                          updateNumEmployees={() => undefined}
+                        />
+                      </Box>
                     </Collapse>
                   </Box>
                 ),

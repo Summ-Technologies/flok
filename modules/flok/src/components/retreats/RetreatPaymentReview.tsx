@@ -1,6 +1,9 @@
 import {Box, Divider, makeStyles, Paper} from "@material-ui/core"
 import {InfoRounded, KeyboardArrowLeftRounded} from "@material-ui/icons"
+import {useDispatch, useSelector} from "react-redux"
 import {RetreatProposal} from "../../models/retreat"
+import {deleteSelectedProposal} from "../../store/actions/retreat"
+import RetreatGetters from "../../store/getters/retreat"
 import AppButton from "../base/AppButton"
 import AppImage from "../base/AppImage"
 import AppList, {AppListItem} from "../base/AppList"
@@ -15,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   note: {
-    backgroundColor: theme.palette.grey[100],
+    backgroundColor: theme.palette.primary.light,
   },
 }))
 
@@ -27,12 +30,25 @@ type RetreatPaymentReviewProps = {
 
 export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
   const classes = useStyles(props)
+  let dispatch = useDispatch()
+  let userRetreat = useSelector(RetreatGetters.getRetreat)
+
   return (
     <Paper elevation={1} className={classes.root}>
-      <Box display="flex" alignItems="center">
-        <Box width="50%" height="100%" paddingLeft={2} paddingRight={2}>
+      <Box
+        display="flex"
+        alignItems="center"
+        flexWrap="wrap"
+        justifyContent="center">
+        <Box width={350} height="100%" margin={2}>
           <Box position="absolute" paddingLeft={2} paddingTop={2}>
-            <AppButton variant="contained" fullWidth>
+            <AppButton
+              variant="contained"
+              fullWidth
+              onClick={() => {
+                if (userRetreat)
+                  dispatch(deleteSelectedProposal(userRetreat.id))
+              }}>
               <KeyboardArrowLeftRounded fontSize="inherit" />
               go back to proposals
             </AppButton>
@@ -70,7 +86,7 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
               }
               body={
                 <AppTypography italic variant="body2">
-                  $1,800 total trip estimate <InfoRounded fontSize="inherit" />
+                  $18,000 total trip estimate <InfoRounded fontSize="inherit" />
                 </AppTypography>
               }
             />

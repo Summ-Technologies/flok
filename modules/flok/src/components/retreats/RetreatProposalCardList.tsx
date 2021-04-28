@@ -1,20 +1,19 @@
-import {Box, Link, makeStyles, Typography} from "@material-ui/core"
-import {SyntheticEvent} from "react"
+import {Box, makeStyles} from "@material-ui/core"
 import {RetreatProposal} from "../../models/retreat"
 import AppRetreatProposalCard from "./AppRetreatProposalCard"
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    width: "100%",
     flexDirection: "column",
   },
   list: {
     display: "flex",
+    justifyContent: "center",
     flexWrap: "wrap",
     width: "100%",
     "& > *:not(:last-child)": {
-      marginRight: theme.spacing(1),
+      marginRight: theme.spacing(2),
     },
   },
   footer: {
@@ -58,7 +57,7 @@ export default function RetreatProposalCardList(
           )
         })}
       </Box>
-      <Box className={classes.footer}>
+      {/* <Box className={classes.footer}>
         <Typography>
           <Link
             href="#"
@@ -69,7 +68,7 @@ export default function RetreatProposalCardList(
             + Request another proposal
           </Link>
         </Typography>
-      </Box>
+      </Box> */}
     </Box>
   )
 }
