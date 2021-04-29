@@ -82,7 +82,7 @@ export default function PageSidenav(
   props: PropsWithChildren<PageSidenavProps>
 ) {
   const classes = useStyles()
-  let [closed, setClosed] = useState(false)
+  let [open, setOpen] = useState(false)
   let dispatch = useDispatch()
   let userName = useSelector(UserGetters.getUserName)
   let userCompany = useSelector(CompanyGetters.getCompany)
@@ -232,15 +232,15 @@ export default function PageSidenav(
         </Drawer>
       </Hidden>
       <Hidden mdUp>
-        <PageNav onMenuClick={() => setClosed(false)} />
+        <PageNav onMenuClick={() => setOpen(true)} />
       </Hidden>
 
       <Hidden mdUp>
         <Drawer
           className={classes.root}
           variant="temporary"
-          open={!closed}
-          onClose={() => setClosed(true)}>
+          open={open}
+          onClose={() => setOpen(false)}>
           <DrawerBody logoSize="small" />
         </Drawer>
       </Hidden>

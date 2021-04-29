@@ -3,6 +3,7 @@ import {AddBoxOutlined, IndeterminateCheckBoxOutlined} from "@material-ui/icons"
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    width: "100%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -15,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 type AppNumberCounterProps = {
   count: number
+  label?: string
   onUpdateCount?: (newCount: number) => void
   max?: number
   min?: number
@@ -34,7 +36,9 @@ export default function AppNumberCounter(props: AppNumberCounterProps) {
         }>
         <IndeterminateCheckBoxOutlined />
       </IconButton>
-      <Typography variant="body1">{props.count}</Typography>
+      <Typography variant="body1">
+        {props.count} {props.label}
+      </Typography>
       <IconButton
         size="small"
         onClick={() => {
