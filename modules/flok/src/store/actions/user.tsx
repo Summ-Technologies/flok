@@ -72,6 +72,33 @@ export function postUserSignin(email: string, password: string) {
   }
 }
 
+export const DELETE_USER_SIGNIN_REQUEST = "DELETE_USER_SIGNIN_REQUEST"
+export const DELETE_USER_SIGNIN_SUCCESS = "DELETE_USER_SIGNIN_SUCCESS"
+export const DELETE_USER_SIGNIN_FAILURE = "DELETE_USER_SIGNIN_FAILURE"
+
+export function deleteUserSignin() {
+  let endpoint = "/v1.0/auth/signin"
+  return async (
+    dispatch: ThunkDispatch<any, any, any>,
+    getState: () => RootState
+  ) => {
+    let signupResponse = ((await dispatch(
+      createApiAction({
+        endpoint,
+        method: "DELETE",
+        types: [
+          DELETE_USER_SIGNIN_REQUEST,
+          DELETE_USER_SIGNIN_SUCCESS,
+          DELETE_USER_SIGNIN_FAILURE,
+        ],
+      })
+    )) as unknown) as ApiAction
+    if (!signupResponse.error) {
+      dispatch(setUserLoggedOut())
+    }
+  }
+}
+
 export const GET_USER_RESET_REQUEST = "GET_USER_RESET_REQUEST"
 export const GET_USER_RESET_SUCCESS = "GET_USER_RESET_SUCCESS"
 export const GET_USER_RESET_FAILURE = "GET_USER_RESET_FAILURE"

@@ -6,6 +6,7 @@ import {
   CardMedia,
   Divider,
   makeStyles,
+  Tooltip,
   Typography,
 } from "@material-ui/core"
 import {
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     height: 200,
   },
   cardBody: {
-    "& > *:not(:last-child):not(:first-child)": {
+    "& > *:not(:last-child)": {
       // don't add margin to first child because it's h3 tag
       marginBottom: theme.spacing(1),
     },
@@ -43,6 +44,7 @@ type AppRetreatProposalCardProps = {
   accomodationCost: number // per person per night
   otherCost: number // per person
   onSelect: () => void
+  summary?: boolean
 }
 
 export default function AppRetreatProposalCard(
@@ -84,7 +86,12 @@ export default function AppRetreatProposalCard(
           {rowProps.info ? (
             <Box marginLeft={1}>
               <Typography variant="body1">
-                <InfoOutlined fontSize="inherit" />
+                <Tooltip
+                  title={
+                    "Flights and lodging typically account for about 65% of total trip cost. The remaining budget is allocated for meals and activites, etc."
+                  }>
+                  <InfoOutlined fontSize="inherit" />
+                </Tooltip>
               </Typography>
             </Box>
           ) : undefined}
@@ -96,33 +103,43 @@ export default function AppRetreatProposalCard(
 
   return (
     <Card className={classes.root}>
-      <CardMedia
-        className={classes.cardImg}
-        image={props.imgUrl}
-        title={props.title}
-      />
+      {props.summary ? undefined : (
+        <CardMedia
+          className={classes.cardImg}
+          image={props.imgUrl}
+          title={props.title}
+        />
+      )}
       <CardContent>
         <Box
           className={classes.cardBody}
           display="flex"
           flexDirection="column"
           justifyContent="flex-start">
-          <AppRetreatProposalCardRow
-            description={<Typography variant="h3">{props.title}</Typography>}
-            cost={
-              <AppTypography bold variant="body1">
-                ${totalCost.toLocaleString()}
-              </AppTypography>
-            }
-          />
-          <AppRetreatProposalCardRow
-            description={
-              <AppTypography italic variant="body2">
-                {props.subtitle}
-              </AppTypography>
-            }
-          />
-          <Divider />
+          {props.summary ? undefined : (
+            <>
+              <Box marginBottom={0}>
+                <AppRetreatProposalCardRow
+                  description={
+                    <Typography variant="h3">{props.title}</Typography>
+                  }
+                  cost={
+                    <AppTypography bold variant="body1">
+                      ${totalCost.toLocaleString()}
+                    </AppTypography>
+                  }
+                />
+              </Box>
+              <AppRetreatProposalCardRow
+                description={
+                  <AppTypography italic variant="body2">
+                    {props.subtitle}
+                  </AppTypography>
+                }
+              />
+              <Divider />
+            </>
+          )}
           <AppRetreatProposalCardRow
             icon={
               <Typography variant="body1">
@@ -196,16 +213,18 @@ export default function AppRetreatProposalCard(
           />
         </Box>
       </CardContent>
-      <CardActions>
-        <Box display="flex" justifyContent="center" width="100%">
-          <AppButton
-            variant="contained"
-            color="primary"
-            onClick={props.onSelect}>
-            Choose destination
-          </AppButton>
-        </Box>
-      </CardActions>
+      {props.summary ? undefined : (
+        <CardActions>
+          <Box display="flex" justifyContent="center" width="100%">
+            <AppButton
+              variant="contained"
+              color="primary"
+              onClick={props.onSelect}>
+              Choose destination
+            </AppButton>
+          </Box>
+        </CardActions>
+      )}
     </Card>
   )
 }

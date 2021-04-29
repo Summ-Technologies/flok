@@ -1,6 +1,7 @@
-import {Box, Divider, makeStyles, Paper} from "@material-ui/core"
+import {Box, Divider, makeStyles, Paper, Popper} from "@material-ui/core"
 import {blue} from "@material-ui/core/colors"
 import {InfoRounded, KeyboardArrowLeftRounded} from "@material-ui/icons"
+import {useRef, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RetreatProposal} from "../../models/retreat"
 import {deleteSelectedProposal} from "../../store/actions/retreat"
@@ -10,6 +11,7 @@ import AppButton from "../base/AppButton"
 import AppImage from "../base/AppImage"
 import AppList, {AppListItem} from "../base/AppList"
 import AppTypography from "../base/AppTypography"
+import AppRetreatProposalCard from "./AppRetreatProposalCard"
 import RetreatDetailsFilter from "./RetreatDetailsFilter"
 
 const FLOK_FEE: number = 250
@@ -34,7 +36,9 @@ type RetreatPaymentReviewProps = {
 export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
   const classes = useStyles(props)
   let dispatch = useDispatch()
+  let anchorRef = useRef<HTMLDivElement | null>(null)
   let userRetreat = useSelector(RetreatGetters.getRetreat)
+  let [proposalCardActive, setProposalCardActive] = useState(false)
 
   return (
     <Paper elevation={1} className={classes.root}>
@@ -79,7 +83,7 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
             <Divider />
             <AppListItem
               header={
-                <Box flex={1}>
+                <Box>
                   <RetreatDetailsFilter
                     guests={props.numEmployees}
                     onUpdate={props.updateNumEmployees}
@@ -95,7 +99,29 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
                     props.numEmployees,
                     props.numNights
                   ).toLocaleString()}{" "}
-                  total trip estimate <InfoRounded fontSize="inherit" />
+                  total trip estimate{" "}
+                  <span
+                    ref={anchorRef}
+                    onMouseEnter={() => setProposalCardActive(true)}
+                    onMouseLeave={() => setProposalCardActive(false)}>
+                    <InfoRounded fontSize="inherit" />
+                  </span>
+                  <Popper
+                    open={proposalCardActive}
+                    anchorEl={anchorRef.current}
+                    onMouseLeave={() => setProposalCardActive(false)}>
+                    <AppRetreatProposalCard
+                      accomodationCost={props.proposal.lodgingCost}
+                      flightCost={props.proposal.flightsCost}
+                      imgUrl={props.proposal.imageUrl}
+                      numNights={props.numNights}
+                      numPeople={props.numEmployees}
+                      onSelect={() => undefined}
+                      otherCost={props.proposal.otherCost}
+                      title={props.proposal.title}
+                      summary
+                    />
+                  </Popper>
                 </AppTypography>
               }
             />

@@ -1,7 +1,6 @@
 import {Box, makeStyles, Theme} from "@material-ui/core"
 import React, {PropsWithChildren} from "react"
 import {use100vh} from "react-div-100vh"
-import PageNav from "./PageNav"
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -10,8 +9,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: "100vh",
     maxHeight: "100vh",
     display: "flex",
-    paddingTop: (props) =>
-      props.hideNav ? undefined : theme.mixins.toolbar.height,
+    paddingTop: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      paddingTop: (props) =>
+        props.sideNav ? theme.mixins.toolbar.height : undefined,
+    },
   },
   body: {
     width: "100%",
@@ -33,7 +35,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 type PageBodyProps = {
-  hideNav?: boolean
   sideNav?: JSX.Element
   fullWidth?: boolean
 }
@@ -44,8 +45,7 @@ export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
     <Box
       className={classes.root}
       height={height100vh ? height100vh : undefined}>
-      {props.hideNav ? undefined : <PageNav />}
-      {props.sideNav}
+      {props.sideNav ? <>{props.sideNav}</> : undefined}
       <Box className={classes.body}>{props.children}</Box>
     </Box>
   )

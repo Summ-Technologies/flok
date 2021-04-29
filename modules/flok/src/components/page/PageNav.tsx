@@ -1,31 +1,27 @@
-import {AppBar, Box, Toolbar, Typography} from "@material-ui/core"
+import {AppBar, Box, IconButton, Toolbar} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
+import {MenuRounded} from "@material-ui/icons"
 import React, {PropsWithChildren} from "react"
-import {useSelector} from "react-redux"
-import CompanyGetters from "../../store/getters/company"
-import UserGetters from "../../store/getters/user"
 import AppLogo from "../base/AppLogo"
 
 const useStyles = makeStyles((theme) => ({
   root: {
     ...theme.mixins.toolbar,
   },
-  logo: {
+  left: {
     marginRight: theme.spacing(2),
-    height: "50%",
     display: "flex",
+    alignItems: "center",
     flexGrow: 1,
   },
-  title: {
-    flexGrow: 1,
-  },
+  right: {},
 }))
 
-type PageNavProps = {}
+type PageNavProps = {
+  onMenuClick: () => void
+}
 export default function PageNav(props: PropsWithChildren<PageNavProps>) {
   const classes = useStyles()
-  let userEmail = useSelector(UserGetters.getUserEmail)
-  let userCompany = useSelector(CompanyGetters.getCompany)
   return (
     <AppBar
       variant="outlined"
@@ -33,20 +29,12 @@ export default function PageNav(props: PropsWithChildren<PageNavProps>) {
       position="fixed"
       className={`${classes.root}`}>
       <Toolbar>
-        <AppLogo className={classes.logo} noBackground withText height={40} />
-        {userEmail ? (
-          <Typography variant="body1">
-            <Box component="span" lineHeight="1.1rem">
-              {userCompany && userCompany.name ? (
-                <Box component="span" fontWeight="fontWeightMedium">
-                  {userCompany.name}
-                  <br />
-                </Box>
-              ) : undefined}
-              {userEmail}
-            </Box>
-          </Typography>
-        ) : undefined}
+        <Box className={classes.left}>
+          <IconButton size="small" onClick={props.onMenuClick}>
+            <MenuRounded fontSize="large" />
+          </IconButton>
+        </Box>
+        <AppLogo className={classes.right} noBackground withText height={30} />
       </Toolbar>
     </AppBar>
   )
