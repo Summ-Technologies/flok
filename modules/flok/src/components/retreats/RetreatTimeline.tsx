@@ -1,7 +1,7 @@
 import {Box, Collapse, makeStyles, Paper, Typography} from "@material-ui/core"
 import {blue} from "@material-ui/core/colors"
 import {ChatBubbleOutlineRounded} from "@material-ui/icons"
-import React from "react"
+import React, {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import AppTimeline from "../../components/base/AppTimeline"
 import AppTypography from "../../components/base/AppTypography"
@@ -38,13 +38,24 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let {retreat, selectedProposal} = {...props}
+  let [state, setState] = useState<"choose" | "pay" | "paid">("choose")
+
+  useEffect(() => {
+    if (retreat.paid) {
+      setState("paid")
+    } else if (selectedProposal) {
+      setState("pay")
+    } else {
+      setState("choose")
+    }
+  }, [retreat.paid, selectedProposal, setState])
 
   return (
     <AppTimeline>
       <AppTimelineItem
         order={1}
         key={"proposals"}
-        state={selectedProposal ? "completed" : "in-progress"}
+        state={state === "choose" ? "in-progress" : "completed"}
         body={
           <Box>
             <Box>
@@ -56,19 +67,21 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
                       {" "}
                       ({selectedProposal.title})
                     </Box>
-                    <AppButton
-                      onClick={() => {
-                        dispatch(deleteSelectedProposal(retreat.id))
-                      }}
-                      variant="text"
-                      color="primary">
-                      Edit
-                    </AppButton>
+                    {state === "pay" ? (
+                      <AppButton
+                        onClick={() => {
+                          dispatch(deleteSelectedProposal(retreat.id))
+                        }}
+                        variant="text"
+                        color="primary">
+                        Edit
+                      </AppButton>
+                    ) : undefined}
                   </>
                 ) : undefined}
               </Typography>
             </Box>
-            <Collapse in={selectedProposal ? false : true}>
+            <Collapse in={state === "choose" ? true : false}>
               <Paper variant="outlined">
                 <Box padding={4} className={classes.chooseProposalBody}>
                   {retreat.flokNote ? (
@@ -109,32 +122,51 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
           </Box>
         }
       />
-      {selectedProposal ? (
+      {state !== "choose" && selectedProposal ? (
         <AppTimelineItem
           order={2}
           key={"payment"}
-          state={"in-progress"}
+          state={state === "pay" ? "in-progress" : "completed"}
           body={
             <Box>
-              <Typography variant="h3">Review payment</Typography>
+              <Typography variant="h3">Pay Flok Fee</Typography>
               <Box marginTop={2}>
-                <RetreatPaymentReview
-                  numEmployees={retreat.numEmployees}
-                  proposal={selectedProposal}
-                  numNights={retreat.numNights}
-                  updateNumEmployees={(n) => {
-                    dispatch(putRetreatDetails(retreat.id, n))
-                  }}
-                />
+                {state === "pay" ? (
+                  <RetreatPaymentReview
+                    numEmployees={retreat.numEmployees}
+                    proposal={selectedProposal}
+                    numNights={retreat.numNights}
+                    updateNumEmployees={(n) => {
+                      dispatch(putRetreatDetails(retreat.id, n))
+                    }}
+                  />
+                ) : undefined}
+                {state === "paid" ? (
+                  <Paper variant="outlined">
+                    <Box width="100%" display="flex" padding={2}>
+                      <Box marginRight={1}>
+                        <ChatBubbleOutlineRounded fontSize="small" />
+                      </Box>
+                      <AppTypography variant="body1">
+                        <Box component="span" fontWeight="fontWeightMedium">
+                          Note from Flok:
+                        </Box>
+                        Thanks for paying. We'll be in contact with you soon!
+                      </AppTypography>
+                    </Box>
+                  </Paper>
+                ) : undefined}
               </Box>
             </Box>
           }
         />
       ) : undefined}
       <AppTimelineItem
-        order={selectedProposal ? 3 : 2}
+        order={state === "choose" ? 2 : 3}
         key={"nextSteps"}
-        body={<RetreatNextStepsList />}
+        body={
+          <RetreatNextStepsList expanded={state === "paid" ? true : false} />
+        }
         state="todo"
         lastItem
       />

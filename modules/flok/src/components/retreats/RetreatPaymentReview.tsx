@@ -1,21 +1,24 @@
 import {Box, Divider, makeStyles, Paper, Popper} from "@material-ui/core"
 import {blue} from "@material-ui/core/colors"
 import {InfoRounded, KeyboardArrowLeftRounded} from "@material-ui/icons"
+import {Elements, useStripe} from "@stripe/react-stripe-js"
 import {useRef, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
+import config, {FLOK_DISCOUNT_KEY, FLOK_FEE_KEY} from "../../config"
 import {RetreatProposal} from "../../models/retreat"
-import {deleteSelectedProposal} from "../../store/actions/retreat"
+import {
+  deleteSelectedProposal,
+  postProposalCheckout,
+} from "../../store/actions/retreat"
 import RetreatGetters from "../../store/getters/retreat"
 import {RetreatUtils} from "../../utils/retreatUtils"
+import {useStripePromise} from "../../utils/stripeUtils"
 import AppButton from "../base/AppButton"
 import AppImage from "../base/AppImage"
 import AppList, {AppListItem} from "../base/AppList"
 import AppTypography from "../base/AppTypography"
 import AppRetreatProposalCard from "./AppRetreatProposalCard"
 import RetreatDetailsFilter from "./RetreatDetailsFilter"
-
-const FLOK_FEE: number = 250
-const FLOK_DISCOUNT: number = 0.5
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,9 +36,10 @@ type RetreatPaymentReviewProps = {
   updateNumEmployees: (newVal: number) => void
 }
 
-export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
+function RetreatPaymentReviewBody(props: RetreatPaymentReviewProps) {
   const classes = useStyles(props)
   let dispatch = useDispatch()
+  let stripe = useStripe()
   let anchorRef = useRef<HTMLDivElement | null>(null)
   let userRetreat = useSelector(RetreatGetters.getRetreat)
   let [proposalCardActive, setProposalCardActive] = useState(false)
@@ -131,30 +135,33 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
                 <AppTypography variant="body1">Flok planning fee</AppTypography>
               }
               subheader={
-                <AppTypography
-                  variant="body2"
-                  color={
-                    "textSecondary"
-                  }>{`${props.numEmployees} employees x $${FLOK_FEE} per person`}</AppTypography>
+                <AppTypography variant="body2" color={"textSecondary"}>{`${
+                  props.numEmployees
+                } employees x $${config.get(
+                  FLOK_FEE_KEY
+                )} per person`}</AppTypography>
               }
               body={
                 <AppTypography>
-                  ${(FLOK_FEE * props.numEmployees).toLocaleString()}
+                  $
+                  {(
+                    config.get(FLOK_FEE_KEY) * props.numEmployees
+                  ).toLocaleString()}
                 </AppTypography>
               }
             />
             <AppListItem
               header={
                 <AppTypography variant="body1">
-                  {FLOK_DISCOUNT * 100}% discount on Flok fee
+                  {config.get(FLOK_DISCOUNT_KEY) * 100}% discount on Flok fee
                 </AppTypography>
               }
               body={
                 <AppTypography>
                   -$
                   {(
-                    FLOK_DISCOUNT *
-                    (props.numEmployees * FLOK_FEE)
+                    config.get(FLOK_DISCOUNT_KEY) *
+                    (props.numEmployees * config.get(FLOK_FEE_KEY))
                   ).toLocaleString()}
                 </AppTypography>
               }
@@ -170,8 +177,9 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
                 <AppTypography bold>
                   $
                   {(
-                    props.numEmployees * FLOK_FEE -
-                    FLOK_DISCOUNT * (props.numEmployees * FLOK_FEE)
+                    props.numEmployees * config.get(FLOK_FEE_KEY) -
+                    config.get(FLOK_DISCOUNT_KEY) *
+                      (props.numEmployees * config.get(FLOK_FEE_KEY))
                   ).toLocaleString()}
                 </AppTypography>
               }
@@ -194,14 +202,26 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
           </Box>
           <Box paddingLeft={1} paddingRight={1} marginBottom={1} marginTop={1}>
             <AppButton
-              onClick={() => undefined}
+              onClick={() => {
+                if (stripe && window) {
+                  dispatch(
+                    postProposalCheckout(
+                      props.proposal.retreatId,
+                      props.proposal.id,
+                      window.location.href,
+                      stripe
+                    )
+                  )
+                }
+              }}
               variant="contained"
               color="primary"
               fullWidth>
               Pay ${" "}
               {(
-                props.numEmployees * FLOK_FEE -
-                FLOK_DISCOUNT * (props.numEmployees * FLOK_FEE)
+                props.numEmployees * config.get(FLOK_FEE_KEY) -
+                config.get(FLOK_DISCOUNT_KEY) *
+                  (props.numEmployees * config.get(FLOK_FEE_KEY))
               ).toLocaleString()}{" "}
               now
             </AppButton>
@@ -209,5 +229,14 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
         </Box>
       </Box>
     </Paper>
+  )
+}
+export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
+  let stripePromise = useStripePromise()
+
+  return (
+    <Elements stripe={stripePromise}>
+      <RetreatPaymentReviewBody {...props} />
+    </Elements>
   )
 }

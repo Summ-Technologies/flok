@@ -8,6 +8,7 @@ export type RetreatModel = {
   selectedProposalId?: number
   numEmployees: number
   numNights: number
+  paid?: boolean
 }
 
 export type RetreatEmployeeLocationItem = {

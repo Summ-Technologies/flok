@@ -57,7 +57,7 @@ export default function AppRetreatProposalCard(
 
   useEffect(() => {
     let _accomodationCost = props.accomodationCost * props.numNights
-    let _perPersonCost = _accomodationCost + props.flightCost
+    let _perPersonCost = _accomodationCost + props.otherCost + props.flightCost
     let _totalCost = _perPersonCost * props.numPeople
     setPerPersonCost(_perPersonCost)
     setTotalCost(_totalCost)
@@ -67,6 +67,7 @@ export default function AppRetreatProposalCard(
     props.numNights,
     props.numPeople,
     props.flightCost,
+    props.otherCost,
   ])
 
   type AppRetreatProposalCardRowProps = {

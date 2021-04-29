@@ -73,7 +73,9 @@ const NEXT_STEPS_LIST = [
   },
 ]
 
-type RetreatNextStepsListProps = {}
+type RetreatNextStepsListProps = {
+  expanded?: boolean
+}
 
 export default function RetreatNextStepsList(props: RetreatNextStepsListProps) {
   const classes = useStyles(props)
@@ -132,21 +134,23 @@ export default function RetreatNextStepsList(props: RetreatNextStepsListProps) {
         alignItems="center">
         <Box display="flex">
           <AppTypography variant="h3">Flok next steps</AppTypography>
-          <Typography variant="h3">
-            <IconButton
-              size="small"
-              onClick={expanded ? collapseList : expandList}>
-              {expanded ? (
-                <ExpandLessRounded fontSize="inherit" />
-              ) : (
-                <ExpandMoreRounded fontSize="inherit" />
-              )}
-            </IconButton>
-          </Typography>
+          {props.expanded ? undefined : (
+            <Typography variant="h3">
+              <IconButton
+                size="small"
+                onClick={expanded ? collapseList : expandList}>
+                {expanded ? (
+                  <ExpandLessRounded fontSize="inherit" />
+                ) : (
+                  <ExpandMoreRounded fontSize="inherit" />
+                )}
+              </IconButton>
+            </Typography>
+          )}
         </Box>
       </Box>
       <Collapse
-        in={expanded}
+        in={props.expanded ? props.expanded : expanded}
         classes={{wrapperInner: classes.collapse}}
         onEntered={scrollBottomList}>
         {NEXT_STEPS_LIST.map((item, i) =>
