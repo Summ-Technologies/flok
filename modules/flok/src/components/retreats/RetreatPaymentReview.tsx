@@ -5,6 +5,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {RetreatProposal} from "../../models/retreat"
 import {deleteSelectedProposal} from "../../store/actions/retreat"
 import RetreatGetters from "../../store/getters/retreat"
+import {RetreatUtils} from "../../utils/retreatUtils"
 import AppButton from "../base/AppButton"
 import AppImage from "../base/AppImage"
 import AppList, {AppListItem} from "../base/AppList"
@@ -26,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 type RetreatPaymentReviewProps = {
   proposal: RetreatProposal
   numEmployees: number
+  numNights: number
   updateNumEmployees: (newVal: number) => void
 }
 
@@ -87,7 +89,13 @@ export default function RetreatPaymentReview(props: RetreatPaymentReviewProps) {
               }
               body={
                 <AppTypography italic variant="body2">
-                  $18,000 total trip estimate <InfoRounded fontSize="inherit" />
+                  $
+                  {RetreatUtils.getProposalEstimate(
+                    props.proposal,
+                    props.numEmployees,
+                    props.numNights
+                  ).toLocaleString()}{" "}
+                  total trip estimate <InfoRounded fontSize="inherit" />
                 </AppTypography>
               }
             />

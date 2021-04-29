@@ -1,6 +1,6 @@
 import {makeStyles} from "@material-ui/core"
 import {Timeline} from "@material-ui/lab"
-import AppTimelineItem, {AppTimelineItemState} from "./AppTimelineItem"
+import {PropsWithChildren} from "react"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,29 +16,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-type AppTimelineProps = {
-  items: {body: JSX.Element; state: AppTimelineItemState}[]
-}
+type AppTimelineProps = PropsWithChildren<{}>
 
 export default function AppTimeline(props: AppTimelineProps) {
-  let {items} = props
   const classes = useStyles(props)
   return (
     <Timeline
       align="left"
       classes={{root: classes.root, alignLeft: classes.alignLeft}}>
-      {items.map((item, i) => {
-        let order = i + 1
-        return (
-          <AppTimelineItem
-            body={item.body}
-            state={item.state}
-            order={order}
-            key={order}
-            lastItem={order === items.length}
-          />
-        )
-      })}
+      {props.children}
     </Timeline>
   )
 }

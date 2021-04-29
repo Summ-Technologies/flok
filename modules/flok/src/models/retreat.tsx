@@ -4,6 +4,7 @@ export type RetreatModel = {
   name?: string
   employeeLocationSubmission?: RetreatEmployeeLocationSubmission
   proposals: RetreatProposal[]
+  flokNote?: string
   selectedProposalId?: number
   numEmployees: number
   numNights: number

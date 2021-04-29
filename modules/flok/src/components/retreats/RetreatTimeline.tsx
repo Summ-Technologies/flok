@@ -14,7 +14,7 @@ import {
   putRetreatDetails,
 } from "../../store/actions/retreat"
 import AppButton from "../base/AppButton"
-import {AppTimelineItemState} from "../base/AppTimeline/AppTimelineItem"
+import AppTimelineItem from "../base/AppTimeline/AppTimelineItem"
 import RetreatNextStepsList from "./RetreatNextStepsList"
 import RetreatPaymentReview from "./RetreatPaymentReview"
 
@@ -40,105 +40,104 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
   let {retreat, selectedProposal} = {...props}
 
   return (
-    <AppTimeline
-      items={[
-        {
-          state: selectedProposal ? "completed" : "in-progress",
-          body: (
+    <AppTimeline>
+      <AppTimelineItem
+        order={1}
+        key={"proposals"}
+        state={selectedProposal ? "completed" : "in-progress"}
+        body={
+          <Box>
             <Box>
-              <Box>
-                <Typography variant="h3">
-                  Choose proposal
-                  {selectedProposal ? (
-                    <>
-                      <Box component="span" fontWeight="fontWeightRegular">
-                        {" "}
-                        ({selectedProposal.title})
-                      </Box>
-                      <AppButton
-                        onClick={() => {
-                          dispatch(deleteSelectedProposal(retreat.id))
-                        }}
-                        variant="text"
-                        color="primary">
-                        Edit
-                      </AppButton>
-                    </>
-                  ) : undefined}
-                </Typography>
-              </Box>
-              <Collapse in={selectedProposal ? false : true}>
-                <Paper variant="outlined">
-                  <Box padding={4} className={classes.chooseProposalBody}>
-                    {/* <Paper elevation={1} className={classes.note}> */}
+              <Typography variant="h3">
+                Choose proposal
+                {selectedProposal ? (
+                  <>
+                    <Box component="span" fontWeight="fontWeightRegular">
+                      {" "}
+                      ({selectedProposal.title})
+                    </Box>
+                    <AppButton
+                      onClick={() => {
+                        dispatch(deleteSelectedProposal(retreat.id))
+                      }}
+                      variant="text"
+                      color="primary">
+                      Edit
+                    </AppButton>
+                  </>
+                ) : undefined}
+              </Typography>
+            </Box>
+            <Collapse in={selectedProposal ? false : true}>
+              <Paper variant="outlined">
+                <Box padding={4} className={classes.chooseProposalBody}>
+                  {retreat.flokNote ? (
+                    /* <Paper elevation={1} className={classes.note}> */
                     <Box width="100%" display="flex" padding={0}>
                       <Box marginRight={1}>
                         <ChatBubbleOutlineRounded fontSize="small" />
                       </Box>
                       <AppTypography variant="body1">
                         <Box component="span" fontWeight="fontWeightMedium">
-                          Note from Flok:{" "}
+                          Note from Flok: {retreat.flokNote}
                         </Box>
                       </AppTypography>
                     </Box>
-                    {/* </Paper> */}
-                    <AppRetreatDetailsFilter
-                      guests={retreat.numEmployees}
-                      nights={retreat.numNights}
-                      onUpdate={(g, n) => {
-                        dispatch(putRetreatDetails(retreat.id, g, n))
+                  ) : /* </Paper> */
+                  undefined}
+                  <AppRetreatDetailsFilter
+                    guests={retreat.numEmployees}
+                    nights={retreat.numNights}
+                    onUpdate={(g, n) => {
+                      dispatch(putRetreatDetails(retreat.id, g, n))
+                    }}
+                  />
+
+                  <Box>
+                    <RetreatProposalCardList
+                      numEmployees={retreat.numEmployees}
+                      numNights={retreat.numNights}
+                      proposals={retreat ? retreat.proposals : []}
+                      selectProposal={(proposalId) => {
+                        dispatch(postSelectedProposal(retreat.id, proposalId))
                       }}
                     />
-
-                    <Box>
-                      <RetreatProposalCardList
-                        numEmployees={retreat.numEmployees}
-                        numNights={retreat.numNights}
-                        proposals={retreat ? retreat.proposals : []}
-                        selectProposal={(proposalId) => {
-                          dispatch(postSelectedProposal(retreat.id, proposalId))
-                        }}
-                      />
-                    </Box>
                   </Box>
-                </Paper>
-              </Collapse>
-            </Box>
-          ),
-        },
-        ...(selectedProposal
-          ? [
-              {
-                body: (
-                  <Box>
-                    <Typography variant="h3">Review payment</Typography>
-                    <Collapse in={true}>
-                      <Box marginTop={2}>
-                        <RetreatPaymentReview
-                          numEmployees={retreat.numEmployees}
-                          proposal={selectedProposal}
-                          updateNumEmployees={(n) => {
-                            dispatch(putRetreatDetails(retreat.id, n))
-                          }}
-                        />
-                      </Box>
-                    </Collapse>
-                  </Box>
-                ),
-
-                state: "in-progress" as AppTimelineItemState,
-              },
-            ]
-          : []),
-        {
-          body: (
+                </Box>
+              </Paper>
+            </Collapse>
+          </Box>
+        }
+      />
+      {selectedProposal ? (
+        <AppTimelineItem
+          order={2}
+          key={"payment"}
+          state={"in-progress"}
+          body={
             <Box>
-              <RetreatNextStepsList />
+              <Typography variant="h3">Review payment</Typography>
+              <Box marginTop={2}>
+                <RetreatPaymentReview
+                  numEmployees={retreat.numEmployees}
+                  proposal={selectedProposal}
+                  numNights={retreat.numNights}
+                  updateNumEmployees={(n) => {
+                    dispatch(putRetreatDetails(retreat.id, n))
+                  }}
+                />
+              </Box>
             </Box>
-          ),
-          state: "todo",
-        },
-      ]}
-    />
+          }
+        />
+      ) : undefined}
+      <AppTimelineItem
+        order={selectedProposal ? 3 : 2}
+        key={"nextSteps"}
+        body={<RetreatNextStepsList />}
+        state="todo"
+        lastItem
+      />
+    </AppTimeline>
   )
 }
