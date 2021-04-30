@@ -92,8 +92,9 @@ export default function RetreatTimeline(props: RetreatTimelineProps) {
                       </Box>
                       <AppTypography variant="body1">
                         <Box component="span" fontWeight="fontWeightMedium">
-                          Note from Flok: {retreat.flokNote}
-                        </Box>
+                          Note from Flok:
+                        </Box>{" "}
+                        {retreat.flokNote}
                       </AppTypography>
                     </Box>
                   ) : /* </Paper> */
