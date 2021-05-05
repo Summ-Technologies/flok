@@ -1,9 +1,23 @@
-import {createMuiTheme} from "@material-ui/core/styles"
+import {grey} from "@material-ui/core/colors"
+import {
+  createMuiTheme,
+  Theme,
+  ThemeOptions as MuiThemeOptions,
+} from "@material-ui/core/styles"
+
+export interface FlokTheme extends Theme {
+  custom: {
+    backgroundGrey: string
+  }
+}
 
 export const theme = createMuiTheme({
+  custom: {
+    backgroundGrey: grey[200],
+  },
   palette: {
     background: {
-      default: "#F5F5F5", //grey[100]
+      default: "#FFFFFF", // white
     },
     primary: {
       main: "#4456FC",
@@ -62,7 +76,7 @@ export const theme = createMuiTheme({
       },
     },
   },
-})
+} as MuiThemeOptions)
 
 // Using variables from the theme to set additional values (like fontWeights (based on typography.fontWeightX))
 theme.typography.h1.fontWeight = theme.typography.fontWeightRegular

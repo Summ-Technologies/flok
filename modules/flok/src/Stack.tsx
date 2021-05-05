@@ -3,6 +3,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
 import AuthPage from "./pages/auth/AuthPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
+import AccomodationsPage from "./pages/dashboard/AccomodationsPage"
 import ProposalsPage from "./pages/dashboard/ProposalsPage"
 import HomePage from "./pages/HomePage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
@@ -14,43 +15,65 @@ type FlokRoute = {
   name: string
   component: JSX.Element
   path: string | string[]
+  loginStatus?:
+    | ("UNKNOWN" | "LOGGED_IN" | "LOGGED_OUT")[]
+    | "UNKNOWN"
+    | "LOGGED_IN"
+    | "LOGGED_OUT"
 }
 
 export class AppRoutes {
-  static loggedInRoutes: FlokRoute[] = [
-    {name: "HomePage", component: <HomePage />, path: "/"},
+  static routes: FlokRoute[] = [
+    {
+      name: "HomePage",
+      component: <HomePage />,
+      path: "/",
+      loginStatus: "LOGGED_IN",
+    },
     {name: "ProposalsPage", component: <ProposalsPage />, path: "/proposals"},
     {
-      name: "RedirectLoggedOutPaths",
-      component: <RedirectPage pageName="ProposalsPage" />,
-      path: ["/auth/signup", "/auth/signin", "/auth/reset"],
+      name: "AccomodationsPage",
+      component: <AccomodationsPage />,
+      path: "/accomodations",
     },
-  ]
-  static loggedOutRoutes: FlokRoute[] = [
     {
       name: "SigninPage",
       component: <AuthPage />,
-      path: ["/auth/signin"],
+      path: "/auth/signin",
+      loginStatus: "LOGGED_OUT",
     },
     {
       name: "SignupPage",
       component: <AuthPage />,
-      path: ["/auth/signup"],
+      path: "/auth/signup",
+      loginStatus: "LOGGED_OUT",
     },
     {
       name: "AuthResetPage",
       component: <AuthResetPage />,
-      path: ["/auth/reset"],
+      path: "/auth/reset",
+      loginStatus: "LOGGED_OUT",
     },
     {
       name: "RedirectSignup",
       component: <RedirectPage pageName="SignupPage" />,
       path: "*",
+      loginStatus: "LOGGED_OUT",
+    },
+    {
+      name: "RedirectLoggedOutPaths",
+      component: <RedirectPage pageName="HomePage" />,
+      path: ["/auth/signup", "/auth/signin", "/auth/reset"],
+      loginStatus: "LOGGED_IN",
+    },
+    {
+      name: "NotFoundPage",
+      component: <NotFound404Page />,
+      path: "*",
+      loginStatus: ["LOGGED_IN", "UNKNOWN"],
     },
   ]
-  static commonRoutes: FlokRoute[] = [
-    {name: "NotFoundPage", component: <NotFound404Page />, path: "*"},
-  ]
+  static commonRoutes: FlokRoute[] = []
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {
     let routeComponent = (
       name: string,
@@ -82,10 +105,9 @@ export class AppRoutes {
     name: string,
     pathParams: {[key: string]: string} = {}
   ): string {
-    let route = [
-      ...AppRoutes.loggedInRoutes,
-      ...AppRoutes.loggedOutRoutes,
-    ].filter((route) => route.name.toLowerCase() === name.toLowerCase())
+    let route = this.routes.filter(
+      (route) => route.name.toLowerCase() === name.toLowerCase()
+    )
     if (route.length !== 1) {
       throw Error("Can't get path for route named: " + name)
     }
@@ -112,22 +134,17 @@ export default function Stack() {
   let [routes, setRoutes] = useState<JSX.Element[]>([])
 
   useEffect(() => {
-    if (loginStatus === "UNKNOWN") {
-    } else if (loginStatus === "LOGGED_IN") {
-      setRoutes(
-        AppRoutes.getRoutes([
-          ...AppRoutes.loggedInRoutes,
-          ...AppRoutes.commonRoutes,
-        ])
+    setRoutes(
+      AppRoutes.getRoutes(
+        AppRoutes.routes.filter((val) =>
+          val.loginStatus &&
+          (val.loginStatus !== loginStatus ||
+            !val.loginStatus.includes(loginStatus))
+            ? false
+            : true
+        )
       )
-    } else if (loginStatus === "LOGGED_OUT") {
-      setRoutes(
-        AppRoutes.getRoutes([
-          ...AppRoutes.loggedOutRoutes,
-          ...AppRoutes.commonRoutes,
-        ])
-      )
-    }
+    )
   }, [loginStatus, setRoutes])
 
   useEffect(() => {

@@ -9,7 +9,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: "100vh",
     maxHeight: "100vh",
     display: "flex",
-    paddingTop: theme.spacing(2),
     [theme.breakpoints.down("sm")]: {
       paddingTop: (props) =>
         props.sideNav ? theme.mixins.toolbar.height : undefined,
@@ -24,13 +23,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
     overflow: "auto",
     [theme.breakpoints.down("sm")]: {
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
+      paddingLeft: (props: PageBodyProps) =>
+        props.fullWidth ? undefined : theme.spacing(1),
+      paddingRight: (props: PageBodyProps) =>
+        props.fullWidth ? undefined : theme.spacing(1),
     },
     paddingLeft: (props: PageBodyProps) =>
-      props.fullWidth ? theme.spacing(1) : theme.spacing(8),
+      props.fullWidth ? undefined : theme.spacing(8),
     paddingRight: (props: PageBodyProps) =>
-      props.fullWidth ? theme.spacing(1) : theme.spacing(8),
+      props.fullWidth ? undefined : theme.spacing(8),
   },
 }))
 

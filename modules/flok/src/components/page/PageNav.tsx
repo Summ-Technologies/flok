@@ -2,11 +2,13 @@ import {AppBar, Box, IconButton, Toolbar} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
 import {MenuRounded} from "@material-ui/icons"
 import React, {PropsWithChildren} from "react"
+import {FlokTheme} from "../../theme"
 import AppLogo from "../base/AppLogo"
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: FlokTheme) => ({
   root: {
     ...theme.mixins.toolbar,
+    backgroundColor: theme.custom.backgroundGrey,
   },
   left: {
     marginRight: theme.spacing(2),

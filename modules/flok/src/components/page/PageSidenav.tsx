@@ -15,6 +15,7 @@ import {
   FlightRounded,
   ForumRounded,
   HomeRounded,
+  ListRounded,
   LockOutlined,
   PersonRounded,
 } from "@material-ui/icons"
@@ -25,13 +26,14 @@ import {AppRoutes} from "../../Stack"
 import {deleteUserSignin} from "../../store/actions/user"
 import CompanyGetters from "../../store/getters/company"
 import UserGetters from "../../store/getters/user"
+import {FlokTheme} from "../../theme"
 import AppLogo from "../base/AppLogo"
 import AppTypography from "../base/AppTypography"
 import PageNav from "./PageNav"
 
 let DRAWER_WIDTH = 240
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: FlokTheme) => ({
   root: {
     zIndex: theme.zIndex.appBar - 1,
     [theme.breakpoints.up("md")]: {
@@ -42,6 +44,10 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(2),
+  },
+  body: {
+    backgroundColor: theme.custom.backgroundGrey,
+    width: DRAWER_WIDTH,
   },
   listItemRoot: {
     color: theme.palette.text.secondary,
@@ -58,10 +64,10 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 let sidenavItems = {
-  onboarding: ["Onboarding", <HomeRounded />],
+  accomodations: ["Accomodations", <HomeRounded />],
+  onboarding: ["Onboarding", <ListRounded />],
   employees: ["Employees", <PersonRounded />],
   flights: ["Flights", <FlightRounded />],
-  accomodations: ["Accomodations", <HomeRounded />],
   corpCard: ["Corporate cards", <CreditCardRounded />],
   bestPractices: ["Retreat best practices", <AddRounded />],
   addOns: ["Retreat add ons", <CreditCardRounded />],
@@ -72,7 +78,15 @@ let sidenavAccountItems = {
   logOut: ["Log out", <ExitToAppRounded />],
 }
 
-let items = {...sidenavItems, ...sidenavAccountItems}
+let sidenavLoggedOutAccountItems = {
+  logIn: ["Log in", <ExitToAppRounded />],
+}
+
+let items = {
+  ...sidenavItems,
+  ...sidenavAccountItems,
+  ...sidenavLoggedOutAccountItems,
+}
 
 type SidenavItemType = keyof typeof items
 type PageSidenavProps = {
@@ -86,6 +100,7 @@ export default function PageSidenav(
   let dispatch = useDispatch()
   let userName = useSelector(UserGetters.getUserName)
   let userCompany = useSelector(CompanyGetters.getCompany)
+  let loginStatus = useSelector(UserGetters.getLoginStatus)
 
   function SidenavListItem(props: {
     itemType: SidenavItemType
@@ -93,15 +108,27 @@ export default function PageSidenav(
   }) {
     let {itemType, activeItem} = {...props}
     let selected = itemType === activeItem
-    let disabled = !["onboarding", "logOut", "support"].includes(itemType)
+    let disabled = ![
+      "accomodations",
+      "onboarding",
+      "logOut",
+      "logIn",
+      "support",
+    ].includes(itemType)
     let onClick = () => {
       if (!selected) {
         switch (itemType) {
           case "onboarding":
             dispatch(push(AppRoutes.getPath("HomePage")))
             break
+          case "accomodations":
+            dispatch(push(AppRoutes.getPath("AccomodationsPage")))
+            break
           case "logOut":
             dispatch(deleteUserSignin())
+            break
+          case "logIn":
+            dispatch(push(AppRoutes.getPath("SigninPage")))
             break
           default:
             break
@@ -141,7 +168,7 @@ export default function PageSidenav(
 
   function SidenavList() {
     return (
-      <List className={classes.root}>
+      <List>
         {Object.keys(sidenavItems).map((item, i) => {
           return (
             <SidenavListItem
@@ -157,8 +184,12 @@ export default function PageSidenav(
 
   function SidenavAccountList() {
     return (
-      <List className={classes.root}>
-        {Object.keys(sidenavAccountItems).map((item, i) => {
+      <List>
+        {Object.keys(
+          loginStatus === "LOGGED_IN"
+            ? sidenavAccountItems
+            : sidenavLoggedOutAccountItems
+        ).map((item, i) => {
           return (
             <SidenavListItem
               itemType={item as SidenavItemType}
@@ -168,31 +199,38 @@ export default function PageSidenav(
           )
         })}
 
-        {userName ? (
-          <>
-            <Box
-              paddingTop={1}
-              paddingBottom={1}
-              width={"80%"}
-              marginLeft="auto"
-              marginRight="auto">
-              <Divider />
+        <Box
+          paddingTop={1}
+          paddingBottom={1}
+          width={"80%"}
+          marginLeft="auto"
+          marginRight="auto">
+          <Divider />
+        </Box>
+        {loginStatus === "LOGGED_IN" ? (
+          <ListItem
+            classes={{
+              root: classes.listItemRoot,
+            }}>
+            <Box display="flex" flexDirection="column">
+              <AppTypography variant="body1">{userName}</AppTypography>
+              {userCompany && userCompany.name ? (
+                <AppTypography variant="body2">
+                  {userCompany.name}
+                </AppTypography>
+              ) : undefined}
             </Box>
-            <ListItem
-              classes={{
-                root: classes.listItemRoot,
-              }}>
-              <Box display="flex" flexDirection="column">
-                <AppTypography variant="body1">{userName}</AppTypography>
-                {userCompany && userCompany.name ? (
-                  <AppTypography variant="body2">
-                    {userCompany.name}
-                  </AppTypography>
-                ) : undefined}
-              </Box>
-            </ListItem>
-          </>
-        ) : undefined}
+          </ListItem>
+        ) : (
+          <ListItem
+            classes={{
+              root: classes.listItemRoot,
+            }}>
+            <Box display="flex" flexDirection="column">
+              <AppTypography variant="body1">Guest</AppTypography>
+            </Box>
+          </ListItem>
+        )}
       </List>
     )
   }
@@ -203,7 +241,8 @@ export default function PageSidenav(
         display="flex"
         flex={1}
         flexDirection="column"
-        justifyContent="space-between">
+        justifyContent="space-between"
+        className={classes.body}>
         <Box>
           <Box className={classes.toolbar}>
             <AppLogo
@@ -227,7 +266,10 @@ export default function PageSidenav(
   return (
     <>
       <Hidden smDown>
-        <Drawer className={classes.root} variant="permanent">
+        <Drawer
+          className={classes.root}
+          classes={{paper: classes.body}}
+          variant="permanent">
           <DrawerBody logoSize="large" />
         </Drawer>
       </Hidden>
@@ -238,6 +280,7 @@ export default function PageSidenav(
       <Hidden mdUp>
         <Drawer
           className={classes.root}
+          classes={{paper: classes.body}}
           variant="temporary"
           open={open}
           onClose={() => setOpen(false)}>
