@@ -2,13 +2,6 @@ import {makeStyles} from "@material-ui/core"
 import {useEffect, useState} from "react"
 import ReactDOM from "react-dom"
 
-//   let popup = new AccomodationMapMarker(
-//     new google.maps.LatLng(-33.866, 151.196),
-//     document.getElementById("content") as HTMLElement
-//   );
-//   popup.setMap(map);
-// }
-
 let useStyles = makeStyles((theme) => ({
   root: {},
   popupContainer: {
@@ -26,6 +19,9 @@ let useStyles = makeStyles((theme) => ({
     },
     "&:hover $popupBubble": {
       backgroundColor: "grey",
+    },
+    "&.active $popupBubble": {
+      backgroundColor: "blue",
     },
   },
   popupBubble: {
@@ -66,6 +62,8 @@ type AccomodationMapMarkerProps = {
   long: number
   text: string
   map?: google.maps.Map
+  selected?: boolean
+  onClick: () => void
 }
 
 export default function AccomodationMapMarker(
@@ -84,11 +82,11 @@ export default function AccomodationMapMarker(
       constructor(
         position: google.maps.LatLng,
         content: HTMLElement,
-        classes: {anchor: string; container: string; bubble: string}
+        classes: {anchor: string; container: string; bubble: string},
+        map: google.maps.Map
       ) {
         super()
         this.position = position
-
         classes.bubble.split(" ").map((cls) => content.classList.add(cls))
 
         // This zero-height div is positioned at the bottom of the bubble.
@@ -105,11 +103,14 @@ export default function AccomodationMapMarker(
 
         // Optionally stop clicks, etc., from bubbling up to the map.
         Popup.preventMapHitsAndGesturesFrom(this.containerDiv)
+
+        this.setMap(map)
       }
 
       /** Called when the popup is added to the map. */
       onAdd() {
         this.getPanes()!.floatPane.appendChild(this.containerDiv)
+        this.containerDiv.onclick = props.onClick
       }
 
       /** Called when the popup is removed from the map. */
@@ -149,9 +150,9 @@ export default function AccomodationMapMarker(
           anchor: classes.popupBubbleAnchor,
           container: classes.popupContainer,
           bubble: classes.popupBubble,
-        }
+        },
+        props.map
       )
-      _popup.setMap(props.map)
       setPopup(_popup)
     }
   }, [props, popup, setPopup, classes, content])
@@ -177,6 +178,22 @@ export default function AccomodationMapMarker(
       })
     }
   }, [popup, props.map])
+
+  useEffect(() => {
+    if (props.map && popup) {
+      if (props.selected)
+        (popup.containerDiv as HTMLElement).classList.add("active")
+      else (popup.containerDiv as HTMLElement).classList.remove("active")
+    }
+  }, [props.map, popup, props.selected])
+
+  useEffect(() => {
+    return () => {
+      if (popup) {
+        popup.onRemove()
+      }
+    }
+  }, [popup])
 
   return <></>
 }

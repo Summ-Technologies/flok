@@ -32,11 +32,16 @@ export default function PageNav(props: PropsWithChildren<PageNavProps>) {
       className={`${classes.root}`}>
       <Toolbar>
         <Box className={classes.left}>
-          <IconButton size="small" onClick={props.onMenuClick}>
-            <MenuRounded fontSize="large" />
-          </IconButton>
+          <AppLogo
+            className={classes.right}
+            noBackground
+            withText
+            height={30}
+          />
         </Box>
-        <AppLogo className={classes.right} noBackground withText height={30} />
+        <IconButton size="small" onClick={props.onMenuClick}>
+          <MenuRounded fontSize="large" />
+        </IconButton>
       </Toolbar>
     </AppBar>
   )

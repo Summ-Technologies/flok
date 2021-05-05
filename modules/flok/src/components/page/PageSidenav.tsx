@@ -1,12 +1,4 @@
-import {
-  Box,
-  Divider,
-  Drawer,
-  Hidden,
-  List,
-  ListItem,
-  Tooltip,
-} from "@material-ui/core"
+import {Box, Divider, Drawer, List, ListItem, Tooltip} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
 import {
   AddRounded,
@@ -31,13 +23,13 @@ import AppLogo from "../base/AppLogo"
 import AppTypography from "../base/AppTypography"
 import PageNav from "./PageNav"
 
-let DRAWER_WIDTH = 240
+// let DRAWER_WIDTH = 240
 
 const useStyles = makeStyles((theme: FlokTheme) => ({
   root: {
     zIndex: theme.zIndex.appBar - 1,
     [theme.breakpoints.up("md")]: {
-      width: DRAWER_WIDTH,
+      // width: DRAWER_WIDTH,
     },
   },
   toolbar: {
@@ -47,7 +39,7 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
   },
   body: {
     backgroundColor: theme.custom.backgroundGrey,
-    width: DRAWER_WIDTH,
+    // width: DRAWER_WIDTH,
   },
   listItemRoot: {
     color: theme.palette.text.secondary,
@@ -265,28 +257,28 @@ export default function PageSidenav(
 
   return (
     <>
-      <Hidden smDown>
+      {/* <Hidden smDown>
         <Drawer
           className={classes.root}
           classes={{paper: classes.body}}
           variant="permanent">
           <DrawerBody logoSize="large" />
         </Drawer>
-      </Hidden>
-      <Hidden mdUp>
-        <PageNav onMenuClick={() => setOpen(true)} />
-      </Hidden>
-
-      <Hidden mdUp>
-        <Drawer
-          className={classes.root}
-          classes={{paper: classes.body}}
-          variant="temporary"
-          open={open}
-          onClose={() => setOpen(false)}>
-          <DrawerBody logoSize="small" />
-        </Drawer>
-      </Hidden>
+      </Hidden> */}
+      {/* <Hidden mdUp> */}
+      <PageNav onMenuClick={() => setOpen(true)} />
+      {/* </Hidden> */}
+      {/* <Hidden mdUp> */}
+      <Drawer
+        className={classes.root}
+        classes={{paper: classes.body}}
+        variant="temporary"
+        anchor="right"
+        open={open}
+        onClose={() => setOpen(false)}>
+        <DrawerBody logoSize="small" />
+      </Drawer>
+      {/* </Hidden> */}
     </>
   )
 }

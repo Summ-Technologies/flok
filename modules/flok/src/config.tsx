@@ -7,6 +7,7 @@ export const GOOGLE_API_KEY = "google_api_key"
 export const STRIPE_KEY = "stripe_key"
 export const FLOK_DISCOUNT_KEY = "flok_discount_key"
 export const FLOK_FEE_KEY = "flok_fee_key"
+export const GOOGLE_MAPS_ID_KEY = "google_maps_id_key"
 type ConfigKey =
   | typeof APP_VERSION_KEY
   | typeof SERVER_BASE_URL_KEY
@@ -15,6 +16,7 @@ type ConfigKey =
   | typeof STRIPE_KEY
   | typeof FLOK_DISCOUNT_KEY
   | typeof FLOK_FEE_KEY
+  | typeof GOOGLE_MAPS_ID_KEY
 
 class Config {
   appConfig: {[key: string]: any}
@@ -22,6 +24,7 @@ class Config {
     [APP_VERSION_KEY]: process.env.REACT_APP_VERSION,
     [FLOK_FEE_KEY]: 250,
     [FLOK_DISCOUNT_KEY]: 0.5,
+    [GOOGLE_MAPS_ID_KEY]: "5eb717f27eeddaee",
   }
   constructor() {
     this.appConfig = {}

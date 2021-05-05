@@ -27,6 +27,9 @@ export const theme = createMuiTheme({
       contrastText: "#FFFFFF",
     },
   },
+  shape: {
+    borderRadius: 15,
+  },
   typography: {
     h1: {
       fontSize: "2.125rem",

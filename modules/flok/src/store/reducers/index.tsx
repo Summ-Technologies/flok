@@ -1,3 +1,4 @@
+import accomodationReducer from "./accomodation"
 import apiReducer from "./api"
 import companyReducer from "./company"
 import retreatReducer from "./retreat"
@@ -8,5 +9,6 @@ const reducers = {
   api: apiReducer,
   company: companyReducer,
   retreat: retreatReducer,
+  accomodation: accomodationReducer,
 }
 export default reducers

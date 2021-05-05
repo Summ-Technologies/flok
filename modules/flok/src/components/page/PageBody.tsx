@@ -9,10 +9,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: "100vh",
     maxHeight: "100vh",
     display: "flex",
-    [theme.breakpoints.down("sm")]: {
-      paddingTop: (props) =>
-        props.sideNav ? theme.mixins.toolbar.height : undefined,
-    },
+    // [theme.breakpoints.down("sm")]: {
+    paddingTop: (props) =>
+      props.sideNav ? theme.mixins.toolbar.height : undefined,
+    // },
   },
   body: {
     width: "100%",
