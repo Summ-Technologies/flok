@@ -12,7 +12,7 @@ let useStyles = makeStyles((props) => ({
   },
 }))
 
-const MAP_OPTIONS = {
+const MAP_OPTIONS: google.maps.MapOptions = {
   mapTypeControl: false,
   fullscreenControl: false,
   zoomControl: false,
@@ -24,8 +24,17 @@ const MAP_OPTIONS = {
     lat: 39.8283,
     lng: -98.5795,
   },
-  maxZoom: 10,
-  minZoom: 3,
+  restriction: {
+    latLngBounds: {
+      north: 49.3457868,
+      west: -124.7844079,
+      east: -66.9513812,
+      south: 24.7433195,
+    },
+    strictBounds: false,
+  },
+  maxZoom: 5,
+  minZoom: 4,
   mapId: config.get(GOOGLE_MAPS_ID_KEY),
 } as google.maps.MapOptions
 

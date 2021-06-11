@@ -8,7 +8,7 @@ import AppLogo from "../base/AppLogo"
 const useStyles = makeStyles((theme: FlokTheme) => ({
   root: {
     ...theme.mixins.toolbar,
-    backgroundColor: theme.custom.backgroundGrey,
+    backgroundColor: theme.custom.backgroundSecondary,
   },
   left: {
     marginRight: theme.spacing(2),
@@ -31,6 +31,11 @@ export default function PageNav(props: PropsWithChildren<PageNavProps>) {
       position="fixed"
       className={`${classes.root}`}>
       <Toolbar>
+        <Box flex={1}>
+          <IconButton size="small" onClick={props.onMenuClick}>
+            <MenuRounded fontSize="large" />
+          </IconButton>
+        </Box>
         <Box className={classes.left}>
           <AppLogo
             className={classes.right}
@@ -39,9 +44,6 @@ export default function PageNav(props: PropsWithChildren<PageNavProps>) {
             height={30}
           />
         </Box>
-        <IconButton size="small" onClick={props.onMenuClick}>
-          <MenuRounded fontSize="large" />
-        </IconButton>
       </Toolbar>
     </AppBar>
   )

@@ -1,8 +1,15 @@
-import {Box, Divider, Drawer, List, ListItem, Tooltip} from "@material-ui/core"
-import {makeStyles} from "@material-ui/core/styles"
 import {
-  AddRounded,
-  CreditCardRounded,
+  Box,
+  Divider,
+  Drawer,
+  Hidden,
+  List,
+  ListItem,
+  Tooltip
+} from "@material-ui/core"
+import { makeStyles } from "@material-ui/core/styles"
+import {
+  AirportShuttleRounded,
   ExitToAppRounded,
   FlightRounded,
   ForumRounded,
@@ -10,43 +17,57 @@ import {
   ListRounded,
   LockOutlined,
   PersonRounded,
+  SearchRounded
 } from "@material-ui/icons"
-import {push} from "connected-react-router"
-import React, {PropsWithChildren, useState} from "react"
-import {useDispatch, useSelector} from "react-redux"
-import {AppRoutes} from "../../Stack"
-import {deleteUserSignin} from "../../store/actions/user"
+import { push } from "connected-react-router"
+import React, { PropsWithChildren, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { Transition } from "react-transition-group"
+import { AppRoutes } from "../../Stack"
+import { deleteUserSignin } from "../../store/actions/user"
 import CompanyGetters from "../../store/getters/company"
 import UserGetters from "../../store/getters/user"
-import {FlokTheme} from "../../theme"
+import { FlokTheme } from "../../theme"
 import AppLogo from "../base/AppLogo"
 import AppTypography from "../base/AppTypography"
 import PageNav from "./PageNav"
 
-// let DRAWER_WIDTH = 240
+let DRAWER_WIDTH = 240
+let COLLAPSED_DRAWER_WIDTH = 80
 
 const useStyles = makeStyles((theme: FlokTheme) => ({
   root: {
     zIndex: theme.zIndex.appBar - 1,
     [theme.breakpoints.up("md")]: {
-      // width: DRAWER_WIDTH,
+      width: COLLAPSED_DRAWER_WIDTH,
+      "&.collapsed $body": {
+        width: COLLAPSED_DRAWER_WIDTH,
+      },
     },
   },
   toolbar: {
-    paddingLeft: theme.spacing(2),
+    paddingLeft: theme.spacing(1),
     paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(2),
+    height: 90,
   },
   body: {
-    backgroundColor: theme.custom.backgroundGrey,
-    // width: DRAWER_WIDTH,
+    transition: "width .25s",
+    backgroundColor: theme.custom.backgroundSecondary,
+    width: DRAWER_WIDTH,
   },
   listItemRoot: {
+    paddingTop: theme.spacing(0.5),
+    paddingBottom: theme.spacing(0.5),
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
     color: theme.palette.text.secondary,
     "&.Mui-selected": {
-      color: theme.palette.primary.main,
-      textDecoration: "underline",
+      paddingLeft: theme.spacing(2) - 4,
       backgroundColor: "inherit",
+      color: theme.palette.primary.main,
+      borderLeftColor: theme.palette.primary.main,
+      borderLeftWidth: 4,
+      borderLeftStyle: "solid",
     },
   },
   listItemButton: {},
@@ -55,23 +76,35 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
   },
 }))
 
+const animationStyles = {
+  entering: {},
+  entered: {},
+  exiting: {
+    width: COLLAPSED_DRAWER_WIDTH,
+  },
+  exited: {
+    width: COLLAPSED_DRAWER_WIDTH,
+  },
+}
+
 let sidenavItems = {
-  accomodations: ["Accomodations", <HomeRounded />],
-  onboarding: ["Onboarding", <ListRounded />],
-  employees: ["Employees", <PersonRounded />],
-  flights: ["Flights", <FlightRounded />],
-  corpCard: ["Corporate cards", <CreditCardRounded />],
-  bestPractices: ["Retreat best practices", <AddRounded />],
-  addOns: ["Retreat add ons", <CreditCardRounded />],
+  accomodations: ["Accomodations", <HomeRounded fontSize="inherit" />],
+  search: ["Search", <SearchRounded fontSize="inherit" />],
+  retreatDetails: ["Retreat Details", <ListRounded fontSize="inherit" />],
+  employees: ["Proposals", <PersonRounded fontSize="inherit" />],
+  retreatPlanner: ["Retreat Planner", <PersonRounded fontSize="inherit" />],
+  itinerary: ["Itinerary", <ListRounded fontSize="inherit" />],
+  flights: ["Flights", <FlightRounded fontSize="inherit" />],
+  groundTrans: ["Transportation", <AirportShuttleRounded fontSize="inherit" />],
 }
 
 let sidenavAccountItems = {
-  support: ["Support", <ForumRounded />],
-  logOut: ["Log out", <ExitToAppRounded />],
+  support: ["Support", <ForumRounded fontSize="inherit" />],
+  logOut: ["Log out", <ExitToAppRounded fontSize="inherit" />],
 }
 
 let sidenavLoggedOutAccountItems = {
-  logIn: ["Log in", <ExitToAppRounded />],
+  logIn: ["Log in", <ExitToAppRounded fontSize="inherit" />],
 }
 
 let items = {
@@ -93,28 +126,27 @@ export default function PageSidenav(
   let userName = useSelector(UserGetters.getUserName)
   let userCompany = useSelector(CompanyGetters.getCompany)
   let loginStatus = useSelector(UserGetters.getLoginStatus)
+  let [collapsed, setCollapsed] = useState(true)
 
   function SidenavListItem(props: {
     itemType: SidenavItemType
     activeItem?: SidenavItemType
+    subItem?: boolean
+    collapsed?: boolean
   }) {
-    let {itemType, activeItem} = {...props}
+    let {itemType, activeItem, subItem} = {...props}
     let selected = itemType === activeItem
-    let disabled = ![
-      "accomodations",
-      "onboarding",
-      "logOut",
-      "logIn",
-      "support",
+    let disabled = [
+      "retreatPlanner",
+      "itinerary",
+      "flights",
+      "groundTrans",
     ].includes(itemType)
     let onClick = () => {
       if (!selected) {
         switch (itemType) {
-          case "onboarding":
-            dispatch(push(AppRoutes.getPath("HomePage")))
-            break
           case "accomodations":
-            dispatch(push(AppRoutes.getPath("AccomodationsPage")))
+            dispatch(push(AppRoutes.getPath("AccomodationsSearchPage")))
             break
           case "logOut":
             dispatch(deleteUserSignin())
@@ -126,6 +158,7 @@ export default function PageSidenav(
             break
         }
       }
+      setCollapsed(true)
     }
     let body = (
       <ListItem
@@ -139,13 +172,26 @@ export default function PageSidenav(
         disabled={disabled}
         button
         key={itemType}>
-        <Box marginRight={1}>{items[itemType][1]}</Box>
-        {items[itemType][0]}
-        {disabled ? (
-          <Box fontSize={14} marginLeft={1}>
-            <LockOutlined fontSize="inherit" />
-          </Box>
-        ) : undefined}
+        <Box
+          marginLeft={subItem ? 2 : undefined}
+          marginRight={!collapsed ? 1 : undefined}
+          fontSize={subItem ? 16 : 22}>
+          {items[itemType][1]}
+        </Box>
+        {collapsed ? undefined : (
+          <>
+            <AppTypography
+              variant={subItem ? "body2" : "body1"}
+              bold={selected}>
+              {items[itemType][0]}
+            </AppTypography>
+            {disabled ? (
+              <Box fontSize={subItem ? 12 : 16} marginLeft={1}>
+                <LockOutlined fontSize="inherit" />
+              </Box>
+            ) : undefined}
+          </>
+        )}
       </ListItem>
     )
     return disabled ? (
@@ -167,6 +213,11 @@ export default function PageSidenav(
               itemType={item as SidenavItemType}
               activeItem={props.activeItem}
               key={i}
+              subItem={
+                !["retreatPlanner", "accomodations"].includes(
+                  item as SidenavItemType
+                )
+              }
             />
           )
         })}
@@ -227,7 +278,10 @@ export default function PageSidenav(
     )
   }
 
-  function DrawerBody(props: {logoSize?: "small" | "large"}) {
+  function DrawerBody(props: {
+    logoSize?: "small" | "large"
+    collapsed?: boolean
+  }) {
     return (
       <Box
         display="flex"
@@ -237,11 +291,15 @@ export default function PageSidenav(
         className={classes.body}>
         <Box>
           <Box className={classes.toolbar}>
-            <AppLogo
-              noBackground
-              withText
-              height={props.logoSize === "small" ? 35 : 45}
-            />
+            {props.collapsed ? (
+              <AppLogo noBackground height={45} />
+            ) : (
+              <AppLogo
+                noBackground
+                withText
+                height={props.logoSize === "small" ? 35 : 45}
+              />
+            )}
           </Box>
           <SidenavList />
         </Box>
@@ -257,28 +315,33 @@ export default function PageSidenav(
 
   return (
     <>
-      {/* <Hidden smDown>
+      <Hidden smDown>
+        <Transition in={!collapsed} addEndListener={() => undefined}>
+          <Drawer
+            onMouseEnter={() => setCollapsed(false)}
+            onMouseLeave={() => setCollapsed(true)}
+            className={`${classes.root} ${collapsed ? "collapsed" : ""}`}
+            style={animationStyles[collapsed ? "exited" : "entered"]}
+            classes={{paper: classes.body}}
+            variant="permanent">
+            <DrawerBody logoSize="large" collapsed={collapsed} />
+          </Drawer>
+        </Transition>
+      </Hidden>
+      <Hidden mdUp>
+        <PageNav onMenuClick={() => setOpen(true)} />
+      </Hidden>
+      <Hidden mdUp>
         <Drawer
           className={classes.root}
           classes={{paper: classes.body}}
-          variant="permanent">
-          <DrawerBody logoSize="large" />
+          variant="temporary"
+          anchor="left"
+          open={open}
+          onClose={() => setOpen(false)}>
+          <DrawerBody logoSize="small" />
         </Drawer>
-      </Hidden> */}
-      {/* <Hidden mdUp> */}
-      <PageNav onMenuClick={() => setOpen(true)} />
-      {/* </Hidden> */}
-      {/* <Hidden mdUp> */}
-      <Drawer
-        className={classes.root}
-        classes={{paper: classes.body}}
-        variant="temporary"
-        anchor="right"
-        open={open}
-        onClose={() => setOpen(false)}>
-        <DrawerBody logoSize="small" />
-      </Drawer>
-      {/* </Hidden> */}
+      </Hidden>
     </>
   )
 }

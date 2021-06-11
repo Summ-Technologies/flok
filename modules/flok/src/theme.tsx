@@ -1,4 +1,3 @@
-import {grey} from "@material-ui/core/colors"
 import {
   createMuiTheme,
   Theme,
@@ -7,13 +6,13 @@ import {
 
 export interface FlokTheme extends Theme {
   custom: {
-    backgroundGrey: string
+    backgroundSecondary: string
   }
 }
 
 export const theme = createMuiTheme({
   custom: {
-    backgroundGrey: grey[200],
+    backgroundSecondary: "#F6F8FF",
   },
   palette: {
     background: {
@@ -44,13 +43,13 @@ export const theme = createMuiTheme({
       fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',
     },
     h3: {
-      fontSize: "1.25rem",
-      lineHeight: 1.6,
+      fontSize: "1.5rem",
+      lineHeight: 1.3,
       letterSpacing: "0.0075em",
       fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',
     },
     h4: {
-      fontSize: "1.15rem",
+      fontSize: "1.25rem",
       lineHeight: 1.3,
       letterSpacing: "0",
       fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',

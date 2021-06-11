@@ -16,9 +16,8 @@ function ProposalsPage(props: ProposalsPageProps) {
   let dispatch = useDispatch()
   let userRetreat = useSelector(RetreatGetters.getRetreat)
   let proposals = useSelector(RetreatGetters.getRetreatProposals)
-  let [selectedProposal, setSeletectedProposal] = useState<
-    RetreatProposal | undefined
-  >(undefined)
+  let [selectedProposal, setSeletectedProposal] =
+    useState<RetreatProposal | undefined>(undefined)
   let user = useSelector(UserGetters.getActiveUser)
 
   useEffect(() => {
@@ -46,7 +45,7 @@ function ProposalsPage(props: ProposalsPageProps) {
   }, [userRetreat, dispatch])
 
   return (
-    <PageBody sideNav={<PageSidenav activeItem="onboarding" />}>
+    <PageBody sideNav={<PageSidenav />}>
       <AppPageIntro
         title={`Welcome${user && user.firstName ? `, ${user.firstName}!` : ""}`}
         body={

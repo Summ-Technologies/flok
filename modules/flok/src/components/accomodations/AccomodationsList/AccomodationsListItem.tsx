@@ -1,34 +1,21 @@
-import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  Divider,
-  Link,
-  makeStyles,
-} from "@material-ui/core"
+import {Box, Divider, makeStyles} from "@material-ui/core"
 import {LocalAirportRounded, PersonRounded} from "@material-ui/icons"
-import {useState} from "react"
-import {Carousel} from "react-responsive-carousel"
 import "react-responsive-carousel/lib/styles/carousel.min.css" // requires a loader
+import AppImage from "../../base/AppImage"
 import AppTypography from "../../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
-    padding: theme.spacing(2),
-  },
-  imgCol: {
-    width: 250,
-    minHeight: 200,
+    "& > *:not(:last-child)": {
+      marginBottom: theme.spacing(1),
+    },
+    cursor: "pointer",
+    "&:hover": {
+      boxShadow: theme.shadows[5],
+    },
   },
   img: {
-    minWidth: 250,
-    minHeight: 200,
     borderRadius: theme.shape.borderRadius,
-  },
-  mainCol: {
-    flex: 1,
   },
   detailsRow: {
     display: "flex",
@@ -37,10 +24,6 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:last-child)": {
       marginRight: theme.spacing(1),
     },
-  },
-  pricingCol: {
-    display: "flex",
-    alignItems: "flex-end",
   },
 }))
 
@@ -51,54 +34,64 @@ type AccomodationsListItemProps = {
   airport: string
   pricing: string
   img: string
+  onClick: () => void
 }
 
 export default function AccomodationsListItem(
   props: AccomodationsListItemProps
 ) {
   let classes = useStyles(props)
-  let [imageHovered, setImageHovered] = useState(false)
   return (
-    <Card elevation={0} className={classes.root}>
-      <Box
-        onMouseEnter={() => setImageHovered(true)}
-        onMouseLeave={() => setImageHovered(false)}>
-        <Carousel
-          className={classes.imgCol}
-          showThumbs={false}
-          infiniteLoop
-          showArrows={imageHovered}
-          showStatus={false}
-          showIndicators={false}>
-          <CardMedia className={classes.img} image={props.img} title="sup" />
-          <CardMedia className={classes.img} image={props.img} title="sup" />
-          <CardMedia className={classes.img} image={props.img} title="sup" />
-        </Carousel>
+    <Box
+      onClick={props.onClick}
+      paddingTop={1}
+      paddingLeft={1}
+      paddingRight={1}
+      display="flex"
+      flexDirection="column"
+      className={classes.root}>
+      <Box display="flex">
+        <Box
+          className={classes.img}
+          width={250}
+          height={166}
+          display="flex"
+          alignItems="center">
+          <AppImage img={props.img} alt="sup" />
+        </Box>
+        <Box
+          padding={1}
+          flex={1}
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start">
+          <AppTypography variant="body1" color="textSecondary">
+            {props.city}
+          </AppTypography>
+          <AppTypography variant="h3">{props.name}</AppTypography>
+          <Box width={40} paddingBottom={0.5} paddingTop={0.5}>
+            <Divider />
+          </Box>
+          <Box className={classes.detailsRow}>
+            <AppTypography variant="body1">
+              <PersonRounded fontSize="inherit" />
+            </AppTypography>
+            <AppTypography variant="body1">{props.employees}</AppTypography>
+          </Box>
+          <Box className={classes.detailsRow}>
+            <AppTypography variant="body1">
+              <LocalAirportRounded fontSize="inherit" />
+            </AppTypography>
+            <AppTypography variant="body1">{props.airport}</AppTypography>
+          </Box>
+        </Box>
+        <Box display="flex" alignItems="flex-end">
+          <AppTypography bold variant="body1">
+            {props.pricing}
+          </AppTypography>
+        </Box>
       </Box>
-      <CardContent className={classes.mainCol}>
-        <AppTypography italic variant="body1">
-          <Link href="#">{props.city}</Link>
-        </AppTypography>
-        <AppTypography variant="h3">{props.name}</AppTypography>
-        <Divider />
-        <Box className={classes.detailsRow}>
-          <AppTypography variant="body1">
-            <PersonRounded fontSize="inherit" />
-          </AppTypography>
-          <AppTypography variant="body1">{props.employees}</AppTypography>
-        </Box>
-        <Box className={classes.detailsRow}>
-          <AppTypography variant="body1">
-            <LocalAirportRounded fontSize="inherit" />
-          </AppTypography>
-          <AppTypography variant="body1">{props.airport}</AppTypography>
-        </Box>
-      </CardContent>
-      <CardContent className={classes.pricingCol}>
-        <AppTypography underline bold italic variant="body1">
-          {props.pricing}
-        </AppTypography>
-      </CardContent>
-    </Card>
+      <Divider />
+    </Box>
   )
 }

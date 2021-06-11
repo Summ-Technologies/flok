@@ -11,6 +11,12 @@ export type AccomodationModel = {
   destinationId: number
 }
 
+export type AccomodationImageModel = {
+  img: string
+  type: "portrait" | "landscape"
+  featured?: boolean
+}
+
 export type DestinationModel = {
   id: number
   lat: number

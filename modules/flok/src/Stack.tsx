@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
 import AuthPage from "./pages/auth/AuthPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
-import AccomodationsPage from "./pages/dashboard/AccomodationsPage"
+import AccomodationsSearchPage from "./pages/dashboard/AccomodationsSearchPage"
 import ProposalsPage from "./pages/dashboard/ProposalsPage"
 import HomePage from "./pages/HomePage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
@@ -32,9 +32,9 @@ export class AppRoutes {
     },
     {name: "ProposalsPage", component: <ProposalsPage />, path: "/proposals"},
     {
-      name: "AccomodationsPage",
-      component: <AccomodationsPage />,
-      path: "/accomodations",
+      name: "AccomodationsSearchPage",
+      component: <AccomodationsSearchPage />,
+      path: ["/accomodations", "/accomodations/:id"],
     },
     {
       name: "SigninPage",
@@ -73,11 +73,13 @@ export class AppRoutes {
       loginStatus: ["LOGGED_IN", "UNKNOWN"],
     },
   ]
-  static commonRoutes: FlokRoute[] = []
+  static PATH_OVERRIDES = [
+    {name: "AccomodationsDetailsOverlayPage", path: "/accomodations/:id"},
+  ]
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {
     let routeComponent = (
       name: string,
-      path: string,
+      path: string | string[],
       component: JSX.Element
     ) => {
       return (
@@ -85,19 +87,7 @@ export class AppRoutes {
       )
     }
     return routes.reduce((prev, route) => {
-      if (Array.isArray(route.path)) {
-        return [
-          ...prev,
-          ...route.path.map((path: string, index: number) =>
-            routeComponent(`${route.name}-${index}`, path, route.component)
-          ),
-        ]
-      } else {
-        return [
-          ...prev,
-          routeComponent(route.name, route.path, route.component),
-        ]
-      }
+      return [...prev, routeComponent(route.name, route.path, route.component)]
     }, new Array<JSX.Element>())
   }
 
@@ -105,9 +95,14 @@ export class AppRoutes {
     name: string,
     pathParams: {[key: string]: string} = {}
   ): string {
-    let route = this.routes.filter(
-      (route) => route.name.toLowerCase() === name.toLowerCase()
-    )
+    let route: {path: string; name: string}[] = (
+      this.routes as {path: string; name: string}[]
+    ).filter((route) => route.name.toLowerCase() === name.toLowerCase())
+    if (route.length !== 1) {
+      route = this.PATH_OVERRIDES.filter(
+        (path) => path.name.toLowerCase() === name.toLowerCase()
+      )
+    }
     if (route.length !== 1) {
       throw Error("Can't get path for route named: " + name)
     }
