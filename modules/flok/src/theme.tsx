@@ -61,6 +61,18 @@ export const theme = createMuiTheme({
         verticalAlign: "middle",
       },
     },
+    MuiInput: {
+      root: {
+        // Keep padding even when helper text hidden
+        marginBottom: "19px", // size of helper text, might be bad hard coding
+      },
+    },
+    MuiFormHelperText: {
+      root: {
+        // Keep padding even when helper text hidden
+        marginTop: "-19px", // size of helper text, might be bad hard coding
+      },
+    },
   },
   mixins: {
     toolbar: {

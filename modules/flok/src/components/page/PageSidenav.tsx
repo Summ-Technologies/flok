@@ -5,9 +5,9 @@ import {
   Hidden,
   List,
   ListItem,
-  Tooltip
+  Tooltip,
 } from "@material-ui/core"
-import { makeStyles } from "@material-ui/core/styles"
+import {makeStyles} from "@material-ui/core/styles"
 import {
   AirportShuttleRounded,
   ExitToAppRounded,
@@ -17,17 +17,16 @@ import {
   ListRounded,
   LockOutlined,
   PersonRounded,
-  SearchRounded
+  SearchRounded,
 } from "@material-ui/icons"
-import { push } from "connected-react-router"
-import React, { PropsWithChildren, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { Transition } from "react-transition-group"
-import { AppRoutes } from "../../Stack"
-import { deleteUserSignin } from "../../store/actions/user"
-import CompanyGetters from "../../store/getters/company"
+import {push} from "connected-react-router"
+import React, {PropsWithChildren, useState} from "react"
+import {useDispatch, useSelector} from "react-redux"
+import {Transition} from "react-transition-group"
+import {AppRoutes} from "../../Stack"
+import {deleteUserSignin} from "../../store/actions/user"
 import UserGetters from "../../store/getters/user"
-import { FlokTheme } from "../../theme"
+import {FlokTheme} from "../../theme"
 import AppLogo from "../base/AppLogo"
 import AppTypography from "../base/AppTypography"
 import PageNav from "./PageNav"
@@ -124,7 +123,6 @@ export default function PageSidenav(
   let [open, setOpen] = useState(false)
   let dispatch = useDispatch()
   let userName = useSelector(UserGetters.getUserName)
-  let userCompany = useSelector(CompanyGetters.getCompany)
   let loginStatus = useSelector(UserGetters.getLoginStatus)
   let [collapsed, setCollapsed] = useState(true)
 
@@ -257,11 +255,6 @@ export default function PageSidenav(
             }}>
             <Box display="flex" flexDirection="column">
               <AppTypography variant="body1">{userName}</AppTypography>
-              {userCompany && userCompany.name ? (
-                <AppTypography variant="body2">
-                  {userCompany.name}
-                </AppTypography>
-              ) : undefined}
             </Box>
           </ListItem>
         ) : (
