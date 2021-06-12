@@ -1,49 +1,11 @@
 import querystring from "querystring"
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
+import {enqueueSnackbar} from "../../notistack-lib/actions"
 import {modelToApi} from "../../utils/apiUtils"
 import {ApiAction, ApiUtils, createApiAction} from "./api"
 
 // Authentication
-export const POST_USER_SIGNUP_REQUEST = "POST_USER_SIGNUP_REQUEST"
-export const POST_USER_SIGNUP_SUCCESS = "POST_USER_SIGNUP_SUCCESS"
-export const POST_USER_SIGNUP_FAILURE = "POST_USER_SIGNUP_FAILURE"
-
-export function postUserSignup(
-  email: string,
-  password: string,
-  firstName: string,
-  lastName: string
-) {
-  let endpoint = "/v1.0/auth/signup"
-  return async (
-    dispatch: ThunkDispatch<any, any, any>,
-    getState: () => RootState
-  ) => {
-    let signupResponse = ((await dispatch(
-      createApiAction({
-        endpoint,
-        method: "POST",
-        body: JSON.stringify({
-          email,
-          password,
-          firstName,
-          lastName,
-          loginProvider: "FLOK",
-        }),
-        types: [
-          POST_USER_SIGNUP_REQUEST,
-          POST_USER_SIGNUP_SUCCESS,
-          POST_USER_SIGNUP_FAILURE,
-        ],
-      })
-    )) as unknown) as ApiAction
-    if (!signupResponse.error) {
-      dispatch(setUserLoggedIn())
-    }
-  }
-}
-
 export const POST_USER_SIGNIN_REQUEST = "POST_USER_SIGNIN_REQUEST"
 export const POST_USER_SIGNIN_SUCCESS = "POST_USER_SIGNIN_SUCCESS"
 export const POST_USER_SIGNIN_FAILURE = "POST_USER_SIGNIN_FAILURE"
@@ -54,7 +16,7 @@ export function postUserSignin(email: string, password: string) {
     dispatch: ThunkDispatch<any, any, any>,
     getState: () => RootState
   ) => {
-    let signupResponse = ((await dispatch(
+    let signupResponse = (await dispatch(
       createApiAction({
         endpoint,
         method: "POST",
@@ -65,7 +27,7 @@ export function postUserSignin(email: string, password: string) {
           POST_USER_SIGNIN_FAILURE,
         ],
       })
-    )) as unknown) as ApiAction
+    )) as unknown as ApiAction
     if (!signupResponse.error) {
       dispatch(setUserLoggedIn())
     }
@@ -82,7 +44,7 @@ export function deleteUserSignin() {
     dispatch: ThunkDispatch<any, any, any>,
     getState: () => RootState
   ) => {
-    let signupResponse = ((await dispatch(
+    let signupResponse = (await dispatch(
       createApiAction({
         endpoint,
         method: "DELETE",
@@ -92,7 +54,7 @@ export function deleteUserSignin() {
           DELETE_USER_SIGNIN_FAILURE,
         ],
       })
-    )) as unknown) as ApiAction
+    )) as unknown as ApiAction
     if (!signupResponse.error) {
       dispatch(setUserLoggedOut())
     }
@@ -107,15 +69,25 @@ export function getUserResetToken(loginToken: string) {
   let endpoint = `/v1.0/auth/reset?${querystring.stringify(
     modelToApi({loginToken})
   )}`
-  return createApiAction({
-    endpoint,
-    method: "GET",
-    types: [
-      ApiUtils.typeWithMeta(GET_USER_RESET_REQUEST, {loginToken}),
-      ApiUtils.typeWithMeta(GET_USER_RESET_SUCCESS, {loginToken}),
-      ApiUtils.typeWithMeta(GET_USER_RESET_FAILURE, {loginToken}),
-    ],
-  })
+  return async (
+    dispatch: ThunkDispatch<any, any, any>,
+    getState: () => RootState
+  ) => {
+    let resetRequest = (await dispatch(
+      createApiAction({
+        endpoint,
+        method: "GET",
+        types: [
+          ApiUtils.typeWithMeta(GET_USER_RESET_REQUEST, {loginToken}),
+          ApiUtils.typeWithMeta(GET_USER_RESET_SUCCESS, {loginToken}),
+          ApiUtils.typeWithMeta(GET_USER_RESET_FAILURE, {loginToken}),
+        ],
+      })
+    )) as unknown as ApiAction
+    if (resetRequest.error) {
+      dispatch(enqueueSnackbar({message: resetRequest.payload.message}))
+    }
+  }
 }
 
 export const POST_USER_RESET_REQUEST = "POST_USER_RESET_REQUEST"
@@ -128,7 +100,7 @@ export function postUserReset(loginToken: string, password: string) {
     dispatch: ThunkDispatch<any, any, any>,
     getState: () => RootState
   ) => {
-    let signupResponse = ((await dispatch(
+    let signupResponse = (await dispatch(
       createApiAction({
         endpoint,
         body: JSON.stringify(modelToApi({loginToken, password})),
@@ -139,7 +111,7 @@ export function postUserReset(loginToken: string, password: string) {
           ApiUtils.typeWithMeta(POST_USER_RESET_FAILURE, {loginToken}),
         ],
       })
-    )) as unknown) as ApiAction
+    )) as unknown as ApiAction
     if (!signupResponse.error) {
       dispatch(setUserLoggedIn())
     }
@@ -167,7 +139,7 @@ export function getUserHome() {
     dispatch: ThunkDispatch<any, any, any>,
     getState: () => RootState
   ) => {
-    let userResponse = ((await dispatch(
+    let userResponse = (await dispatch(
       createApiAction({
         endpoint,
         method: "GET",
@@ -177,7 +149,7 @@ export function getUserHome() {
           GET_USER_HOME_FAILURE,
         ],
       })
-    )) as unknown) as ApiAction
+    )) as unknown as ApiAction
     if (!userResponse.error) {
       if (getState().user.loginStatus !== "LOGGED_IN") {
         dispatch(setUserLoggedIn())

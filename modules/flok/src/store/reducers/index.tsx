@@ -1,14 +1,9 @@
-import accomodationReducer from "./accomodation"
-import apiReducer from "./api"
-import companyReducer from "./company"
-import retreatReducer from "./retreat"
+import notistackReducer from "../../notistack-lib/reducer"
 import userReducer from "./user"
 
 const reducers = {
   user: userReducer,
-  api: apiReducer,
-  company: companyReducer,
-  retreat: retreatReducer,
-  accomodation: accomodationReducer,
+  notistack: notistackReducer,
 }
+
 export default reducers

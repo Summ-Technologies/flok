@@ -3,28 +3,15 @@
 export const APP_VERSION_KEY = "app_version"
 export const SERVER_BASE_URL_KEY = "server_base_url"
 export const IMAGES_BASE_URL_KEY = "images_base_url"
-export const GOOGLE_API_KEY = "google_api_key"
-export const STRIPE_KEY = "stripe_key"
-export const FLOK_DISCOUNT_KEY = "flok_discount_key"
-export const FLOK_FEE_KEY = "flok_fee_key"
-export const GOOGLE_MAPS_ID_KEY = "google_maps_id_key"
 type ConfigKey =
   | typeof APP_VERSION_KEY
   | typeof SERVER_BASE_URL_KEY
   | typeof IMAGES_BASE_URL_KEY
-  | typeof GOOGLE_API_KEY
-  | typeof STRIPE_KEY
-  | typeof FLOK_DISCOUNT_KEY
-  | typeof FLOK_FEE_KEY
-  | typeof GOOGLE_MAPS_ID_KEY
 
 class Config {
   appConfig: {[key: string]: any}
   defaultConfig: {[key: string]: any} = {
     [APP_VERSION_KEY]: process.env.REACT_APP_VERSION,
-    [FLOK_FEE_KEY]: 250,
-    [FLOK_DISCOUNT_KEY]: 0.5,
-    [GOOGLE_MAPS_ID_KEY]: "5eb717f27eeddaee",
   }
   constructor() {
     this.appConfig = {}
@@ -53,7 +40,7 @@ class Config {
       })
     } else {
       // When in production, comes from config.js file at runtime
-      let windowConfig = ((window as any) as {appConfig: any}).appConfig
+      let windowConfig = (window as any as {appConfig: any}).appConfig
       if (windowConfig) {
         this.appConfig = {
           ...windowConfig,

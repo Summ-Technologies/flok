@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
-import AuthPage from "./pages/auth/AuthPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
-import AccomodationsSearchPage from "./pages/dashboard/AccomodationsSearchPage"
-import ProposalsPage from "./pages/dashboard/ProposalsPage"
+import SigninPage from "./pages/auth/SigninPage"
 import HomePage from "./pages/HomePage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"
@@ -30,65 +28,44 @@ export class AppRoutes {
       path: "/",
       loginStatus: "LOGGED_IN",
     },
-    {name: "ProposalsPage", component: <ProposalsPage />, path: "/proposals"},
-    {
-      name: "AccomodationsSearchPage",
-      component: <AccomodationsSearchPage />,
-      path: ["/accomodations", "/accomodations/:id"],
-    },
     {
       name: "SigninPage",
-      component: <AuthPage />,
+      component: <SigninPage />,
       path: "/auth/signin",
-      loginStatus: "LOGGED_OUT",
-    },
-    {
-      name: "SignupPage",
-      component: <AuthPage />,
-      path: "/auth/signup",
       loginStatus: "LOGGED_OUT",
     },
     {
       name: "AuthResetPage",
       component: <AuthResetPage />,
       path: "/auth/reset",
-      loginStatus: "LOGGED_OUT",
     },
     {
-      name: "RedirectSignup",
-      component: <RedirectPage pageName="SignupPage" />,
+      name: "RedirectSignin",
+      component: <RedirectPage pageName="SigninPage" />,
       path: "*",
       loginStatus: "LOGGED_OUT",
     },
     {
       name: "RedirectLoggedOutPaths",
       component: <RedirectPage pageName="HomePage" />,
-      path: ["/auth/signup", "/auth/signin", "/auth/reset"],
+      path: ["/auth/signin"],
       loginStatus: "LOGGED_IN",
     },
     {
       name: "NotFoundPage",
       component: <NotFound404Page />,
       path: "*",
-      loginStatus: ["LOGGED_IN", "UNKNOWN"],
+      loginStatus: ["LOGGED_IN", "LOGGED_OUT"],
     },
   ]
-  static PATH_OVERRIDES = [
-    {name: "AccomodationsDetailsOverlayPage", path: "/accomodations/:id"},
-  ]
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {
-    let routeComponent = (
-      name: string,
-      path: string | string[],
-      component: JSX.Element
-    ) => {
-      return (
-        <Route path={path} key={name} exact render={() => component}></Route>
-      )
-    }
-    return routes.reduce((prev, route) => {
-      return [...prev, routeComponent(route.name, route.path, route.component)]
-    }, new Array<JSX.Element>())
+    return routes.map((route) => (
+      <Route
+        path={route.path}
+        key={route.name}
+        exact
+        render={() => route.component}></Route>
+    ))
   }
 
   static getPath(
@@ -98,11 +75,6 @@ export class AppRoutes {
     let route: {path: string; name: string}[] = (
       this.routes as {path: string; name: string}[]
     ).filter((route) => route.name.toLowerCase() === name.toLowerCase())
-    if (route.length !== 1) {
-      route = this.PATH_OVERRIDES.filter(
-        (path) => path.name.toLowerCase() === name.toLowerCase()
-      )
-    }
     if (route.length !== 1) {
       throw Error("Can't get path for route named: " + name)
     }
