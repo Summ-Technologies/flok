@@ -1,99 +1,110 @@
+import {Theme} from "@material-ui/core"
 import {
   createMuiTheme,
-  Theme,
   ThemeOptions as MuiThemeOptions,
 } from "@material-ui/core/styles"
+import {ExpandMore} from "@material-ui/icons"
 
-export interface FlokTheme extends Theme {
-  custom: {
-    backgroundSecondary: string
-  }
+export interface FlokTheme extends Theme {}
+
+// These values are defined as constants
+//  so they can be referenced in multiple places
+//  throughout the call to createMuiTheme
+const VALUES = {
+  colors: {
+    primary: {
+      main: "#4b51ff",
+    },
+  },
+  fontWeight: {
+    light: 300,
+    regular: 400,
+    medium: 500,
+    bold: 700,
+  },
+  borderRadius: 10,
 }
 
 export const theme = createMuiTheme({
-  custom: {
-    backgroundSecondary: "#F6F8FF",
-  },
   palette: {
+    text: {
+      primary: "rgba(0,0,0,.75)",
+    },
     background: {
-      default: "#FFFFFF", // white
+      default: "#f7f7f7",
+      paper: "#ffffff",
     },
     primary: {
-      main: "#4456FC",
+      light: "#b1b5ff",
+      main: VALUES.colors.primary.main,
+      dark: "#1c1e68",
+    },
+    secondary: undefined,
+    warning: {
+      main: "#f0b728",
     },
     success: {
-      main: "#57C17A",
-      contrastText: "#FFFFFF",
+      main: "#78d6bd",
     },
   },
-  shape: {
-    borderRadius: 15,
-  },
   typography: {
+    fontWeightLight: VALUES.fontWeight.light,
+    fontWeightRegular: VALUES.fontWeight.regular,
+    fontWeightMedium: VALUES.fontWeight.medium,
+    fontWeightBold: VALUES.fontWeight.bold,
     h1: {
-      fontSize: "2.125rem",
-      lineHeight: 1.235,
-      letterSpacing: "0.00735em",
-      fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',
+      fontSize: "2rem",
+      fontWeight: VALUES.fontWeight.bold,
     },
     h2: {
       fontSize: "2rem",
-      lineHeight: 1.334,
-      letterSpacing: "0em",
-      fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',
+      fontWeight: VALUES.fontWeight.regular,
     },
     h3: {
-      fontSize: "1.5rem",
-      lineHeight: 1.3,
-      letterSpacing: "0.0075em",
-      fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',
+      fontSize: "1.75rem",
+      fontWeight: VALUES.fontWeight.medium,
     },
     h4: {
       fontSize: "1.25rem",
-      lineHeight: 1.3,
-      letterSpacing: "0",
-      fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"',
+      fontWeight: VALUES.fontWeight.bold,
+    },
+    h5: {
+      fontSize: "1.25rem",
+      fontWeight: VALUES.fontWeight.regular,
+    },
+    h6: {
+      fontSize: "1rem",
+      fontWeight: VALUES.fontWeight.medium,
+    },
+    body1: {},
+    body2: {},
+    subtitle1: {},
+    subtitle2: {},
+    button: {
+      textTransform: undefined,
+    },
+  },
+  shape: {borderRadius: VALUES.borderRadius},
+  props: {
+    MuiSelect: {
+      IconComponent: ExpandMore,
+    },
+    MuiSvgIcon: {
+      color: "inherit",
     },
   },
   overrides: {
     MuiSvgIcon: {
-      root: {
-        verticalAlign: "middle",
-      },
+      root: {verticalAlign: "middle"},
     },
-    MuiInput: {
-      root: {
-        // Keep padding even when helper text hidden
-        marginBottom: "19px", // size of helper text, might be bad hard coding
-      },
+    MuiListItem: {
+      root: {borderRadius: VALUES.borderRadius},
     },
-    MuiFormHelperText: {
-      root: {
-        // Keep padding even when helper text hidden
-        marginTop: "-19px", // size of helper text, might be bad hard coding
-      },
+    MuiListItemIcon: {
+      root: {color: "inherit"},
     },
-  },
-  mixins: {
-    toolbar: {
-      // Give the nav bar a defined height so that
-      //    the app icon img height can use % value
-      height: 60,
-      maxHeight: 60,
-      "@media (min-width:0px) and (orientation: landscape)": {
-        height: 60,
-        maxHeight: 60,
-      },
-      "@media (min-width:600px)": {
-        height: 60,
-        maxHeight: 60,
-      },
+    MuiPaper: {
+      root: {borderRadius: VALUES.borderRadius},
     },
   },
 } as MuiThemeOptions)
-
-// Using variables from the theme to set additional values (like fontWeights (based on typography.fontWeightX))
-theme.typography.h1.fontWeight = theme.typography.fontWeightRegular
-theme.typography.h2.fontWeight = theme.typography.fontWeightMedium
-theme.typography.h3.fontWeight = theme.typography.fontWeightMedium
-theme.typography.h4.fontWeight = theme.typography.fontWeightBold

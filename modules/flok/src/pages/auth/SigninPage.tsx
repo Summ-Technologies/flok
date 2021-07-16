@@ -1,12 +1,12 @@
 import {Box} from "@material-ui/core"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import SigninForm from "../../components/forms/SigninForm"
-import PageBody from "../../components/page/PageBody"
+import PageContainer from "../../components/page/PageContainer"
 
 type SigninPageProps = RouteComponentProps<{}>
 function SigninPage(props: SigninPageProps) {
   return (
-    <PageBody fullWidth>
+    <PageContainer>
       <Box
         style={{width: "100%", height: "100%"}}
         display="flex"
@@ -15,7 +15,7 @@ function SigninPage(props: SigninPageProps) {
           <SigninForm submitSigninForm={() => {}} />
         </Box>
       </Box>
-    </PageBody>
+    </PageContainer>
   )
 }
 export default withRouter(SigninPage)

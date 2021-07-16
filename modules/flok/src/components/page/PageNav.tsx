@@ -8,7 +8,6 @@ import AppLogo from "../base/AppLogo"
 const useStyles = makeStyles((theme: FlokTheme) => ({
   root: {
     ...theme.mixins.toolbar,
-    backgroundColor: theme.custom.backgroundSecondary,
   },
   left: {
     marginRight: theme.spacing(2),

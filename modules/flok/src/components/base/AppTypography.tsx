@@ -3,24 +3,36 @@ import clsx from "clsx"
 
 let useStyles = makeStyles((theme) => ({
   root: {
-    textDecoration: (props: AppTypographyProps) =>
-      props.underline ? "underline" : undefined,
-    fontWeight: (props: AppTypographyProps) =>
-      props.bold ? theme.typography.fontWeightMedium : undefined,
+    fontWeight: (props: AppTypographyProps) => {
+      switch (props.fontWeight) {
+        case "light":
+          return theme.typography.fontWeightLight
+        case "regular":
+          return theme.typography.fontWeightRegular
+        case "medium":
+          return theme.typography.fontWeightMedium
+        case "bold":
+          return theme.typography.fontWeightBold
+        default:
+          return undefined
+      }
+    },
     fontStyle: (props: AppTypographyProps) =>
       props.italic ? "italic" : undefined,
+    textDecoration: (props: AppTypographyProps) =>
+      props.underline ? "underline" : undefined,
   },
 }))
 
 interface AppTypographyProps extends TypographyProps {
-  bold?: boolean
+  fontWeight?: "light" | "regular" | "medium" | "bold"
   italic?: boolean
   underline?: boolean
 }
 
 export default function AppTypography(props: AppTypographyProps) {
   let classes = useStyles(props)
-  let {bold, italic, underline, children, ...otherProps} = props
+  let {fontWeight, italic, underline, children, ...otherProps} = props
   return (
     <Typography
       {...otherProps}

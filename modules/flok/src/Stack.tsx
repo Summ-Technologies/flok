@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
+import AttendeesPage from "./pages/AttendeesPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import SigninPage from "./pages/auth/SigninPage"
-import HomePage from "./pages/HomePage"
+import FlightsPage from "./pages/FlightsPage"
+import ItineraryPage from "./pages/ItineraryPage"
+import LodgingPage from "./pages/LodgingPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"
+import OverviewPage from "./pages/OverviewPage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
 
@@ -23,10 +27,34 @@ type FlokRoute = {
 export class AppRoutes {
   static routes: FlokRoute[] = [
     {
-      name: "HomePage",
-      component: <HomePage />,
+      name: "OverviewPage",
+      component: <OverviewPage />,
       path: "/",
-      loginStatus: "LOGGED_IN",
+      // loginStatus: ["LOGGED_IN"],
+    },
+    {
+      name: "LodgingPage",
+      component: <LodgingPage />,
+      path: "/lodging",
+      // loginStatus: ["LOGGED_IN"],
+    },
+    {
+      name: "AttendeesPage",
+      component: <AttendeesPage />,
+      path: "/attendees",
+      // loginStatus: ["LOGGED_IN"],
+    },
+    {
+      name: "FlightsPage",
+      component: <FlightsPage />,
+      path: "/flights",
+      // loginStatus: ["LOGGED_IN"],
+    },
+    {
+      name: "ItineraryPage",
+      component: <ItineraryPage />,
+      path: "/itinerary",
+      // loginStatus: ["LOGGED_IN"],
     },
     {
       name: "SigninPage",
@@ -47,7 +75,7 @@ export class AppRoutes {
     },
     {
       name: "RedirectLoggedOutPaths",
-      component: <RedirectPage pageName="HomePage" />,
+      component: <RedirectPage pageName="OverviewPage" />,
       path: ["/auth/signin"],
       loginStatus: "LOGGED_IN",
     },
@@ -119,5 +147,6 @@ export default function Stack() {
     dispatch(getUserHome())
   }, [dispatch, loginStatus])
 
+  console.log(routes)
   return <Switch>{routes}</Switch>
 }

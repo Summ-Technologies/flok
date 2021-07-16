@@ -4,7 +4,7 @@ import React, {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AuthResetForm from "../../components/forms/AuthResetForm"
-import PageBody from "../../components/page/PageBody"
+import PageContainer from "../../components/page/PageContainer"
 import {getUserResetToken, postUserReset} from "../../store/actions/user"
 import UserGetters from "../../store/getters/user"
 import {apiToModel} from "../../utils/apiUtils"
@@ -28,7 +28,7 @@ function AuthResetPage(props: AuthResetPageProps) {
     dispatch(postUserReset(loginToken, ""))
   }
   return (
-    <PageBody>
+    <PageContainer>
       <Box
         height="100%"
         width="100%"
@@ -47,7 +47,7 @@ function AuthResetPage(props: AuthResetPageProps) {
           prefilledEmail={loginTokenUserEmail}
         />
       </Box>
-    </PageBody>
+    </PageContainer>
   )
 }
 export default withRouter(AuthResetPage)

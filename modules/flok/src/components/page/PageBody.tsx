@@ -1,53 +1,33 @@
-import {Box, makeStyles, Theme} from "@material-ui/core"
+import {makeStyles} from "@material-ui/core"
 import React, {PropsWithChildren} from "react"
-import {use100vh} from "react-div-100vh"
+import PageHeader, {PageHeaderProps} from "./PageHeader"
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100vw",
-    maxWidth: "100vw",
-    height: "100vh",
-    maxHeight: "100vh",
+    flex: 1,
+    minWidth: 0, // flex box trick to max width 100%
     display: "flex",
-    [theme.breakpoints.down("sm")]: {
-      paddingTop: (props) =>
-        props.sideNav ? theme.mixins.toolbar.height : undefined,
-    },
+    flexDirection: "column",
   },
   body: {
-    width: "100%",
-    height: "100%",
-    maxHeight: "100%",
-    marginLeft: "auto",
-    marginRight: "auto",
-
-    overflow: "auto",
-    [theme.breakpoints.down("sm")]: {
-      paddingLeft: (props: PageBodyProps) =>
-        props.fullWidth ? undefined : theme.spacing(1),
-      paddingRight: (props: PageBodyProps) =>
-        props.fullWidth ? undefined : theme.spacing(1),
-    },
     paddingLeft: (props: PageBodyProps) =>
-      props.fullWidth ? undefined : theme.spacing(8),
+      props.noGutter ? 0 : theme.spacing(4),
     paddingRight: (props: PageBodyProps) =>
-      props.fullWidth ? undefined : theme.spacing(8),
+      props.noGutter ? 0 : theme.spacing(4),
+    paddingBottom: theme.spacing(2),
   },
 }))
 
-type PageBodyProps = {
-  sideNav?: JSX.Element
-  fullWidth?: boolean
-}
-export default function PageBody(props: PropsWithChildren<PageBodyProps>) {
-  let height100vh = use100vh()
+type PageBodyProps = PropsWithChildren<{
+  noGutter?: boolean
+  HeaderProps?: PageHeaderProps
+}>
+export default function PageBody(props: PageBodyProps) {
   const classes = useStyles(props)
   return (
-    <Box
-      className={classes.root}
-      height={height100vh ? height100vh : undefined}>
-      {props.sideNav ? <>{props.sideNav}</> : undefined}
-      <Box className={classes.body}>{props.children}</Box>
-    </Box>
+    <div className={classes.root}>
+      {props.HeaderProps ? <PageHeader {...props.HeaderProps} /> : undefined}
+      <div className={classes.body}>{props.children}</div>
+    </div>
   )
 }
