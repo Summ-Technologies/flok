@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-interface AppImageProps extends StandardProps<{}, "root"> {
+export interface AppImageProps extends StandardProps<{}, "root"> {
   img: KnownImageKey | string
   square?: boolean
   alt: string

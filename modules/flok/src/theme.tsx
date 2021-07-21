@@ -31,7 +31,7 @@ export const theme = createMuiTheme({
       primary: "rgba(0,0,0,.75)",
     },
     background: {
-      default: "#f7f7f7",
+      default: "#ffffff",
       paper: "#ffffff",
     },
     primary: {
@@ -53,31 +53,33 @@ export const theme = createMuiTheme({
     fontWeightMedium: VALUES.fontWeight.medium,
     fontWeightBold: VALUES.fontWeight.bold,
     h1: {
-      fontSize: "2rem",
+      fontSize: "1.75rem",
+      lineHeight: 1.2,
       fontWeight: VALUES.fontWeight.bold,
     },
     h2: {
-      fontSize: "2rem",
+      fontSize: "1.5rem",
+      lineHeight: 1.2,
       fontWeight: VALUES.fontWeight.regular,
     },
     h3: {
-      fontSize: "1.75rem",
-      fontWeight: VALUES.fontWeight.medium,
-    },
-    h4: {
       fontSize: "1.25rem",
-      fontWeight: VALUES.fontWeight.bold,
-    },
-    h5: {
-      fontSize: "1.25rem",
+      lineHeight: 1.2,
       fontWeight: VALUES.fontWeight.regular,
     },
-    h6: {
-      fontSize: "1rem",
-      fontWeight: VALUES.fontWeight.medium,
+    h4: {
+      fontSize: "1.125rem",
+      lineHeight: 1.2,
+      fontWeight: VALUES.fontWeight.bold,
     },
-    body1: {},
-    body2: {},
+    body1: {
+      fontSize: "1rem",
+      lineHeight: 1.2,
+    },
+    body2: {
+      fontSize: "0.875rem",
+      lineHeight: 1.2,
+    },
     subtitle1: {},
     subtitle2: {},
     button: {

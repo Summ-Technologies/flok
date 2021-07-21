@@ -147,6 +147,5 @@ export default function Stack() {
     dispatch(getUserHome())
   }, [dispatch, loginStatus])
 
-  console.log(routes)
   return <Switch>{routes}</Switch>
 }

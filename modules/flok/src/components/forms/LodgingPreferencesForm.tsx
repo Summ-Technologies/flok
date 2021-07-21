@@ -4,6 +4,7 @@ import {useEffect, useState} from "react"
 import * as yup from "yup"
 import AppInputDropdown from "../base/AppInputDropdown"
 import AppTypography from "../base/AppTypography"
+import AppDatePicker from "../lodging/AppDateRangePicker"
 import AppInputSelectCardGroup from "../lodging/AppInputSelectCardGroup"
 import AppInputSelectLargeCardGroup from "../lodging/AppInputSelectLargeCardGroup"
 import AppInputToggle from "../lodging/AppInputToggle"
@@ -85,13 +86,11 @@ let LodgingPreferencesCommonFormSchema = yup.object().shape({
     then: yup.array(yup.string()),
   }),
   meetingSpaces: yup.array(yup.string()),
-  rommingPreferences: yup.array(yup.string()),
+  roomingPreferences: yup.array(yup.string()),
 })
 
 type LodgingPreferencesFormProps = {
-  submitLodgingPreferencesForm: (
-    values: LodgingPreferencesFormValues
-  ) => undefined
+  submitLodgingPreferencesForm: (values: LodgingPreferencesFormValues) => void
 }
 
 export default function LodgingPreferencesForm(
@@ -228,85 +227,102 @@ export default function LodgingPreferencesForm(
               />
             </div>
           </div>
-          <div className={classes.formPaperRow}>
-            <div className={classes.inputContainer}>
-              <div className={classes.inputHeader}>
-                <AppTypography variant="h5">Preferred months</AppTypography>
-                <AppTypography variant="body1">
-                  Select all that apply
-                </AppTypography>
+          {formik.values.isExactDates ? (
+            <div className={classes.formPaperRow}>
+              <div className={classes.inputContainer}>
+                <div className={classes.inputHeader}>
+                  <AppTypography variant="h5">Timeline</AppTypography>
+                </div>
+                <AppDatePicker />
               </div>
-              <AppInputSelectCardGroup
-                values={formik.values.preferredMonths}
-                options={[
-                  {label: "Jan", value: "1"},
-                  {label: "Feb", value: "2"},
-                  {label: "Mar", value: "3"},
-                  {label: "Apr", value: "4"},
-                  {label: "May", value: "5"},
-                  {label: "Jun", value: "6"},
-                  {label: "Jul", value: "7"},
-                  {label: "Aug", value: "8"},
-                  {label: "Sep", value: "9"},
-                  {label: "Oct", value: "10"},
-                  {label: "Nov", value: "11"},
-                  {label: "Dec", value: "12"},
-                  {label: "Nov", value: "13"},
-                  {label: "Dec", value: "14"},
-                  {label: "Nov", value: "15"},
-                  {label: "Dec", value: "16"},
-                ]}
-                onChange={(val) => {
-                  if (formik.values.preferredMonths.includes(val)) {
-                    formik.setFieldValue(
-                      "preferredMonths",
-                      formik.values.preferredMonths.filter((v) => val !== v)
-                    )
-                  } else {
-                    formik.setFieldValue("preferredMonths", [
-                      ...formik.values.preferredMonths,
-                      val,
-                    ])
-                  }
-                }}
-              />
             </div>
-          </div>
-          <div className={classes.formPaperRow}>
-            <div className={classes.inputContainer}>
-              <div className={classes.inputHeader}>
-                <AppTypography variant="h5">Preferred start date</AppTypography>
-                <AppTypography variant="body1">
-                  Select all that apply
-                </AppTypography>
+          ) : (
+            <>
+              <div className={classes.formPaperRow}>
+                <div className={classes.inputContainer}>
+                  <div className={classes.inputHeader}>
+                    <AppTypography variant="h5">Preferred months</AppTypography>
+                    <AppTypography variant="body1">
+                      Select all that apply
+                    </AppTypography>
+                  </div>
+                  <AppInputSelectCardGroup
+                    values={formik.values.preferredMonths}
+                    options={[
+                      {label: "Jan", value: "1"},
+                      {label: "Feb", value: "2"},
+                      {label: "Mar", value: "3"},
+                      {label: "Apr", value: "4"},
+                      {label: "May", value: "5"},
+                      {label: "Jun", value: "6"},
+                      {label: "Jul", value: "7"},
+                      {label: "Aug", value: "8"},
+                      {label: "Sep", value: "9"},
+                      {label: "Oct", value: "10"},
+                      {label: "Nov", value: "11"},
+                      {label: "Dec", value: "12"},
+                      {label: "Nov", value: "13"},
+                      {label: "Dec", value: "14"},
+                      {label: "Nov", value: "15"},
+                      {label: "Dec", value: "16"},
+                    ]}
+                    onChange={(val) => {
+                      if (formik.values.preferredMonths.includes(val)) {
+                        formik.setFieldValue(
+                          "preferredMonths",
+                          formik.values.preferredMonths.filter((v) => val !== v)
+                        )
+                      } else {
+                        formik.setFieldValue("preferredMonths", [
+                          ...formik.values.preferredMonths,
+                          val,
+                        ])
+                      }
+                    }}
+                  />
+                </div>
               </div>
-              <AppInputSelectCardGroup
-                values={formik.values.preferredStartDays}
-                options={[
-                  {label: "Mon", value: "1"},
-                  {label: "Tue", value: "2"},
-                  {label: "Wed", value: "3"},
-                  {label: "Thu", value: "4"},
-                  {label: "Fri", value: "5"},
-                  {label: "Sat", value: "6"},
-                  {label: "Sun", value: "7"},
-                ]}
-                onChange={(val) => {
-                  if (formik.values.preferredStartDays.includes(val)) {
-                    formik.setFieldValue(
-                      "preferredStartDays",
-                      formik.values.preferredStartDays.filter((v) => val !== v)
-                    )
-                  } else {
-                    formik.setFieldValue("preferredStartDays", [
-                      ...formik.values.preferredStartDays,
-                      val,
-                    ])
-                  }
-                }}
-              />
-            </div>
-          </div>
+              <div className={classes.formPaperRow}>
+                <div className={classes.inputContainer}>
+                  <div className={classes.inputHeader}>
+                    <AppTypography variant="h5">
+                      Preferred start date
+                    </AppTypography>
+                    <AppTypography variant="body1">
+                      Select all that apply
+                    </AppTypography>
+                  </div>
+                  <AppInputSelectCardGroup
+                    values={formik.values.preferredStartDays}
+                    options={[
+                      {label: "Mon", value: "1"},
+                      {label: "Tue", value: "2"},
+                      {label: "Wed", value: "3"},
+                      {label: "Thu", value: "4"},
+                      {label: "Fri", value: "5"},
+                      {label: "Sat", value: "6"},
+                      {label: "Sun", value: "7"},
+                    ]}
+                    onChange={(val) => {
+                      if (formik.values.preferredStartDays.includes(val)) {
+                        formik.setFieldValue(
+                          "preferredStartDays",
+                          formik.values.preferredStartDays.filter(
+                            (v) => val !== v
+                          )
+                        )
+                      } else {
+                        formik.setFieldValue("preferredStartDays", [
+                          ...formik.values.preferredStartDays,
+                          val,
+                        ])
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </Paper>
       </div>
       <div className={classes.formSection}>

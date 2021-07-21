@@ -40,8 +40,8 @@ export default function userReducer(
       payload = apiToModel((action as ApiAction).payload) as UserHomeResponse
       return {...state, user: payload.user}
     case GET_USER_RESET_SUCCESS:
-      let loginToken = ((action as unknown) as {meta: {loginToken: string}})
-        .meta.loginToken
+      let loginToken = (action as unknown as {meta: {loginToken: string}}).meta
+        .loginToken
       let user = apiToModel((action as ApiAction).payload) as UserAuthResponse
       return {
         ...state,
