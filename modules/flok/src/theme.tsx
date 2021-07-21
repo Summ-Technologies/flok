@@ -31,7 +31,7 @@ export const theme = createMuiTheme({
       primary: "rgba(0,0,0,.75)",
     },
     background: {
-      default: "#ffffff",
+      default: "#EFF1F7",
       paper: "#ffffff",
     },
     primary: {

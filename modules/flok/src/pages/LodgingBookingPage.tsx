@@ -1,12 +1,12 @@
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppProgressStepper from "../components/base/AppProgressStepper"
-import AppLodgingProposal from "../components/lodging/AppLodgingProposal"
+import AppLodgingConfirmation from "../components/lodging/AppLodgingConfirmation"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 
-type LodgingProposalPageProps = RouteComponentProps<{}>
-function LodgingProposalPage(props: LodgingProposalPageProps) {
+type LodgingProposalBookingPageProps = RouteComponentProps<{}>
+function LodgingProposalBookingPage(props: LodgingProposalBookingPageProps) {
   return (
     <PageContainer>
       <PageSidenav activeItem="lodging" />
@@ -33,9 +33,9 @@ function LodgingProposalPage(props: LodgingProposalPageProps) {
             />
           ),
         }}>
-        <AppLodgingProposal />
+        <AppLodgingConfirmation />
       </PageBody>
     </PageContainer>
   )
 }
-export default withRouter(LodgingProposalPage)
+export default withRouter(LodgingProposalBookingPage)
