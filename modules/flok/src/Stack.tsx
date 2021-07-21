@@ -7,6 +7,7 @@ import SigninPage from "./pages/auth/SigninPage"
 import FlightsPage from "./pages/FlightsPage"
 import ItineraryPage from "./pages/ItineraryPage"
 import LodgingPage from "./pages/LodgingPage"
+import LodgingProposalPage from "./pages/LodgingProposalPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"
 import OverviewPage from "./pages/OverviewPage"
@@ -36,6 +37,12 @@ export class AppRoutes {
       name: "LodgingPage",
       component: <LodgingPage />,
       path: "/lodging",
+      // loginStatus: ["LOGGED_IN"],
+    },
+    {
+      name: "LodgingProposalPage",
+      component: <LodgingProposalPage />,
+      path: "/lodging/proposals/:id",
       // loginStatus: ["LOGGED_IN"],
     },
     {
