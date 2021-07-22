@@ -10,7 +10,7 @@ function ItineraryPage(props: ItineraryPageProps) {
       <PageSidenav activeItem="itinerary" />
       <PageBody
         HeaderProps={{
-          header: "Lodging",
+          header: "Itinerary",
           subheader: "GameStop Summer 2021 Retreat",
         }}></PageBody>
     </PageContainer>
