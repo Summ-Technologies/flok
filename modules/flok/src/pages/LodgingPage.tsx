@@ -23,15 +23,15 @@ function LodgingPage(props: LodgingPageProps) {
             <AppProgressStepper
               steps={[
                 {
-                  name: "Add attendees to Slack channel",
+                  name: "Lodging Questions",
                   progress: "IN-PROGRESS",
                 },
                 {
-                  name: "Add Flok with Slack Connect",
+                  name: "View Proposals",
                   progress: "TODO",
                 },
                 {
-                  name: "View and manage attendees",
+                  name: "Book Lodging",
                   progress: "TODO",
                 },
               ]}
