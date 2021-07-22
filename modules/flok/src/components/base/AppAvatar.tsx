@@ -5,19 +5,19 @@ let useStyles = makeStyles((theme) => ({
   root: {
     width: (props: AppAvatarProps) =>
       props.size === "md" || props.size === undefined
-        ? theme.spacing(4)
+        ? 32
         : props.size === "sm"
-        ? theme.spacing(3)
+        ? 24
         : props.size === "lg"
-        ? theme.spacing(6)
+        ? 48
         : props.size,
     height: (props: AppAvatarProps) =>
       props.size === "md" || props.size === undefined
-        ? theme.spacing(4)
+        ? 32
         : props.size === "sm"
-        ? theme.spacing(3)
+        ? 24
         : props.size === "lg"
-        ? theme.spacing(6)
+        ? 48
         : props.size,
     backgroundColor: (props: AppAvatarProps) =>
       props.color === "primary"

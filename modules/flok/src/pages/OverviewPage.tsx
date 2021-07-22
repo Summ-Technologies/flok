@@ -48,7 +48,7 @@ function OverviewPage(props: OverviewPageProps) {
         </div>
         <div className={classes.section}>
           <div className={classes.sectionHeader}>
-            <AppAvatar size="sm" color="warning">
+            <AppAvatar size="md" color="warning">
               <PriorityHighRounded fontSize="small" />
             </AppAvatar>
             <AppTypography variant="h4">To Do List</AppTypography>
@@ -95,7 +95,7 @@ function OverviewPage(props: OverviewPageProps) {
         </div>
         <div className={classes.section}>
           <div className={classes.sectionHeader}>
-            <AppAvatar size="sm" color="success">
+            <AppAvatar size="md" color="success">
               <CheckRounded fontSize="small" />
             </AppAvatar>
             <AppTypography variant="h4">Completed</AppTypography>
