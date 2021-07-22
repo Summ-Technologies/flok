@@ -1,14 +1,13 @@
-import { useState } from "react"
-import { useSelector } from "react-redux"
-import { RouteComponentProps, withRouter } from "react-router-dom"
+import {useState} from "react"
+import {useSelector} from "react-redux"
+import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppAttendeesListBody from "../components/attendees/AppAttendeesListBody"
 import AppBlockedPageBody from "../components/base/AppBlockedPageBody"
 import DemoStepper from "../components/page/DemoStepper"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
-import { RootState } from "../store"
-import  from "../components/attendees/AppAttendeesListBody"
+import {RootState} from "../store"
 
 type AttendeesPageProps = RouteComponentProps<{}>
 function AttendeesPage(props: AttendeesPageProps) {
