@@ -8,12 +8,16 @@ let useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(2),
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),
-    marginBottom: theme.spacing(3),
+    marginBottom: theme.spacing(4),
 
     display: "flex",
     justifyContent: "space-between",
   },
-  title: {},
+  title: {
+    "& > *:not(:last-child)": {
+      marginBottom: theme.spacing(0.5),
+    },
+  },
   progress: {
     display: "flex",
     flexDirection: "column",

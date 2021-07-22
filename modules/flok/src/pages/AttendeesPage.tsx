@@ -18,7 +18,6 @@ function AttendeesPage(props: AttendeesPageProps) {
       <DemoStepper step={step} setStep={setStep} maxStep={2} />
       <PageSidenav activeItem="attendees" />
       <PageBody
-        paddingTop
         HeaderProps={{
           header: "Attendees",
           subheader: "GameStop Summer 2021 Retreat",

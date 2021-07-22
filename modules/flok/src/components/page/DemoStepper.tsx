@@ -3,7 +3,7 @@ import React from "react"
 
 let useStyles = makeStyles((theme) => ({
   root: {
-    position: "absolute",
+    position: "fixed",
     bottom: 100,
     right: 100,
     zIndex: 10000,

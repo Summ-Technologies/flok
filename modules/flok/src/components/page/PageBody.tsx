@@ -15,8 +15,6 @@ const useStyles = makeStyles((theme) => ({
       props.noGutter ? 0 : theme.spacing(4),
     paddingRight: (props: PageBodyProps) =>
       props.noGutter ? 0 : theme.spacing(4),
-    paddingTop: (props: PageBodyProps) =>
-      props.paddingTop ? theme.spacing(2) : undefined,
     paddingBottom: theme.spacing(2),
   },
 }))
@@ -24,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
 type PageBodyProps = PropsWithChildren<{
   noGutter?: boolean
   HeaderProps?: PageHeaderProps
-  paddingTop?: boolean
 }>
 export default function PageBody(props: PageBodyProps) {
   const classes = useStyles(props)
