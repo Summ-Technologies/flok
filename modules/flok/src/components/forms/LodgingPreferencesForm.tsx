@@ -1,8 +1,7 @@
-import {Button, makeStyles, Paper} from "@material-ui/core"
+import {Button, FormControl, makeStyles, Paper, Select} from "@material-ui/core"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
 import * as yup from "yup"
-import AppInputDropdown from "../base/AppInputDropdown"
 import AppTypography from "../base/AppTypography"
 import AppDatePicker from "../lodging/AppDateRangePicker"
 import AppInputSelectCardGroup from "../lodging/AppInputSelectCardGroup"
@@ -10,6 +9,11 @@ import AppInputSelectLargeCardGroup from "../lodging/AppInputSelectLargeCardGrou
 import AppInputToggle from "../lodging/AppInputToggle"
 
 const useStyles = makeStyles((theme) => ({
+  selectDestinationInput: {
+    "& .MuiAutocomplete-inputRoot": {
+      paddingRight: "9px !important",
+    },
+  },
   root: {},
   formSection: {
     "&:not(:first-child)": {
@@ -17,16 +21,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   formSectionHeader: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(3),
     "& > *:not(:first-child)": {
       marginTop: theme.spacing(0.5),
     },
   },
   formPaper: {
-    paddingLeft: theme.spacing(6),
-    paddingRight: theme.spacing(6),
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
+    padding: theme.spacing(4),
   },
   formPaperRow: {
     display: "flex",
@@ -39,17 +40,17 @@ const useStyles = makeStyles((theme) => ({
   inputContainer: {
     display: "flex",
     flexDirection: "column",
-    flex: 1,
+    "&:not(:first-child)": {
+      marginLeft: theme.spacing(4),
+    },
     minWidth: 0,
   },
   inputHeader: {
     display: "flex",
-    // flexWrap: "wrap",
-    flexDirection: "column",
-    // alignItems: "flex-end",
+    alignItems: "flex-end",
     marginBottom: theme.spacing(2),
     "& > *:not(:first-child)": {
-      marginTop: theme.spacing(1),
+      marginLeft: theme.spacing(1),
     },
     "& *": {
       lineHeight: 1,
@@ -58,13 +59,17 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export type LodgingPreferencesFormValues = {
-  numAttendees?: number
+  numAttendees: number | ""
   isExactDates: boolean
+  meetingSpaces: string[]
+  roomingPreferences: string[]
+
+  // exact dates
+
+  // i'm flexible
   numNights?: number
   preferredMonths: string[]
   preferredStartDays: string[]
-  meetingSpaces: string[]
-  roomingPreferences: string[]
 }
 
 let LodgingPreferencesCommonFormSchema = yup.object().shape({
@@ -99,6 +104,7 @@ export default function LodgingPreferencesForm(
   const classes = useStyles()
   let formik = useFormik<LodgingPreferencesFormValues>({
     initialValues: {
+      numAttendees: "",
       isExactDates: false,
       preferredMonths: [],
       preferredStartDays: [],
@@ -106,9 +112,7 @@ export default function LodgingPreferencesForm(
       roomingPreferences: [],
     },
     validationSchema: LodgingPreferencesCommonFormSchema,
-    onSubmit: (values) => {
-      props.submitLodgingPreferencesForm(values)
-    },
+    onSubmit: props.submitLodgingPreferencesForm,
     validateOnMount: true,
   })
 
@@ -147,53 +151,55 @@ export default function LodgingPreferencesForm(
             <div className={classes.inputContainer}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Attendees</AppTypography>
-                <AppTypography variant="body1">
+                <AppTypography variant="body1" color="textSecondary">
                   # employees attending
                 </AppTypography>
               </div>
-              <AppInputDropdown
-                id="numAttendees"
-                required
-                value={formik.values.numAttendees}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.numAttendees && formik.errors.numAttendees
-                    ? true
-                    : false
-                }
-                options={[
-                  {label: "1 employees", value: "1"},
-                  {label: "2 employees", value: "2"},
-                  {label: "3 employees", value: "3"},
-                  {label: "4 employees", value: "4"},
-                  {label: "5 employees", value: "5"},
-                  {label: "6 employees", value: "6"},
-                  {label: "7 employees", value: "7"},
-                  {label: "8 employees", value: "8"},
-                  {label: "9 employees", value: "9"},
-                ]}
-              />
+              <FormControl>
+                <Select
+                  id="numAttendees"
+                  variant="outlined"
+                  required
+                  value={formik.values.numAttendees}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.numAttendees && formik.errors.numAttendees
+                      ? true
+                      : false
+                  }>
+                  {[
+                    {label: "1 employees", value: "1"},
+                    {label: "2 employees", value: "2"},
+                    {label: "3 employees", value: "3"},
+                    {label: "4 employees", value: "4"},
+                    {label: "5 employees", value: "5"},
+                    {label: "6 employees", value: "6"},
+                    {label: "7 employees", value: "7"},
+                    {label: "8 employees", value: "8"},
+                    {label: "9 employees", value: "9"},
+                  ].map((option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      label={option.label}
+                    />
+                  ))}
+                </Select>
+              </FormControl>
             </div>
-            <div
-              className={classes.inputContainer}
-              style={{alignItems: "center"}}>
+            <div className={classes.inputContainer}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Dates</AppTypography>
-                <AppTypography variant="body1">
+
+                <AppTypography variant="body1" color="textSecondary">
                   Select your retreat dates
                 </AppTypography>
               </div>
               <AppInputToggle
-                id="isExactDates"
                 value={formik.values.isExactDates}
-                exclusive
-                onChange={(e, val: boolean) => {
-                  if (val !== null) {
-                    // val === null represents unselecting all
-                    // https://material-ui.com/components/toggle-button/#enforce-value-set
-                    formik.setFieldValue("isExactDates", val)
-                  }
+                onChange={(val: boolean) => {
+                  formik.setFieldValue("isExactDates", val)
                 }}
                 trueOption="Exact"
                 falseOption="I'm flexible"
@@ -203,28 +209,37 @@ export default function LodgingPreferencesForm(
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Number of nights</AppTypography>
               </div>
-              <AppInputDropdown
-                id="numNights"
-                required
-                value={formik.values.numAttendees}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={
-                  formik.touched.numAttendees && formik.errors.numAttendees
-                    ? true
-                    : false
-                }
-                options={[
-                  {label: "1 night", value: "1"},
-                  {label: "2 nights", value: "2"},
-                  {label: "3 nights", value: "3"},
-                  {label: "4 nights", value: "4"},
-                  {label: "5 nights", value: "5"},
-                  {label: "6 nights", value: "6"},
-                  {label: "7 nights", value: "7"},
-                  {label: "8+ nights", value: "8"},
-                ]}
-              />
+              <FormControl>
+                <Select
+                  variant="outlined"
+                  id="numNights"
+                  required
+                  value={formik.values.numNights}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.numAttendees && formik.errors.numAttendees
+                      ? true
+                      : false
+                  }>
+                  {[
+                    {label: "1 night", value: "1"},
+                    {label: "2 nights", value: "2"},
+                    {label: "3 nights", value: "3"},
+                    {label: "4 nights", value: "4"},
+                    {label: "5 nights", value: "5"},
+                    {label: "6 nights", value: "6"},
+                    {label: "7 nights", value: "7"},
+                    {label: "8+ nights", value: "8"},
+                  ].map((option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      label={option.label}
+                    />
+                  ))}
+                </Select>
+              </FormControl>
             </div>
           </div>
           {formik.values.isExactDates ? (
@@ -242,12 +257,17 @@ export default function LodgingPreferencesForm(
                 <div className={classes.inputContainer}>
                   <div className={classes.inputHeader}>
                     <AppTypography variant="h5">Preferred months</AppTypography>
-                    <AppTypography variant="body1">
+
+                    <AppTypography variant="body1" color="textSecondary">
                       Select all that apply
                     </AppTypography>
                   </div>
                   <AppInputSelectCardGroup
-                    values={formik.values.preferredMonths}
+                    values={
+                      formik.values.preferredMonths
+                        ? formik.values.preferredMonths
+                        : []
+                    }
                     options={[
                       {label: "Jan", value: "1"},
                       {label: "Feb", value: "2"},
@@ -288,7 +308,8 @@ export default function LodgingPreferencesForm(
                     <AppTypography variant="h5">
                       Preferred start date
                     </AppTypography>
-                    <AppTypography variant="body1">
+
+                    <AppTypography variant="body1" color="textSecondary">
                       Select all that apply
                     </AppTypography>
                   </div>
@@ -338,7 +359,8 @@ export default function LodgingPreferencesForm(
             <div className={classes.inputContainer}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Meeting space</AppTypography>
-                <AppTypography variant="body1">
+
+                <AppTypography variant="body1" color="textSecondary">
                   Select all that apply
                 </AppTypography>
               </div>
@@ -374,12 +396,16 @@ export default function LodgingPreferencesForm(
             <div className={classes.inputContainer}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Rooming preferences</AppTypography>
-                <AppTypography variant="body1">
+                <AppTypography variant="body1" color="textSecondary">
                   Select all that apply
                 </AppTypography>
               </div>
               <AppInputSelectLargeCardGroup
-                values={formik.values.roomingPreferences}
+                values={
+                  formik.values.roomingPreferences
+                    ? formik.values.roomingPreferences
+                    : []
+                }
                 options={[
                   {
                     label: "Double",

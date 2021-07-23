@@ -83,8 +83,10 @@ export default function AppInputSelectLargeCardGroup(
             onClick={() => props.onChange(option.value)}>
             <div className={classes.cardButtonBody}>
               <div className={classes.cardButtonBodyText}>
-                <AppTypography variant="h5">{option.label}</AppTypography>
-                <AppTypography variant="body2">
+                <AppTypography variant="h5" align="left">
+                  {option.label}
+                </AppTypography>
+                <AppTypography variant="body2" align="left">
                   {option.description}
                 </AppTypography>
               </div>
