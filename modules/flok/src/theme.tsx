@@ -90,6 +90,7 @@ export const theme = createMuiTheme({
   props: {
     MuiSelect: {
       IconComponent: ExpandMore,
+      native: true,
     },
     MuiSvgIcon: {
       color: "inherit",
