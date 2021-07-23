@@ -1,18 +1,19 @@
-import {
-  ButtonBaseTypeMap,
-  IconButton,
-  ListItem,
-  ListItemText,
-  makeStyles,
-} from "@material-ui/core"
-import {ArrowDropDownRounded, ArrowDropUpRounded} from "@material-ui/icons"
-import React, {useState} from "react"
+import {ListItem, ListItemText, makeStyles} from "@material-ui/core"
+import {LockRounded} from "@material-ui/icons"
+import clsx from "clsx"
+import React from "react"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(2),
+  },
+  locked: {
+    color: theme.palette.text.disabled,
+  },
+  completed: {
+    color: theme.palette.text.secondary,
   },
   header: {
     display: "flex",
@@ -24,25 +25,33 @@ let useStyles = makeStyles((theme) => ({
   headerText: {
     minWidth: 0, // to allow text ellipsis
   },
-  headerAction: {},
+  cta: {
+    display: "flex",
+    alignItems: "center",
+  },
   body: {
     marginTop: theme.spacing(1),
   },
 }))
 
+type TodoListItemState = "DEFAULT" | "LOCKED" | "COMPLETED"
 type AppTodolistItemProps = {
+  state?: TodoListItemState
+
   header: string
   subheader: string
   body?: JSX.Element
-
-  completed?: boolean
-  quickAction?: ButtonBaseTypeMap | "lock"
+  cta?: JSX.Element // in most cases the CTA should be built into the "body" of the item and not here
 }
 export default function AppTodolistItem(props: AppTodolistItemProps) {
   let classes = useStyles(props)
-  let [expanded, setExpanded] = useState(false)
   return (
-    <ListItem className={classes.root}>
+    <ListItem
+      className={clsx(
+        classes.root,
+        props.state === "LOCKED" ? classes.locked : undefined,
+        props.state === "COMPLETED" ? classes.completed : undefined
+      )}>
       <ListItemText>
         <div className={classes.header}>
           <div className={classes.headerText}>
@@ -53,23 +62,15 @@ export default function AppTodolistItem(props: AppTodolistItemProps) {
               {props.subheader ? props.subheader : <>&nbsp;</>}
             </AppTypography>
           </div>
-          <div className={classes.headerAction}>
-            {expanded ? (
-              <IconButton size="small" onClick={() => setExpanded(false)}>
-                <ArrowDropUpRounded fontSize="large" />
-              </IconButton>
-            ) : (
-              <IconButton size="small" onClick={() => setExpanded(true)}>
-                <ArrowDropDownRounded fontSize="large" />
-              </IconButton>
-            )}
-          </div>
+          {props.state === "LOCKED" ? (
+            <div className={classes.cta}>
+              <LockRounded fontSize="small" />
+            </div>
+          ) : props.cta ? (
+            <div className={classes.cta}>{props.cta}</div>
+          ) : undefined}
         </div>
-        {props.body && expanded ? (
-          <div className={classes.body}>{props.body}</div>
-        ) : (
-          <></>
-        )}
+        {props.body ? <div className={classes.body}>{props.body}</div> : <></>}
       </ListItemText>
     </ListItem>
   )

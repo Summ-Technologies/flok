@@ -83,11 +83,13 @@ function OverviewPage(props: OverviewPageProps) {
             />
             <Divider />
             <AppTodolistItem
+              state="LOCKED"
               header="Coordinate employee flights"
               subheader="Get your employees to your destination on time!"
             />
             <Divider />
             <AppTodolistItem
+              state="LOCKED"
               header="Plan your itinerary"
               subheader="We'll help you plan the perfect itinerary for your trip!"
             />
@@ -102,15 +104,25 @@ function OverviewPage(props: OverviewPageProps) {
           </div>
           <AppTodolist>
             <AppTodolistItem
-              completed
+              state="COMPLETED"
               header="Destination confirmed"
               subheader="Selected: Berlin, Germany"
+              cta={
+                <Button color="primary" variant="outlined">
+                  Edit
+                </Button>
+              }
             />
             <Divider />
             <AppTodolistItem
-              completed
+              state="COMPLETED"
               header="Lodging confirmed"
               subheader="Selected: The Ritz-Carlton"
+              cta={
+                <Button color="primary" variant="outlined">
+                  View Contact
+                </Button>
+              }
             />
           </AppTodolist>
         </div>
