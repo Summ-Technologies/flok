@@ -1,4 +1,11 @@
-import {Button, FormControl, makeStyles, Paper, Select} from "@material-ui/core"
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  makeStyles,
+  Paper,
+  Select,
+} from "@material-ui/core"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
 import * as yup from "yup"
@@ -9,11 +16,6 @@ import AppInputSelectLargeCardGroup from "../lodging/AppInputSelectLargeCardGrou
 import AppInputToggle from "../lodging/AppInputToggle"
 
 const useStyles = makeStyles((theme) => ({
-  selectDestinationInput: {
-    "& .MuiAutocomplete-inputRoot": {
-      paddingRight: "9px !important",
-    },
-  },
   root: {},
   formSection: {
     "&:not(:first-child)": {
@@ -56,6 +58,12 @@ const useStyles = makeStyles((theme) => ({
       lineHeight: 1,
     },
   },
+  inputSelect: {
+    minWidth: "30ch",
+  },
+  submitButton: {
+    marginTop: theme.spacing(4),
+  },
 }))
 
 export type LodgingPreferencesFormValues = {
@@ -67,7 +75,7 @@ export type LodgingPreferencesFormValues = {
   // exact dates
 
   // i'm flexible
-  numNights?: number
+  numNights: number | ""
   preferredMonths: string[]
   preferredStartDays: string[]
 }
@@ -106,6 +114,7 @@ export default function LodgingPreferencesForm(
     initialValues: {
       numAttendees: "",
       isExactDates: false,
+      numNights: "",
       preferredMonths: [],
       preferredStartDays: [],
       meetingSpaces: [],
@@ -151,24 +160,25 @@ export default function LodgingPreferencesForm(
             <div className={classes.inputContainer}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Attendees</AppTypography>
-                <AppTypography variant="body1" color="textSecondary">
-                  # employees attending
-                </AppTypography>
               </div>
-              <FormControl>
+              <FormControl variant="outlined" className={classes.inputSelect}>
+                <InputLabel htmlFor="numAttendees">
+                  # employees attending
+                </InputLabel>
                 <Select
-                  id="numAttendees"
-                  variant="outlined"
+                  label="# employees attending"
                   required
                   value={formik.values.numAttendees}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  inputProps={{id: "numAttendees"}}
                   error={
                     formik.touched.numAttendees && formik.errors.numAttendees
                       ? true
                       : false
                   }>
                   {[
+                    {label: "", value: ""},
                     {label: "1 employees", value: "1"},
                     {label: "2 employees", value: "2"},
                     {label: "3 employees", value: "3"},
@@ -191,10 +201,6 @@ export default function LodgingPreferencesForm(
             <div className={classes.inputContainer}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Dates</AppTypography>
-
-                <AppTypography variant="body1" color="textSecondary">
-                  Select your retreat dates
-                </AppTypography>
               </div>
               <AppInputToggle
                 value={formik.values.isExactDates}
@@ -209,9 +215,10 @@ export default function LodgingPreferencesForm(
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Number of nights</AppTypography>
               </div>
-              <FormControl>
+              <FormControl variant="outlined" className={classes.inputSelect}>
+                <InputLabel htmlFor="numNights"># nights</InputLabel>
                 <Select
-                  variant="outlined"
+                  label="# nights"
                   id="numNights"
                   required
                   value={formik.values.numNights}
@@ -223,6 +230,7 @@ export default function LodgingPreferencesForm(
                       : false
                   }>
                   {[
+                    {label: "", value: ""},
                     {label: "1 night", value: "1"},
                     {label: "2 nights", value: "2"},
                     {label: "3 nights", value: "3"},
@@ -368,14 +376,14 @@ export default function LodgingPreferencesForm(
                 values={formik.values.meetingSpaces}
                 options={[
                   {
-                    label: "Double",
-                    value: "single",
-                    description: "this is on a monday! best one",
+                    label: "Full Company",
+                    description: "Meeting space to fit your entire company",
+                    value: "fullCompany",
                   },
                   {
-                    label: "Double",
-                    value: "double",
-                    description: "this is on a monday! best one",
+                    label: "Breakout Rooms",
+                    description: "Breakout rooms for smaller groups",
+                    value: "breakoutSpace",
                   },
                 ]}
                 onChange={(val) => {
@@ -408,14 +416,14 @@ export default function LodgingPreferencesForm(
                 }
                 options={[
                   {
-                    label: "Double",
+                    label: "Singles only",
                     value: "single",
-                    description: "this is on a monday! best one",
+                    description: "Each employee has their own room",
                   },
                   {
-                    label: "Double",
+                    label: "Doubles",
                     value: "double",
-                    description: "this is on a monday! best one",
+                    description: "Double rooms allowed to save cost",
                   },
                 ]}
                 onChange={(val) => {
@@ -437,6 +445,8 @@ export default function LodgingPreferencesForm(
         </Paper>
       </div>
       <Button
+        className={classes.submitButton}
+        size="large"
         type="submit"
         variant="contained"
         color="primary"

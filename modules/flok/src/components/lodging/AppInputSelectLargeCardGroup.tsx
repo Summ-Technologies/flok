@@ -17,6 +17,7 @@ let useStyles = makeStyles((theme) => ({
     overflowX: "auto",
   },
   cardButton: {
+    flex: 1,
     minWidth: "unset",
     backgroundColor: "unset",
     padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
@@ -41,9 +42,9 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "flex-start",
     flexDirection: "column",
-    "& > p": {
-      lineHeight: "1.43em",
-      height: `${1.43 * 3}em`,
+    "& > .MuiTypography-body2": {
+      lineHeight: "1.43rem",
+      height: `${1.43 * 3}rem`,
       overflow: "hidden",
     },
   },
@@ -83,10 +84,13 @@ export default function AppInputSelectLargeCardGroup(
             onClick={() => props.onChange(option.value)}>
             <div className={classes.cardButtonBody}>
               <div className={classes.cardButtonBodyText}>
-                <AppTypography variant="h5" align="left">
+                <AppTypography variant="body1" align="left" noWrap>
                   {option.label}
                 </AppTypography>
-                <AppTypography variant="body2" align="left">
+                <AppTypography
+                  variant="body2"
+                  align="left"
+                  color="textSecondary">
                   {option.description}
                 </AppTypography>
               </div>
