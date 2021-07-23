@@ -1,4 +1,4 @@
-import {Button, Divider, makeStyles} from "@material-ui/core"
+import {Button, Divider, Grid, makeStyles, TextField} from "@material-ui/core"
 import {CheckRounded, PriorityHighRounded} from "@material-ui/icons"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppAvatar from "../components/base/AppAvatar"
@@ -55,6 +55,29 @@ function OverviewPage(props: OverviewPageProps) {
           </div>
           <AppTodolist>
             <AppTodolistItem
+                header="Select your retreat destination"
+                subheader="Before we can plan your retreat, please confirm where your team will be going."
+                body={
+                  <Grid container spacing={2}>
+                    <Grid item xs={11}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        id="destination"
+                        name="destination"
+                        label="Enter the city, followed by the state or country"
+                        value=""
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Button color="primary" variant="contained">
+                        Confirm
+                      </Button>
+                    </Grid>
+                  </Grid>
+                }
+              />
+            <AppTodolistItem
               header="Add attendees to your retreat"
               subheader="Let's hook up Slack so we can help coordinate everyone's flights."
               body={
@@ -103,17 +126,6 @@ function OverviewPage(props: OverviewPageProps) {
             <AppTypography variant="h4">Completed</AppTypography>
           </div>
           <AppTodolist>
-            <AppTodolistItem
-              state="COMPLETED"
-              header="Destination confirmed"
-              subheader="Selected: Berlin, Germany"
-              cta={
-                <Button color="primary" variant="outlined">
-                  Edit
-                </Button>
-              }
-            />
-            <Divider />
             <AppTodolistItem
               state="COMPLETED"
               header="Lodging confirmed"
