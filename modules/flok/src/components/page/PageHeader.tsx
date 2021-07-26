@@ -38,9 +38,11 @@ export default function PageHeader(props: PageHeaderProps) {
         <AppTypography variant="h1" noWrap>
           {props.header}
         </AppTypography>
-        <AppTypography variant="body1" noWrap>
-          {props.subheader ? props.subheader : <>&nbsp;</>}
-        </AppTypography>
+        {props.subheader ? (
+          <AppTypography variant="body1" noWrap>
+            {props.subheader}
+          </AppTypography>
+        ) : undefined}
       </div>
       {props.progressBar ? (
         <div className={classes.progress}>{props.progressBar}</div>

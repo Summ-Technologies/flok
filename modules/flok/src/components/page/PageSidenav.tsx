@@ -47,7 +47,7 @@ let navItem = (title: string, Icon: SvgIconComponent, pageName: string) => [
 
 let navItems = {
   overview: navItem("Overview", ListRounded, "OverviewPage"),
-  lodging: navItem("Lodging", HomeRounded, "LodgingPage"),
+  lodging: navItem("Lodging", HomeRounded, "LodgingFormPage"),
   attendees: navItem("Attendees", PersonRounded, "AttendeesPage"),
   flights: navItem("Flights", FlightRounded, "FlightsPage"),
   itinerary: navItem("Itinerary", MapRounded, "ItineraryPage"),

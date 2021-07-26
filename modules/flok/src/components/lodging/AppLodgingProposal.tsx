@@ -52,7 +52,7 @@ export default function AppLodgingProposal(props: AppLodgingProposalProps) {
     <Paper className={classes.root}>
       <MuiLink
         className={classes.back}
-        to={AppRoutes.getPath("LodgingPage")}
+        to={AppRoutes.getPath("LodgingFormPage")}
         component={ReactRouterLink}
         variant="body2"
         color="textSecondary">

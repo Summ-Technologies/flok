@@ -1,17 +1,8 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
-import AttendeesPage from "./pages/AttendeesPage"
-import AuthResetPage from "./pages/auth/AuthResetPage"
-import SigninPage from "./pages/auth/SigninPage"
-import FlightsPage from "./pages/FlightsPage"
-import ItineraryPage from "./pages/ItineraryPage"
-import LodgingBookingPage from "./pages/LodgingBookingPage"
-import LodgingPage from "./pages/LodgingPage"
-import LodgingProposalPage from "./pages/LodgingProposalPage"
+import LodgingFormPage from "./pages/LodgingFormPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
-import RedirectPage from "./pages/misc/RedirectPage"
-import OverviewPage from "./pages/OverviewPage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
 
@@ -29,69 +20,9 @@ type FlokRoute = {
 export class AppRoutes {
   static routes: FlokRoute[] = [
     {
-      name: "OverviewPage",
-      component: <OverviewPage />,
-      path: "/",
-      // loginStatus: ["LOGGED_IN"],
-    },
-    {
-      name: "LodgingPage",
-      component: <LodgingPage />,
+      name: "LodgingFormPage",
+      component: <LodgingFormPage />,
       path: "/lodging",
-      // loginStatus: ["LOGGED_IN"],
-    },
-    {
-      name: "LodgingProposalPage",
-      component: <LodgingProposalPage />,
-      path: "/lodging/proposals/:id",
-      // loginStatus: ["LOGGED_IN"],
-    },
-    {
-      name: "LodgingBookingPage",
-      component: <LodgingBookingPage />,
-      path: "/lodging/proposals/:id/book",
-      // loginStatus: ["LOGGED_IN"],
-    },
-    {
-      name: "AttendeesPage",
-      component: <AttendeesPage />,
-      path: "/attendees",
-      // loginStatus: ["LOGGED_IN"],
-    },
-    {
-      name: "FlightsPage",
-      component: <FlightsPage />,
-      path: "/flights",
-      // loginStatus: ["LOGGED_IN"],
-    },
-    {
-      name: "ItineraryPage",
-      component: <ItineraryPage />,
-      path: "/itinerary",
-      // loginStatus: ["LOGGED_IN"],
-    },
-    {
-      name: "SigninPage",
-      component: <SigninPage />,
-      path: "/auth/signin",
-      loginStatus: "LOGGED_OUT",
-    },
-    {
-      name: "AuthResetPage",
-      component: <AuthResetPage />,
-      path: "/auth/reset",
-    },
-    {
-      name: "RedirectSignin",
-      component: <RedirectPage pageName="SigninPage" />,
-      path: "*",
-      loginStatus: "LOGGED_OUT",
-    },
-    {
-      name: "RedirectLoggedOutPaths",
-      component: <RedirectPage pageName="OverviewPage" />,
-      path: ["/auth/signin"],
-      loginStatus: "LOGGED_IN",
     },
     {
       name: "NotFoundPage",
