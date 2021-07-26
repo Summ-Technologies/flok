@@ -1,10 +1,8 @@
 import {
   Button,
   FormControl,
-  InputLabel,
   makeStyles,
   Paper,
-  Select,
   TextField,
 } from "@material-ui/core"
 import {useFormik} from "formik"
@@ -15,6 +13,7 @@ import AppDatePicker from "../lodging/AppDateRangePicker"
 import AppInputSelectCardGroup from "../lodging/AppInputSelectCardGroup"
 import AppInputSelectLargeCardGroup from "../lodging/AppInputSelectLargeCardGroup"
 import AppInputToggle from "../lodging/AppInputToggle"
+import AppNightsSelect from "../lodging/AppNightsSelect"
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -192,42 +191,14 @@ export default function LodgingPreferencesForm(
               />
             </div>
             <div className={classes.inputContainer}>
-              <div className={classes.inputHeader}>
-                <AppTypography variant="h5">Number of nights</AppTypography>
-              </div>
-              <FormControl variant="outlined" className={classes.inputSelect}>
-                <InputLabel htmlFor="numNights"># nights</InputLabel>
-                <Select
-                  label="# nights"
-                  id="numNights"
-                  required
+              {!formik.values.isExactDates && (
+                <AppNightsSelect
                   value={formik.values.numNights}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.numAttendees && formik.errors.numAttendees
-                      ? true
-                      : false
-                  }>
-                  {[
-                    {label: "", value: ""},
-                    {label: "1 night", value: "1"},
-                    {label: "2 nights", value: "2"},
-                    {label: "3 nights", value: "3"},
-                    {label: "4 nights", value: "4"},
-                    {label: "5 nights", value: "5"},
-                    {label: "6 nights", value: "6"},
-                    {label: "7 nights", value: "7"},
-                    {label: "8+ nights", value: "8"},
-                  ].map((option) => (
-                    <option
-                      key={option.value}
-                      value={option.value}
-                      label={option.label}
-                    />
-                  ))}
-                </Select>
-              </FormControl>
+                  handleChange={formik.handleChange}
+                  handleBlur={formik.handleBlur}
+                  handleError={formik.touched.numAttendees && formik.errors.numAttendees ? true : false}
+                />
+              )}
             </div>
           </div>
           {formik.values.isExactDates ? (
