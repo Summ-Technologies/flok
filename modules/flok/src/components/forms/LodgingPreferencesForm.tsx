@@ -5,6 +5,7 @@ import {
   makeStyles,
   Paper,
   Select,
+  TextField,
 } from "@material-ui/core"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
@@ -162,40 +163,19 @@ export default function LodgingPreferencesForm(
                 <AppTypography variant="h5">Attendees</AppTypography>
               </div>
               <FormControl variant="outlined" className={classes.inputSelect}>
-                <InputLabel htmlFor="numAttendees">
-                  # employees attending
-                </InputLabel>
-                <Select
-                  label="# employees attending"
+                <TextField
+                  label="Estimated # employees"
+                  type="number"
                   required
-                  value={formik.values.numAttendees}
+                  variant="outlined"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  inputProps={{id: "numAttendees"}}
+                  InputProps={{ inputProps: { min: 0, max: 500 } }}
                   error={
                     formik.touched.numAttendees && formik.errors.numAttendees
                       ? true
                       : false
-                  }>
-                  {[
-                    {label: "", value: ""},
-                    {label: "1 employees", value: "1"},
-                    {label: "2 employees", value: "2"},
-                    {label: "3 employees", value: "3"},
-                    {label: "4 employees", value: "4"},
-                    {label: "5 employees", value: "5"},
-                    {label: "6 employees", value: "6"},
-                    {label: "7 employees", value: "7"},
-                    {label: "8 employees", value: "8"},
-                    {label: "9 employees", value: "9"},
-                  ].map((option) => (
-                    <option
-                      key={option.value}
-                      value={option.value}
-                      label={option.label}
-                    />
-                  ))}
-                </Select>
+                  } />
               </FormControl>
             </div>
             <div className={classes.inputContainer}>
