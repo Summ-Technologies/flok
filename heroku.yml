@@ -1,5 +1,3 @@
 build:
   docker:
     web: modules/flok/Dockerfile
-run:
-  web: npm run start
