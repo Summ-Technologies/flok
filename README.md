@@ -1,7 +1,6 @@
-## React App
+## Flok React/Front End App
 
-This section will walk you through how to run Flok's frontend React app, [Flok](https://github.com/summ-technologies/flok).
-
+#### Local Setup
 1. Checkout the flok repository and enter the Flok module within that repo.
 
 ```bash
