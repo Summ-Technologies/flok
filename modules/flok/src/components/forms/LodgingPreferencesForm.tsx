@@ -388,12 +388,12 @@ export default function LodgingPreferencesForm(
                   {
                     label: "Singles only",
                     value: "singles",
-                    description: "Each employee has their own room",
+                    description: "Each employee has their own room.  Increased cost, but recommended especially if it's your team's first retreat.",
                   },
                   {
                     label: "Doubles",
                     value: "doubles",
-                    description: "Double rooms allowed to save cost",
+                    description: "Double rooms help reduce cost, but increase complexity slightly.",
                   },
                 ]}
                 onChange={(val) => {
