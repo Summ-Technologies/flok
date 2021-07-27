@@ -54,10 +54,13 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type AppDateRangePickerProps = {}
+type AppDateRangePickerProps = {
+  startDate?: Date
+  endDate?: Date
+  onChange: (dateRange: DateRange<Date>) => void
+}
 export default function AppDateRangePicker(props: AppDateRangePickerProps) {
   let classes = useStyles(props)
-  const [value, setValue] = React.useState<DateRange<Date>>([null, null])
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
       <StaticDateRangePicker
@@ -65,8 +68,8 @@ export default function AppDateRangePicker(props: AppDateRangePickerProps) {
         displayStaticWrapperAs="desktop"
         calendars={2}
         disablePast
-        value={value}
-        onChange={(date) => setValue(date)}
+        value={[props.startDate, props.endDate]}
+        onChange={props.onChange}
         renderInput={(startProps, endProps) => <></>}
       />
     </LocalizationProvider>

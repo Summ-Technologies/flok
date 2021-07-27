@@ -73,6 +73,8 @@ export type LodgingPreferencesFormValues = {
   roomingPreferences: string[]
 
   // exact dates
+  startDate: Date | ""
+  endDate: Date | ""
 
   // i'm flexible
   numNights: number | ""
@@ -114,6 +116,8 @@ export default function LodgingPreferencesForm(
     initialValues: {
       numAttendees: "",
       isExactDates: false,
+      startDate: "",
+      endDate: "",
       numNights: "",
       preferredMonths: [],
       preferredStartDays: [],
@@ -165,16 +169,18 @@ export default function LodgingPreferencesForm(
                 <TextField
                   label="Estimated # employees"
                   type="number"
+                  id="numAttendees"
                   required
                   variant="outlined"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  InputProps={{ inputProps: { min: 0, max: 500 } }}
+                  InputProps={{inputProps: {min: 0, max: 500}}}
                   error={
                     formik.touched.numAttendees && formik.errors.numAttendees
                       ? true
                       : false
-                  } />
+                  }
+                />
               </FormControl>
             </div>
             <div className={classes.inputContainer}>
@@ -196,7 +202,11 @@ export default function LodgingPreferencesForm(
                   value={formik.values.numNights}
                   handleChange={formik.handleChange}
                   handleBlur={formik.handleBlur}
-                  handleError={formik.touched.numAttendees && formik.errors.numAttendees ? true : false}
+                  handleError={
+                    formik.touched.numAttendees && formik.errors.numAttendees
+                      ? true
+                      : false
+                  }
                 />
               )}
             </div>
@@ -207,7 +217,20 @@ export default function LodgingPreferencesForm(
                 <div className={classes.inputHeader}>
                   <AppTypography variant="h5">Timeline</AppTypography>
                 </div>
-                <AppDatePicker />
+                <AppDatePicker
+                  startDate={
+                    formik.values.startDate
+                      ? formik.values.startDate
+                      : undefined
+                  }
+                  endDate={
+                    formik.values.endDate ? formik.values.endDate : undefined
+                  }
+                  onChange={([start, end]) => {
+                    formik.setFieldValue("startDate", start ? start : "")
+                    formik.setFieldValue("endDate", end ? end : "")
+                  }}
+                />
               </div>
             </div>
           ) : (
@@ -228,22 +251,18 @@ export default function LodgingPreferencesForm(
                         : []
                     }
                     options={[
-                      {label: "Jan", value: "1"},
-                      {label: "Feb", value: "2"},
-                      {label: "Mar", value: "3"},
-                      {label: "Apr", value: "4"},
-                      {label: "May", value: "5"},
-                      {label: "Jun", value: "6"},
-                      {label: "Jul", value: "7"},
-                      {label: "Aug", value: "8"},
-                      {label: "Sep", value: "9"},
-                      {label: "Oct", value: "10"},
-                      {label: "Nov", value: "11"},
-                      {label: "Dec", value: "12"},
-                      {label: "Nov", value: "13"},
-                      {label: "Dec", value: "14"},
-                      {label: "Nov", value: "15"},
-                      {label: "Dec", value: "16"},
+                      {label: "Jan", value: "Jan"},
+                      {label: "Feb", value: "Feb"},
+                      {label: "Mar", value: "Mar"},
+                      {label: "Apr", value: "Apr"},
+                      {label: "May", value: "May"},
+                      {label: "Jun", value: "Jun"},
+                      {label: "Jul", value: "Jul"},
+                      {label: "Aug", value: "Aug"},
+                      {label: "Sep", value: "Sep"},
+                      {label: "Oct", value: "Oct"},
+                      {label: "Nov", value: "Nov"},
+                      {label: "Dec", value: "Dec"},
                     ]}
                     onChange={(val) => {
                       if (formik.values.preferredMonths.includes(val)) {
@@ -275,13 +294,13 @@ export default function LodgingPreferencesForm(
                   <AppInputSelectCardGroup
                     values={formik.values.preferredStartDays}
                     options={[
-                      {label: "Mon", value: "1"},
-                      {label: "Tue", value: "2"},
-                      {label: "Wed", value: "3"},
-                      {label: "Thu", value: "4"},
-                      {label: "Fri", value: "5"},
-                      {label: "Sat", value: "6"},
-                      {label: "Sun", value: "7"},
+                      {label: "Mon", value: "Mon"},
+                      {label: "Tue", value: "Tue"},
+                      {label: "Wed", value: "Wed"},
+                      {label: "Thu", value: "Thu"},
+                      {label: "Fri", value: "Fri"},
+                      {label: "Sat", value: "Sat"},
+                      {label: "Sun", value: "Sun"},
                     ]}
                     onChange={(val) => {
                       if (formik.values.preferredStartDays.includes(val)) {
@@ -329,12 +348,12 @@ export default function LodgingPreferencesForm(
                   {
                     label: "Full Company",
                     description: "Meeting space to fit your entire company",
-                    value: "fullCompany",
+                    value: "company",
                   },
                   {
                     label: "Breakout Rooms",
                     description: "Breakout rooms for smaller groups",
-                    value: "breakoutSpace",
+                    value: "breakout",
                   },
                 ]}
                 onChange={(val) => {
@@ -368,12 +387,12 @@ export default function LodgingPreferencesForm(
                 options={[
                   {
                     label: "Singles only",
-                    value: "single",
+                    value: "singles",
                     description: "Each employee has their own room",
                   },
                   {
                     label: "Doubles",
-                    value: "double",
+                    value: "doubles",
                     description: "Double rooms allowed to save cost",
                   },
                 ]}
