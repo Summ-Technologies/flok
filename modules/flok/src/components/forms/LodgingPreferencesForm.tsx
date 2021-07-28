@@ -72,7 +72,8 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export type LodgingPreferencesFormValues = {
-  numAttendees: number | ""
+  numAttendeesLower: number | ""
+  numAttendeesUpper: number | ""
   isExactDates: boolean
   meetingSpaces: string[]
   roomingPreferences: string[]
@@ -88,7 +89,8 @@ export type LodgingPreferencesFormValues = {
 }
 
 let LodgingPreferencesCommonFormSchema = yup.object().shape({
-  numAttendees: yup.number().positive().required("This field is required."),
+  numAttendeesLower: yup.number().positive().required("This field is required."),
+  numAttendeesUpper: yup.number().positive().required("This field is required."),
   isExactDates: yup.boolean().required("This field is required."),
   numNights: yup.number().when("isExactDates", {
     is: false,
@@ -119,7 +121,8 @@ export default function LodgingPreferencesForm(
   const classes = useStyles()
   let formik = useFormik<LodgingPreferencesFormValues>({
     initialValues: {
-      numAttendees: "",
+      numAttendeesUpper: "",
+      numAttendeesLower: "",
       isExactDates: false,
       startDate: "",
       endDate: "",
@@ -216,7 +219,7 @@ export default function LodgingPreferencesForm(
                   onBlur={formik.handleBlur}
                   onKeyPress={preventMinus}
                   InputProps={{inputProps: {min: 5, max: 500}}}
-                  error={ formik.touched.numAttendees && formik.errors.numAttendees ? true : false }
+                  error={ formik.touched.numAttendeesLower && formik.errors.numAttendeesLower ? true : false }
                 />
                 <div className={classes.attendeeText}>and</div>
                 <TextField
@@ -229,7 +232,7 @@ export default function LodgingPreferencesForm(
                   onBlur={formik.handleBlur}
                   onKeyPress={preventMinus}
                   InputProps={{inputProps: {min: 5, max: 500}}}
-                  error={ formik.touched.numAttendees && formik.errors.numAttendees ? true : false }
+                  error={ formik.touched.numAttendeesUpper && formik.errors.numAttendeesUpper ? true : false }
                 />
                 <div className={classes.attendeeText}>people join us on this retreat</div>
               </FormControl>
@@ -260,7 +263,7 @@ export default function LodgingPreferencesForm(
                   handleChange={formik.handleChange}
                   handleBlur={formik.handleBlur}
                   handleError={
-                    formik.touched.numAttendees && formik.errors.numAttendees
+                    formik.touched.numNights && formik.errors.numNights
                       ? true
                       : false
                   }
