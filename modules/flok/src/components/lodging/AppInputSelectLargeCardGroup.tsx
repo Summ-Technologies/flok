@@ -18,7 +18,6 @@ let useStyles = makeStyles((theme) => ({
   },
   cardButton: {
     flex: 1,
-    minWidth: "unset",
     backgroundColor: "unset",
     padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
     "&:hover": {
