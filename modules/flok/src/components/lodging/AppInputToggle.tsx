@@ -19,7 +19,8 @@ let useStyles = makeStyles((theme) => ({
   option: {
     paddingTop: 9.5,
     paddingBottom: 9.5,
-    width: (props: AppInputToggleProps) => {
+    width: "50%",
+    minWidth: (props: AppInputToggleProps) => {
       return `calc(${Math.max(
         props.trueOption.length,
         props.falseOption.length

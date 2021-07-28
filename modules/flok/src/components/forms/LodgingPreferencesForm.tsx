@@ -1,13 +1,16 @@
 import {
   Button,
   FormControl,
+  Grid,
   makeStyles,
   Paper,
   TextField,
+  useMediaQuery,
 } from "@material-ui/core"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
 import * as yup from "yup"
+import {FlokTheme} from "../../theme"
 import AppTypography from "../base/AppTypography"
 import AppDatePicker from "../lodging/AppDateRangePicker"
 import AppInputSelectCardGroup from "../lodging/AppInputSelectCardGroup"
@@ -31,35 +34,22 @@ const useStyles = makeStyles((theme) => ({
   formPaper: {
     padding: theme.spacing(4),
   },
-  formPaperRow: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "flex-end",
-    "&:not(:first-child)": {
-      marginTop: theme.spacing(4),
-    },
-  },
   inputContainer: {
     display: "flex",
     flexDirection: "column",
-    "&:not(:first-child)": {
-      marginLeft: theme.spacing(4),
-    },
     minWidth: 0,
   },
   inputHeader: {
     display: "flex",
+    flexWrap: "wrap",
     alignItems: "flex-end",
     marginBottom: theme.spacing(2),
-    "& > *:not(:first-child)": {
-      marginLeft: theme.spacing(1),
+    "& *:after": {
+      content: '"\\00a0"',
     },
     "& *": {
       lineHeight: 1,
     },
-  },
-  inputSelect: {
-    minWidth: "30ch",
   },
   submitButton: {
     marginTop: theme.spacing(4),
@@ -147,6 +137,10 @@ export default function LodgingPreferencesForm(
     }
   }, [setDisableSubmit, formik.errors])
 
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
+  )
+
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
       <div className={classes.formSection}>
@@ -160,16 +154,16 @@ export default function LodgingPreferencesForm(
           </AppTypography>
         </div>
         <Paper className={classes.formPaper}>
-          <div className={classes.formPaperRow}>
-            <div className={classes.inputContainer}>
+          <Grid container spacing={3}>
+            <Grid item container spacing={1} direction="column" xs={12} md={4}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Attendees</AppTypography>
               </div>
-              <FormControl variant="outlined" className={classes.inputSelect}>
+              <FormControl variant="outlined">
                 <TextField
                   label="Estimated # employees"
-                  type="number"
                   id="numAttendees"
+                  type="number"
                   required
                   variant="outlined"
                   onChange={formik.handleChange}
@@ -182,8 +176,8 @@ export default function LodgingPreferencesForm(
                   }
                 />
               </FormControl>
-            </div>
-            <div className={classes.inputContainer}>
+            </Grid>
+            <Grid item container spacing={1} direction="column" xs={12} md={4}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Dates</AppTypography>
               </div>
@@ -195,9 +189,15 @@ export default function LodgingPreferencesForm(
                 trueOption="Exact"
                 falseOption="I'm flexible"
               />
-            </div>
-            <div className={classes.inputContainer}>
-              {!formik.values.isExactDates && (
+            </Grid>
+            {!formik.values.isExactDates && (
+              <Grid
+                item
+                container
+                spacing={1}
+                direction="column"
+                xs={12}
+                md={4}>
                 <AppNightsSelect
                   value={formik.values.numNights}
                   handleChange={formik.handleChange}
@@ -208,12 +208,10 @@ export default function LodgingPreferencesForm(
                       : false
                   }
                 />
-              )}
-            </div>
-          </div>
-          {formik.values.isExactDates ? (
-            <div className={classes.formPaperRow}>
-              <div className={classes.inputContainer}>
+              </Grid>
+            )}
+            {formik.values.isExactDates ? (
+              <Grid item container spacing={1} direction="column" xs={12}>
                 <div className={classes.inputHeader}>
                   <AppTypography variant="h5">Timeline</AppTypography>
                 </div>
@@ -230,16 +228,14 @@ export default function LodgingPreferencesForm(
                     formik.setFieldValue("startDate", start ? start : "")
                     formik.setFieldValue("endDate", end ? end : "")
                   }}
+                  numCalendars={isSmallScreen ? 1 : 2}
                 />
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className={classes.formPaperRow}>
-                <div className={classes.inputContainer}>
+              </Grid>
+            ) : (
+              <>
+                <Grid item container spacing={1} direction="column" xs={12}>
                   <div className={classes.inputHeader}>
                     <AppTypography variant="h5">Preferred months</AppTypography>
-
                     <AppTypography variant="body1" color="textSecondary">
                       Select all that apply
                     </AppTypography>
@@ -278,15 +274,12 @@ export default function LodgingPreferencesForm(
                       }
                     }}
                   />
-                </div>
-              </div>
-              <div className={classes.formPaperRow}>
-                <div className={classes.inputContainer}>
+                </Grid>
+                <Grid item container spacing={1} direction="column" xs={12}>
                   <div className={classes.inputHeader}>
                     <AppTypography variant="h5">
                       Preferred start date
                     </AppTypography>
-
                     <AppTypography variant="body1" color="textSecondary">
                       Select all that apply
                     </AppTypography>
@@ -318,10 +311,10 @@ export default function LodgingPreferencesForm(
                       }
                     }}
                   />
-                </div>
-              </div>
-            </>
-          )}
+                </Grid>
+              </>
+            )}
+          </Grid>
         </Paper>
       </div>
       <div className={classes.formSection}>
@@ -333,11 +326,10 @@ export default function LodgingPreferencesForm(
           </AppTypography>
         </div>
         <Paper className={classes.formPaper}>
-          <div className={classes.formPaperRow}>
-            <div className={classes.inputContainer}>
+          <Grid container spacing={3}>
+            <Grid item container spacing={1} direction="column" xs={12} md={6}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Meeting space</AppTypography>
-
                 <AppTypography variant="body1" color="textSecondary">
                   Select all that apply
                 </AppTypography>
@@ -370,8 +362,8 @@ export default function LodgingPreferencesForm(
                   }
                 }}
               />
-            </div>
-            <div className={classes.inputContainer}>
+            </Grid>
+            <Grid item container spacing={1} direction="column" xs={12} md={6}>
               <div className={classes.inputHeader}>
                 <AppTypography variant="h5">Rooming preferences</AppTypography>
                 <AppTypography variant="body1" color="textSecondary">
@@ -388,12 +380,14 @@ export default function LodgingPreferencesForm(
                   {
                     label: "Singles only",
                     value: "singles",
-                    description: "Each employee has their own room.  Increased cost, but recommended especially if it's your team's first retreat.",
+                    description:
+                      "Each employee has their own room.  Increased cost, but recommended especially if it's your team's first retreat.",
                   },
                   {
                     label: "Doubles",
                     value: "doubles",
-                    description: "Double rooms help reduce cost, but increase complexity slightly.",
+                    description:
+                      "Double rooms help reduce cost, but increase complexity slightly.",
                   },
                 ]}
                 onChange={(val) => {
@@ -410,19 +404,24 @@ export default function LodgingPreferencesForm(
                   }
                 }}
               />
-            </div>
-          </div>
+            </Grid>
+          </Grid>
         </Paper>
       </div>
-      <Button
-        className={classes.submitButton}
-        size="large"
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={disableSubmit}>
-        Submit
-      </Button>
+      <Grid container justify="center">
+        <Grid item xs={10} md={4} lg={2}>
+          <Button
+            className={classes.submitButton}
+            size="large"
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={disableSubmit}>
+            Submit
+          </Button>
+        </Grid>
+      </Grid>
     </form>
   )
 }
