@@ -30,7 +30,7 @@ export default function AppNightsSelect(props: AppNightsSelectProps) {
   return (
     <>
       <div className={classes.inputHeader}>
-        <AppTypography variant="h5">Number of nights</AppTypography>
+        <AppTypography variant="h2">Number of nights</AppTypography>
       </div>
       <FormControl variant="outlined" className={classes.inputSelect}>
         <InputLabel htmlFor="numNights"># nights</InputLabel>

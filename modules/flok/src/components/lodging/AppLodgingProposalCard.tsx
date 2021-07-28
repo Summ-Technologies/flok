@@ -42,7 +42,7 @@ export default function AppLodgingProposalCard(
       <AppImage {...props.ImgProps} />
       <CardHeader
         disableTypography
-        title={<AppTypography variant="h5">{props.header}</AppTypography>}
+        title={<AppTypography variant="h2">{props.header}</AppTypography>}
         subheader={
           <AppTypography variant="body1">{props.subheader}</AppTypography>
         }
