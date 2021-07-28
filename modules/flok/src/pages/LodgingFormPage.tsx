@@ -33,6 +33,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
   function submitLodgingPreferencesForm(values: LodgingPreferencesFormValues) {
     dispatch(
       postLodgingRequestForm(
+        email ? email : "", // page + submission should be blocked by email modal unless email non-null
         values.numAttendees ? values.numAttendees : 0,
         !values.isExactDates,
         values.meetingSpaces,
