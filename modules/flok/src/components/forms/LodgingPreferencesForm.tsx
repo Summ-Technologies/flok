@@ -141,6 +141,30 @@ export default function LodgingPreferencesForm(
     theme.breakpoints.down("sm")
   )
 
+  // Get values (by year) for flexible month selection
+  function getOption(month: number, year: number) {
+    let months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ]
+    return {
+      label: months[month],
+      value: `${months[month]}-${year}`,
+    }
+  }
+  let thisYear = new Date().getFullYear()
+  let thisMonth = new Date().getMonth()
+
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
       <div className={classes.formSection}>
@@ -157,7 +181,7 @@ export default function LodgingPreferencesForm(
           <Grid container spacing={3}>
             <Grid item container spacing={1} direction="column" xs={12} md={4}>
               <div className={classes.inputHeader}>
-                <AppTypography variant="h5">Attendees</AppTypography>
+                <AppTypography variant="h2">Attendees</AppTypography>
               </div>
               <FormControl variant="outlined">
                 <TextField
@@ -179,7 +203,7 @@ export default function LodgingPreferencesForm(
             </Grid>
             <Grid item container spacing={1} direction="column" xs={12} md={4}>
               <div className={classes.inputHeader}>
-                <AppTypography variant="h5">Dates</AppTypography>
+                <AppTypography variant="h2">Dates</AppTypography>
               </div>
               <AppInputToggle
                 value={formik.values.isExactDates}
@@ -213,7 +237,7 @@ export default function LodgingPreferencesForm(
             {formik.values.isExactDates ? (
               <Grid item container spacing={1} direction="column" xs={12}>
                 <div className={classes.inputHeader}>
-                  <AppTypography variant="h5">Timeline</AppTypography>
+                  <AppTypography variant="h2">Timeline</AppTypography>
                 </div>
                 <AppDatePicker
                   startDate={
@@ -233,51 +257,53 @@ export default function LodgingPreferencesForm(
               </Grid>
             ) : (
               <>
-                <Grid item container spacing={1} direction="column" xs={12}>
+                <Grid item container spacing={1} xs={12}>
                   <div className={classes.inputHeader}>
-                    <AppTypography variant="h5">Preferred months</AppTypography>
+                    <AppTypography variant="h2">Preferred months</AppTypography>
                     <AppTypography variant="body1" color="textSecondary">
                       Select all that apply
                     </AppTypography>
                   </div>
-                  <AppInputSelectCardGroup
-                    values={
-                      formik.values.preferredMonths
-                        ? formik.values.preferredMonths
-                        : []
-                    }
-                    options={[
-                      {label: "Jan", value: "Jan"},
-                      {label: "Feb", value: "Feb"},
-                      {label: "Mar", value: "Mar"},
-                      {label: "Apr", value: "Apr"},
-                      {label: "May", value: "May"},
-                      {label: "Jun", value: "Jun"},
-                      {label: "Jul", value: "Jul"},
-                      {label: "Aug", value: "Aug"},
-                      {label: "Sep", value: "Sep"},
-                      {label: "Oct", value: "Oct"},
-                      {label: "Nov", value: "Nov"},
-                      {label: "Dec", value: "Dec"},
-                    ]}
-                    onChange={(val) => {
-                      if (formik.values.preferredMonths.includes(val)) {
-                        formik.setFieldValue(
-                          "preferredMonths",
-                          formik.values.preferredMonths.filter((v) => val !== v)
-                        )
-                      } else {
-                        formik.setFieldValue("preferredMonths", [
-                          ...formik.values.preferredMonths,
-                          val,
-                        ])
-                      }
-                    }}
-                  />
+                  {[thisYear, thisYear + 1].map((year) => {
+                    let options =
+                      thisYear === year
+                        ? [...Array(12 - thisMonth)].map((v, i) =>
+                            getOption(i + thisMonth, year)
+                          )
+                        : [...Array(12)].map((v, i) => getOption(i, year))
+                    return (
+                      <Grid item spacing={1} direction="column" xs={12}>
+                        <AppTypography variant="h4">{year}</AppTypography>
+                        <AppInputSelectCardGroup
+                          values={
+                            formik.values.preferredMonths
+                              ? formik.values.preferredMonths
+                              : []
+                          }
+                          options={options}
+                          onChange={(val) => {
+                            if (formik.values.preferredMonths.includes(val)) {
+                              formik.setFieldValue(
+                                "preferredMonths",
+                                formik.values.preferredMonths.filter(
+                                  (v) => val !== v
+                                )
+                              )
+                            } else {
+                              formik.setFieldValue("preferredMonths", [
+                                ...formik.values.preferredMonths,
+                                val,
+                              ])
+                            }
+                          }}
+                        />
+                      </Grid>
+                    )
+                  })}
                 </Grid>
                 <Grid item container spacing={1} direction="column" xs={12}>
                   <div className={classes.inputHeader}>
-                    <AppTypography variant="h5">
+                    <AppTypography variant="h2">
                       Preferred start date
                     </AppTypography>
                     <AppTypography variant="body1" color="textSecondary">
@@ -329,7 +355,7 @@ export default function LodgingPreferencesForm(
           <Grid container spacing={3}>
             <Grid item container spacing={1} direction="column" xs={12} md={6}>
               <div className={classes.inputHeader}>
-                <AppTypography variant="h5">Meeting space</AppTypography>
+                <AppTypography variant="h2">Meeting space</AppTypography>
                 <AppTypography variant="body1" color="textSecondary">
                   Select all that apply
                 </AppTypography>
@@ -365,7 +391,7 @@ export default function LodgingPreferencesForm(
             </Grid>
             <Grid item container spacing={1} direction="column" xs={12} md={6}>
               <div className={classes.inputHeader}>
-                <AppTypography variant="h5">Rooming preferences</AppTypography>
+                <AppTypography variant="h2">Rooming preferences</AppTypography>
                 <AppTypography variant="body1" color="textSecondary">
                   Select all that apply
                 </AppTypography>
