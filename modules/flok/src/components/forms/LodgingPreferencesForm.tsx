@@ -5,10 +5,12 @@ import {
   makeStyles,
   Paper,
   TextField,
+  useMediaQuery,
 } from "@material-ui/core"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
 import * as yup from "yup"
+import {FlokTheme} from "../../theme"
 import AppTypography from "../base/AppTypography"
 import AppDatePicker from "../lodging/AppDateRangePicker"
 import AppInputSelectCardGroup from "../lodging/AppInputSelectCardGroup"
@@ -135,6 +137,10 @@ export default function LodgingPreferencesForm(
     }
   }, [setDisableSubmit, formik.errors])
 
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
+  )
+
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
       <div className={classes.formSection}>
@@ -205,13 +211,7 @@ export default function LodgingPreferencesForm(
               </Grid>
             )}
             {formik.values.isExactDates ? (
-              <Grid
-                item
-                container
-                spacing={1}
-                direction="column"
-                xs={12}
-                md={4}>
+              <Grid item container spacing={1} direction="column" xs={12}>
                 <div className={classes.inputHeader}>
                   <AppTypography variant="h5">Timeline</AppTypography>
                 </div>
@@ -228,6 +228,7 @@ export default function LodgingPreferencesForm(
                     formik.setFieldValue("startDate", start ? start : "")
                     formik.setFieldValue("endDate", end ? end : "")
                   }}
+                  numCalendars={isSmallScreen ? 1 : 2}
                 />
               </Grid>
             ) : (

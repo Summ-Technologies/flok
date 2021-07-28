@@ -58,15 +58,17 @@ type AppDateRangePickerProps = {
   startDate?: Date
   endDate?: Date
   onChange: (dateRange: DateRange<Date>) => void
+  numCalendars?: 2 | 1 | 3 | undefined
 }
 export default function AppDateRangePicker(props: AppDateRangePickerProps) {
   let classes = useStyles(props)
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
       <StaticDateRangePicker
+        showToolbar={false}
         className={classes.root}
         displayStaticWrapperAs="desktop"
-        calendars={2}
+        calendars={props.numCalendars ? props.numCalendars : 1}
         disablePast
         value={[props.startDate, props.endDate]}
         onChange={props.onChange}
