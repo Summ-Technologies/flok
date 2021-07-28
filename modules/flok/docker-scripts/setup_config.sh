@@ -5,7 +5,7 @@ if [[ -z "$API_URL" ]]; then
 fi
 if [[ -z "$IMAGES_URL" ]]; then
     echo "IMAGES_URL environment variable needs to be present."
-    exit
+    exit 1
 fi
 if [[ -z "$GOOGLE_API_KEY" ]]; then
     echo "GOOGLE_API_KEY environment variable not set. Location search will fail."
