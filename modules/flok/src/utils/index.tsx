@@ -1,4 +1,16 @@
 import {useEffect, useState} from "react"
+import {useLocation} from "react-router-dom"
+
+export function useQuery(param: string) {
+  let searchString = useLocation().search.substring(1)
+  let [paramVal, setParamVal] = useState<string | null>(
+    new URLSearchParams(searchString).get(param)
+  )
+  useEffect(() => {
+    setParamVal(new URLSearchParams(searchString).get(param))
+  }, [searchString, setParamVal, param])
+  return paramVal
+}
 
 // Hook
 export type ScriptLoadingState = "loading" | "idle" | "ready" | "error"
