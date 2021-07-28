@@ -49,6 +49,7 @@ let useStyles = makeStyles((theme) => ({
     },
   },
   cardButtonBodyIcon: {
+    marginLeft: theme.spacing(1),
     flex: 1,
     display: "flex",
     flexDirection: "column",

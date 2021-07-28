@@ -6,9 +6,7 @@ let useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     paddingTop: theme.spacing(2),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
-    marginBottom: theme.spacing(4),
+    paddingBottom: theme.spacing(2),
 
     display: "flex",
     justifyContent: "space-between",

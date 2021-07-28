@@ -1,4 +1,4 @@
-import { makeStyles, FormControl, InputLabel, Select } from "@material-ui/core"
+import {FormControl, InputLabel, makeStyles, Select} from "@material-ui/core"
 import React from "react"
 import AppTypography from "../base/AppTypography"
 
@@ -20,10 +20,10 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 type AppNightsSelectProps = {
-  value: number | "",
-  handleChange: any,
-  handleBlur: any,
-  handleError: any,
+  value: number | ""
+  handleChange: any
+  handleBlur: any
+  handleError: any
 }
 export default function AppNightsSelect(props: AppNightsSelectProps) {
   let classes = useStyles(props)
@@ -41,24 +41,21 @@ export default function AppNightsSelect(props: AppNightsSelectProps) {
           value={props.value}
           onChange={props.handleChange}
           onBlur={props.handleBlur}
-          error={props.handleError}
-          >
+          error={props.handleError}>
           {[
             {label: "", value: ""},
-            {label: "1 night", value: "1"},
-            {label: "2 nights", value: "2"},
-            {label: "3 nights", value: "3"},
-            {label: "4 nights", value: "4"},
-            {label: "5 nights", value: "5"},
-            {label: "6 nights", value: "6"},
-            {label: "7 nights", value: "7"},
-            {label: "8+ nights", value: "8"},
+            {label: "1 night", value: 1},
+            {label: "2 nights", value: 2},
+            {label: "3 nights", value: 3},
+            {label: "4 nights", value: 4},
+            {label: "5 nights", value: 5},
+            {label: "6 nights", value: 6},
+            {label: "7 nights", value: 7},
+            {label: "8+ nights", value: 8},
           ].map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              label={option.label}
-            />
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
           ))}
         </Select>
       </FormControl>
