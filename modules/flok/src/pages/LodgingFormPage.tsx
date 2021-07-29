@@ -30,9 +30,13 @@ function LodgingFormPage(props: LodgingFormPageProps) {
     dispatch(push({...location, search: searchParams.toString()}))
   }
 
-  function submitLodgingPreferencesForm(values: LodgingPreferencesFormValues) {
+  function submitLodgingPreferencesForm(
+    values: LodgingPreferencesFormValues,
+    resetForm: () => void
+  ) {
     dispatch(
       postLodgingRequestForm(
+        resetForm,
         email ? email : "", // page + submission should be blocked by email modal unless email non-null
         values.numAttendeesUpper ? values.numAttendeesUpper : 0,
         values.numAttendeesLower ? values.numAttendeesLower : 0,
@@ -43,7 +47,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
         values.preferredMonths,
         values.preferredStartDays,
         values.startDate ? values.startDate : undefined,
-        values.endDate ? values.endDate : undefined,
+        values.endDate ? values.endDate : undefined
       )
     )
   }

@@ -109,7 +109,10 @@ let LodgingPreferencesCommonFormSchema = yup.object().shape({
 })
 
 type LodgingPreferencesFormProps = {
-  submitLodgingPreferencesForm: (values: LodgingPreferencesFormValues) => void
+  submitLodgingPreferencesForm: (
+    values: LodgingPreferencesFormValues,
+    resetForm: () => void
+  ) => void
 }
 
 export default function LodgingPreferencesForm(
@@ -130,7 +133,9 @@ export default function LodgingPreferencesForm(
       roomingPreferences: [],
     },
     validationSchema: LodgingPreferencesCommonFormSchema,
-    onSubmit: props.submitLodgingPreferencesForm,
+    onSubmit: (values, helpers) => {
+      props.submitLodgingPreferencesForm(values, helpers.resetForm)
+    },
     validateOnMount: true,
   })
 
@@ -224,6 +229,7 @@ export default function LodgingPreferencesForm(
                       fullWidth
                       placeholder="25"
                       required
+                      value={formik.values.numAttendeesLower}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       onKeyPress={preventMinus}
@@ -240,6 +246,7 @@ export default function LodgingPreferencesForm(
                       className={classes.attendeesInputs}
                       id="numAttendeesUpper"
                       type="number"
+                      value={formik.values.numAttendeesUpper}
                       fullWidth
                       placeholder="30"
                       required
