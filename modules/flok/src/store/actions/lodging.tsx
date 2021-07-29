@@ -14,7 +14,8 @@ export const POST_LODGING_REQUEST_FORM_FAILURE =
 
 export function postLodgingRequestForm(
   email: string,
-  numberAttendees: number,
+  numberAttendeesUpper: number,
+  numberAttendeesLower: number,
   flexibleDates: boolean,
   meetingSpaces: string[],
   occupancyTypes: string[],
@@ -39,7 +40,8 @@ export function postLodgingRequestForm(
         method: "POST",
         body: JSON.stringify({
           email,
-          numberAttendees,
+          numberAttendeesUpper,
+          numberAttendeesLower,
           flexibleDates,
           numberNights,
           meetingSpaces,

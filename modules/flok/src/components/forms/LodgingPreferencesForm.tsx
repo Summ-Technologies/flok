@@ -5,6 +5,7 @@ import {
   makeStyles,
   Paper,
   TextField,
+  Slider,
   useMediaQuery,
 } from "@material-ui/core"
 import {useFormik} from "formik"
@@ -51,13 +52,28 @@ const useStyles = makeStyles((theme) => ({
       lineHeight: 1,
     },
   },
+  attendeeInputControl: {
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
+  attendeeText: {
+    fontSize: "1.2rem",
+  },
+  attendeesInputs: {
+    alignItems: "baseline",
+    padding: "0px",
+    marginLeft: "1rem",
+    marginRight: "1rem",
+    width: 50,
+  },
   submitButton: {
     marginTop: theme.spacing(4),
   },
 }))
 
 export type LodgingPreferencesFormValues = {
-  numAttendees: number | ""
+  numAttendeesLower: number | ""
+  numAttendeesUpper: number | ""
   isExactDates: boolean
   meetingSpaces: string[]
   roomingPreferences: string[]
@@ -73,7 +89,8 @@ export type LodgingPreferencesFormValues = {
 }
 
 let LodgingPreferencesCommonFormSchema = yup.object().shape({
-  numAttendees: yup.number().positive().required("This field is required."),
+  numAttendeesLower: yup.number().positive().required("This field is required."),
+  numAttendeesUpper: yup.number().positive().required("This field is required."),
   isExactDates: yup.boolean().required("This field is required."),
   numNights: yup.number().when("isExactDates", {
     is: false,
@@ -104,7 +121,8 @@ export default function LodgingPreferencesForm(
   const classes = useStyles()
   let formik = useFormik<LodgingPreferencesFormValues>({
     initialValues: {
-      numAttendees: "",
+      numAttendeesUpper: "",
+      numAttendeesLower: "",
       isExactDates: false,
       startDate: "",
       endDate: "",
@@ -140,6 +158,12 @@ export default function LodgingPreferencesForm(
   const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
     theme.breakpoints.down("sm")
   )
+
+  const preventMinus = (e: any) => {
+    if (e.code === 'Minus' || e.which < 48 || e.which > 57 || e.target.value.length > 3) {
+      e.preventDefault();
+    }
+  };
 
   // Get values (by year) for flexible month selection
   function getOption(month: number, year: number) {
@@ -179,26 +203,38 @@ export default function LodgingPreferencesForm(
         </div>
         <Paper className={classes.formPaper}>
           <Grid container spacing={3}>
-            <Grid item container spacing={1} direction="column" xs={12} md={4}>
-              <div className={classes.inputHeader}>
+            <Grid item container spacing={1} direction="column" xs={12}>
+            <div className={classes.inputHeader}>
                 <AppTypography variant="h2">Attendees</AppTypography>
               </div>
-              <FormControl variant="outlined">
+              <FormControl className={classes.attendeeInputControl}>
+                <div className={classes.attendeeText}>We plan on having between </div>
                 <TextField
-                  label="Estimated # employees"
-                  id="numAttendees"
-                  type="number"
+                  className={classes.attendeesInputs}
+                  id="numAttendeesLower"
+                  type="tel"
+                  placeholder="25"
                   required
-                  variant="outlined"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  InputProps={{inputProps: {min: 0, max: 500}}}
-                  error={
-                    formik.touched.numAttendees && formik.errors.numAttendees
-                      ? true
-                      : false
-                  }
+                  onKeyPress={preventMinus}
+                  InputProps={{inputProps: {min: 5, max: 500}}}
+                  error={ formik.touched.numAttendeesLower && formik.errors.numAttendeesLower ? true : false }
                 />
+                <div className={classes.attendeeText}>and</div>
+                <TextField
+                  className={classes.attendeesInputs}
+                  id="numAttendeesUpper"
+                  type="tel"
+                  placeholder="30"
+                  required
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  onKeyPress={preventMinus}
+                  InputProps={{inputProps: {min: 5, max: 500}}}
+                  error={ formik.touched.numAttendeesUpper && formik.errors.numAttendeesUpper ? true : false }
+                />
+                <div className={classes.attendeeText}>people join us on this retreat</div>
               </FormControl>
             </Grid>
             <Grid item container spacing={1} direction="column" xs={12} md={4}>
@@ -227,7 +263,7 @@ export default function LodgingPreferencesForm(
                   handleChange={formik.handleChange}
                   handleBlur={formik.handleBlur}
                   handleError={
-                    formik.touched.numAttendees && formik.errors.numAttendees
+                    formik.touched.numNights && formik.errors.numNights
                       ? true
                       : false
                   }
