@@ -55,7 +55,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
     <PageContainer>
       <PageBody
         HeaderProps={{
-          header: "Lodging Form",
+          header: "You've taken the first step in planning your retreat!",
         }}>
         {!isValidEmail && (
           <LodgingPreferencesEmailForm submitValues={submitEmailForm} />
