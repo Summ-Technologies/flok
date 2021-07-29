@@ -28,3 +28,6 @@ REACT_APP_IMAGES_URL=https://flok-b32d43c.s3.us-east-1.amazonaws.com/
 ```bash
 env $(cat .env) npm run start
 ```
+
+#### Heroku
+Production, staging, and review apps are all hosted on heroku
