@@ -1,4 +1,4 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Button, Grid, makeStyles} from "@material-ui/core"
 import {CheckRounded} from "@material-ui/icons"
 import clsx from "clsx"
 import React from "react"
@@ -9,16 +9,12 @@ let useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(0.5),
     maxWidth: "100%",
-    display: "flex",
-    flexWrap: "nowrap",
-    "& > $cardButton:not(:first-child)": {
-      marginLeft: theme.spacing(2),
-    },
-    overflowX: "auto",
   },
   cardButton: {
     flex: 1,
+    minWidth: 200,
     backgroundColor: "unset",
+    justifyContent: "flex-start",
     padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
     "&:hover": {
       boxShadow: theme.shadows[3],
@@ -36,6 +32,8 @@ let useStyles = makeStyles((theme) => ({
   cardButtonBody: {
     display: "flex",
     flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   cardButtonBodyText: {
     display: "flex",
@@ -49,7 +47,6 @@ let useStyles = makeStyles((theme) => ({
   },
   cardButtonBodyIcon: {
     marginLeft: theme.spacing(1),
-    flex: 1,
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
@@ -67,44 +64,47 @@ export default function AppInputSelectLargeCardGroup(
 ) {
   let classes = useStyles(props)
   return (
-    <div className={classes.root}>
+    <Grid item xs={12} container spacing={2} className={classes.root}>
       {props.options.map((option) => {
         let selected = props.values.includes(option.value)
         return (
-          <Button
-            key={option.value}
-            className={clsx(
-              classes.cardButton,
-              selected ? classes.cardButtonSelected : undefined
-            )}
-            variant="outlined"
-            disableFocusRipple
-            disableTouchRipple
-            value={option.value}
-            onClick={() => props.onChange(option.value)}>
-            <div className={classes.cardButtonBody}>
-              <div className={classes.cardButtonBodyText}>
-                <AppTypography variant="body1" align="left" noWrap>
-                  {option.label}
-                </AppTypography>
-                <AppTypography
-                  variant="body2"
-                  align="left"
-                  color="textSecondary">
-                  {option.description}
-                </AppTypography>
+          <Grid item xs={12} md={6}>
+            <Button
+              key={option.value}
+              className={clsx(
+                classes.cardButton,
+                selected ? classes.cardButtonSelected : undefined
+              )}
+              fullWidth
+              variant="outlined"
+              disableFocusRipple
+              disableTouchRipple
+              value={option.value}
+              onClick={() => props.onChange(option.value)}>
+              <div className={classes.cardButtonBody}>
+                <div className={classes.cardButtonBodyText}>
+                  <AppTypography variant="body1" align="left" noWrap>
+                    {option.label}
+                  </AppTypography>
+                  <AppTypography
+                    variant="body2"
+                    align="left"
+                    color="textSecondary">
+                    {option.description}
+                  </AppTypography>
+                </div>
+                <div className={classes.cardButtonBodyIcon}>
+                  <AppAvatar
+                    color={selected ? "primary" : undefined}
+                    borderColor={selected ? "primary" : "grey"}>
+                    {selected ? <CheckRounded /> : undefined}
+                  </AppAvatar>
+                </div>
               </div>
-              <div className={classes.cardButtonBodyIcon}>
-                <AppAvatar
-                  color={selected ? "primary" : undefined}
-                  borderColor={selected ? "primary" : "grey"}>
-                  {selected ? <CheckRounded /> : undefined}
-                </AppAvatar>
-              </div>
-            </div>
-          </Button>
+            </Button>
+          </Grid>
         )
       })}
-    </div>
+    </Grid>
   )
 }

@@ -458,34 +458,36 @@ export default function LodgingPreferencesForm(
                   Select all that apply
                 </AppTypography>
               </Grid>
-              <AppInputSelectLargeCardGroup
-                values={formik.values.meetingSpaces}
-                options={[
-                  {
-                    label: "Full Company",
-                    description: "Meeting space to fit your entire company",
-                    value: "company",
-                  },
-                  {
-                    label: "Breakout Rooms",
-                    description: "Breakout rooms for smaller groups",
-                    value: "breakout",
-                  },
-                ]}
-                onChange={(val) => {
-                  if (formik.values.meetingSpaces.includes(val)) {
-                    formik.setFieldValue(
-                      "meetingSpaces",
-                      formik.values.meetingSpaces.filter((v) => val !== v)
-                    )
-                  } else {
-                    formik.setFieldValue("meetingSpaces", [
-                      ...formik.values.meetingSpaces,
-                      val,
-                    ])
-                  }
-                }}
-              />
+              <Grid item xs={12}>
+                <AppInputSelectLargeCardGroup
+                  values={formik.values.meetingSpaces}
+                  options={[
+                    {
+                      label: "Full Company",
+                      description: "Meeting space to fit your entire company",
+                      value: "company",
+                    },
+                    {
+                      label: "Breakout Rooms",
+                      description: "Breakout rooms for smaller groups",
+                      value: "breakout",
+                    },
+                  ]}
+                  onChange={(val) => {
+                    if (formik.values.meetingSpaces.includes(val)) {
+                      formik.setFieldValue(
+                        "meetingSpaces",
+                        formik.values.meetingSpaces.filter((v) => val !== v)
+                      )
+                    } else {
+                      formik.setFieldValue("meetingSpaces", [
+                        ...formik.values.meetingSpaces,
+                        val,
+                      ])
+                    }
+                  }}
+                />
+              </Grid>
             </Grid>
             <Grid item container spacing={1} xs={12} md={6}>
               <Grid item xs={12} className={classes.inputHeader}>
@@ -494,40 +496,44 @@ export default function LodgingPreferencesForm(
                   Select all that apply
                 </AppTypography>
               </Grid>
-              <AppInputSelectLargeCardGroup
-                values={
-                  formik.values.roomingPreferences
-                    ? formik.values.roomingPreferences
-                    : []
-                }
-                options={[
-                  {
-                    label: "Singles only",
-                    value: "singles",
-                    description:
-                      "Each employee has their own room.  Increased cost, but recommended especially if it's your team's first retreat.",
-                  },
-                  {
-                    label: "Doubles",
-                    value: "doubles",
-                    description:
-                      "Double rooms help reduce cost, but increase complexity slightly.",
-                  },
-                ]}
-                onChange={(val) => {
-                  if (formik.values.roomingPreferences.includes(val)) {
-                    formik.setFieldValue(
-                      "roomingPreferences",
-                      formik.values.roomingPreferences.filter((v) => val !== v)
-                    )
-                  } else {
-                    formik.setFieldValue("roomingPreferences", [
-                      ...formik.values.roomingPreferences,
-                      val,
-                    ])
+              <Grid item xs={12}>
+                <AppInputSelectLargeCardGroup
+                  values={
+                    formik.values.roomingPreferences
+                      ? formik.values.roomingPreferences
+                      : []
                   }
-                }}
-              />
+                  options={[
+                    {
+                      label: "Singles only",
+                      value: "singles",
+                      description:
+                        "Each employee has their own room.  Increased cost, but recommended especially if it's your team's first retreat.",
+                    },
+                    {
+                      label: "Doubles",
+                      value: "doubles",
+                      description:
+                        "Double rooms help reduce cost, but increase complexity slightly.",
+                    },
+                  ]}
+                  onChange={(val) => {
+                    if (formik.values.roomingPreferences.includes(val)) {
+                      formik.setFieldValue(
+                        "roomingPreferences",
+                        formik.values.roomingPreferences.filter(
+                          (v) => val !== v
+                        )
+                      )
+                    } else {
+                      formik.setFieldValue("roomingPreferences", [
+                        ...formik.values.roomingPreferences,
+                        val,
+                      ])
+                    }
+                  }}
+                />
+              </Grid>
             </Grid>
           </Grid>
         </Paper>
