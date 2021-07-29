@@ -1,5 +1,5 @@
 {
-  "stack": "Container",
+  "stack": "container",
   "env": {
     "RAILS_ENV": "production",
     "API_URL": "https://api.goflok.com/api",
