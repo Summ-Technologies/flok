@@ -1,18 +1,11 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Button, Grid, makeStyles} from "@material-ui/core"
 import clsx from "clsx"
 import React from "react"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(0.5),
     maxWidth: "100%",
-    display: "flex",
-    flexWrap: "nowrap",
-    "& > $cardButton:not(:first-child)": {
-      marginLeft: theme.spacing(2),
-    },
-    overflowX: "auto",
   },
   cardButton: {
     minWidth: "unset",
@@ -30,6 +23,13 @@ let useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.primary.light,
     },
   },
+  cardButtonText: {
+    width: (props: AppInputSelectCardGroupProps) =>
+      `${
+        Math.max(...props.options.map((option) => option.label.trim().length)) +
+        0.5
+      }ch`,
+  },
 }))
 
 type AppInputSelectCardGroupProps = {
@@ -42,26 +42,29 @@ export default function AppInputSelectCardGroup(
   props: AppInputSelectCardGroupProps
 ) {
   let classes = useStyles(props)
+
   return (
-    <div className={classes.root}>
+    <Grid container spacing={2} direction="row" className={classes.root}>
       {props.options.map((option) => {
         return (
-          <Button
-            key={option.value}
-            className={clsx(
-              classes.cardButton,
-              props.values.includes(option.value)
-                ? classes.cardButtonSelected
-                : undefined
-            )}
-            disableFocusRipple
-            disableTouchRipple
-            value={option.value}
-            onClick={() => props.onChange(option.value)}>
-            <AppTypography variant="body1">{option.label}</AppTypography>
-          </Button>
+          <Grid item key={option.value}>
+            <Button
+              className={clsx(
+                classes.cardButton,
+                props.values.includes(option.value)
+                  ? classes.cardButtonSelected
+                  : undefined
+              )}
+              classes={{label: classes.cardButtonText}}
+              disableFocusRipple
+              disableTouchRipple
+              value={option.value}
+              onClick={() => props.onChange(option.value)}>
+              <AppTypography variant="body1">{option.label}</AppTypography>
+            </Button>
+          </Grid>
         )
       })}
-    </div>
+    </Grid>
   )
 }
