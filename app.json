@@ -1,3 +1,9 @@
 {
-  "stack": "container"
+  "stack": "Container",
+  "env": {
+    "RAILS_ENV": "production",
+    "API_URL": "https://api.goflok.com/api",
+    "GOOGLE_API_KEY": "",
+    "IMAGES_URL": "https://flok-b32d43c.s3.us-east-1.amazonaws.com/",
+    "STRIPE_KEY": ""
 }
