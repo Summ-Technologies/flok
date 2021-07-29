@@ -6,4 +6,5 @@
     "GOOGLE_API_KEY": "",
     "IMAGES_URL": "https://flok-b32d43c.s3.us-east-1.amazonaws.com/",
     "STRIPE_KEY": ""
+  }
 }
