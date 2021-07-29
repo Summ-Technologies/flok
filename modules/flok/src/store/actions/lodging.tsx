@@ -13,6 +13,7 @@ export const POST_LODGING_REQUEST_FORM_FAILURE =
   "POST_LODGING_REQUEST_FORM_FAILURE"
 
 export function postLodgingRequestForm(
+  onSuccess: () => void,
   email: string,
   numberAttendeesUpper: number,
   numberAttendeesLower: number,
@@ -59,6 +60,7 @@ export function postLodgingRequestForm(
       })
     )) as unknown as ApiAction
     if (!response.error) {
+      onSuccess()
       dispatch(
         enqueueSnackbar(
           apiNotification("Successfully submitted", (key) =>
