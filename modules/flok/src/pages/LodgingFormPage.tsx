@@ -1,6 +1,6 @@
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, useLocation, withRouter} from "react-router-dom"
 import * as yup from "yup"
 import LodgingPreferencesEmailForm, {
@@ -11,12 +11,16 @@ import LodgingPreferencesForm, {
 } from "../components/forms/LodgingPreferencesForm"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
+import {RootState} from "../store"
 import {postLodgingRequestForm} from "../store/actions/lodging"
 import {useQuery} from "../utils"
 
 type LodgingFormPageProps = RouteComponentProps<{}>
 function LodgingFormPage(props: LodgingFormPageProps) {
   let dispatch = useDispatch()
+  let postRfpRequestState = useSelector(
+    (state: RootState) => state.api.postRfpForm
+  )
   let email = useQuery("email")
   let location = useLocation()
   let [isValidEmail, setIsValidEmail] = useState<boolean | undefined>(undefined)
@@ -62,6 +66,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
         )}
         <LodgingPreferencesForm
           submitLodgingPreferencesForm={submitLodgingPreferencesForm}
+          isLoading={postRfpRequestState.loading}
         />
       </PageBody>
     </PageContainer>
