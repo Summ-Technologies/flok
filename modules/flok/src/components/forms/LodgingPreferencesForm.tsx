@@ -69,6 +69,8 @@ export type LodgingPreferencesFormValues = {
   isExactDates: boolean
   meetingSpaces: string[]
   roomingPreferences: string[]
+  email: string
+  companyName: string
 
   // exact dates
   startDate: Date | ""
@@ -81,6 +83,8 @@ export type LodgingPreferencesFormValues = {
 }
 
 let LodgingPreferencesCommonFormSchema = yup.object().shape({
+  email: yup.string().email().required("This field is required"),
+  companyName: yup.string().min(3).required("This field is required"),
   numAttendeesLower: yup
     .number()
     .positive()
@@ -115,6 +119,7 @@ type LodgingPreferencesFormProps = {
     resetForm: () => void
   ) => void
   isLoading?: boolean
+  prefilledEmail?: string
 }
 
 export default function LodgingPreferencesForm(
@@ -123,6 +128,8 @@ export default function LodgingPreferencesForm(
   const classes = useStyles()
   let formik = useFormik<LodgingPreferencesFormValues>({
     initialValues: {
+      email: props.prefilledEmail ? props.prefilledEmail : "",
+      companyName: "",
       numAttendeesUpper: "",
       numAttendeesLower: "",
       isExactDates: false,
@@ -200,6 +207,62 @@ export default function LodgingPreferencesForm(
 
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
+      <div className={classes.formSection}>
+        <div className={classes.formSectionHeader}>
+          <AppTypography variant="h4">A few questions about you</AppTypography>
+          <AppTypography variant="body1">
+            Let us know how we can get back to you with proposals!
+          </AppTypography>
+        </div>
+        <Paper className={classes.formPaper}>
+          <Grid container spacing={3}>
+            <Grid item container spacing={3} xs={12}>
+              <Grid item container spacing={1} xs={12} sm={6} md={4}>
+                <Grid item xs={12} className={classes.inputHeader}>
+                  <AppTypography variant="h2">Email</AppTypography>
+                </Grid>
+                <Grid item xs={12} alignItems="stretch">
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    label="Enter your email"
+                    id="email"
+                    required
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.email && formik.errors.email ? true : false
+                    }
+                  />
+                </Grid>
+              </Grid>
+              <Grid item container spacing={1} xs={12} sm={6} md={4}>
+                <Grid item xs={12} className={classes.inputHeader}>
+                  <AppTypography variant="h2">Company</AppTypography>
+                </Grid>
+                <Grid item xs={12} alignItems="stretch">
+                  <TextField
+                    variant="outlined"
+                    fullWidth
+                    label="Enter your company name"
+                    id="companyName"
+                    required
+                    value={formik.values.companyName}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.companyName && formik.errors.companyName
+                        ? true
+                        : false
+                    }
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Paper>
+      </div>
       <div className={classes.formSection}>
         <div className={classes.formSectionHeader}>
           <AppTypography variant="h4">
