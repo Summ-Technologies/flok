@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
 import {default as LodgingFormPage} from "./pages/LodgingFormPage"
+import ChooseDestinationPage from "./pages/ChooseDestinationPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
@@ -35,6 +36,11 @@ export class AppRoutes {
       name: "RedirectHome",
       component: <RedirectPage pageName="LodgingFormPage" />,
       path: "/",
+    },
+    {
+      name: "ChooseDestinationPage",
+      component: <ChooseDestinationPage />,
+      path: "/lodging/destinations",
     },
     {
       name: "NotFoundPage",
