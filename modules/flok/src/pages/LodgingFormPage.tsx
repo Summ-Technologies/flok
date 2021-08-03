@@ -1,11 +1,5 @@
-import {push} from "connected-react-router"
-import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RouteComponentProps, useLocation, withRouter} from "react-router-dom"
-import * as yup from "yup"
-import LodgingPreferencesEmailForm, {
-  LodgingPreferencesEmailFormValues,
-} from "../components/forms/LodgingPreferencesEmailForm"
+import {RouteComponentProps, withRouter} from "react-router-dom"
 import LodgingPreferencesForm, {
   LodgingPreferencesFormValues,
 } from "../components/forms/LodgingPreferencesForm"
@@ -22,17 +16,6 @@ function LodgingFormPage(props: LodgingFormPageProps) {
     (state: RootState) => state.api.postRfpForm
   )
   let email = useQuery("email")
-  let location = useLocation()
-  let [isValidEmail, setIsValidEmail] = useState<boolean | undefined>(undefined)
-  useEffect(() => {
-    setIsValidEmail(yup.string().required().email().isValidSync(email))
-  }, [email, setIsValidEmail])
-
-  function submitEmailForm(values: LodgingPreferencesEmailFormValues) {
-    let searchParams = new URLSearchParams(location.search)
-    searchParams.set("email", values.email)
-    dispatch(push({...location, search: searchParams.toString()}))
-  }
 
   function submitLodgingPreferencesForm(
     values: LodgingPreferencesFormValues,
@@ -41,7 +24,8 @@ function LodgingFormPage(props: LodgingFormPageProps) {
     dispatch(
       postLodgingRequestForm(
         resetForm,
-        email ? email : "", // page + submission should be blocked by email modal unless email non-null
+        values.email,
+        values.companyName,
         values.numAttendeesUpper ? values.numAttendeesUpper : 0,
         values.numAttendeesLower ? values.numAttendeesLower : 0,
         !values.isExactDates,
@@ -61,10 +45,8 @@ function LodgingFormPage(props: LodgingFormPageProps) {
         HeaderProps={{
           header: "You've taken the first step in planning your retreat!",
         }}>
-        {!isValidEmail && (
-          <LodgingPreferencesEmailForm submitValues={submitEmailForm} />
-        )}
         <LodgingPreferencesForm
+          prefilledEmail={email ? email : undefined}
           submitLodgingPreferencesForm={submitLodgingPreferencesForm}
           isLoading={postRfpRequestState.loading}
         />
