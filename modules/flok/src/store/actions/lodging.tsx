@@ -24,8 +24,7 @@ export function postLodgingRequestForm(
   numberNights?: number,
   preferredMonths?: string[],
   preferredStartDow?: string[],
-  startDate?: Date,
-  endDate?: Date
+  exactDates?: [Date, Date][]
 ) {
   let endpoint = "/v1.0/lodging/proposal-requests"
   return async (
@@ -51,8 +50,10 @@ export function postLodgingRequestForm(
           occupancyTypes,
           preferredMonths,
           preferredStartDow,
-          startDate: toDate(startDate),
-          endDate: toDate(endDate),
+          exactDates: exactDates?.map((date) => [
+            toDate(date[0]),
+            toDate(date[1]),
+          ]),
         }),
         types: [
           POST_LODGING_REQUEST_FORM_REQUEST,

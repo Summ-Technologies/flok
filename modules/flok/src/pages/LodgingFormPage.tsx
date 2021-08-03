@@ -34,8 +34,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
         values.numNights ? values.numNights : undefined,
         values.preferredMonths,
         values.preferredStartDays,
-        values.startDate ? values.startDate : undefined,
-        values.endDate ? values.endDate : undefined
+        values.exactDates as [Date, Date][]
       )
     )
   }

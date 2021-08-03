@@ -9,17 +9,18 @@ import {
   Paper,
   Select,
   TextField,
-  useMediaQuery,
 } from "@material-ui/core"
+import {DateRange} from "@material-ui/pickers/DateRangePicker/RangeTypes"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
+import {useDispatch} from "react-redux"
 import * as yup from "yup"
-import {FlokTheme} from "../../theme"
+import {enqueueSnackbar} from "../../notistack-lib/actions"
 import AppTypography from "../base/AppTypography"
-import AppDatePicker from "../lodging/AppDateRangePicker"
 import AppInputSelectCardGroup from "../lodging/AppInputSelectCardGroup"
 import AppInputSelectLargeCardGroup from "../lodging/AppInputSelectLargeCardGroup"
 import AppInputToggle from "../lodging/AppInputToggle"
+import AppMultiDateRangePicker from "../lodging/AppMultiDateRangePicker"
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -73,8 +74,7 @@ export type LodgingPreferencesFormValues = {
   companyName: string
 
   // exact dates
-  startDate: Date | ""
-  endDate: Date | ""
+  exactDates: DateRange<Date>[]
 
   // i'm flexible
   numNights: number | ""
@@ -94,6 +94,10 @@ let LodgingPreferencesCommonFormSchema = yup.object().shape({
     .positive()
     .required("This field is required."),
   isExactDates: yup.boolean().required("This field is required."),
+  exactDates: yup.array().when("isExactDates", {
+    is: true,
+    then: yup.array(yup.array((yup.date(), yup.date()))).min(1),
+  }),
   numNights: yup.number().when("isExactDates", {
     is: false,
     then: yup.number().required("This field is required."),
@@ -126,6 +130,7 @@ export default function LodgingPreferencesForm(
   props: LodgingPreferencesFormProps
 ) {
   const classes = useStyles()
+  let dispatch = useDispatch()
   let formik = useFormik<LodgingPreferencesFormValues>({
     initialValues: {
       email: props.prefilledEmail ? props.prefilledEmail : "",
@@ -133,8 +138,7 @@ export default function LodgingPreferencesForm(
       numAttendeesUpper: "",
       numAttendeesLower: "",
       isExactDates: false,
-      startDate: "",
-      endDate: "",
+      exactDates: [],
       numNights: "",
       preferredMonths: [],
       preferredStartDays: [],
@@ -165,10 +169,6 @@ export default function LodgingPreferencesForm(
       setDisableSubmit(false)
     }
   }, [setDisableSubmit, formik.errors])
-
-  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
-    theme.breakpoints.down("sm")
-  )
 
   const preventMinus = (e: any) => {
     if (
@@ -396,22 +396,41 @@ export default function LodgingPreferencesForm(
               <Grid item container spacing={1} xs={12}>
                 <Grid item xs={12} className={classes.inputHeader}>
                   <AppTypography variant="h2">Timeline</AppTypography>
+                  <AppTypography variant="body1" color="textSecondary">
+                    Select up to three dates
+                  </AppTypography>
                 </Grid>
-                <AppDatePicker
-                  startDate={
-                    formik.values.startDate
-                      ? formik.values.startDate
-                      : undefined
-                  }
-                  endDate={
-                    formik.values.endDate ? formik.values.endDate : undefined
-                  }
-                  onChange={([start, end]) => {
-                    formik.setFieldValue("startDate", start ? start : "")
-                    formik.setFieldValue("endDate", end ? end : "")
-                  }}
-                  numCalendars={isSmallScreen ? 1 : 2}
-                />
+                <Grid item xs={12}>
+                  <AppMultiDateRangePicker
+                    values={formik.values.exactDates}
+                    onAdd={(dateRange) => {
+                      if (formik.values.exactDates.length >= 3) {
+                        dispatch(
+                          enqueueSnackbar({
+                            message: "Can't add more than 3 dates",
+                            options: {
+                              variant: "warning",
+                              autoHideDuration: 2000,
+                            },
+                          })
+                        )
+                      } else {
+                        formik.setFieldValue("exactDates", [
+                          ...formik.values.exactDates,
+                          dateRange,
+                        ])
+                      }
+                    }}
+                    onRemove={(toRemove) => {
+                      formik.setFieldValue(
+                        "exactDates",
+                        formik.values.exactDates.filter(
+                          (dateRange) => dateRange !== toRemove
+                        )
+                      )
+                    }}
+                  />
+                </Grid>
               </Grid>
             ) : (
               <>
@@ -621,6 +640,8 @@ export default function LodgingPreferencesForm(
           </Button>
         </Grid>
       </Grid>
+      <div>{JSON.stringify(formik.values)}</div>
+      <div>{JSON.stringify(formik.errors)}</div>
     </form>
   )
 }

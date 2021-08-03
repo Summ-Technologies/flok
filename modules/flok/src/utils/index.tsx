@@ -98,3 +98,13 @@ export function useScript(src: string): [boolean, ScriptLoadingState] {
 
   return [ready, status]
 }
+
+export class DateUtils {
+  static getDateString(date: Date) {
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  }
+}
