@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
@@ -113,6 +114,7 @@ type LodgingPreferencesFormProps = {
     values: LodgingPreferencesFormValues,
     resetForm: () => void
   ) => void
+  isLoading?: boolean
 }
 
 export default function LodgingPreferencesForm(
@@ -548,7 +550,11 @@ export default function LodgingPreferencesForm(
             color="primary"
             fullWidth
             disabled={disableSubmit}>
-            Submit
+            {props.isLoading ? (
+              <CircularProgress size={`${0.9375 * 1.75}rem`} color="inherit" />
+            ) : (
+              "Submit"
+            )}
           </Button>
         </Grid>
       </Grid>
