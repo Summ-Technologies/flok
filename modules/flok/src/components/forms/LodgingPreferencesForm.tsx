@@ -640,8 +640,6 @@ export default function LodgingPreferencesForm(
           </Button>
         </Grid>
       </Grid>
-      <div>{JSON.stringify(formik.values)}</div>
-      <div>{JSON.stringify(formik.errors)}</div>
     </form>
   )
 }
