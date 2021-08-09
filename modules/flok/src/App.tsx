@@ -3,8 +3,10 @@ import {ThemeProvider} from "@material-ui/styles"
 import {ConnectedRouter} from "connected-react-router"
 import {SnackbarProvider} from "notistack"
 import React, {useEffect} from "react"
+import MixPanelProvider from "react-mixpanel-provider-component"
 import {Provider} from "react-redux"
 import {polyfill as seamlessScrollPolyfill} from "seamless-scroll-polyfill"
+import config from "./config"
 import Notistack from "./notistack-lib/Notistack"
 import Stack from "./Stack"
 import store, {history} from "./store"
@@ -17,15 +19,17 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <ConnectedRouter history={history}>
-          <SnackbarProvider>
-            <Notistack />
-            <CssBaseline />
-            <Stack />
-          </SnackbarProvider>
-        </ConnectedRouter>
-      </ThemeProvider>
+      <MixPanelProvider token={config.get("mixpanel_token")}>
+        <ThemeProvider theme={theme}>
+          <ConnectedRouter history={history}>
+            <SnackbarProvider>
+              <Notistack />
+              <CssBaseline />
+              <Stack />
+            </SnackbarProvider>
+          </ConnectedRouter>
+        </ThemeProvider>
+      </MixPanelProvider>
     </Provider>
   )
 }
