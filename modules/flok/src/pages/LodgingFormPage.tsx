@@ -1,3 +1,4 @@
+import querystring from "querystring"
 import {useEffect} from "react"
 import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
@@ -30,7 +31,12 @@ function LodgingFormPage(props: LodgingFormPageProps) {
   ) {
     let onSuccess = () => {
       mixpanel.track("LODGING_FORM_SUBMITTED")
-      window.location.href = "https://calendly.com/flok_sales/flok-intro-call"
+      let q = querystring.stringify({
+        email: values.email,
+        a1: values.companyName,
+        a3: `${values.numAttendeesLower} - ${values.numAttendeesUpper}`,
+      })
+      window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
     }
     dispatch(
       postLodgingRequestForm(
