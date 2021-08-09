@@ -30,7 +30,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
   ) {
     let onSuccess = () => {
       mixpanel.track("LODGING_FORM_SUBMITTED")
-      resetForm()
+      window.location.href = "https://calendly.com/flok_sales/flok-intro-call"
     }
     dispatch(
       postLodgingRequestForm(
