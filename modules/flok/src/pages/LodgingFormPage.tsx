@@ -1,3 +1,5 @@
+import {useEffect} from "react"
+import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import LodgingPreferencesForm, {
@@ -12,18 +14,27 @@ import {useQuery} from "../utils"
 type LodgingFormPageProps = RouteComponentProps<{}>
 function LodgingFormPage(props: LodgingFormPageProps) {
   let dispatch = useDispatch()
+  const {mixpanel} = useMixPanel()
   let postRfpRequestState = useSelector(
     (state: RootState) => state.api.postRfpForm
   )
   let email = useQuery("email")
 
+  useEffect(() => {
+    mixpanel.track("LODGING_FORM_START")
+  }, [mixpanel])
+
   function submitLodgingPreferencesForm(
     values: LodgingPreferencesFormValues,
     resetForm: () => void
   ) {
+    let onSuccess = () => {
+      mixpanel.track("LODGING_FORM_SUBMITTED")
+      resetForm()
+    }
     dispatch(
       postLodgingRequestForm(
-        resetForm,
+        onSuccess,
         values.email,
         values.companyName,
         values.numAttendeesUpper ? values.numAttendeesUpper : 0,
