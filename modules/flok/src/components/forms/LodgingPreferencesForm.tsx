@@ -612,7 +612,7 @@ export default function LodgingPreferencesForm(
             variant="contained"
             color="primary"
             fullWidth
-            disabled={disableSubmit}>
+            disabled={disableSubmit || props.isLoading}>
             {props.isLoading ? (
               <CircularProgress size={`${0.9375 * 1.75}rem`} color="inherit" />
             ) : (
