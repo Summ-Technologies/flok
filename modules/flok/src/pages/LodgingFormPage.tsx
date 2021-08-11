@@ -3,9 +3,7 @@ import {useEffect} from "react"
 import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import LodgingPreferencesForm, {
-  LodgingPreferencesFormValues,
-} from "../components/forms/LodgingPreferencesForm"
+import LodgingPreferencesForm from "../components/forms/LodgingPreferencesForm"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import {RootState} from "../store"
@@ -25,10 +23,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
     mixpanel.track("LODGING_FORM_START")
   }, [mixpanel])
 
-  function submitLodgingPreferencesForm(
-    values: LodgingPreferencesFormValues,
-    resetForm: () => void
-  ) {
+  function submitLodgingPreferencesForm(values: any, resetForm: () => void) {
     let onSuccess = () => {
       mixpanel.track("LODGING_FORM_SUBMITTED")
       let q = querystring.stringify({

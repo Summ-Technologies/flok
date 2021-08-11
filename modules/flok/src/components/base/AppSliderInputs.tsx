@@ -50,7 +50,8 @@ export function AppSliderInput(props: AppSliderInputProps) {
 }
 
 type AppSliderRangeInputProps = {
-  value: [number, number]
+  lower?: number
+  upper?: number
   onChange: (value: [number, number]) => void
   max: number
   min: number
@@ -67,7 +68,10 @@ export function AppSliderRangeInput(props: AppSliderRangeInputProps) {
     <Slider
       className={classes.root}
       classes={{thumb: classes.thumb, active: classes.active}}
-      value={props.value}
+      value={
+        props.upper && props.lower ? [props.upper, props.lower] : undefined
+      }
+      defaultValue={[props.min, props.max]}
       onChange={handleChange}
       min={props.min}
       max={props.max}
