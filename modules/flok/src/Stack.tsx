@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
-import LodgingFormPage from "./pages/LodgingFormPage"
-import LodgingFormPageV2 from "./pages/LodgingFormPageV2"
+import {default as LodgingFormPage} from "./pages/LodgingFormPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
+import RedirectPage from "./pages/misc/RedirectPage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
 
@@ -26,8 +26,8 @@ export class AppRoutes {
       path: "/lodging",
     },
     {
-      name: "LodgingFormPageV2",
-      component: <LodgingFormPageV2 />,
+      name: "RedirectHome",
+      component: <RedirectPage pageName="LodgingFormPage" />,
       path: "/",
     },
     {

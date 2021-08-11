@@ -41,13 +41,13 @@ export default function AppNumberCounterInput(
   let classes = useStyles(props)
   function increment() {
     let newValue = props.value + 1
-    if (props.max !== undefined && newValue <= props.max) {
+    if (props.max === undefined || newValue <= props.max) {
       props.onChange(newValue)
     }
   }
   function decrement() {
     let newValue = props.value - 1
-    if (props.min !== undefined && newValue >= props.min) {
+    if (props.min === undefined || newValue >= props.min) {
       props.onChange(newValue)
     }
   }
@@ -57,7 +57,10 @@ export default function AppNumberCounterInput(
         className={classes.btn}
         disableFocusRipple
         color="inherit"
-        onClick={decrement}>
+        onClick={(e) => {
+          e.stopPropagation()
+          decrement()
+        }}>
         -
       </Button>
       <AppTypography variant="body1" fontWeight="bold">
@@ -67,7 +70,10 @@ export default function AppNumberCounterInput(
         className={classes.btn}
         disableFocusRipple
         color="inherit"
-        onClick={increment}>
+        onClick={(e) => {
+          e.stopPropagation()
+          increment()
+        }}>
         +
       </Button>
     </div>

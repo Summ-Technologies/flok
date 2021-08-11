@@ -1,67 +1,33 @@
-import querystring from "querystring"
-import {useEffect} from "react"
-import {useMixPanel} from "react-mixpanel-provider-component"
-import {useDispatch, useSelector} from "react-redux"
+import {Grid, makeStyles} from "@material-ui/core"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import LodgingPreferencesForm from "../components/forms/LodgingPreferencesForm"
+import LodgingPreferencesForm from "../components/lodging/LodgingPreferencesForm"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
-import {RootState} from "../store"
-import {postLodgingRequestForm} from "../store/actions/lodging"
-import {useQuery} from "../utils"
+
+const useStyles = makeStyles((theme) => ({
+  formContainer: {
+    [theme.breakpoints.down("sm")]: {
+      justifyContent: "center",
+    },
+    height: "100%",
+  },
+}))
 
 type LodgingFormPageProps = RouteComponentProps<{}>
 function LodgingFormPage(props: LodgingFormPageProps) {
-  let dispatch = useDispatch()
-  const {mixpanel} = useMixPanel()
-  let postRfpRequestState = useSelector(
-    (state: RootState) => state.api.postRfpForm
-  )
-  let email = useQuery("email")
-
-  useEffect(() => {
-    mixpanel.track("LODGING_FORM_START")
-  }, [mixpanel])
-
-  function submitLodgingPreferencesForm(values: any, resetForm: () => void) {
-    let onSuccess = () => {
-      mixpanel.track("LODGING_FORM_SUBMITTED")
-      let q = querystring.stringify({
-        email: values.email,
-        a1: values.companyName,
-        a3: `${values.numAttendeesLower} - ${values.numAttendeesUpper}`,
-      })
-      window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
-    }
-    dispatch(
-      postLodgingRequestForm(
-        onSuccess,
-        values.email,
-        values.companyName,
-        values.numAttendeesUpper ? values.numAttendeesUpper : 0,
-        values.numAttendeesLower ? values.numAttendeesLower : 0,
-        !values.isExactDates,
-        values.meetingSpaces,
-        values.roomingPreferences,
-        values.numNights ? values.numNights : undefined,
-        values.preferredMonths,
-        values.preferredStartDays,
-        values.startDate ? values.startDate : undefined,
-        values.endDate ? values.endDate : undefined
-      )
-    )
-  }
+  const classes = useStyles()
   return (
     <PageContainer>
       <PageBody
-        HeaderProps={{
-          header: "You've taken the first step in planning your retreat!",
-        }}>
-        <LodgingPreferencesForm
-          prefilledEmail={email ? email : undefined}
-          submitLodgingPreferencesForm={submitLodgingPreferencesForm}
-          isLoading={postRfpRequestState.loading}
-        />
+        noGutter
+        backgroundImage={
+          "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
+        }>
+        <Grid container className={classes.formContainer}>
+          <Grid item xs={11} sm={10} md={9} lg={7}>
+            <LodgingPreferencesForm />
+          </Grid>
+        </Grid>
       </PageBody>
     </PageContainer>
   )

@@ -6,6 +6,8 @@ import AppLogo from "../base/AppLogo"
 import AppTypography from "../base/AppTypography"
 import AppAttendeesRangeInput from "./AppAttendeesRangeInput"
 import AppDatesRangeInput from "./AppDatesRangeInput"
+import AppMeetingSpacesInput from "./AppMeetingSpacesInput"
+import AppRoomTypeInput from "./AppRoomTypeInput"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,7 +23,11 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
   },
   ctaContainer: {
-    marginTop: "auto",
+    flexDirection: "row-reverse",
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: theme.spacing(2),
   },
   formBody: {
     minHeight: "100%",
@@ -68,6 +74,9 @@ export default function LodgingPreferencesForm(
 
       numNights: 1,
       preferredMonths: [],
+
+      meetingSpaces: [],
+      numBreakoutRooms: 1,
     },
     onSubmit: (vals) => {
       alert("submitted")
@@ -104,8 +113,20 @@ export default function LodgingPreferencesForm(
               variant="contained"
               color="primary"
               size="large">
-              Next Step
+              {step === steps.length - 1 ? "Submit" : "Next Step"}
             </Button>
+            {step > 0 ? (
+              <Button
+                onClick={() => {
+                  setFormData({...formData, ...formikSteps[step].values})
+                  setStep(step - 1)
+                }}
+                variant="outlined"
+                color="primary"
+                size="large">
+                Go Back
+              </Button>
+            ) : undefined}
           </Grid>
         </Grid>
       </form>
@@ -121,11 +142,17 @@ let StepOneValidation = yup.object().shape({
 function RFPFormBodyStepOne(props: {formik: any}) {
   return (
     <Grid container spacing={4}>
-      <Grid container alignItems="center" justify="space-between" item xs={12}>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justify="space-between"
+        item
+        xs={12}>
         <Grid item>
           <AppTypography variant="h4">What's your name?</AppTypography>
         </Grid>
-        <Grid item>
+        <Grid item xs={12} md={6}>
           <TextField
             id="name"
             value={props.formik.values.name}
@@ -138,9 +165,17 @@ function RFPFormBodyStepOne(props: {formik: any}) {
           />
         </Grid>
       </Grid>
-      <Grid container alignItems="center" justify="space-between" item xs={12}>
-        <AppTypography variant="h4">What's your email?</AppTypography>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justify="space-between"
+        item
+        xs={12}>
         <Grid item>
+          <AppTypography variant="h4">What's your email?</AppTypography>
+        </Grid>
+        <Grid item xs={12} md={6}>
           <TextField
             id="email"
             value={props.formik.values.email}
@@ -153,9 +188,17 @@ function RFPFormBodyStepOne(props: {formik: any}) {
           />
         </Grid>
       </Grid>
-      <Grid container alignItems="center" justify="space-between" item xs={12}>
-        <AppTypography variant="h4">What's your company?</AppTypography>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justify="space-between"
+        item
+        xs={12}>
         <Grid item>
+          <AppTypography variant="h4">What's your company?</AppTypography>
+        </Grid>
+        <Grid item xs={12} md={6}>
           <TextField
             id="companyName"
             value={props.formik.values.companyName}
@@ -198,19 +241,32 @@ let StepTwoValidation = yup.object().shape({
       .min(1, "Please select at least one preferred month")
       .required(),
   }),
+  meetingSpaces: yup.array(yup.string()),
+  numBreakoutRooms: yup.number().when("meetingSpaces", {
+    is: (val: string[]) => val.includes("breakout"),
+    then: yup.number().required().min(1),
+  }),
+  roomingType: yup.string().required(),
 })
 
 function RFPFormBodyStepTwo(props: {formik: any}) {
   return (
     <Grid container spacing={4}>
-      <Grid container alignItems="center" justify="space-between" item xs={12}>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        alignContent="space-between"
+        justify="space-between"
+        item
+        xs={12}>
         <Grid item>
           <AppTypography variant="h4">How many attendees?</AppTypography>
           <AppTypography variant="body2" color="textSecondary">
             If you’re not 100% sure just start with a best guess.
           </AppTypography>
         </Grid>
-        <Grid item>
+        <Grid item xs={12} md="auto">
           <AppAttendeesRangeInput
             error={
               !!(
@@ -229,14 +285,20 @@ function RFPFormBodyStepTwo(props: {formik: any}) {
           />
         </Grid>
       </Grid>
-      <Grid container alignItems="center" justify="space-between" item xs={12}>
-        <Grid item>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justify="space-between"
+        item
+        xs={12}>
+        <Grid item xs={12} md={6}>
           <AppTypography variant="h4">When do you want to go?</AppTypography>
           <AppTypography variant="body2" color="textSecondary">
             Exact dates or a time of year, you tell us.
           </AppTypography>
         </Grid>
-        <Grid item>
+        <Grid item xs={12} md="auto">
           <AppDatesRangeInput
             isExactDates={props.formik.values.isExactDates}
             onChangeIsExactDates={(isExact) =>
@@ -258,6 +320,50 @@ function RFPFormBodyStepTwo(props: {formik: any}) {
             preferredMonths={props.formik.values.preferredMonths}
             onChangePreferredMonths={(vals) => {
               props.formik.setFieldValue("preferredMonths", vals)
+            }}
+          />
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justify="space-between"
+        item
+        xs={12}>
+        <Grid item xs={12}>
+          <AppTypography variant="h4">
+            What types of spaces do you need?
+          </AppTypography>
+        </Grid>
+        <Grid item xs={12}>
+          <AppMeetingSpacesInput
+            numBreakoutRooms={props.formik.values.numBreakoutRooms}
+            values={props.formik.values.meetingSpaces}
+            onChange={(newVals, newNumRooms) => {
+              props.formik.setFieldValue("meetingSpaces", newVals)
+              props.formik.setFieldValue("numBreakoutRooms", newNumRooms)
+            }}
+          />
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justify="space-between"
+        item
+        xs={12}>
+        <Grid item xs={12}>
+          <AppTypography variant="h4">
+            What types of rooms do you prefer?
+          </AppTypography>
+        </Grid>
+        <Grid item xs={12}>
+          <AppRoomTypeInput
+            value={props.formik.values.roomingType}
+            onChange={(newVal) => {
+              props.formik.setFieldValue("roomingType", newVal)
             }}
           />
         </Grid>
