@@ -165,9 +165,7 @@ function Range(props: {
             fullWidth
             value={lower}
             onChange={(e) => {
-              if (!upper || parseInt(e.target.value) <= upper) {
-                props.onChange(parseInt(e.target.value), upper)
-              }
+              props.onChange(parseInt(e.target.value), upper)
             }}
             size="small"
             type="number"
@@ -186,9 +184,7 @@ function Range(props: {
             fullWidth
             value={upper}
             onChange={(e) => {
-              if (!lower || lower <= parseInt(e.target.value)) {
-                onChange(lower, parseInt(e.target.value))
-              }
+              onChange(lower, parseInt(e.target.value))
             }}
             size="small"
             type="number"
