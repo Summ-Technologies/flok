@@ -1,4 +1,5 @@
 import {Button, Grid, makeStyles} from "@material-ui/core"
+import {CalendarToday} from "@material-ui/icons"
 import clsx from "clsx"
 import React from "react"
 import AppTypography from "../base/AppTypography"
@@ -6,45 +7,55 @@ import AppTypography from "../base/AppTypography"
 let useStyles = makeStyles((theme) => ({
   root: {
     maxWidth: "100%",
+    overflowX: "auto",
   },
   cardButton: {
     minWidth: "unset",
-    backgroundColor: theme.palette.grey[200],
-    padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
+    border: `solid 1px ${theme.palette.text.secondary}`,
+    color: theme.palette.text.secondary,
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
     "&:hover": {
       boxShadow: theme.shadows[3],
-      backgroundColor: theme.palette.grey[200],
     },
   },
   cardButtonSelected: {
-    backgroundColor: theme.palette.primary.light,
     boxShadow: theme.shadows[1],
-    "&:hover": {
-      backgroundColor: theme.palette.primary.light,
-    },
+    borderColor: theme.palette.primary.main,
+    color: theme.palette.primary.main,
   },
   cardButtonText: {
-    width: (props: AppInputSelectCardGroupProps) =>
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    minWidth: (props: AppMonthCardGroupInputProps) =>
       `${
         Math.max(...props.options.map((option) => option.label.trim().length)) +
         0.5
       }ch`,
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(0.5),
+    },
   },
 }))
 
-type AppInputSelectCardGroupProps = {
+type AppMonthCardGroupInputProps = {
   options: {label: string; value: string}[]
   values: string[]
-  onChange: (val: string) => void
+  onChange: (vals: string[]) => void
 }
 
-export default function AppInputSelectCardGroup(
-  props: AppInputSelectCardGroupProps
+export default function AppMonthCardGroupInput(
+  props: AppMonthCardGroupInputProps
 ) {
   let classes = useStyles(props)
 
   return (
-    <Grid container spacing={2} direction="row" className={classes.root}>
+    <Grid
+      container
+      spacing={1}
+      direction="row"
+      wrap="nowrap"
+      className={classes.root}>
       {props.options.map((option) => {
         return (
           <Grid item key={option.value}>
@@ -59,7 +70,16 @@ export default function AppInputSelectCardGroup(
               disableFocusRipple
               disableTouchRipple
               value={option.value}
-              onClick={() => props.onChange(option.value)}>
+              onClick={() => {
+                if (props.values.includes(option.value)) {
+                  props.onChange(
+                    props.values.filter((val) => val !== option.value)
+                  )
+                } else {
+                  props.onChange([...props.values, option.value])
+                }
+              }}>
+              <CalendarToday color="inherit" />
               <AppTypography variant="body1">{option.label}</AppTypography>
             </Button>
           </Grid>

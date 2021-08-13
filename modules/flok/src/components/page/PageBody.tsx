@@ -1,4 +1,5 @@
 import {makeStyles} from "@material-ui/core"
+import clsx from "clsx"
 import React, {PropsWithChildren} from "react"
 import PageHeader, {PageHeaderProps} from "./PageHeader"
 
@@ -19,21 +20,30 @@ const useStyles = makeStyles((theme) => ({
         props.noGutter ? 0 : theme.spacing(4),
     },
   },
-  padding: {},
+  backgroundImage: {
+    backgroundImage: (props: PageBodyProps) =>
+      `url("${props.backgroundImage}")`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+  },
   body: {
     flex: 1,
-    paddingBottom: theme.spacing(2),
   },
 }))
 
 type PageBodyProps = PropsWithChildren<{
   noGutter?: boolean
   HeaderProps?: PageHeaderProps
+  backgroundImage?: string
 }>
 export default function PageBody(props: PageBodyProps) {
   const classes = useStyles(props)
   return (
-    <div className={classes.root}>
+    <div
+      className={clsx(
+        classes.root,
+        props.backgroundImage ? classes.backgroundImage : undefined
+      )}>
       {props.HeaderProps ? <PageHeader {...props.HeaderProps} /> : undefined}
       <div className={classes.body}>{props.children}</div>
     </div>

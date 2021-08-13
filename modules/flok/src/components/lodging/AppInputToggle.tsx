@@ -1,25 +1,18 @@
 import {Button, makeStyles} from "@material-ui/core"
-import clsx from "clsx"
 import React from "react"
 
 let useStyles = makeStyles((theme) => ({
   root: {
-    padding: "8px 6px",
-    borderWidth: 1,
-    borderStyle: "solid",
     borderRadius: theme.shape.borderRadius,
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
+    backgroundColor: theme.palette.grey[200],
     boxSizing: "content-box",
-    "& .AppInputToggle-activeButton": {
-      backgroundColor: theme.palette.primary.light,
-    },
   },
   option: {
-    paddingTop: 9.5,
-    paddingBottom: 9.5,
     width: "50%",
+    borderRadius: theme.shape.borderRadius,
     minWidth: (props: AppInputToggleProps) => {
       return `calc(${Math.max(
         props.trueOption.length,
@@ -49,16 +42,13 @@ export default function AppInputToggle(props: AppInputToggleProps) {
         return (
           <Button
             variant={isActive ? "contained" : "text"}
-            color="inherit"
+            color={isActive ? "primary" : "default"}
             disableElevation
             disableFocusRipple
             onClick={() => props.onChange(optionValue)}
             key={index}
-            className={clsx(
-              classes.option,
-              isActive ? "AppInputToggle-activeButton" : undefined
-            )}>
-            <div className={"MuiInputBase-root"}>{option}</div>
+            className={classes.option}>
+            {option}
           </Button>
         )
       })}
