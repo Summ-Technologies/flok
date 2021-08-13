@@ -409,7 +409,6 @@ function RFPFormBodyStepTwo(props: {formik: any}) {
           />
         </Grid>
       </Grid>
-      {JSON.stringify(props.formik.errors)}
     </Grid>
   )
 }
