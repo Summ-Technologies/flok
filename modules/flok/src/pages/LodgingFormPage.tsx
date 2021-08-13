@@ -9,6 +9,8 @@ import LodgingPreferencesForm, {
 } from "../components/lodging/LodgingPreferencesForm"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
+import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
+import {apiNotification} from "../notistack-lib/utils"
 import {RootState} from "../store"
 import {postLodgingRequestForm} from "../store/actions/lodging"
 
@@ -63,6 +65,14 @@ function LodgingFormPage(props: LodgingFormPageProps) {
     )
   }
 
+  function showError(error: string) {
+    dispatch(
+      enqueueSnackbar(
+        apiNotification(error, (key) => dispatch(closeSnackbar(key)), true)
+      )
+    )
+  }
+
   return (
     <PageContainer>
       <PageBody
@@ -74,6 +84,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
           <Grid item xs={11} sm={10} md={9} lg={7}>
             <LodgingPreferencesForm
               onSubmit={submitLodgingPreferencesForm}
+              onError={showError}
               isLoading={postRfpRequestState.loading}
             />
           </Grid>

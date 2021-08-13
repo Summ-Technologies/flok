@@ -60,6 +60,7 @@ export type RFPFormValues = {
 type LodgingPreferencesFormProps = {
   onSubmit: (vals: RFPFormValues) => void
   isLoading?: boolean
+  onError: (error: string) => void
 }
 export default function LodgingPreferencesForm(
   props: LodgingPreferencesFormProps
@@ -126,7 +127,21 @@ export default function LodgingPreferencesForm(
               type="submit"
               variant="contained"
               color="primary"
-              size="large">
+              size="large"
+              disabled={props.isLoading}
+              onClick={() => {
+                if (Object.values(formikSteps[step].errors).length > 0) {
+                  Object.values(formikSteps[step].errors)
+                    .slice(0, 3)
+                    .forEach((err) => {
+                      if (typeof err === "string") {
+                        props.onError(err)
+                      } else if (err && err.length > 0) {
+                        props.onError(err[0])
+                      }
+                    })
+                }
+              }}>
               {step === steps.length - 1 ? (
                 props.isLoading ? (
                   <CircularProgress
@@ -160,9 +175,9 @@ export default function LodgingPreferencesForm(
 }
 
 let StepOneValidation = yup.object().shape({
-  name: yup.string().required("Missing required fields"),
-  email: yup.string().email().required(),
-  companyName: yup.string().min(3).required(),
+  name: yup.string().required("Name is a required field."),
+  email: yup.string().email().required("Email is a required field."),
+  companyName: yup.string().min(3).required("Company is a required field."),
 })
 function RFPFormBodyStepOne(props: {formik: any}) {
   return (
@@ -181,7 +196,7 @@ function RFPFormBodyStepOne(props: {formik: any}) {
           <TextField
             id="name"
             value={props.formik.values.name}
-            error={props.formik.touched.name && props.formik.errors.name}
+            error={!!(props.formik.touched.name && props.formik.errors.name)}
             fullWidth
             variant="outlined"
             size="small"
@@ -204,7 +219,7 @@ function RFPFormBodyStepOne(props: {formik: any}) {
           <TextField
             id="email"
             value={props.formik.values.email}
-            error={props.formik.touched.email && props.formik.errors.email}
+            error={!!(props.formik.touched.email && props.formik.errors.email)}
             fullWidth
             variant="outlined"
             size="small"
@@ -228,8 +243,10 @@ function RFPFormBodyStepOne(props: {formik: any}) {
             id="companyName"
             value={props.formik.values.companyName}
             error={
-              props.formik.touched.companyName &&
-              props.formik.errors.companyName
+              !!(
+                props.formik.touched.companyName &&
+                props.formik.errors.companyName
+              )
             }
             fullWidth
             variant="outlined"
@@ -244,34 +261,34 @@ function RFPFormBodyStepOne(props: {formik: any}) {
 }
 
 let StepTwoValidation = yup.object().shape({
-  attendeesLower: yup.number().required(),
-  attendeesUpper: yup.number().required(),
+  attendeesLower: yup.number().required("Number of attendees is required."),
+  attendeesUpper: yup.number().required("Number of attendees is required."),
   isExactDates: yup.boolean().required(),
   startDate: yup.date().when("isExactDates", {
     is: true,
-    then: yup.date().required(),
+    then: yup.date().required("Start date is required."),
   }),
   endDate: yup.date().when("isExactDates", {
     is: true,
-    then: yup.date().required(),
+    then: yup.date().required("End date is required."),
   }),
   numNights: yup.number().when("isExactDates", {
     is: false,
-    then: yup.number().required(),
+    then: yup.number().required("Number of nights is required."),
   }),
   preferredMonths: yup.array().when("isExactDates", {
     is: false,
     then: yup
       .array(yup.string())
-      .min(1, "Please select at least one preferred month")
-      .required(),
+      .min(1, "At least one preferred month is required")
+      .required("At least one preferred month is required"),
   }),
   meetingSpaces: yup.array(yup.string()),
   numBreakoutRooms: yup.number().when("meetingSpaces", {
     is: (val: string[]) => val.includes("breakout"),
     then: yup.number().required().min(1),
   }),
-  roomingType: yup.string().required(),
+  roomingType: yup.string().required("Room type is a required field."),
 })
 
 function RFPFormBodyStepTwo(props: {formik: any}) {
