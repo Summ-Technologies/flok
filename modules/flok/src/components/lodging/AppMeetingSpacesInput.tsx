@@ -81,7 +81,7 @@ export default function AppMeetingSpacesInput(
           disableRipple>
           <AppTypography variant="h2">Breakout Rooms</AppTypography>
           <AppTypography variant="body1" color="textSecondary">
-            Meeting space to fit your entire company
+            Meeting space to fit teams within your company
           </AppTypography>
           {props.values.includes("breakout") ? (
             <AppNumberCounterInput
@@ -91,21 +91,6 @@ export default function AppMeetingSpacesInput(
               size="small"
             />
           ) : undefined}
-        </ButtonBase>
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <ButtonBase
-          className={clsx(
-            classes.card,
-            props.values.includes("outdoor") && classes.active
-          )}
-          onClick={() => toggleCard("outdoor")}
-          disableTouchRipple
-          disableRipple>
-          <AppTypography variant="h2">Outdoor</AppTypography>
-          <AppTypography variant="body1" color="textSecondary">
-            Meeting space to fit your entire company
-          </AppTypography>
         </ButtonBase>
       </Grid>
     </Grid>

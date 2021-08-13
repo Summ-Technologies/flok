@@ -86,7 +86,7 @@ export default function AppRoomTypeInput(props: AppRoomTypeInputProps) {
           disableRipple>
           <AppTypography variant="h2">Doubles Okay</AppTypography>
           <AppTypography variant="body1" color="textSecondary">
-            Doubles help reduce cost but can increase complexity.
+            Doubles help reduce cost but are less popular among employees.
           </AppTypography>
         </ButtonBase>
       </Grid>
@@ -96,7 +96,7 @@ export default function AppRoomTypeInput(props: AppRoomTypeInputProps) {
           onClick={() => props.onChange("either")}
           disableTouchRipple
           disableRipple>
-          <AppTypography variant="h2">Either works!</AppTypography>
+          <AppTypography variant="h2">Either works</AppTypography>
           <AppTypography variant="body1" color="textSecondary">
             Depending on the location you may have one type or a mix.
           </AppTypography>
