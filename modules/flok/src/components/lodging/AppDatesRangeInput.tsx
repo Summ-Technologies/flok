@@ -23,14 +23,19 @@ let useStyles = makeStyles((theme) => ({
     border: `solid 1px ${theme.palette.grey[400]}`,
     borderRadius: theme.shape.borderRadius,
     "& .MuiSvgIcon-root": {
-      color: theme.palette.text.secondary,
+      color: (props: AppRetreatDatesInputProps) =>
+        props.error ? theme.palette.error.main : theme.palette.text.secondary,
     },
     "&.active .MuiSvgIcon-root": {
-      color: theme.palette.primary.main,
+      color: (props: AppRetreatDatesInputProps) =>
+        props.error ? theme.palette.error.main : theme.palette.primary.main,
     },
     "&.active": {
-      borderColor: theme.palette.primary.main,
+      borderColor: (props: AppRetreatDatesInputProps) =>
+        props.error ? theme.palette.error.main : theme.palette.primary.main,
     },
+    borderColor: (props: AppRetreatDatesInputProps) =>
+      props.error ? theme.palette.error.main : theme.palette.grey[400],
   },
   popper: {
     paddingTop: theme.spacing(1),
@@ -112,6 +117,8 @@ type AppRetreatDatesInputProps = {
   onChangeNumNights: (newVal: number) => void
   preferredMonths: string[]
   onChangePreferredMonths: (vals: string[]) => void
+
+  error?: boolean
 }
 export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
   let classes = useStyles(props)

@@ -31,6 +31,15 @@ let useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: theme.spacing(2),
     border: `solid 1px ${theme.palette.grey[300]}`,
+    borderColor: (props: AppRoomTypeInputProps) =>
+      props.error ? theme.palette.error.main : theme.palette.grey[300],
+    "&.active": {
+      borderColor: (props: AppRoomTypeInputProps) =>
+        props.error ? theme.palette.error.main : theme.palette.primary.main,
+
+      borderWidth: 2,
+      backgroundColor: theme.palette.common.white,
+    },
     backgroundColor: theme.palette.grey[100],
     display: "flex",
     justifyContent: "flex-start",
@@ -44,11 +53,6 @@ let useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(0.5),
     },
   },
-  active: {
-    borderColor: theme.palette.primary.main,
-    borderWidth: 2,
-    backgroundColor: theme.palette.common.white,
-  },
 }))
 
 type RoomType = "singles" | "doubles" | "either"
@@ -56,6 +60,7 @@ type RoomType = "singles" | "doubles" | "either"
 type AppRoomTypeInputProps = {
   value?: RoomType
   onChange: (newVal: RoomType) => void
+  error?: boolean
 }
 export default function AppRoomTypeInput(props: AppRoomTypeInputProps) {
   let classes = useStyles(props)
@@ -63,10 +68,7 @@ export default function AppRoomTypeInput(props: AppRoomTypeInputProps) {
     <Grid container className={classes.root}>
       <Grid item xs={12} md={4}>
         <ButtonBase
-          className={clsx(
-            classes.card,
-            props.value === "singles" && classes.active
-          )}
+          className={clsx(classes.card, props.value === "singles" && "active")}
           onClick={() => props.onChange("singles")}
           disableTouchRipple
           disableRipple>
@@ -78,10 +80,7 @@ export default function AppRoomTypeInput(props: AppRoomTypeInputProps) {
       </Grid>
       <Grid item xs={12} md={4}>
         <ButtonBase
-          className={clsx(
-            classes.card,
-            props.value === "doubles" && classes.active
-          )}
+          className={clsx(classes.card, props.value === "doubles" && "active")}
           onClick={() => props.onChange("doubles")}
           disableTouchRipple
           disableRipple>
@@ -93,10 +92,7 @@ export default function AppRoomTypeInput(props: AppRoomTypeInputProps) {
       </Grid>
       <Grid item xs={12} md={4}>
         <ButtonBase
-          className={clsx(
-            classes.card,
-            props.value === "either" && classes.active
-          )}
+          className={clsx(classes.card, props.value === "either" && "active")}
           onClick={() => props.onChange("either")}
           disableTouchRipple
           disableRipple>

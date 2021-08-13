@@ -90,6 +90,8 @@ export default function LodgingPreferencesForm(
 
       meetingSpaces: [],
       numBreakoutRooms: 1,
+
+      roomingType: "",
     },
     onSubmit: (vals) => {
       props.onSubmit({...formData, ...vals})
@@ -344,6 +346,16 @@ function RFPFormBodyStepTwo(props: {formik: any}) {
             onChangePreferredMonths={(vals) => {
               props.formik.setFieldValue("preferredMonths", vals)
             }}
+            error={
+              !!(
+                props.formik.touched.isExactDates &&
+                (props.formik.errors.isExactDates ||
+                  props.formik.errors.startDate ||
+                  props.formik.errors.endDate ||
+                  props.formik.errors.numNights ||
+                  props.formik.errors.preferredMonths)
+              )
+            }
           />
         </Grid>
       </Grid>
@@ -388,9 +400,16 @@ function RFPFormBodyStepTwo(props: {formik: any}) {
             onChange={(newVal) => {
               props.formik.setFieldValue("roomingType", newVal)
             }}
+            error={
+              !!(
+                props.formik.touched.roomingType &&
+                props.formik.errors.roomingType
+              )
+            }
           />
         </Grid>
       </Grid>
+      {JSON.stringify(props.formik.errors)}
     </Grid>
   )
 }
