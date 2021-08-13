@@ -1,4 +1,11 @@
-import {Button, Grid, makeStyles, Paper, TextField} from "@material-ui/core"
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  makeStyles,
+  Paper,
+  TextField,
+} from "@material-ui/core"
 import {useFormik} from "formik"
 import {useState} from "react"
 import * as yup from "yup"
@@ -34,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-type RFPFormValues = {
+export type RFPFormValues = {
   name?: string
   email?: string
   companyName?: string
@@ -45,9 +52,15 @@ type RFPFormValues = {
   endDate?: Date
   numNights?: number
   preferredMonths?: string[]
+  meetingSpaces?: string[]
+  numBreakoutRooms?: number
+  roomingType?: string
 }
 
-type LodgingPreferencesFormProps = {}
+type LodgingPreferencesFormProps = {
+  onSubmit: (vals: RFPFormValues) => void
+  isLoading?: boolean
+}
 export default function LodgingPreferencesForm(
   props: LodgingPreferencesFormProps
 ) {
@@ -79,8 +92,7 @@ export default function LodgingPreferencesForm(
       numBreakoutRooms: 1,
     },
     onSubmit: (vals) => {
-      alert("submitted")
-      console.log({...formData, ...vals})
+      props.onSubmit({...formData, ...vals})
     },
   })
 
@@ -113,7 +125,18 @@ export default function LodgingPreferencesForm(
               variant="contained"
               color="primary"
               size="large">
-              {step === steps.length - 1 ? "Submit" : "Next Step"}
+              {step === steps.length - 1 ? (
+                props.isLoading ? (
+                  <CircularProgress
+                    size={`${0.9375 * 1.75}rem`}
+                    color="inherit"
+                  />
+                ) : (
+                  "Submit"
+                )
+              ) : (
+                "Next Step"
+              )}
             </Button>
             {step > 0 ? (
               <Button
