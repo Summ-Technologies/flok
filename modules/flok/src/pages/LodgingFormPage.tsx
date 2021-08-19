@@ -38,11 +38,13 @@ function LodgingFormPage(props: LodgingFormPageProps) {
 
   let dispatch = useDispatch()
   function submitLodgingPreferencesForm(values: RFPFormValues) {
-    let onSuccess = () => {
+    let onSuccess = (id: number) => {
       mixpanel.track("LODGING_FORM_SUBMITTED")
       let q = querystring.stringify({
         email: values.email,
         a1: values.companyName,
+        utm_campaign: "intake_call",
+        utm_content: id,
       })
       window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
     }
