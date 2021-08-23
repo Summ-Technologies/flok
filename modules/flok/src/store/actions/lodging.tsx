@@ -4,7 +4,7 @@ import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
 import {ApiAction, createApiAction} from "./api"
 
-// Authentication
+// lodging form
 export const POST_LODGING_REQUEST_FORM_REQUEST =
   "POST_LODGING_REQUEST_FORM_REQUEST"
 export const POST_LODGING_REQUEST_FORM_SUCCESS =
@@ -82,4 +82,32 @@ export function postLodgingRequestForm(
       )
     }
   }
+}
+
+export const POST_RFP_LITE_RESPONSE_REQUEST = "POST_RFP_LITE_RESPONSE_REQUEST"
+export const POST_RFP_LITE_RESPONSE_SUCCESS = "POST_RFP_LITE_RESPONSE_SUCCESS"
+export const POST_RFP_LITE_RESPONSE_FAILURE = "POST_RFP_LITE_RESPONSE_FAILURE"
+
+export function postRFPLiteResponse(
+  lodgingProposalRequestId: number,
+  availability: boolean,
+  hotel: string,
+  dates?: string
+) {
+  let endpoint = "/v1.0/lodging/rfp-lite-responses"
+  return createApiAction({
+    endpoint,
+    method: "POST",
+    body: JSON.stringify({
+      lodgingProposalRequestId,
+      availability,
+      hotel,
+      dates,
+    }),
+    types: [
+      POST_RFP_LITE_RESPONSE_REQUEST,
+      POST_RFP_LITE_RESPONSE_SUCCESS,
+      POST_RFP_LITE_RESPONSE_FAILURE,
+    ],
+  })
 }

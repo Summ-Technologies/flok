@@ -4,6 +4,7 @@ import {Route, Switch} from "react-router-dom"
 import {default as LodgingFormPage} from "./pages/LodgingFormPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"
+import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
 
@@ -24,6 +25,11 @@ export class AppRoutes {
       name: "LodgingFormPage",
       component: <LodgingFormPage />,
       path: "/lodging",
+    },
+    {
+      name: "RFPLiteResponsePage",
+      component: <RFPLiteResponsePage />,
+      path: "/rfp-lite",
     },
     {
       name: "RedirectHome",
