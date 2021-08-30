@@ -2,13 +2,11 @@ import {
   Button,
   ClickAwayListener,
   makeStyles,
-  Popper,
   TextField,
 } from "@material-ui/core"
 import {People} from "@material-ui/icons"
 import clsx from "clsx"
 import React, {useRef, useState} from "react"
-import {AppSliderRangeInput} from "../base/AppSliderInputs"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -78,9 +76,6 @@ export default function AppAttendeesRangeInput(
   let anchorEl = useRef(null)
   let {lower, upper} = {...props}
 
-  const handleSliderChange = (val: [number, number]) => {
-    props.onChange(val[0], val[1])
-  }
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setActive(true)
   }
@@ -102,21 +97,6 @@ export default function AppAttendeesRangeInput(
             onChange={props.onChange}
           />
         </Button>
-        <Popper
-          className={classes.popper}
-          open={active}
-          anchorEl={anchorEl.current}
-          placement="bottom-end">
-          <div className={classes.popperBody}>
-            <AppSliderRangeInput
-              lower={lower}
-              upper={upper}
-              onChange={handleSliderChange}
-              min={10}
-              max={250}
-            />
-          </div>
-        </Popper>
       </div>
     </ClickAwayListener>
   )
@@ -162,6 +142,7 @@ function Range(props: {
       <AppTypography variant="body1" className={classes.lower}>
         {active ? (
           <TextField
+            autoFocus
             fullWidth
             value={lower}
             onChange={(e) => {
