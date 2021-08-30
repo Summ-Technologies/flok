@@ -10,6 +10,7 @@ import {useState} from "react"
 import * as yup from "yup"
 import AppTypography from "../base/AppTypography"
 import AppAttendeesRangeInput from "./AppAttendeesRangeInput"
+import AppBudgetInput from "./AppBudgetInput"
 import AppDatesRangeInput from "./AppDatesRangeInput"
 import AppMeetingSpacesInput from "./AppMeetingSpacesInput"
 import AppRoomTypeInput from "./AppRoomTypeInput"
@@ -48,6 +49,7 @@ export type RFPFormValues = {
   meetingSpaces?: string[]
   numBreakoutRooms?: number
   roomingType?: string
+  budget?: string[]
 }
 
 type LodgingPreferencesFormProps = {
@@ -86,6 +88,7 @@ export default function LodgingPreferencesForm(
       numBreakoutRooms: 1,
 
       roomingType: "",
+      budget: [],
     },
     onSubmit: (vals) => {
       props.onSubmit({...formData, ...vals})
@@ -273,6 +276,7 @@ let StepTwoValidation = yup.object().shape({
     then: yup.number().required().min(1),
   }),
   roomingType: yup.string().required("Room type is a required field."),
+  budget: yup.array(yup.string()),
 })
 
 function RFPFormBodyStepTwo(props: {formik: any}) {
@@ -390,12 +394,15 @@ function RFPFormBodyStepTwo(props: {formik: any}) {
         justify="space-between"
         item
         xs={12}>
-        <Grid item xs={12}>
+        <Grid item xs={12} md="auto">
           <AppTypography variant="h4">
             What types of rooms do you prefer?
           </AppTypography>
+          <AppTypography variant="body2" color="textSecondary">
+            Singles cost the most, but provide the most employee privacy.
+          </AppTypography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} md="auto">
           <AppRoomTypeInput
             value={props.formik.values.roomingType}
             onChange={(newVal) => {
@@ -407,6 +414,30 @@ function RFPFormBodyStepTwo(props: {formik: any}) {
                 props.formik.errors.roomingType
               )
             }
+          />
+        </Grid>
+      </Grid>
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+        justify="space-between"
+        item
+        xs={12}>
+        <Grid item xs={12} md="auto">
+          <AppTypography variant="h4">
+            What is your retreat budget?
+          </AppTypography>
+          <AppTypography variant="body2" color="textSecondary">
+            This just helps guide our initial proposal options.
+          </AppTypography>
+        </Grid>
+        <Grid item xs={12} md="auto">
+          <AppBudgetInput
+            value={props.formik.values.budget}
+            onChange={(newVal) => {
+              props.formik.setFieldValue("budget", newVal)
+            }}
           />
         </Grid>
       </Grid>
