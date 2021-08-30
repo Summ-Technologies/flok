@@ -406,12 +406,15 @@ function RFPFormBodyStepTwo(props: {formik: any}) {
         justify="space-between"
         item
         xs={12}>
-        <Grid item xs={12}>
+        <Grid item xs={12} md="auto">
           <AppTypography variant="h4">
             What types of rooms do you prefer?
           </AppTypography>
+          <AppTypography variant="body2" color="textSecondary">
+            Singles cost the most, but provide the most employee privacy.
+          </AppTypography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} md="auto">
           <AppRoomTypeInput
             value={props.formik.values.roomingType}
             onChange={(newVal) => {
