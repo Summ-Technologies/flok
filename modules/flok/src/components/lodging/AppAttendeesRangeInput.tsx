@@ -39,27 +39,6 @@ let useStyles = makeStyles((theme) => ({
   },
   lower: {},
   upper: {},
-  popperBody: {
-    backgroundColor: theme.palette.common.white,
-    border: `solid 1px ${theme.palette.primary.main}`,
-    borderRadius: theme.shape.borderRadius,
-    "& .MuiSvgIcon-root": {
-      color: theme.palette.primary.main,
-    },
-    "& .MuiSlider-root": {
-      marginRight: 25,
-      marginLeft: 25,
-
-      [theme.breakpoints.up("sm")]: {
-        width: 200,
-      },
-      [theme.breakpoints.up("lg")]: {
-        width: 300,
-      },
-      width: 150,
-    },
-  },
-  none: {opacity: "0"},
 }))
 
 type AppAttendeesRangeInputProps = {
