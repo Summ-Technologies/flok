@@ -17,6 +17,8 @@ let useStyles = makeStyles((theme) => ({
   },
   card: {
     padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
     width: "100%",
     border: `solid 1px ${theme.palette.grey[300]}`,
     borderColor: (props: AppRoomTypeInputProps) =>

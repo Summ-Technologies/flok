@@ -62,7 +62,8 @@ function LodgingFormPage(props: LodgingFormPageProps) {
         values.preferredMonths,
         [],
         values.startDate ? values.startDate : undefined,
-        values.endDate ? values.endDate : undefined
+        values.endDate ? values.endDate : undefined,
+        values.budget
       )
     )
   }
