@@ -30,6 +30,7 @@ type AppLocationCardProps = {
   img: string
   selected?: boolean
   onSelect: () => void
+  onExplore: () => void
 }
 export default function AppLocationCard(props: AppLocationCardProps) {
   let classes = useStyles(props)
@@ -65,6 +66,7 @@ export default function AppLocationCard(props: AppLocationCardProps) {
           {props.selected ? "Selected" : "Select"}
         </Button>
       }
+      onExplore={props.onExplore}
     />
   )
 }
