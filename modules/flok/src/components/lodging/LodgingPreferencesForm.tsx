@@ -3,13 +3,11 @@ import {
   CircularProgress,
   Grid,
   makeStyles,
-  Paper,
   TextField,
 } from "@material-ui/core"
 import {useFormik} from "formik"
 import {useState} from "react"
 import * as yup from "yup"
-import AppLogo from "../base/AppLogo"
 import AppTypography from "../base/AppTypography"
 import AppAttendeesRangeInput from "./AppAttendeesRangeInput"
 import AppDatesRangeInput from "./AppDatesRangeInput"
@@ -18,11 +16,6 @@ import AppRoomTypeInput from "./AppRoomTypeInput"
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    [theme.breakpoints.down("xs")]: {
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
-    },
-    padding: theme.spacing(4),
     height: "100%",
     "& > form": {
       height: "100%",
@@ -105,23 +98,14 @@ export default function LodgingPreferencesForm(
     <RFPFormBodyStepTwo formik={formik2} />,
   ]
   return (
-    <Paper className={classes.root}>
+    <div className={classes.root}>
       <form onSubmit={formikSteps[step].handleSubmit}>
         <Grid
           className={classes.formBody}
           container
           direction="column"
           justify="space-between">
-          <Grid container direction="column" spacing={6} item>
-            <Grid item>
-              <AppLogo height={40} noBackground />
-              <AppTypography variant="h1">Let's Get Started!</AppTypography>
-              <AppTypography variant="body1">
-                We need just a few details to plan your perfect retreat.
-              </AppTypography>
-            </Grid>
-            <Grid item>{steps[step]}</Grid>
-          </Grid>
+          {steps[step]}
           <Grid item className={classes.ctaContainer}>
             <Button
               type="submit"
@@ -170,7 +154,7 @@ export default function LodgingPreferencesForm(
           </Grid>
         </Grid>
       </form>
-    </Paper>
+    </div>
   )
 }
 
@@ -181,7 +165,7 @@ let StepOneValidation = yup.object().shape({
 })
 function RFPFormBodyStepOne(props: {formik: any}) {
   return (
-    <Grid container spacing={4}>
+    <Grid item xs={12} container spacing={4}>
       <Grid
         container
         spacing={2}
@@ -293,7 +277,7 @@ let StepTwoValidation = yup.object().shape({
 
 function RFPFormBodyStepTwo(props: {formik: any}) {
   return (
-    <Grid container spacing={4}>
+    <Grid item xs={12} container spacing={4}>
       <Grid
         container
         spacing={2}

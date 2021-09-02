@@ -1,32 +1,24 @@
-import {Grid, makeStyles} from "@material-ui/core"
+import {Box} from "@material-ui/core"
 import querystring from "querystring"
 import {useEffect} from "react"
 import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import AppLogo from "../components/base/AppLogo"
 import LodgingPreferencesForm, {
   RFPFormValues,
 } from "../components/lodging/LodgingPreferencesForm"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
+import PageHeader from "../components/page/PageHeader"
+import PageOverlay from "../components/page/PageOverlay"
 import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
 import {RootState} from "../store"
 import {postLodgingRequestForm} from "../store/actions/lodging"
 
-const useStyles = makeStyles((theme) => ({
-  formContainer: {
-    [theme.breakpoints.down("sm")]: {
-      justifyContent: "center",
-    },
-    height: "100%",
-  },
-}))
-
 type LodgingFormPageProps = RouteComponentProps<{}>
 function LodgingFormPage(props: LodgingFormPageProps) {
-  const classes = useStyles()
-
   let postRfpRequestState = useSelector(
     (state: RootState) => state.api.postRfpForm
   )
@@ -76,21 +68,25 @@ function LodgingFormPage(props: LodgingFormPageProps) {
   }
 
   return (
-    <PageContainer>
-      <PageBody
-        noGutter
-        backgroundImage={
-          "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
-        }>
-        <Grid container className={classes.formContainer}>
-          <Grid item xs={11} sm={10} md={9} lg={7}>
-            <LodgingPreferencesForm
-              onSubmit={submitLodgingPreferencesForm}
-              onError={showError}
-              isLoading={postRfpRequestState.loading}
+    <PageContainer
+      backgroundImage={
+        "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
+      }>
+      <PageBody noGutter>
+        <PageOverlay>
+          <Box paddingBottom={4}>
+            <AppLogo height={40} noBackground />
+            <PageHeader
+              header="Let's Get Started"
+              subheader="We need just a few details to plan your perfect retreat."
             />
-          </Grid>
-        </Grid>
+          </Box>
+          <LodgingPreferencesForm
+            onSubmit={submitLodgingPreferencesForm}
+            onError={showError}
+            isLoading={postRfpRequestState.loading}
+          />
+        </PageOverlay>
       </PageBody>
     </PageContainer>
   )
