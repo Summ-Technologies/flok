@@ -4,3 +4,12 @@ export type DestinationAlgoliaHitModel = {
   state: string
   objectID: string
 }
+
+export type HotelAlgoliaHitModel = {
+  location: string
+  price: string
+  website: string
+  rooms: string
+  google_rating: string
+  objectID: string
+}
