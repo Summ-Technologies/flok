@@ -72,7 +72,7 @@ function LodgingFormPage(props: LodgingFormPageProps) {
       backgroundImage={
         "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
       }>
-      <PageBody noGutter>
+      <PageBody>
         <PageOverlay>
           <Box paddingBottom={4}>
             <AppLogo height={40} noBackground />

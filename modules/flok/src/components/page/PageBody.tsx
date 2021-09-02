@@ -7,25 +7,14 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 0, // flex box trick to max width 100%
     display: "flex",
     flexDirection: "column",
-    paddingLeft: (props: PageBodyProps) =>
-      props.noGutter ? 0 : theme.spacing(1),
-    paddingRight: (props: PageBodyProps) =>
-      props.noGutter ? 0 : theme.spacing(1),
-    [theme.breakpoints.up("md")]: {
-      paddingLeft: (props: PageBodyProps) =>
-        props.noGutter ? 0 : theme.spacing(4),
-      paddingRight: (props: PageBodyProps) =>
-        props.noGutter ? 0 : theme.spacing(4),
-    },
   },
   body: {
     flex: 1,
+    overflow: "auto",
   },
 }))
 
-type PageBodyProps = PropsWithChildren<{
-  noGutter?: boolean
-}>
+type PageBodyProps = PropsWithChildren<{}>
 export default function PageBody(props: PageBodyProps) {
   const classes = useStyles(props)
   return (

@@ -61,12 +61,11 @@ function RFPLiteResponsePage(props: RFPLiteResponsePageProps) {
   }, [dates, hotel, availability, lodgingProposalRequestId, dispatch])
 
   return (
-    <PageContainer>
-      <PageBody
-        noGutter
-        backgroundImage={
-          "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
-        }>
+    <PageContainer
+      backgroundImage={
+        "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
+      }>
+      <PageBody>
         <div className={classes.body}>
           <Paper className={classes.modal} elevation={2}>
             <AppLogo height={50} withText noBackground />

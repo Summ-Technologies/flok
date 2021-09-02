@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
-import ChooseDestinationPage from "./components/destinations/ChooseDestinationPage"
+import ChooseDestinationPage from "./pages/ChooseDestinationPage"
 import {default as LodgingFormPage} from "./pages/LodgingFormPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"

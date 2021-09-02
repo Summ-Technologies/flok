@@ -12,11 +12,11 @@ let useStyles = makeStyles((theme) => ({
     alignItems: "center",
     borderRadius: theme.shape.borderRadius,
     overflow: "hidden",
-    boxShadow: theme.shadows[2],
+    boxShadow: theme.shadows[3],
     cursor: "pointer",
   },
   explore: {
-    boxShadow: theme.shadows[3],
+    boxShadow: theme.shadows[5],
     "& $img": {
       filter: "blur(1px) brightness(75%)",
     },

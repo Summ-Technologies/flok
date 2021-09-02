@@ -33,9 +33,7 @@ export default function PageHeader(props: PageHeaderProps) {
           {props.header}
         </AppTypography>
         {props.subheader ? (
-          <AppTypography variant="body1" noWrap>
-            {props.subheader}
-          </AppTypography>
+          <AppTypography variant="body1">{props.subheader}</AppTypography>
         ) : undefined}
       </div>
     </div>
