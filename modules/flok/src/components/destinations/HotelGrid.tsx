@@ -28,7 +28,7 @@ function HotelGrid(props: HotelGridProps) {
   return (
     <div className={classes.root}>
       {props.hits.map((hit, index) => (
-        <>{hit.location}</>
+        <>{hit.hotel_name} {hit.location}</>
       ))}
     </div>
   )

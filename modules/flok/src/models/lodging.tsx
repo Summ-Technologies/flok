@@ -11,5 +11,6 @@ export type HotelAlgoliaHitModel = {
   website: string
   rooms: string
   google_rating: string
+  hotel_name: string
   objectID: string
 }
