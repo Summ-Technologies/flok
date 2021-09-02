@@ -23,7 +23,7 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type AppLocationCardProps = {
+type AppDestinationCardProps = {
   title: string // city
   subtitle: string // state/country
   description: string
@@ -32,7 +32,7 @@ type AppLocationCardProps = {
   onSelect: () => void
   onExplore: () => void
 }
-export default function AppLocationCard(props: AppLocationCardProps) {
+export default function AppDestinationCard(props: AppDestinationCardProps) {
   let classes = useStyles(props)
   return (
     <AppBaseCard

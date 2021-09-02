@@ -37,8 +37,8 @@ let useStyles = makeStyles((theme) => ({
 
 type AppLodgingCardProps = {
   img: string
-  name: string // city
-  location: string // state/country
+  name: string
+  destination: string
   rooms: number
   stars: number
   budget: 1 | 2 | 3 | 4
@@ -62,7 +62,7 @@ export default function AppLodgingCard(props: AppLodgingCardProps) {
             className={classes.subtitle}
             variant="body2"
             color="textSecondary">
-            {props.location ? props.location : "\u00A0"}
+            {props.destination ? props.destination : "\u00A0"}
           </AppTypography>
           <Rating value={props.stars} readOnly size="small" />
           <div className={classes.row}>

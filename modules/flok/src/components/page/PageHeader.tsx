@@ -5,9 +5,6 @@ import AppTypography from "../base/AppTypography"
 let useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-
     display: "flex",
     justifyContent: "space-between",
   },
@@ -26,7 +23,6 @@ let useStyles = makeStyles((theme) => ({
 export type PageHeaderProps = {
   header: string
   subheader?: string
-  progressBar?: JSX.Element
 }
 export default function PageHeader(props: PageHeaderProps) {
   let classes = useStyles(props)
@@ -37,14 +33,9 @@ export default function PageHeader(props: PageHeaderProps) {
           {props.header}
         </AppTypography>
         {props.subheader ? (
-          <AppTypography variant="body1" noWrap>
-            {props.subheader}
-          </AppTypography>
+          <AppTypography variant="body1">{props.subheader}</AppTypography>
         ) : undefined}
       </div>
-      {props.progressBar ? (
-        <div className={classes.progress}>{props.progressBar}</div>
-      ) : undefined}
     </div>
   )
 }

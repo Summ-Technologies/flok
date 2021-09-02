@@ -1,4 +1,5 @@
 import {Box, makeStyles, Theme} from "@material-ui/core"
+import clsx from "clsx"
 import React, {PropsWithChildren} from "react"
 import {use100vh} from "react-div-100vh"
 
@@ -11,9 +12,17 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     flexWrap: "nowrap",
   },
+  backgroundImage: {
+    backgroundImage: (props: PageContainerProps) =>
+      `url("${props.backgroundImage}")`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+  },
 }))
 
-type PageContainerProps = {}
+type PageContainerProps = {
+  backgroundImage?: string
+}
 export default function PageContainer(
   props: PropsWithChildren<PageContainerProps>
 ) {
@@ -21,7 +30,10 @@ export default function PageContainer(
   const classes = useStyles(props)
   return (
     <Box
-      className={classes.root}
+      className={clsx(
+        classes.root,
+        props.backgroundImage ? classes.backgroundImage : undefined
+      )}
       height={height100vh ? height100vh : undefined}>
       {props.children}
     </Box>
