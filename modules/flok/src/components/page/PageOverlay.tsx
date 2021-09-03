@@ -32,17 +32,26 @@ let useStyles = makeStyles((theme) => ({
 
 type PageOverlayProps = PropsWithChildren<{
   OverlayFooterProps?: PageOverlayFooterProps
+  size?: "default" | "small"
+  right?: JSX.Element
 }>
 export default function PageOverlay(props: PageOverlayProps) {
   let classes = useStyles(props)
   return (
     <Grid container className={classes.root}>
-      <Grid item xs={11} sm={10} md={9} lg={7} className={classes.overlay}>
+      <Grid
+        item
+        xs={11}
+        sm={10}
+        md={props.size === "small" ? 6 : 9}
+        lg={props.size === "small" ? 5 : 7}
+        className={classes.overlay}>
         <div className={classes.overlayBody}>{props.children}</div>
         {props.OverlayFooterProps ? (
           <PageOverlayFooter {...props.OverlayFooterProps} />
         ) : undefined}
       </Grid>
+      {props.right ? <>{props.right}</> : undefined}
     </Grid>
   )
 }
