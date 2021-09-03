@@ -16,7 +16,6 @@ export default function AppImageGrid(props: AppImageGridProps) {
   let classes = useStyles(props)
   let [imageGroups, setImageGroups] = useState<ImageModel[][]>([])
   useEffect(() => {
-    console.log("sup")
     let tmpImageGroups: ImageModel[][] = []
     let i = 0
     while (i < props.images.length) {
