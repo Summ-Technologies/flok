@@ -7,7 +7,7 @@ let useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       justifyContent: "center",
     },
-    maxHeight: "100%",
+    height: "100%",
   },
   overlay: {
     maxHeight: "100%",
