@@ -2,7 +2,7 @@ import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
 import AppTypography from "../components/base/AppTypography"
 import PageContainer from "../components/page/PageContainer"
-import PageHeader from "../components/page/PageHeader"
+import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {sampleLandscape, samplePortrait} from "../models"
 import {AppRoutes} from "../Stack"
@@ -39,7 +39,11 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
         <PageHeader
           header="Lake Tahoe"
           subheader="World class skiing, hiking, boating, and more!"
-          goBackTo={AppRoutes.getPath("ChooseDestinationPage")}
+          preHeader={
+            <PageHeaderBackButton
+              to={AppRoutes.getPath("ChooseDestinationPage")}
+            />
+          }
         />
         <AppTypography variant="body1" paragraph>
           Lake Tahoe the world’s second largest alpine lake, located high up in

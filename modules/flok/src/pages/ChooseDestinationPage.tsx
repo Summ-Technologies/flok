@@ -6,11 +6,12 @@ import {InstantSearch} from "react-instantsearch-dom"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLogo from "../components/base/AppLogo"
-import DestinationsGrid from "../components/destinations/DestinationsGrid"
+import DestinationsGrid from "../components/lodging/DestinationsGrid"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {DestinationAlgoliaHitModel} from "../models/lodging"
+import {AppRoutes} from "../Stack"
 
 const searchClient = algoliasearch(
   "0GNPYG0XAN",
@@ -45,7 +46,7 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
         OverlayFooterProps={{
           cta: "Next Step",
           onClick: () => {
-            alert("should goto next step")
+            dispatch(push(AppRoutes.getPath("ChooseHotelPage")))
           },
           rightText: `${selected.length} destinations selected`,
         }}>

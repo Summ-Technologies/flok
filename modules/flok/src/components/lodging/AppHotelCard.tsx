@@ -35,7 +35,7 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type AppLodgingCardProps = {
+type AppHotelCardProps = {
   img: string
   name: string
   destination: string
@@ -47,7 +47,7 @@ type AppLodgingCardProps = {
   onSelect: () => void
   onExplore: () => void
 }
-export default function AppLodgingCard(props: AppLodgingCardProps) {
+export default function AppHotelCard(props: AppHotelCardProps) {
   let classes = useStyles(props)
   return (
     <AppBaseCard

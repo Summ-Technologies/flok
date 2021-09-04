@@ -1,17 +1,14 @@
-import {Box} from "@material-ui/core"
 import algoliasearch from "algoliasearch"
 import {push} from "connected-react-router"
 import {useState} from "react"
 import {InstantSearch} from "react-instantsearch-dom"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import AppLogo from "../components/base/AppLogo"
+import HotelGrid, {HotelGridFilters} from "../components/lodging/HotelGrid"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import HotelGrid from "../components/destinations/HotelGrid"
-import { HotelAlgoliaHitModel } from "../models/lodging"
-
+import {HotelAlgoliaHitModel} from "../models/lodging"
 
 const searchClient = algoliasearch(
   "0GNPYG0XAN",
@@ -25,7 +22,7 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
 
   // Actions
   function explore(hit: HotelAlgoliaHitModel) {
-    dispatch(push(`/lodging/destinations/${hit.objectID}`))
+    dispatch(push(`/lodging/hotels/${hit.objectID}`))
   }
 
   function isSelected(hit: HotelAlgoliaHitModel) {
@@ -50,15 +47,34 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
           },
           rightText: `${selected.length} hotels selected`,
         }}>
-        <Box paddingBottom={4}>
-          <AppLogo height={40} noBackground />
-          <PageHeader
-            header="Lodging"
-            subheader="Select some hotels to request a free proposal from!"
-          />
-        </Box>
+        <PageHeader
+          header="Lodging"
+          subheader="Select some hotels to request a free proposal from!"
+          postHeader={
+            <HotelGridFilters
+              filters={[
+                {
+                  filter: "Location",
+                  filterSelected: "2",
+                  popper: <div></div>,
+                  onClick: () => undefined,
+                },
+                {
+                  filter: "Price",
+                  popper: <div></div>,
+                  onClick: () => undefined,
+                },
+                {
+                  filter: "Rooms",
+                  popper: <div></div>,
+                  onClick: () => undefined,
+                },
+              ]}
+            />
+          }
+        />
         <InstantSearch searchClient={searchClient} indexName="hotels">
-          <HotelGrid 
+          <HotelGrid
             onExplore={explore}
             onSelect={toggleSelect}
             isSelected={isSelected}
