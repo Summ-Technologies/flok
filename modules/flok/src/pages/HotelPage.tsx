@@ -1,4 +1,6 @@
 import {makeStyles} from "@material-ui/core"
+import {push} from "connected-react-router"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
 import AppTypography from "../components/base/AppTypography"
@@ -26,6 +28,7 @@ let useStyles = makeStyles((theme) => ({
 type HotelPageProps = RouteComponentProps<{}>
 function HotelPage(props: HotelPageProps) {
   let classes = useStyles(props)
+  let dispatch = useDispatch()
   return (
     <PageContainer>
       <PageOverlay
@@ -33,7 +36,7 @@ function HotelPage(props: HotelPageProps) {
         OverlayFooterProps={{
           cta: "Select Location",
           onClick: () => {
-            alert("select and go back")
+            dispatch(push(AppRoutes.getPath("ChooseHotelPage")))
           },
         }}
         right={

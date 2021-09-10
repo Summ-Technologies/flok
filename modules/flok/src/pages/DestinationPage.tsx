@@ -1,3 +1,5 @@
+import {push} from "connected-react-router"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
 import AppTypography from "../components/base/AppTypography"
@@ -9,6 +11,7 @@ import {AppRoutes} from "../Stack"
 
 type DestinationPageProps = RouteComponentProps<{}>
 function DestinationPage(props: DestinationPageProps) {
+  let dispatch = useDispatch()
   return (
     <PageContainer>
       <PageOverlay
@@ -16,7 +19,7 @@ function DestinationPage(props: DestinationPageProps) {
         OverlayFooterProps={{
           cta: "Select Location",
           onClick: () => {
-            alert("select and go back")
+            dispatch(push(AppRoutes.getPath("ChooseDestinationPage")))
           },
         }}
         right={
