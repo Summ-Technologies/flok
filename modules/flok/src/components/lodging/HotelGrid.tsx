@@ -6,8 +6,9 @@ import {
   Paper,
   Theme,
 } from "@material-ui/core"
-import {HitsProvided} from "react-instantsearch-core"
-import {connectHits} from "react-instantsearch-dom"
+import {useEffect, useRef} from "react"
+import {InfiniteHitsProvided} from "react-instantsearch-core"
+import {connectInfiniteHits} from "react-instantsearch-dom"
 import {BudgetType, HotelAlgoliaHitModel} from "../../models/lodging"
 import AppFilter, {AppFilterProps} from "../base/AppFilter"
 import {AppSliderInput} from "../base/AppSliderInputs"
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-interface HotelGridProps extends HitsProvided<HotelAlgoliaHitModel> {
+interface HotelGridProps extends InfiniteHitsProvided<HotelAlgoliaHitModel> {
   isSelected: (hit: HotelAlgoliaHitModel) => boolean
   onSelect: (hit: HotelAlgoliaHitModel) => void
   onExplore: (hit: HotelAlgoliaHitModel) => void
@@ -35,6 +36,24 @@ interface HotelGridProps extends HitsProvided<HotelAlgoliaHitModel> {
 
 function HotelGrid(props: HotelGridProps) {
   let classes = useStyles(props)
+  const {hasMore, refineNext} = props
+  let sentinelRef = useRef<HTMLLIElement>(null)
+
+  useEffect(() => {
+    function loadMoreHits(entries: IntersectionObserverEntry[]) {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && hasMore) {
+          refineNext()
+        }
+      })
+    }
+    let observer = new IntersectionObserver(loadMoreHits)
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current)
+    }
+    return () => observer.disconnect()
+  }, [hasMore, refineNext])
+
   return (
     <div className={classes.root}>
       {props.hits.map((hit, index) => (
@@ -54,11 +73,14 @@ function HotelGrid(props: HotelGridProps) {
           selected={props.isSelected(hit)}
         />
       ))}
+      <li ref={sentinelRef} />
     </div>
   )
 }
 
-export default connectHits<HotelGridProps, HotelAlgoliaHitModel>(HotelGrid)
+export default connectInfiniteHits<HotelGridProps, HotelAlgoliaHitModel>(
+  HotelGrid
+)
 
 const useFilterStyles = makeStyles((theme: Theme) => ({
   root: {
