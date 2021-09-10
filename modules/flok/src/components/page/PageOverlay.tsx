@@ -28,6 +28,11 @@ let useStyles = makeStyles((theme) => ({
     flex: 1,
     overflow: "auto",
   },
+  right: {
+    height: "100%",
+    flex: 1,
+    overflow: "auto",
+  },
 }))
 
 type PageOverlayProps = PropsWithChildren<{
@@ -51,7 +56,9 @@ export default function PageOverlay(props: PageOverlayProps) {
           <PageOverlayFooter {...props.OverlayFooterProps} />
         ) : undefined}
       </Grid>
-      {props.right ? <>{props.right}</> : undefined}
+      {props.right ? (
+        <div className={classes.right}>{props.right}</div>
+      ) : undefined}
     </Grid>
   )
 }

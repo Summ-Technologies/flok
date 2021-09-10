@@ -1,4 +1,4 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Chip, makeStyles} from "@material-ui/core"
 import {KeyboardBackspace} from "@material-ui/icons"
 import React from "react"
 import {Link} from "react-router-dom"
@@ -9,7 +9,7 @@ let useStyles = makeStyles((theme) => ({
     width: "100%",
     marginBottom: theme.spacing(3),
   },
-  backBtn: {
+  preHeader: {
     marginBottom: theme.spacing(2),
   },
   title: {
@@ -22,31 +22,23 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "flex-end",
   },
+  postHeader: {marginTop: theme.spacing(1)},
 }))
 
 export type PageHeaderProps = {
   header: string
   subheader?: string
-  goBackTo?: string
+  preHeader?: JSX.Element
+  postHeader?: JSX.Element
 }
 export default function PageHeader(props: PageHeaderProps) {
   let classes = useStyles(props)
   return (
     <div className={classes.root}>
-      {props.goBackTo ? (
-        <Button
-          className={classes.backBtn}
-          component={Link}
-          variant="outlined"
-          color="primary"
-          size="small"
-          to={props.goBackTo}>
-          <KeyboardBackspace />
-          {"\u00A0"}
-          Back
-          {"\u00A0"}
-        </Button>
+      {props.preHeader ? (
+        <div className={classes.preHeader}>{props.preHeader}</div>
       ) : undefined}
+
       <div className={classes.title}>
         <AppTypography variant="h1" noWrap>
           {props.header}
@@ -55,6 +47,31 @@ export default function PageHeader(props: PageHeaderProps) {
           <AppTypography variant="body1">{props.subheader}</AppTypography>
         ) : undefined}
       </div>
+      {props.postHeader ? (
+        <div className={classes.postHeader}>{props.postHeader}</div>
+      ) : undefined}
     </div>
+  )
+}
+
+let useBackButtonStyles = makeStyles((theme) => ({
+  label: {
+    fontWeight: theme.typography.fontWeightBold,
+  },
+}))
+
+export function PageHeaderBackButton(props: {to: string}) {
+  let classes = useBackButtonStyles(props)
+  return (
+    <Chip
+      classes={{label: classes.label}}
+      label="Back"
+      icon={<KeyboardBackspace />}
+      component={Link}
+      variant="outlined"
+      color="primary"
+      to={props.to}
+      clickable
+    />
   )
 }

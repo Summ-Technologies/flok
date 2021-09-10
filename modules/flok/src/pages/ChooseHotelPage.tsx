@@ -1,17 +1,20 @@
-import {Box} from "@material-ui/core"
 import algoliasearch from "algoliasearch"
 import {push} from "connected-react-router"
 import {useState} from "react"
 import {InstantSearch} from "react-instantsearch-dom"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import AppLogo from "../components/base/AppLogo"
+import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
+import HotelGrid, {
+  HotelGridBudgetFilterBody,
+  HotelGridFilters,
+  HotelGridLocationFilterBody,
+  HotelGridRoomsFilterBody,
+} from "../components/lodging/HotelGrid"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import HotelGrid from "../components/destinations/HotelGrid"
-import { HotelAlgoliaHitModel } from "../models/lodging"
-
+import {BudgetType, HotelAlgoliaHitModel} from "../models/lodging"
 
 const searchClient = algoliasearch(
   "0GNPYG0XAN",
@@ -21,11 +24,21 @@ const searchClient = algoliasearch(
 type ChooseHotelPageProps = RouteComponentProps<{}>
 function ChooseHotelPage(props: ChooseHotelPageProps) {
   let dispatch = useDispatch()
+
   let [selected, setSelected] = useState<string[]>([])
+
+  let [locationFilter, setLocationFilter] = useState<string[]>([])
+  let [locationFilterOpen, setLocationFilterOpen] = useState(false)
+
+  let [priceFilter, setPriceFilter] = useState<BudgetType[]>([])
+  let [priceFilterOpen, setPriceFilterOpen] = useState(false)
+
+  let [roomsFilter, setRoomsFilter] = useState<number>(10)
+  let [roomsFilterOpen, setRoomsFilterOpen] = useState(false)
 
   // Actions
   function explore(hit: HotelAlgoliaHitModel) {
-    dispatch(push(`/lodging/destinations/${hit.objectID}`))
+    dispatch(push(`/lodging/hotels/${hit.objectID}`))
   }
 
   function isSelected(hit: HotelAlgoliaHitModel) {
@@ -50,15 +63,65 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
           },
           rightText: `${selected.length} hotels selected`,
         }}>
-        <Box paddingBottom={4}>
-          <AppLogo height={40} noBackground />
-          <PageHeader
-            header="Lodging"
-            subheader="Select some hotels to request a free proposal from!"
-          />
-        </Box>
+        <PageHeader
+          header="Lodging"
+          subheader="Select some hotels to request a free proposal from!"
+          preHeader={<AppLodgingFlowTimeline currentStep="SELECT_HOTEL_RFPS" />}
+          postHeader={
+            <HotelGridFilters
+              filters={[
+                {
+                  filter: "Location",
+                  filterSelected: locationFilter.length
+                    ? `${locationFilter.length} selected`
+                    : undefined,
+                  popper: (
+                    <HotelGridLocationFilterBody
+                      onClose={() => setLocationFilterOpen(false)}
+                      selected={locationFilter}
+                      setSelected={(vals) => setLocationFilter(vals)}
+                    />
+                  ),
+                  open: locationFilterOpen,
+                  toggleOpen: () => {
+                    setLocationFilterOpen(!locationFilterOpen)
+                  },
+                },
+                {
+                  filter: "Price",
+                  filterSelected: priceFilter.length
+                    ? `${priceFilter.length} selected`
+                    : undefined,
+                  popper: (
+                    <HotelGridBudgetFilterBody
+                      onClose={() => setPriceFilterOpen(false)}
+                      selected={priceFilter}
+                      setSelected={(newVals) => setPriceFilter(newVals)}
+                    />
+                  ),
+                  open: priceFilterOpen,
+                  toggleOpen: () => setPriceFilterOpen(!priceFilterOpen),
+                },
+                {
+                  filter: "Min. rooms",
+                  filterSelected:
+                    roomsFilter !== 10 ? roomsFilter.toString() : undefined,
+                  popper: (
+                    <HotelGridRoomsFilterBody
+                      onClose={() => setRoomsFilterOpen(false)}
+                      selectedRoomsMin={roomsFilter}
+                      setSelectedRoomsMin={(newMin) => setRoomsFilter(newMin)}
+                    />
+                  ),
+                  open: roomsFilterOpen,
+                  toggleOpen: () => setRoomsFilterOpen(!roomsFilterOpen),
+                },
+              ]}
+            />
+          }
+        />
         <InstantSearch searchClient={searchClient} indexName="hotels">
-          <HotelGrid 
+          <HotelGrid
             onExplore={explore}
             onSelect={toggleSelect}
             isSelected={isSelected}

@@ -14,3 +14,5 @@ export type HotelAlgoliaHitModel = {
   hotel_name: string
   objectID: string
 }
+
+export type BudgetType = "$" | "$$" | "$$$" | "$$$$"
