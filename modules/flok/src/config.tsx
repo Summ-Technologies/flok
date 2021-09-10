@@ -4,17 +4,22 @@ export const APP_VERSION_KEY = "app_version"
 export const SERVER_BASE_URL_KEY = "server_base_url"
 export const IMAGES_BASE_URL_KEY = "images_base_url"
 export const MIXPANEL_TOKEN_KEY = "mixpanel_token"
+export const GOOGLE_API_KEY = "google_api_key"
+export const GOOGLE_MAPS_ID_HOTEL_PAGE_KEY = "google_maps_id_hotel_page"
 type ConfigKey =
   | typeof APP_VERSION_KEY
   | typeof SERVER_BASE_URL_KEY
   | typeof IMAGES_BASE_URL_KEY
   | typeof MIXPANEL_TOKEN_KEY
+  | typeof GOOGLE_API_KEY
+  | typeof GOOGLE_MAPS_ID_HOTEL_PAGE_KEY
 
 class Config {
   appConfig: {[key: string]: any}
   defaultConfig: {[key: string]: any} = {
     [APP_VERSION_KEY]: process.env.REACT_APP_VERSION,
     [MIXPANEL_TOKEN_KEY]: "BOGUS_KEY", // use default key to prevent error's from non-initialized mixpanel instance
+    [GOOGLE_MAPS_ID_HOTEL_PAGE_KEY]: "209c3e9f6984bce3",
   }
   constructor() {
     this.appConfig = {}
@@ -34,6 +39,16 @@ class Config {
       } else {
         throw Error("Environment variable missing: REACT_APP_IMAGES_URL")
       }
+
+      let googleApiKey = process.env.REACT_APP_GOOGLE_API_KEY
+      if (googleApiKey) {
+        this.appConfig[GOOGLE_API_KEY] = googleApiKey
+      } else {
+        console.warn(
+          "Missing Google API Key, Google functionality (maps, etc.) may be limited."
+        )
+      }
+
       Object.keys(process.env).forEach((envVar) => {
         if (envVar.toLowerCase().startsWith("react_app_")) {
           let key = envVar.toLowerCase().replace("react_app_", "")

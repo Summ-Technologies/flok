@@ -7,8 +7,8 @@ import PageOverlay from "../components/page/PageOverlay"
 import {sampleLandscape, samplePortrait} from "../models"
 import {AppRoutes} from "../Stack"
 
-type ChooseDestinationPageProps = RouteComponentProps<{}>
-function ChooseDestinationPage(props: ChooseDestinationPageProps) {
+type DestinationPageProps = RouteComponentProps<{}>
+function DestinationPage(props: DestinationPageProps) {
   return (
     <PageContainer>
       <PageOverlay
@@ -20,29 +20,25 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
           },
         }}
         right={
-          <div style={{flex: 1, height: "100%", overflow: "auto"}}>
-            <AppImageGrid
-              images={[
-                samplePortrait,
-                sampleLandscape,
-                sampleLandscape,
-                samplePortrait,
-                samplePortrait,
-                sampleLandscape,
-                sampleLandscape,
-                sampleLandscape,
-                sampleLandscape,
-              ]}
-            />
-          </div>
+          <AppImageGrid
+            images={[
+              samplePortrait,
+              sampleLandscape,
+              sampleLandscape,
+              samplePortrait,
+              samplePortrait,
+              sampleLandscape,
+              sampleLandscape,
+              sampleLandscape,
+              sampleLandscape,
+            ]}
+          />
         }>
         <PageHeader
           header="Lake Tahoe"
           subheader="World class skiing, hiking, boating, and more!"
           preHeader={
-            <PageHeaderBackButton
-              to={AppRoutes.getPath("ChooseDestinationPage")}
-            />
+            <PageHeaderBackButton to={AppRoutes.getPath("DestinationPage")} />
           }
         />
         <AppTypography variant="body1" paragraph>
@@ -78,4 +74,4 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
     </PageContainer>
   )
 }
-export default withRouter(ChooseDestinationPage)
+export default withRouter(DestinationPage)
