@@ -4,11 +4,16 @@ import {useState} from "react"
 import {InstantSearch} from "react-instantsearch-dom"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import HotelGrid, {HotelGridFilters} from "../components/lodging/HotelGrid"
+import HotelGrid, {
+  HotelGridBudgetFilterBody,
+  HotelGridFilters,
+  HotelGridLocationFilterBody,
+  HotelGridRoomsFilterBody,
+} from "../components/lodging/HotelGrid"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import {HotelAlgoliaHitModel} from "../models/lodging"
+import {BudgetType, HotelAlgoliaHitModel} from "../models/lodging"
 
 const searchClient = algoliasearch(
   "0GNPYG0XAN",
@@ -18,7 +23,17 @@ const searchClient = algoliasearch(
 type ChooseHotelPageProps = RouteComponentProps<{}>
 function ChooseHotelPage(props: ChooseHotelPageProps) {
   let dispatch = useDispatch()
+
   let [selected, setSelected] = useState<string[]>([])
+
+  let [locationFilter, setLocationFilter] = useState<string[]>([])
+  let [locationFilterOpen, setLocationFilterOpen] = useState(false)
+
+  let [priceFilter, setPriceFilter] = useState<BudgetType[]>([])
+  let [priceFilterOpen, setPriceFilterOpen] = useState(false)
+
+  let [roomsFilter, setRoomsFilter] = useState<number>(10)
+  let [roomsFilterOpen, setRoomsFilterOpen] = useState(false)
 
   // Actions
   function explore(hit: HotelAlgoliaHitModel) {
@@ -55,19 +70,49 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
               filters={[
                 {
                   filter: "Location",
-                  filterSelected: "2",
-                  popper: <div></div>,
-                  onClick: () => undefined,
+                  filterSelected: locationFilter.length
+                    ? `${locationFilter.length} selected`
+                    : undefined,
+                  popper: (
+                    <HotelGridLocationFilterBody
+                      onClose={() => setLocationFilterOpen(false)}
+                      selected={locationFilter}
+                      setSelected={(vals) => setLocationFilter(vals)}
+                    />
+                  ),
+                  open: locationFilterOpen,
+                  toggleOpen: () => {
+                    setLocationFilterOpen(!locationFilterOpen)
+                  },
                 },
                 {
                   filter: "Price",
-                  popper: <div></div>,
-                  onClick: () => undefined,
+                  filterSelected: priceFilter.length
+                    ? `${priceFilter.length} selected`
+                    : undefined,
+                  popper: (
+                    <HotelGridBudgetFilterBody
+                      onClose={() => setPriceFilterOpen(false)}
+                      selected={priceFilter}
+                      setSelected={(newVals) => setPriceFilter(newVals)}
+                    />
+                  ),
+                  open: priceFilterOpen,
+                  toggleOpen: () => setPriceFilterOpen(!priceFilterOpen),
                 },
                 {
-                  filter: "Rooms",
-                  popper: <div></div>,
-                  onClick: () => undefined,
+                  filter: "Min. rooms",
+                  filterSelected:
+                    roomsFilter !== 10 ? roomsFilter.toString() : undefined,
+                  popper: (
+                    <HotelGridRoomsFilterBody
+                      onClose={() => setRoomsFilterOpen(false)}
+                      selectedRoomsMin={roomsFilter}
+                      setSelectedRoomsMin={(newMin) => setRoomsFilter(newMin)}
+                    />
+                  ),
+                  open: roomsFilterOpen,
+                  toggleOpen: () => setRoomsFilterOpen(!roomsFilterOpen),
                 },
               ]}
             />

@@ -1,5 +1,5 @@
-import {Chip, makeStyles} from "@material-ui/core"
-import React from "react"
+import {Chip, ClickAwayListener, makeStyles, Popper} from "@material-ui/core"
+import React, {useRef} from "react"
 import AppTypography from "./AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -32,16 +32,19 @@ export type AppFilterProps = {
   filter: string
   filterSelected?: string
   open?: boolean
-  onClick: () => void
+  toggleOpen: () => void
   popper: JSX.Element
 }
 export default function AppFilter(props: AppFilterProps) {
   let classes = useStyles(props)
+  let btnRef = useRef<HTMLDivElement>(null)
   return (
     <div className={classes.root}>
       <Chip
-        // ref={}
+        ref={btnRef}
         className={classes.chip}
+        color={props.open ? "primary" : undefined}
+        onClick={props.toggleOpen}
         label={
           <div className={classes.labelContainer}>
             <AppTypography variant="body2">{props.filter}</AppTypography>
@@ -57,11 +60,17 @@ export default function AppFilter(props: AppFilterProps) {
         variant="outlined"
         clickable
       />
-      {/* <Popper
-      // anchorEl={}
-      >
-        <div>Test</div>
-      </Popper> */}
+      {props.open ? (
+        <ClickAwayListener onClickAway={props.toggleOpen}>
+          <Popper
+            className={classes.popper}
+            anchorEl={btnRef.current}
+            placement="bottom-start"
+            open>
+            {props.popper}
+          </Popper>
+        </ClickAwayListener>
+      ) : undefined}
     </div>
   )
 }
