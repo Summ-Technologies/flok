@@ -5,7 +5,7 @@ import {useState} from "react"
 import {InstantSearch} from "react-instantsearch-dom"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import AppLogo from "../components/base/AppLogo"
+import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import DestinationsGrid from "../components/lodging/DestinationsGrid"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -51,8 +51,10 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
           rightText: `${selected.length} destinations selected`,
         }}>
         <Box paddingBottom={4}>
-          <AppLogo height={40} noBackground />
           <PageHeader
+            preHeader={
+              <AppLodgingFlowTimeline currentStep="SELECT_DESTINATION" />
+            }
             header="Location"
             subheader="Finding the right destination is the first step to a planning a great retreat!"
           />

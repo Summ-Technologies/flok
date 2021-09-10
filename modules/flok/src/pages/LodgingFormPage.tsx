@@ -4,7 +4,7 @@ import {useEffect} from "react"
 import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import AppLogo from "../components/base/AppLogo"
+import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import LodgingPreferencesForm, {
   RFPFormValues,
 } from "../components/lodging/LodgingPreferencesForm"
@@ -75,8 +75,8 @@ function LodgingFormPage(props: LodgingFormPageProps) {
       <PageBody>
         <PageOverlay>
           <Box paddingBottom={4}>
-            <AppLogo height={40} noBackground />
             <PageHeader
+              preHeader={<AppLodgingFlowTimeline currentStep="INTAKE_FORM" />}
               header="Let's Get Started"
               subheader="We need just a few details to plan your perfect retreat."
             />

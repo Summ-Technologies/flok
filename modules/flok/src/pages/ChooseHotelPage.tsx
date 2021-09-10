@@ -4,6 +4,7 @@ import {useState} from "react"
 import {InstantSearch} from "react-instantsearch-dom"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import HotelGrid, {
   HotelGridBudgetFilterBody,
   HotelGridFilters,
@@ -65,6 +66,7 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
         <PageHeader
           header="Lodging"
           subheader="Select some hotels to request a free proposal from!"
+          preHeader={<AppLodgingFlowTimeline currentStep="SELECT_HOTEL_RFPS" />}
           postHeader={
             <HotelGridFilters
               filters={[

@@ -38,7 +38,9 @@ function DestinationPage(props: DestinationPageProps) {
           header="Lake Tahoe"
           subheader="World class skiing, hiking, boating, and more!"
           preHeader={
-            <PageHeaderBackButton to={AppRoutes.getPath("DestinationPage")} />
+            <PageHeaderBackButton
+              to={AppRoutes.getPath("ChooseDestinationPage")}
+            />
           }
         />
         <AppTypography variant="body1" paragraph>
