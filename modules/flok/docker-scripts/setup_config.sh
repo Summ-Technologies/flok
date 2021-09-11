@@ -18,3 +18,8 @@ else
     echo "window.appConfig.mixpanel_token=\"$MIXPANEL_TOKEN\"" >> /usr/share/nginx/html/config.js
 fi
 
+if [[ -z "$GOOGLE_TAG_MANAGER_ID" ]]; then
+    echo "GOOGLE_TAG_MANAGER_ID environment variable not set. Google Analytics not recording."
+else
+    echo "window.appConfig.google_tag_manager_id=\"$GOOGLE_TAG_MANAGER_ID\"" >> /usr/share/nginx/html/config.js
+fi

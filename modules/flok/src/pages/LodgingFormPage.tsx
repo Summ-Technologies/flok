@@ -1,6 +1,7 @@
 import {Grid, makeStyles} from "@material-ui/core"
 import querystring from "querystring"
 import {useEffect} from "react"
+import TagManager from "react-gtm-module"
 import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -45,6 +46,11 @@ function LodgingFormPage(props: LodgingFormPageProps) {
         a1: values.companyName,
         utm_campaign: "intake_call",
         utm_content: id,
+      })
+      TagManager.dataLayer({
+        dataLayer: {
+          event: "INTAKE_FORM_SUBMITTED",
+        },
       })
       window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
     }
