@@ -4,11 +4,13 @@ export const APP_VERSION_KEY = "app_version"
 export const SERVER_BASE_URL_KEY = "server_base_url"
 export const IMAGES_BASE_URL_KEY = "images_base_url"
 export const MIXPANEL_TOKEN_KEY = "mixpanel_token"
+export const GOOGLE_TAG_MANAGER_ID_KEY = "google_tag_manager_id"
 type ConfigKey =
   | typeof APP_VERSION_KEY
   | typeof SERVER_BASE_URL_KEY
   | typeof IMAGES_BASE_URL_KEY
   | typeof MIXPANEL_TOKEN_KEY
+  | typeof GOOGLE_TAG_MANAGER_ID_KEY
 
 class Config {
   appConfig: {[key: string]: any}
