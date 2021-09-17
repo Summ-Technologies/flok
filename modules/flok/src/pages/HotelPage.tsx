@@ -1,6 +1,7 @@
 import {makeStyles} from "@material-ui/core"
 import {push} from "connected-react-router"
-import {useDispatch} from "react-redux"
+import {useEffect} from "react"
+import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
 import AppTypography from "../components/base/AppTypography"
@@ -8,8 +9,10 @@ import AppHotelLocationMap from "../components/lodging/AppHotelLocationMap"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import {sampleLandscape, samplePortrait} from "../models"
 import {AppRoutes} from "../Stack"
+import {RootState} from "../store"
+import {getHotelById} from "../store/actions/lodging"
+import NotFound404Page from "./misc/NotFound404Page"
 
 let useStyles = makeStyles((theme) => ({
   mapContainer: {
@@ -25,11 +28,33 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type HotelPageProps = RouteComponentProps<{}>
+type HotelPageProps = RouteComponentProps<{guid: string}>
 function HotelPage(props: HotelPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
-  return (
+  let hotelId = useSelector(
+    (state: RootState) =>
+      state.lodging.hotelsGuidMapping[props.match.params.guid]
+  )
+  let hotel = useSelector((state: RootState) => {
+    if (hotelId && hotelId !== "NOT_FOUND") {
+      return state.lodging.hotels[hotelId]
+    } else {
+      return undefined
+    }
+  })
+
+  useEffect(() => {
+    if (!hotel && hotelId !== "NOT_FOUND") {
+      dispatch(getHotelById(props.match.params.guid))
+    }
+  }, [props.match.params.guid, hotel, hotelId, dispatch])
+
+  return hotelId === "NOT_FOUND" ? (
+    <NotFound404Page />
+  ) : hotel === undefined ? (
+    <>Loading...</>
+  ) : (
     <PageContainer>
       <PageOverlay
         size="small"
@@ -39,31 +64,16 @@ function HotelPage(props: HotelPageProps) {
             dispatch(push(AppRoutes.getPath("ChooseHotelPage")))
           },
         }}
-        right={
-          <AppImageGrid
-            images={[
-              samplePortrait,
-              sampleLandscape,
-              sampleLandscape,
-              samplePortrait,
-              samplePortrait,
-              sampleLandscape,
-              sampleLandscape,
-              sampleLandscape,
-              sampleLandscape,
-            ]}
-          />
-        }>
+        right={<AppImageGrid images={hotel.imgs} />}>
         <PageHeader
-          header="Dream Inn"
-          subheader="A mainstay resort in Santa Cruz, CA with beachfront views."
+          header={hotel.name}
+          subheader={""}
           preHeader={
             <PageHeaderBackButton to={AppRoutes.getPath("ChooseHotelPage")} />
           }
         />
         <AppTypography variant="body1" paragraph>
-          Dream Inn Santa Cruz is the only beachfront resort offering oceanside
-          dining with panoramic views of the famous Cowell Beach.
+          {hotel.description}
         </AppTypography>
         <div className={classes.mapContainer}>
           <AppHotelLocationMap

@@ -47,6 +47,34 @@ export function updateHotels(hotels: HotelModel[]): UpdateHotelsAction {
   }
 }
 
+export const UPDATE_HOTEL_NOT_FOUND = "UPDATE_HOTEL_NOT_FOUND"
+export type UpdateHotelNotFoundAction = {
+  type: typeof UPDATE_HOTEL_NOT_FOUND
+  guid: string
+}
+function updateHotelNotFound(guid: string): UpdateHotelNotFoundAction {
+  return {
+    type: UPDATE_HOTEL_NOT_FOUND,
+    guid,
+  }
+}
+
+export function getHotelById(guid: string) {
+  return async (
+    dispatch: ThunkDispatch<any, any, any>,
+    getState: () => RootState
+  ) => {
+    try {
+      let hotel = await AlgoliaClient.getHotelsIndex().getObject<HotelModel>(
+        guid
+      )
+      dispatch(updateHotels([hotel]))
+    } catch (err) {
+      dispatch(updateHotelNotFound(guid))
+    }
+  }
+}
+
 // lodging form
 export const POST_LODGING_REQUEST_FORM_REQUEST =
   "POST_LODGING_REQUEST_FORM_REQUEST"

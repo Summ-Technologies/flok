@@ -27,7 +27,7 @@ export type HotelModel = {
   guid: string
   objectID: string
   name: string
-  destination_id: string
+  destination_id: number
   sub_location?: string
 
   price: BudgetType
