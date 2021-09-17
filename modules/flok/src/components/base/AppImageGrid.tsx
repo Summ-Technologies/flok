@@ -27,8 +27,8 @@ export default function AppImageGrid(props: AppImageGridProps) {
   return (
     <div className={classes.root}>
       {imageGroups.map((imgs) => {
-        let [l1, l2, l3] = imgs.filter((img) => img.orientation === "landscape")
-        let [p1, p2] = imgs.filter((img) => img.orientation === "portrait")
+        let [l1, l2, l3] = imgs.filter((img) => img.orientation === "LANDSCAPE")
+        let [p1, p2] = imgs.filter((img) => img.orientation === "PORTRAIT")
         if (l1 && l2 && l3) {
           return <PackLLL l1={l1} l2={l2} l3={l3} />
         } else if (l1 && l2 && p1) {
@@ -134,14 +134,14 @@ function PackLLP(props: {l1: ImageModel; l2: ImageModel; p1: ImageModel}) {
             <div className={classes.landscapeContainer}>
               <img
                 className={classes.img}
-                src={props.l1.url}
+                src={props.l1.image_url}
                 alt={props.l1.alt}
               />
             </div>
             <div className={classes.landscapeContainer}>
               <img
                 className={classes.img}
-                src={props.l2.url}
+                src={props.l2.image_url}
                 alt={props.l2.alt}
               />
             </div>
@@ -151,7 +151,7 @@ function PackLLP(props: {l1: ImageModel; l2: ImageModel; p1: ImageModel}) {
           <div className={classes.portraitContainer}>
             <img
               className={classes.img}
-              src={props.p1.url}
+              src={props.p1.image_url}
               alt={props.p1.alt}
             />
           </div>
@@ -170,7 +170,7 @@ function PackLL(props: {l1: ImageModel; l2: ImageModel}) {
           <div className={classes.landscapeContainer}>
             <img
               className={classes.img}
-              src={props.l1.url}
+              src={props.l1.image_url}
               alt={props.l1.alt}
             />
           </div>
@@ -179,7 +179,7 @@ function PackLL(props: {l1: ImageModel; l2: ImageModel}) {
           <div className={classes.landscapeContainer}>
             <img
               className={classes.img}
-              src={props.l2.url}
+              src={props.l2.image_url}
               alt={props.l2.alt}
             />
           </div>
@@ -198,7 +198,7 @@ function PackLP(props: {l1: ImageModel; p1: ImageModel}) {
             <div className={classes.landscapeContainer}>
               <img
                 className={classes.img}
-                src={props.l1.url}
+                src={props.l1.image_url}
                 alt={props.l1.alt}
               />
             </div>
@@ -208,7 +208,7 @@ function PackLP(props: {l1: ImageModel; p1: ImageModel}) {
           <div className={classes.portraitContainer}>
             <img
               className={classes.img}
-              src={props.p1.url}
+              src={props.p1.image_url}
               alt={props.p1.alt}
             />
           </div>
@@ -226,7 +226,7 @@ function PackPP(props: {p1: ImageModel; p2: ImageModel}) {
           <div className={classes.portraitContainer}>
             <img
               className={classes.img}
-              src={props.p1.url}
+              src={props.p1.image_url}
               alt={props.p1.alt}
             />
           </div>
@@ -235,7 +235,7 @@ function PackPP(props: {p1: ImageModel; p2: ImageModel}) {
           <div className={classes.portraitContainer}>
             <img
               className={classes.img}
-              src={props.p2.url}
+              src={props.p2.image_url}
               alt={props.p2.alt}
             />
           </div>
@@ -249,7 +249,11 @@ function PackL(props: {l1: ImageModel}) {
   return (
     <div className={classes.root}>
       <div className={classes.landscapeContainer}>
-        <img className={classes.img} src={props.l1.url} alt={props.l1.alt} />
+        <img
+          className={classes.img}
+          src={props.l1.image_url}
+          alt={props.l1.alt}
+        />
       </div>
     </div>
   )
@@ -260,7 +264,11 @@ function PackP(props: {p1: ImageModel}) {
     <div className={classes.root}>
       <div className={clsx(classes.half, classes.center)}>
         <div className={classes.portraitContainer}>
-          <img className={classes.img} src={props.p1.url} alt={props.p1.alt} />
+          <img
+            className={classes.img}
+            src={props.p1.image_url}
+            alt={props.p1.alt}
+          />
         </div>
       </div>
     </div>

@@ -1,18 +1,37 @@
 import {push} from "connected-react-router"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
 import AppTypography from "../components/base/AppTypography"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import {sampleLandscape, samplePortrait} from "../models"
 import {AppRoutes} from "../Stack"
+import {RootState} from "../store"
+import NotFound404Page from "./misc/NotFound404Page"
 
-type DestinationPageProps = RouteComponentProps<{}>
+type DestinationPageProps = RouteComponentProps<{guid: string}>
 function DestinationPage(props: DestinationPageProps) {
   let dispatch = useDispatch()
-  return (
+
+  let destinationsLoaded = useSelector(
+    (state: RootState) => state.lodging.destinationsLoaded
+  )
+  let destination = useSelector((state: RootState) => {
+    let destinationId =
+      state.lodging.destinationsGuidMapping[props.match.params.guid]
+    if (destinationId && state.lodging.destinations[destinationId]) {
+      return state.lodging.destinations[destinationId]
+    } else {
+      return undefined
+    }
+  })
+
+  return !destinationsLoaded ? (
+    <>Loading...</>
+  ) : destination === undefined ? (
+    <NotFound404Page />
+  ) : (
     <PageContainer>
       <PageOverlay
         size="small"
@@ -22,24 +41,10 @@ function DestinationPage(props: DestinationPageProps) {
             dispatch(push(AppRoutes.getPath("ChooseDestinationPage")))
           },
         }}
-        right={
-          <AppImageGrid
-            images={[
-              samplePortrait,
-              sampleLandscape,
-              sampleLandscape,
-              samplePortrait,
-              samplePortrait,
-              sampleLandscape,
-              sampleLandscape,
-              sampleLandscape,
-              sampleLandscape,
-            ]}
-          />
-        }>
+        right={<AppImageGrid images={destination.imgs} />}>
         <PageHeader
-          header="Lake Tahoe"
-          subheader="World class skiing, hiking, boating, and more!"
+          header={destination.location}
+          subheader=""
           preHeader={
             <PageHeaderBackButton
               to={AppRoutes.getPath("ChooseDestinationPage")}
@@ -47,34 +52,16 @@ function DestinationPage(props: DestinationPageProps) {
           }
         />
         <AppTypography variant="body1" paragraph>
-          Lake Tahoe the world’s second largest alpine lake, located high up in
-          the Sierra Nevada Mountains straddling the border of California and
-          Nevada. It’s known for its beaches and ski resorts. On the southwest
-          shore, Emerald Bay State Park contains the 1929 Nordic-style mansion
-          Vikingsholm. Along the lake’s northeast side, Lake Tahoe Nevada State
-          Park includes Sand Harbor Beach and Spooner Lake, a gateway to the
-          long-distance Tahoe Rim Trail.
+          {destination.description}
         </AppTypography>
-        <AppTypography variant="h4">Why do we love Lake Tahoe?</AppTypography>
-        <AppTypography variant="body1" paragraph>
-          As both a summer and a winter destination, Lake Tahoe is one of the
-          most beautiful places on earth. It’s home to tons of great year round
-          activities, as well as world class skiing. Take your team spelunking,
-          biking, white water rafter, or a few brews at Rob Nealan’s house!
-        </AppTypography>
-        <AppTypography variant="h4">
-          What makes Lake Tahoe great for retreats?
-        </AppTypography>
-        <AppTypography variant="body1" paragraph>
-          Lake Tahoe’s proximity to the tech hub of the SF Bay area makes it
-          convenient for many teams. There’s truly something something for
-          everyone at Tahoe. Find an exciting outdoor activity like mountain
-          biking to cultivate team bonding. Maybe your team appreciates great
-          food, so why not a big team dinner at the top of the mountain with a
-          night at Heavenly with a scenic gondola tour to the top. We’re also
-          fans of going out for a night on the casino with our team mates to try
-          our luck!
-        </AppTypography>
+        {destination.detail_sections.map((section) => (
+          <>
+            <AppTypography variant="h4">{section.header}</AppTypography>
+            <AppTypography variant="body1" paragraph>
+              {section.body}
+            </AppTypography>
+          </>
+        ))}
       </PageOverlay>
     </PageContainer>
   )

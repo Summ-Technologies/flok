@@ -4,6 +4,7 @@ import {useState} from "react"
 import {InstantSearch} from "react-instantsearch-dom"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import {HotelsAlgoliaReduxConnector} from "../components/lodging/AlgoliaReduxConnectors"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import HotelGrid, {
   HotelGridBudgetFilterBody,
@@ -14,7 +15,8 @@ import HotelGrid, {
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import {BudgetType, HotelAlgoliaHitModel} from "../models/lodging"
+import config, {ALGOLIA_HOTELS_INDEX_KEY} from "../config"
+import {BudgetType, HotelModel} from "../models/lodging"
 
 const searchClient = algoliasearch(
   "0GNPYG0XAN",
@@ -37,15 +39,15 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
   let [roomsFilterOpen, setRoomsFilterOpen] = useState(false)
 
   // Actions
-  function explore(hit: HotelAlgoliaHitModel) {
+  function explore(hit: HotelModel) {
     dispatch(push(`/lodging/hotels/${hit.objectID}`))
   }
 
-  function isSelected(hit: HotelAlgoliaHitModel) {
+  function isSelected(hit: HotelModel) {
     return selected.includes(hit.objectID)
   }
 
-  function toggleSelect(hit: HotelAlgoliaHitModel) {
+  function toggleSelect(hit: HotelModel) {
     if (isSelected(hit)) {
       setSelected(selected.filter((objId) => objId !== hit.objectID))
     } else {
@@ -120,12 +122,15 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
             />
           }
         />
-        <InstantSearch searchClient={searchClient} indexName="hotels">
+        <InstantSearch
+          searchClient={searchClient}
+          indexName={config.get(ALGOLIA_HOTELS_INDEX_KEY)}>
           <HotelGrid
             onExplore={explore}
             onSelect={toggleSelect}
             isSelected={isSelected}
           />
+          <HotelsAlgoliaReduxConnector />
         </InstantSearch>
       </PageOverlay>
     </PageContainer>

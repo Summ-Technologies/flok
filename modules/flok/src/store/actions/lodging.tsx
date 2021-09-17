@@ -1,8 +1,51 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
+import {DestinationModel, HotelModel} from "../../models/lodging"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
+import {AlgoliaClient} from "../../utils/algoliaUtils"
 import {ApiAction, createApiAction} from "./api"
+
+// destinations
+export const GET_DESTINATIONS = "GET_DESTINATIONS"
+export type GetDestinationsAction = {
+  type: typeof GET_DESTINATIONS
+  destinations: DestinationModel[]
+}
+export function getDestinations() {
+  return async (
+    dispatch: ThunkDispatch<any, any, any>,
+    getState: () => RootState
+  ) => {
+    let destinationsIndex = AlgoliaClient.getDestinationsIndex()
+    try {
+      let response = await destinationsIndex.search<DestinationModel>("", {
+        hitsPerPage: 50,
+      })
+      if (response) {
+        dispatch({
+          type: GET_DESTINATIONS,
+          destinations: response.hits,
+        })
+      }
+    } catch (err) {
+      // TODO err handling
+    }
+  }
+}
+
+// hotels
+export const UPDATE_HOTELS = "UPDATE_HOTELS"
+export type UpdateHotelsAction = {
+  type: typeof UPDATE_HOTELS
+  hotels: HotelModel[]
+}
+export function updateHotels(hotels: HotelModel[]): UpdateHotelsAction {
+  return {
+    type: UPDATE_HOTELS,
+    hotels,
+  }
+}
 
 // lodging form
 export const POST_LODGING_REQUEST_FORM_REQUEST =
