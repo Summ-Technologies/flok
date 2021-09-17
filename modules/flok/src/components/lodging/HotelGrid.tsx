@@ -9,7 +9,7 @@ import {
 import {useEffect, useRef} from "react"
 import {InfiniteHitsProvided} from "react-instantsearch-core"
 import {connectInfiniteHits} from "react-instantsearch-dom"
-import {BudgetType, HotelAlgoliaHitModel} from "../../models/lodging"
+import {BudgetType, HotelModel} from "../../models/lodging"
 import AppFilter, {AppFilterProps} from "../base/AppFilter"
 import {AppSliderInput} from "../base/AppSliderInputs"
 import AppTypography from "../base/AppTypography"
@@ -28,10 +28,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-interface HotelGridProps extends InfiniteHitsProvided<HotelAlgoliaHitModel> {
-  isSelected: (hit: HotelAlgoliaHitModel) => boolean
-  onSelect: (hit: HotelAlgoliaHitModel) => void
-  onExplore: (hit: HotelAlgoliaHitModel) => void
+interface HotelGridProps extends InfiniteHitsProvided<HotelModel> {
+  isSelected: (hit: HotelModel) => boolean
+  onSelect: (hit: HotelModel) => void
+  onExplore: (hit: HotelModel) => void
 }
 
 function HotelGrid(props: HotelGridProps) {
@@ -64,7 +64,7 @@ function HotelGrid(props: HotelGridProps) {
           img={
             "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
           }
-          name={hit.hotel_name}
+          name={hit.name}
           rooms={100}
           stars={4}
           key={index}
@@ -78,9 +78,7 @@ function HotelGrid(props: HotelGridProps) {
   )
 }
 
-export default connectInfiniteHits<HotelGridProps, HotelAlgoliaHitModel>(
-  HotelGrid
-)
+export default connectInfiniteHits<HotelGridProps, HotelModel>(HotelGrid)
 
 const useFilterStyles = makeStyles((theme: Theme) => ({
   root: {

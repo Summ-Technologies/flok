@@ -6,6 +6,10 @@ export const IMAGES_BASE_URL_KEY = "images_base_url"
 export const MIXPANEL_TOKEN_KEY = "mixpanel_token"
 export const GOOGLE_API_KEY = "google_api_key"
 export const GOOGLE_MAPS_ID_HOTEL_PAGE_KEY = "google_maps_id_hotel_page"
+export const ALGOLIA_API_KEY = "algolia_api_key"
+export const ALGOLIA_APP_ID_KEY = "algolia_app_id"
+export const ALGOLIA_DESTINATIONS_INDEX_KEY = "algolia_destinations_index"
+export const ALGOLIA_HOTELS_INDEX_KEY = "algolia_hotels_index"
 type ConfigKey =
   | typeof APP_VERSION_KEY
   | typeof SERVER_BASE_URL_KEY
@@ -13,6 +17,10 @@ type ConfigKey =
   | typeof MIXPANEL_TOKEN_KEY
   | typeof GOOGLE_API_KEY
   | typeof GOOGLE_MAPS_ID_HOTEL_PAGE_KEY
+  | typeof ALGOLIA_API_KEY
+  | typeof ALGOLIA_APP_ID_KEY
+  | typeof ALGOLIA_DESTINATIONS_INDEX_KEY
+  | typeof ALGOLIA_HOTELS_INDEX_KEY
 
 class Config {
   appConfig: {[key: string]: any}
@@ -20,6 +28,10 @@ class Config {
     [APP_VERSION_KEY]: process.env.REACT_APP_VERSION,
     [MIXPANEL_TOKEN_KEY]: "BOGUS_KEY", // use default key to prevent error's from non-initialized mixpanel instance
     [GOOGLE_MAPS_ID_HOTEL_PAGE_KEY]: "209c3e9f6984bce3",
+    [ALGOLIA_API_KEY]: "1bfd529008a4c2c0945b629b44707593",
+    [ALGOLIA_APP_ID_KEY]: "0GNPYG0XAN",
+    [ALGOLIA_DESTINATIONS_INDEX_KEY]: "destinations",
+    [ALGOLIA_HOTELS_INDEX_KEY]: "hotels",
   }
   constructor() {
     this.appConfig = {}

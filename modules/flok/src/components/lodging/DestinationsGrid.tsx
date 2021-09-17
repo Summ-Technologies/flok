@@ -1,7 +1,5 @@
 import {makeStyles, Theme} from "@material-ui/core"
-import {HitsProvided} from "react-instantsearch-core"
-import {connectHits} from "react-instantsearch-dom"
-import {DestinationAlgoliaHitModel} from "../../models/lodging"
+import {DestinationModel} from "../../models/lodging"
 import AppDestinationCard from "./AppDestinationCard"
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -17,37 +15,34 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-interface DestinationsGridProps
-  extends HitsProvided<DestinationAlgoliaHitModel> {
-  isSelected: (hit: DestinationAlgoliaHitModel) => boolean
-  onSelect: (hit: DestinationAlgoliaHitModel) => void
-  onExplore: (hit: DestinationAlgoliaHitModel) => void
+type DestinationsGridProps = {
+  destinations: DestinationModel[]
+  isSelected: (destination: DestinationModel) => boolean
+  onSelect: (destination: DestinationModel) => void
+  onExplore: (destination: DestinationModel) => void
 }
 
-function DestinationsGrid(props: DestinationsGridProps) {
+export default function DestinationsGrid(props: DestinationsGridProps) {
   let classes = useStyles(props)
   return (
     <div className={classes.root}>
-      {props.hits.map((hit, index) => (
-        <AppDestinationCard
-          description={
-            "New York City comprises 5 boroughs sitting where the Hudson River meets the Atlantic Ocean. At its core is Manhattan, a densely populated borough that’s among the world’s major commercial areas."
-          }
-          title={hit.city}
-          subtitle={`${hit.state}, ${hit.country}`}
-          img={
-            "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
-          }
-          onExplore={() => props.onExplore(hit)}
-          onSelect={() => props.onSelect(hit)}
-          selected={props.isSelected(hit)}
-          key={index}
-        />
-      ))}
+      {props.destinations.map((destination, index) => {
+        let subtitle = destination.state
+          ? `${destination.state}, ${destination.country_abbreviation}`
+          : `${destination.country}`
+        return (
+          <AppDestinationCard
+            description={destination.description_short}
+            title={destination.location}
+            subtitle={subtitle}
+            img={destination.spotlight_img.image_url}
+            onExplore={() => props.onExplore(destination)}
+            onSelect={() => props.onSelect(destination)}
+            selected={props.isSelected(destination)}
+            key={index}
+          />
+        )
+      })}
     </div>
   )
 }
-
-export default connectHits<DestinationsGridProps, DestinationAlgoliaHitModel>(
-  DestinationsGrid
-)
