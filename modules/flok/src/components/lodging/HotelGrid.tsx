@@ -9,7 +9,9 @@ import {
 import {useEffect, useRef} from "react"
 import {InfiniteHitsProvided} from "react-instantsearch-core"
 import {connectInfiniteHits} from "react-instantsearch-dom"
+import {useSelector} from "react-redux"
 import {BudgetType, HotelModel} from "../../models/lodging"
+import {RootState} from "../../store"
 import AppFilter, {AppFilterProps} from "../base/AppFilter"
 import {AppSliderInput} from "../base/AppSliderInputs"
 import AppTypography from "../base/AppTypography"
@@ -38,6 +40,9 @@ function HotelGrid(props: HotelGridProps) {
   let classes = useStyles(props)
   const {hasMore, refineNext} = props
   let sentinelRef = useRef<HTMLLIElement>(null)
+  let destinations = useSelector(
+    (state: RootState) => state.lodging.destinations
+  )
 
   useEffect(() => {
     function loadMoreHits(entries: IntersectionObserverEntry[]) {
@@ -56,23 +61,33 @@ function HotelGrid(props: HotelGridProps) {
 
   return (
     <div className={classes.root}>
-      {props.hits.map((hit, index) => (
-        <AppHotelCard
-          budget={2}
-          description={""}
-          destination={""}
-          img={
-            "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
-          }
-          name={hit.name}
-          rooms={100}
-          stars={4}
-          key={index}
-          onExplore={() => props.onExplore(hit)}
-          onSelect={() => props.onSelect(hit)}
-          selected={props.isSelected(hit)}
-        />
-      ))}
+      {props.hits.map((hit, index) => {
+        let destination = destinations[hit.destination_id]
+        let destinationText = destination
+          ? `${destination.location}, ${
+              destination.state_abbreviation || destination.country_abbreviation
+            }`
+          : ""
+        return (
+          <AppHotelCard
+            budget={
+              hit.price && hit.price.length < 4
+                ? (hit.price.length as 1 | 2 | 3 | 4)
+                : 3
+            }
+            description={hit.description_short}
+            destination={destinationText}
+            img={hit.spotlight_img.image_url}
+            name={hit.name}
+            rooms={hit.num_rooms}
+            stars={hit.rating}
+            key={index}
+            onExplore={() => props.onExplore(hit)}
+            onSelect={() => props.onSelect(hit)}
+            selected={props.isSelected(hit)}
+          />
+        )
+      })}
       <li ref={sentinelRef} />
     </div>
   )
