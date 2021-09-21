@@ -45,22 +45,22 @@ export class AppRoutes {
     {
       name: "ChooseDestinationPage",
       component: <ChooseDestinationPage />,
-      path: "/lodging/destinations",
+      path: "/:retreatGuid/destinations",
     },
     {
       name: "DestinationPage",
       component: <DestinationPage />,
-      path: "/lodging/destinations/:guid",
+      path: "/:retreatGuid/destinations/:destinationGuid",
     },
     {
       name: "ChooseHotelPage",
       component: <ChooseHotelPage />,
-      path: "/lodging/hotels",
+      path: "/:retreatGuid/hotels",
     },
     {
       name: "HotelPage",
       component: <HotelPage />,
-      path: "/lodging/hotels/:guid",
+      path: "/:retreatGuid/hotels/:hotelGuid",
     },
     {
       name: "NotFoundPage",

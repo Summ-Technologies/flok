@@ -6,6 +6,7 @@ import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
 import AppTypography from "../components/base/AppTypography"
 import AppHotelLocationMap from "../components/lodging/AppHotelLocationMap"
+import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
@@ -28,13 +29,16 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type HotelPageProps = RouteComponentProps<{guid: string}>
+type HotelPageProps = RouteComponentProps<{
+  hotelGuid: string
+  retreatGuid: string
+}>
 function HotelPage(props: HotelPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let hotelId = useSelector(
     (state: RootState) =>
-      state.lodging.hotelsGuidMapping[props.match.params.guid]
+      state.lodging.hotelsGuidMapping[props.match.params.hotelGuid]
   )
   let hotel = useSelector((state: RootState) => {
     if (hotelId && hotelId !== "NOT_FOUND") {
@@ -46,43 +50,57 @@ function HotelPage(props: HotelPageProps) {
 
   useEffect(() => {
     if (!hotel && hotelId !== "NOT_FOUND") {
-      dispatch(getHotelById(props.match.params.guid))
+      dispatch(getHotelById(props.match.params.hotelGuid))
     }
-  }, [props.match.params.guid, hotel, hotelId, dispatch])
+  }, [props.match.params.hotelGuid, hotel, hotelId, dispatch])
 
-  return hotelId === "NOT_FOUND" ? (
-    <NotFound404Page />
-  ) : hotel === undefined ? (
-    <>Loading...</>
-  ) : (
-    <PageContainer>
-      <PageOverlay
-        size="small"
-        OverlayFooterProps={{
-          cta: "Select Location",
-          onClick: () => {
-            dispatch(push(AppRoutes.getPath("ChooseHotelPage")))
-          },
-        }}
-        right={<AppImageGrid images={hotel.imgs} />}>
-        <PageHeader
-          header={hotel.name}
-          subheader={""}
-          preHeader={
-            <PageHeaderBackButton to={AppRoutes.getPath("ChooseHotelPage")} />
-          }
-        />
-        <AppTypography variant="body1" paragraph>
-          {hotel.description}
-        </AppTypography>
-        <div className={classes.mapContainer}>
-          <AppHotelLocationMap
-            lat={36.96204259329413}
-            long={-122.02508367338864}
-          />
-        </div>
-      </PageOverlay>
-    </PageContainer>
+  return (
+    <RetreatRequired retreatGuid={props.match.params.retreatGuid}>
+      {hotelId === "NOT_FOUND" ? (
+        <NotFound404Page />
+      ) : hotel === undefined ? (
+        <>Loading...</>
+      ) : (
+        <PageContainer>
+          <PageOverlay
+            size="small"
+            OverlayFooterProps={{
+              cta: "Select Location",
+              onClick: () => {
+                dispatch(
+                  push(
+                    AppRoutes.getPath("ChooseHotelPage", {
+                      retreatGuid: props.match.params.retreatGuid,
+                    })
+                  )
+                )
+              },
+            }}
+            right={<AppImageGrid images={hotel.imgs} />}>
+            <PageHeader
+              header={hotel.name}
+              subheader={""}
+              preHeader={
+                <PageHeaderBackButton
+                  to={AppRoutes.getPath("ChooseHotelPage", {
+                    retreatGuid: props.match.params.retreatGuid,
+                  })}
+                />
+              }
+            />
+            <AppTypography variant="body1" paragraph>
+              {hotel.description}
+            </AppTypography>
+            <div className={classes.mapContainer}>
+              <AppHotelLocationMap
+                lat={36.96204259329413}
+                long={-122.02508367338864}
+              />
+            </div>
+          </PageOverlay>
+        </PageContainer>
+      )}
+    </RetreatRequired>
   )
 }
 export default withRouter(HotelPage)
