@@ -1,4 +1,3 @@
-import {push} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
@@ -9,6 +8,10 @@ import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
+import {
+  deleteSelectedRetreatDestination,
+  postSelectedRetreatDestination,
+} from "../store/actions/retreat"
 import {convertGuid} from "../utils"
 import NotFound404Page from "./misc/NotFound404Page"
 
@@ -19,7 +22,17 @@ type DestinationPageProps = RouteComponentProps<{
 function DestinationPage(props: DestinationPageProps) {
   let dispatch = useDispatch()
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
-
+  let selectedDestinationIds = useSelector((state: RootState) => {
+    let retreat = state.retreat.retreats[retreatGuid]
+    if (retreat && retreat !== "NOT_FOUND") {
+      return retreat.selected_destinations_ids
+    }
+    return []
+  })
+  let destinationId = useSelector(
+    (state: RootState) =>
+      state.lodging.destinationsGuidMapping[props.match.params.destinationGuid]
+  )
   let destinationsLoaded = useSelector(
     (state: RootState) => state.lodging.destinationsLoaded
   )
@@ -44,15 +57,19 @@ function DestinationPage(props: DestinationPageProps) {
           <PageOverlay
             size="small"
             OverlayFooterProps={{
-              cta: "Select Location",
+              cta: selectedDestinationIds.includes(destinationId)
+                ? "Unselect Location"
+                : "Select Location",
               onClick: () => {
-                dispatch(
-                  push(
-                    AppRoutes.getPath("ChooseDestinationPage", {
-                      retreatGuid: props.match.params.retreatGuid,
-                    })
+                if (selectedDestinationIds.includes(destinationId)) {
+                  dispatch(
+                    deleteSelectedRetreatDestination(retreatGuid, destinationId)
                   )
-                )
+                } else {
+                  dispatch(
+                    postSelectedRetreatDestination(retreatGuid, destinationId)
+                  )
+                }
               },
             }}
             right={<AppImageGrid images={destination.imgs} />}>

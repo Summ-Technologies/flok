@@ -1,5 +1,4 @@
 import {makeStyles} from "@material-ui/core"
-import {push} from "connected-react-router"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -13,6 +12,10 @@ import PageOverlay from "../components/page/PageOverlay"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotelById} from "../store/actions/lodging"
+import {
+  deleteSelectedRetreatHotel,
+  postSelectedRetreatHotel,
+} from "../store/actions/retreat"
 import {convertGuid} from "../utils"
 import NotFound404Page from "./misc/NotFound404Page"
 
@@ -38,6 +41,13 @@ function HotelPage(props: HotelPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let selectedHotelIds = useSelector((state: RootState) => {
+    let retreat = state.retreat.retreats[retreatGuid]
+    if (retreat && retreat !== "NOT_FOUND") {
+      return retreat.selected_hotels_ids
+    }
+    return []
+  })
   let hotelId = useSelector(
     (state: RootState) =>
       state.lodging.hotelsGuidMapping[props.match.params.hotelGuid]
@@ -67,15 +77,19 @@ function HotelPage(props: HotelPageProps) {
           <PageOverlay
             size="small"
             OverlayFooterProps={{
-              cta: "Select Location",
+              cta: selectedHotelIds.includes(hotelId)
+                ? "Unselect location"
+                : "Select Location",
               onClick: () => {
-                dispatch(
-                  push(
-                    AppRoutes.getPath("ChooseHotelPage", {
-                      retreatGuid: props.match.params.retreatGuid,
-                    })
+                if (selectedHotelIds.includes(hotelId as number)) {
+                  dispatch(
+                    deleteSelectedRetreatHotel(retreatGuid, hotelId as number)
                   )
-                )
+                } else {
+                  dispatch(
+                    postSelectedRetreatHotel(retreatGuid, hotelId as number)
+                  )
+                }
               },
             }}
             right={<AppImageGrid images={hotel.imgs} />}>
