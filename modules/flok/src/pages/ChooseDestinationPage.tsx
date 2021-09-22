@@ -1,6 +1,5 @@
 import {Box} from "@material-ui/core"
 import {push} from "connected-react-router"
-import {useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
@@ -12,11 +11,24 @@ import PageOverlay from "../components/page/PageOverlay"
 import {DestinationModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
+import {
+  deleteSelectedRetreatDestination,
+  postSelectedRetreatDestination,
+} from "../store/actions/retreat"
+import {convertGuid} from "../utils"
 
 type ChooseDestinationPageProps = RouteComponentProps<{retreatGuid: string}>
 function ChooseDestinationPage(props: ChooseDestinationPageProps) {
   let dispatch = useDispatch()
+  let retreatGuid = convertGuid(props.match.params.retreatGuid)
 
+  let selectedDestinationIds = useSelector((state: RootState) => {
+    let retreat = state.retreat.retreats[retreatGuid]
+    if (retreat && retreat !== "NOT_FOUND") {
+      return retreat.selected_destinations_ids
+    }
+    return []
+  })
   let destinationsLoaded = useSelector(
     (state: RootState) => state.lodging.destinationsLoaded
   )
@@ -24,32 +36,31 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
     // TODO THIS SHOULD BE ORDERED
     Object.values(state.lodging.destinations)
   )
-  let [selected, setSelected] = useState<string[]>([])
 
   // Actions
   function explore(destination: DestinationModel) {
     dispatch(
       push(
         AppRoutes.getPath("DestinationPage", {
-          retreatGuid: props.match.params.retreatGuid,
+          retreatGuid: retreatGuid,
           destinationGuid: destination.guid,
         })
       )
     )
   }
   function isSelected(destination: DestinationModel) {
-    return selected.includes(destination.objectID)
+    return selectedDestinationIds.includes(destination.id)
   }
   function toggleSelect(destination: DestinationModel) {
     if (isSelected(destination)) {
-      setSelected(selected.filter((objId) => objId !== destination.objectID))
+      dispatch(deleteSelectedRetreatDestination(retreatGuid, destination.id))
     } else {
-      setSelected([...selected, destination.objectID])
+      dispatch(postSelectedRetreatDestination(retreatGuid, destination.id))
     }
   }
 
   return (
-    <RetreatRequired retreatGuid={props.match.params.retreatGuid}>
+    <RetreatRequired retreatGuid={retreatGuid}>
       {!destinationsLoaded ? (
         <>Loading...</>
       ) : (
@@ -66,7 +77,7 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
                   )
                 )
               },
-              rightText: `${selected.length} destinations selected`,
+              rightText: `${selectedDestinationIds.length} destinations selected`,
             }}>
             <Box paddingBottom={4}>
               <PageHeader

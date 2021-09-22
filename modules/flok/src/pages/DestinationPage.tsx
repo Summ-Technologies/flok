@@ -9,6 +9,7 @@ import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
+import {convertGuid} from "../utils"
 import NotFound404Page from "./misc/NotFound404Page"
 
 type DestinationPageProps = RouteComponentProps<{
@@ -17,6 +18,7 @@ type DestinationPageProps = RouteComponentProps<{
 }>
 function DestinationPage(props: DestinationPageProps) {
   let dispatch = useDispatch()
+  let retreatGuid = convertGuid(props.match.params.retreatGuid)
 
   let destinationsLoaded = useSelector(
     (state: RootState) => state.lodging.destinationsLoaded
@@ -32,7 +34,7 @@ function DestinationPage(props: DestinationPageProps) {
   })
 
   return (
-    <RetreatRequired retreatGuid={props.match.params.retreatGuid}>
+    <RetreatRequired retreatGuid={retreatGuid}>
       {!destinationsLoaded ? (
         <>Loading...</>
       ) : destination === undefined ? (

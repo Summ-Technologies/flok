@@ -1,6 +1,27 @@
 import {useEffect, useState} from "react"
 import {useLocation} from "react-router-dom"
 
+/**
+ * Converts given string to guid with hypens if possible, else return str unchanged
+ */
+export function convertGuid(str: string) {
+  if (str.length === 32) {
+    return (
+      str.slice(0, 8) +
+      "-" +
+      str.slice(8, 12) +
+      "-" +
+      str.slice(12, 16) +
+      "-" +
+      str.slice(16, 20) +
+      "-" +
+      str.slice(20, str.length + 1)
+    )
+  } else {
+    return str
+  }
+}
+
 export function useQuery(param: string) {
   let searchString = useLocation().search.substring(1)
   let [paramVal, setParamVal] = useState<string | null>(

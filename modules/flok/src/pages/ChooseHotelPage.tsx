@@ -2,7 +2,7 @@ import algoliasearch from "algoliasearch"
 import {push} from "connected-react-router"
 import {useState} from "react"
 import {InstantSearch} from "react-instantsearch-dom"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import {HotelsAlgoliaReduxConnector} from "../components/lodging/AlgoliaReduxConnectors"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
@@ -19,6 +19,12 @@ import PageOverlay from "../components/page/PageOverlay"
 import config, {ALGOLIA_HOTELS_INDEX_KEY} from "../config"
 import {BudgetType, HotelModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
+import {RootState} from "../store"
+import {
+  deleteSelectedRetreatHotel,
+  postSelectedRetreatHotel,
+} from "../store/actions/retreat"
+import {convertGuid} from "../utils"
 
 const searchClient = algoliasearch(
   "0GNPYG0XAN",
@@ -28,8 +34,15 @@ const searchClient = algoliasearch(
 type ChooseHotelPageProps = RouteComponentProps<{retreatGuid: string}>
 function ChooseHotelPage(props: ChooseHotelPageProps) {
   let dispatch = useDispatch()
+  let retreatGuid = convertGuid(props.match.params.retreatGuid)
 
-  let [selected, setSelected] = useState<string[]>([])
+  let selectedHotelIds = useSelector((state: RootState) => {
+    let retreat = state.retreat.retreats[retreatGuid]
+    if (retreat && retreat !== "NOT_FOUND") {
+      return retreat.selected_hotels_ids
+    }
+    return []
+  })
 
   let [locationFilter, setLocationFilter] = useState<string[]>([])
   let [locationFilterOpen, setLocationFilterOpen] = useState(false)
@@ -41,31 +54,31 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
   let [roomsFilterOpen, setRoomsFilterOpen] = useState(false)
 
   // Actions
-  function explore(hit: HotelModel) {
+  function explore(hotel: HotelModel) {
     dispatch(
       push(
         AppRoutes.getPath("HotelPage", {
           retreatGuid: props.match.params.retreatGuid,
-          hotelGuid: hit.guid,
+          hotelGuid: hotel.guid,
         })
       )
     )
   }
 
-  function isSelected(hit: HotelModel) {
-    return selected.includes(hit.objectID)
+  function isSelected(hotel: HotelModel) {
+    return selectedHotelIds.includes(hotel.id)
   }
 
-  function toggleSelect(hit: HotelModel) {
-    if (isSelected(hit)) {
-      setSelected(selected.filter((objId) => objId !== hit.objectID))
+  function toggleSelect(hotel: HotelModel) {
+    if (isSelected(hotel)) {
+      dispatch(deleteSelectedRetreatHotel(retreatGuid, hotel.id))
     } else {
-      setSelected([...selected, hit.objectID])
+      dispatch(postSelectedRetreatHotel(retreatGuid, hotel.id))
     }
   }
 
   return (
-    <RetreatRequired retreatGuid={props.match.params.retreatGuid}>
+    <RetreatRequired retreatGuid={retreatGuid}>
       <PageContainer backgroundImage="https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg">
         <PageOverlay
           OverlayFooterProps={{
@@ -73,7 +86,7 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
             onClick: () => {
               alert("should goto next step")
             },
-            rightText: `${selected.length} hotels selected`,
+            rightText: `${selectedHotelIds.length} hotels selected`,
           }}>
           <PageHeader
             header="Lodging"

@@ -22,5 +22,6 @@ export type RetreatModel = {
   company_name: string
   state: RetreatProgressState
   selected_destinations_ids: number[]
+  selected_hotels_ids: number[]
   selected_hotels_proposals: RetreatSelectedHotelProposal[]
 }

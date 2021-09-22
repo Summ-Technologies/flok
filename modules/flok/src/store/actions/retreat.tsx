@@ -33,9 +33,15 @@ export function postSelectedRetreatDestination(
     method: "POST",
     endpoint,
     types: [
-      POST_SELECTED_RETREAT_DESTINATION_REQUEST,
+      {
+        type: POST_SELECTED_RETREAT_DESTINATION_REQUEST,
+        meta: {retreatGuid, destinationId},
+      },
       POST_SELECTED_RETREAT_DESTINATION_SUCCESS,
-      POST_SELECTED_RETREAT_DESTINATION_FAILURE,
+      {
+        type: POST_SELECTED_RETREAT_DESTINATION_FAILURE,
+        meta: {retreatGuid, destinationId},
+      },
     ],
   })
 }
@@ -56,9 +62,15 @@ export function deleteSelectedRetreatDestination(
     method: "DELETE",
     endpoint,
     types: [
-      DELETE_SELECTED_RETREAT_DESTINATION_REQUEST,
+      {
+        type: DELETE_SELECTED_RETREAT_DESTINATION_REQUEST,
+        meta: {retreatGuid, destinationId},
+      },
       DELETE_SELECTED_RETREAT_DESTINATION_SUCCESS,
-      DELETE_SELECTED_RETREAT_DESTINATION_FAILURE,
+      {
+        type: DELETE_SELECTED_RETREAT_DESTINATION_FAILURE,
+        meta: {retreatGuid, destinationId},
+      },
     ],
   })
 }
@@ -76,9 +88,9 @@ export function postSelectedRetreatHotel(retreatGuid: string, hotelId: number) {
     method: "POST",
     endpoint,
     types: [
-      POST_SELECTED_RETREAT_HOTEL_REQUEST,
+      {type: POST_SELECTED_RETREAT_HOTEL_REQUEST, meta: {retreatGuid, hotelId}},
       POST_SELECTED_RETREAT_HOTEL_SUCCESS,
-      POST_SELECTED_RETREAT_HOTEL_FAILURE,
+      {type: POST_SELECTED_RETREAT_HOTEL_FAILURE, meta: {retreatGuid, hotelId}},
     ],
   })
 }
@@ -99,9 +111,15 @@ export function deleteSelectedRetreatHotel(
     method: "DELETE",
     endpoint,
     types: [
-      DELETE_SELECTED_RETREAT_HOTEL_REQUEST,
+      {
+        type: DELETE_SELECTED_RETREAT_HOTEL_REQUEST,
+        meta: {retreatGuid, hotelId},
+      },
       DELETE_SELECTED_RETREAT_HOTEL_SUCCESS,
-      DELETE_SELECTED_RETREAT_HOTEL_FAILURE,
+      {
+        type: DELETE_SELECTED_RETREAT_HOTEL_FAILURE,
+        meta: {retreatGuid, hotelId},
+      },
     ],
   })
 }

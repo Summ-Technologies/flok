@@ -13,6 +13,7 @@ import PageOverlay from "../components/page/PageOverlay"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotelById} from "../store/actions/lodging"
+import {convertGuid} from "../utils"
 import NotFound404Page from "./misc/NotFound404Page"
 
 let useStyles = makeStyles((theme) => ({
@@ -36,6 +37,7 @@ type HotelPageProps = RouteComponentProps<{
 function HotelPage(props: HotelPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
+  let retreatGuid = convertGuid(props.match.params.retreatGuid)
   let hotelId = useSelector(
     (state: RootState) =>
       state.lodging.hotelsGuidMapping[props.match.params.hotelGuid]
@@ -55,7 +57,7 @@ function HotelPage(props: HotelPageProps) {
   }, [props.match.params.hotelGuid, hotel, hotelId, dispatch])
 
   return (
-    <RetreatRequired retreatGuid={props.match.params.retreatGuid}>
+    <RetreatRequired retreatGuid={retreatGuid}>
       {hotelId === "NOT_FOUND" ? (
         <NotFound404Page />
       ) : hotel === undefined ? (
