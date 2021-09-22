@@ -1,4 +1,4 @@
-import React, {useEffect} from "react"
+import React, {useEffect, useState} from "react"
 import {
   connectStateResults,
   StateResultsProvided,
@@ -11,12 +11,16 @@ type HotelsAlgoliaReduxConnectorProps = StateResultsProvided<HotelModel>
 function _HotelsAlgoliaReduxConnector(props: HotelsAlgoliaReduxConnectorProps) {
   let dispatch = useDispatch()
   let {searchResults} = {...props}
+  let [searchResultsSaved, setSearchResultsSaved] = useState<string[]>([])
   useEffect(() => {
-    console.log(searchResults)
-    if (searchResults) {
+    let searchKey = searchResults
+      ? `${searchResults.query}-${searchResults.page}-${searchResults.index}`
+      : undefined
+    if (searchKey && !searchResultsSaved.includes(searchKey)) {
       dispatch(updateHotels(searchResults.hits))
+      setSearchResultsSaved([...searchResultsSaved, searchKey])
     }
-  }, [searchResults, dispatch])
+  }, [searchResults, dispatch, searchResultsSaved, setSearchResultsSaved])
   return <></>
 }
 
