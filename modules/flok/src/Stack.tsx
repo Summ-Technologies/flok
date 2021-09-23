@@ -9,8 +9,6 @@ import {default as LodgingFormPage} from "./pages/LodgingFormPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
-import {RootState} from "./store"
-import {getDestinations} from "./store/actions/lodging"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
 
@@ -108,9 +106,6 @@ export default function Stack() {
   let dispatch = useDispatch()
 
   let loginStatus = useSelector(UserGetters.getLoginStatus)
-  let destinationsLoaded = useSelector(
-    (state: RootState) => state.lodging.destinationsLoaded
-  )
   let [routes, setRoutes] = useState<JSX.Element[]>([])
 
   useEffect(() => {
@@ -131,13 +126,6 @@ export default function Stack() {
     /** Helps determine user login status */
     dispatch(getUserHome())
   }, [dispatch, loginStatus])
-
-  useEffect(() => {
-    // Always need to load destinations
-    if (!destinationsLoaded) {
-      dispatch(getDestinations())
-    }
-  }, [dispatch, destinationsLoaded])
 
   return <Switch>{routes}</Switch>
 }

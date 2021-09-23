@@ -15,12 +15,13 @@ import {
   deleteSelectedRetreatDestination,
   postSelectedRetreatDestination,
 } from "../store/actions/retreat"
-import {convertGuid} from "../utils"
+import {convertGuid, useDestinations} from "../utils"
 
 type ChooseDestinationPageProps = RouteComponentProps<{retreatGuid: string}>
 function ChooseDestinationPage(props: ChooseDestinationPageProps) {
   let dispatch = useDispatch()
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let destinations = Object.values(useDestinations())
 
   let selectedDestinationIds = useSelector((state: RootState) => {
     let retreat = state.retreat.retreats[retreatGuid]
@@ -29,13 +30,6 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
     }
     return []
   })
-  let destinationsLoaded = useSelector(
-    (state: RootState) => state.lodging.destinationsLoaded
-  )
-  let destinations = useSelector((state: RootState) =>
-    // TODO THIS SHOULD BE ORDERED
-    Object.values(state.lodging.destinations)
-  )
 
   // Actions
   function explore(destination: DestinationModel) {
@@ -61,7 +55,7 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
-      {!destinationsLoaded ? (
+      {!destinations ? (
         <>Loading...</>
       ) : (
         <PageContainer backgroundImage="https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg">

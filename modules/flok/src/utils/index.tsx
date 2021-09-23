@@ -1,5 +1,31 @@
+import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
+import {useDispatch, useSelector} from "react-redux"
 import {useLocation} from "react-router-dom"
+import {DestinationModel} from "../models/lodging"
+import {RootState} from "../store"
+import {getDestinations} from "../store/actions/lodging"
+
+export class DestinationUtils {
+  static getLocationName(destination: DestinationModel) {
+    return `${destination.location}, ${
+      destination.state_abbreviation || destination.country
+    }`
+  }
+}
+
+export function useDestinations() {
+  let dispatch = useDispatch()
+  let destinations = useSelector(
+    (state: RootState) => state.lodging.destinations
+  )
+  useEffect(() => {
+    if (!Object.keys(destinations).length) {
+      dispatch(getDestinations())
+    }
+  }, [dispatch, destinations])
+  return destinations
+}
 
 /**
  * Converts given string to guid with hypens if possible, else return str unchanged
@@ -23,6 +49,7 @@ export function convertGuid(str: string) {
 }
 
 export function useQuery(param: string) {
+  let dispatch = useDispatch()
   let searchString = useLocation().search.substring(1)
   let [paramVal, setParamVal] = useState<string | null>(
     new URLSearchParams(searchString).get(param)
@@ -30,7 +57,40 @@ export function useQuery(param: string) {
   useEffect(() => {
     setParamVal(new URLSearchParams(searchString).get(param))
   }, [searchString, setParamVal, param])
-  return paramVal
+
+  function setParam(newParamVal: string) {
+    let allParams = new URLSearchParams(searchString)
+    allParams.set(param, newParamVal)
+    dispatch(
+      push({
+        search: `${allParams.toString() ? "?" + allParams.toString() : ""}`,
+      })
+    )
+  }
+  return [paramVal, setParam] as const
+}
+
+export function useQueryAsList(param: string, separator: string = ",") {
+  let dispatch = useDispatch()
+  let searchString = useLocation().search.substring(1)
+  let [paramVals, setParamVals] = useState<string[]>(
+    new URLSearchParams(searchString).getAll(param)
+  )
+  useEffect(() => {
+    setParamVals(new URLSearchParams(searchString).getAll(param))
+  }, [searchString, setParamVals, param, separator])
+
+  function setParams(newParamVals: string[]) {
+    let allParams = new URLSearchParams(searchString)
+    allParams.delete(param)
+    newParamVals.forEach((newParamVal) => allParams.append(param, newParamVal))
+    dispatch(
+      push({
+        search: `${allParams.toString() ? "?" + allParams.toString() : ""}`,
+      })
+    )
+  }
+  return [paramVals, setParams] as const
 }
 
 // Hook

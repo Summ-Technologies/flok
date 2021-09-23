@@ -33,10 +33,10 @@ type RFPLiteResponsePageProps = RouteComponentProps<{}>
 function RFPLiteResponsePage(props: RFPLiteResponsePageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
-  let availability = useQuery("avail")
-  let hotel = useQuery("hotel")
-  let dates = useQuery("dates")
-  let lodgingProposalRequestId = useQuery("reqId")
+  let [availability] = useQuery("avail")
+  let [hotel] = useQuery("hotel")
+  let [dates] = useQuery("dates")
+  let [lodgingProposalRequestId] = useQuery("reqId")
 
   useEffect(() => {
     function postResponse() {
