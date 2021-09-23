@@ -1,3 +1,4 @@
+import {goBack} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
@@ -6,7 +7,6 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {
   deleteSelectedRetreatDestination,
@@ -77,11 +77,7 @@ function DestinationPage(props: DestinationPageProps) {
               header={destination.location}
               subheader=""
               preHeader={
-                <PageHeaderBackButton
-                  to={AppRoutes.getPath("ChooseDestinationPage", {
-                    retreatGuid: props.match.params.retreatGuid,
-                  })}
-                />
+                <PageHeaderBackButton onClick={() => dispatch(goBack())} />
               }
             />
             <AppTypography variant="body1" paragraph>

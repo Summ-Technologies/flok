@@ -1,7 +1,6 @@
-import {Chip, makeStyles} from "@material-ui/core"
+import {Button, Chip, makeStyles} from "@material-ui/core"
 import {KeyboardBackspace} from "@material-ui/icons"
 import React from "react"
-import {Link} from "react-router-dom"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -60,17 +59,17 @@ let useBackButtonStyles = makeStyles((theme) => ({
   },
 }))
 
-export function PageHeaderBackButton(props: {to: string}) {
+export function PageHeaderBackButton(props: {onClick: () => void}) {
   let classes = useBackButtonStyles(props)
   return (
     <Chip
       classes={{label: classes.label}}
       label="Back"
       icon={<KeyboardBackspace />}
-      component={Link}
+      component={Button}
       variant="outlined"
       color="primary"
-      to={props.to}
+      onClick={props.onClick}
       clickable
     />
   )

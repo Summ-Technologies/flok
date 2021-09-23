@@ -1,4 +1,5 @@
 import {makeStyles} from "@material-ui/core"
+import {goBack} from "connected-react-router"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -9,7 +10,6 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotelById} from "../store/actions/lodging"
 import {
@@ -97,11 +97,7 @@ function HotelPage(props: HotelPageProps) {
               header={hotel.name}
               subheader={""}
               preHeader={
-                <PageHeaderBackButton
-                  to={AppRoutes.getPath("ChooseHotelPage", {
-                    retreatGuid: props.match.params.retreatGuid,
-                  })}
-                />
+                <PageHeaderBackButton onClick={() => dispatch(goBack())} />
               }
             />
             <AppTypography variant="body1" paragraph>

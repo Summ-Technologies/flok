@@ -1,10 +1,8 @@
-import algoliasearch from "algoliasearch"
 import {push} from "connected-react-router"
-import {useState} from "react"
-import {InstantSearch} from "react-instantsearch-dom"
+import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import {HotelsAlgoliaReduxConnector} from "../components/lodging/AlgoliaReduxConnectors"
+import useAlgolia from "use-algolia"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import HotelGrid, {
   HotelGridBudgetFilterBody,
@@ -16,26 +14,35 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import config, {ALGOLIA_HOTELS_INDEX_KEY} from "../config"
-import {BudgetType, HotelModel} from "../models/lodging"
+import config, {
+  ALGOLIA_API_KEY,
+  ALGOLIA_APP_ID_KEY,
+  ALGOLIA_HOTELS_INDEX_KEY,
+} from "../config"
+import {BudgetType, BudgetTypeVals, HotelModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
+import {updateHotels} from "../store/actions/lodging"
 import {
   deleteSelectedRetreatHotel,
   postSelectedRetreatHotel,
 } from "../store/actions/retreat"
-import {convertGuid} from "../utils"
-
-const searchClient = algoliasearch(
-  "0GNPYG0XAN",
-  "1bfd529008a4c2c0945b629b44707593"
-)
+import {convertGuid, useDestinations, useQuery, useQueryAsList} from "../utils"
 
 type ChooseHotelPageProps = RouteComponentProps<{retreatGuid: string}>
 function ChooseHotelPage(props: ChooseHotelPageProps) {
   let dispatch = useDispatch()
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  const [searchState, requestDispatch, getMore] = useAlgolia<HotelModel>(
+    config.get(ALGOLIA_APP_ID_KEY),
+    config.get(ALGOLIA_API_KEY),
+    config.get(ALGOLIA_HOTELS_INDEX_KEY)
+  )
 
+  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreat = useSelector(
+    (state: RootState) => state.retreat.retreats[retreatGuid]
+  )
+  let destinations = useDestinations()
   let selectedHotelIds = useSelector((state: RootState) => {
     let retreat = state.retreat.retreats[retreatGuid]
     if (retreat && retreat !== "NOT_FOUND") {
@@ -43,15 +50,85 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
     }
     return []
   })
+  let selectedDestinationIds = useSelector((state: RootState) => {
+    let retreat = state.retreat.retreats[retreatGuid]
+    if (retreat && retreat !== "NOT_FOUND") {
+      return retreat.selected_destinations_ids
+    }
+    return []
+  })
 
-  let [locationFilter, setLocationFilter] = useState<string[]>([])
+  let [locationFilterParam, setLocationFilterParam] =
+    useQueryAsList("locations")
+  let [locationFilter, setLocationFilter] = useState<number[]>([])
   let [locationFilterOpen, setLocationFilterOpen] = useState(false)
+  let [initLocationFilter, setInitLocationFilter] = useState(false)
+  useEffect(() => {
+    setLocationFilter(
+      locationFilterParam
+        .map((strVal) => parseInt(strVal))
+        .filter((intVal) => !isNaN(intVal))
+    )
+  }, [locationFilterParam])
+  useEffect(() => {
+    if (!initLocationFilter && retreat) {
+      if (locationFilterParam.length > 0) {
+        setLocationFilterParam(selectedDestinationIds.map((x) => x.toString()))
+      }
+      setInitLocationFilter(true)
+    }
+  }, [
+    retreat,
+    selectedDestinationIds,
+    setInitLocationFilter,
+    initLocationFilter,
+    setLocationFilterParam,
+    locationFilterParam,
+  ])
+  useEffect(() => {}, [])
 
   let [priceFilter, setPriceFilter] = useState<BudgetType[]>([])
+  let [priceFilterParam, setPriceFilterParam] = useQueryAsList("price")
   let [priceFilterOpen, setPriceFilterOpen] = useState(false)
+  useEffect(() => {
+    setPriceFilter(
+      priceFilterParam.filter((val) =>
+        BudgetTypeVals.includes(val)
+      ) as BudgetType[]
+    )
+  }, [priceFilterParam])
 
   let [roomsFilter, setRoomsFilter] = useState<number>(10)
+  let [roomsFilterParam, setRoomsFilterParm] = useQuery("rooms")
   let [roomsFilterOpen, setRoomsFilterOpen] = useState(false)
+
+  useEffect(() => {
+    setRoomsFilter(
+      !isNaN(parseInt(roomsFilterParam || ""))
+        ? parseInt(roomsFilterParam || "")
+        : roomsFilter
+    )
+  }, [roomsFilterParam, roomsFilter])
+
+  useEffect(() => {
+    let locationFilterString = locationFilter
+      .map((destId) => `destination_id=${destId}`)
+      .join(" OR ")
+    let priceFilterString = priceFilter
+      .map((priceOption) => `price:"${priceOption}"`)
+      .join(" OR ")
+    let roomsFilterString = ""
+    let filters = [locationFilterString, priceFilterString, roomsFilterString]
+      .filter((x) => x)
+      .join(" AND ")
+    requestDispatch({filters})
+  }, [locationFilter, priceFilter, roomsFilter, requestDispatch])
+
+  useEffect(() => {
+    if (searchState.response) {
+      dispatch(updateHotels(searchState.response.hits))
+    }
+  }, [searchState.response, dispatch])
 
   // Actions
   function explore(hotel: HotelModel) {
@@ -74,6 +151,12 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
       dispatch(deleteSelectedRetreatHotel(retreatGuid, hotel.id))
     } else {
       dispatch(postSelectedRetreatHotel(retreatGuid, hotel.id))
+    }
+  }
+
+  function onReachEnd() {
+    if (searchState.hasMore) {
+      getMore()
     }
   }
 
@@ -104,9 +187,14 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
                       : undefined,
                     popper: (
                       <HotelGridLocationFilterBody
+                        locations={Object.values(destinations)}
                         onClose={() => setLocationFilterOpen(false)}
                         selected={locationFilter}
-                        setSelected={(vals) => setLocationFilter(vals)}
+                        setSelected={(vals) =>
+                          setLocationFilterParam(
+                            vals.map((val) => val.toString())
+                          )
+                        }
                       />
                     ),
                     open: locationFilterOpen,
@@ -123,7 +211,7 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
                       <HotelGridBudgetFilterBody
                         onClose={() => setPriceFilterOpen(false)}
                         selected={priceFilter}
-                        setSelected={(newVals) => setPriceFilter(newVals)}
+                        setSelected={(newVals) => setPriceFilterParam(newVals)}
                       />
                     ),
                     open: priceFilterOpen,
@@ -137,7 +225,9 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
                       <HotelGridRoomsFilterBody
                         onClose={() => setRoomsFilterOpen(false)}
                         selectedRoomsMin={roomsFilter}
-                        setSelectedRoomsMin={(newMin) => setRoomsFilter(newMin)}
+                        setSelectedRoomsMin={(newMin) =>
+                          setRoomsFilterParm(newMin.toString())
+                        }
                       />
                     ),
                     open: roomsFilterOpen,
@@ -147,16 +237,14 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
               />
             }
           />
-          <InstantSearch
-            searchClient={searchClient}
-            indexName={config.get(ALGOLIA_HOTELS_INDEX_KEY)}>
-            <HotelGrid
-              onExplore={explore}
-              onSelect={toggleSelect}
-              isSelected={isSelected}
-            />
-            <HotelsAlgoliaReduxConnector />
-          </InstantSearch>
+          <HotelGrid
+            hotels={searchState.hits}
+            onReachEnd={onReachEnd}
+            onExplore={explore}
+            onSelect={toggleSelect}
+            isSelected={isSelected}
+          />
+          {searchState.loading && <>Loading</>}
         </PageOverlay>
       </PageContainer>
     </RetreatRequired>

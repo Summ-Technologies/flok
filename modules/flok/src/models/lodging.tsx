@@ -1,6 +1,8 @@
 import {ImageModel} from "."
 
+// keep the following in parity (enables us to check if strings are of budget type)
 export type BudgetType = "$" | "$$" | "$$$" | "$$$$"
+export const BudgetTypeVals = ["$", "$$", "$$$", "$$$$"]
 
 // Destinations
 export type DestinationModel = {

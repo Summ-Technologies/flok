@@ -7,11 +7,8 @@ import {
   Theme,
 } from "@material-ui/core"
 import {useEffect, useRef} from "react"
-import {InfiniteHitsProvided} from "react-instantsearch-core"
-import {connectInfiniteHits} from "react-instantsearch-dom"
-import {useSelector} from "react-redux"
-import {BudgetType, HotelModel} from "../../models/lodging"
-import {RootState} from "../../store"
+import {BudgetType, DestinationModel, HotelModel} from "../../models/lodging"
+import {DestinationUtils, useDestinations} from "../../utils"
 import AppFilter, {AppFilterProps} from "../base/AppFilter"
 import {AppSliderInput} from "../base/AppSliderInputs"
 import AppTypography from "../base/AppTypography"
@@ -30,39 +27,39 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }))
 
-interface HotelGridProps extends InfiniteHitsProvided<HotelModel> {
-  isSelected: (hit: HotelModel) => boolean
-  onSelect: (hit: HotelModel) => void
-  onExplore: (hit: HotelModel) => void
+type HotelGridProps = {
+  onReachEnd: () => void
+  hotels: HotelModel[]
+  isSelected: (hotel: HotelModel) => boolean
+  onSelect: (hotel: HotelModel) => void
+  onExplore: (hotel: HotelModel) => void
 }
 
-function HotelGrid(props: HotelGridProps) {
+export default function HotelGrid(props: HotelGridProps) {
   let classes = useStyles(props)
-  const {hasMore, refineNext} = props
+  const {onReachEnd} = props
   let sentinelRef = useRef<HTMLLIElement>(null)
-  let destinations = useSelector(
-    (state: RootState) => state.lodging.destinations
-  )
+  let destinations = useDestinations()
 
   useEffect(() => {
-    function loadMoreHits(entries: IntersectionObserverEntry[]) {
+    function loadMoreHotels(entries: IntersectionObserverEntry[]) {
       entries.forEach((entry) => {
-        if (entry.isIntersecting && hasMore) {
-          refineNext()
+        if (entry.isIntersecting) {
+          onReachEnd()
         }
       })
     }
-    let observer = new IntersectionObserver(loadMoreHits)
+    let observer = new IntersectionObserver(loadMoreHotels)
     if (sentinelRef.current) {
       observer.observe(sentinelRef.current)
     }
     return () => observer.disconnect()
-  }, [hasMore, refineNext])
+  }, [onReachEnd])
 
   return (
     <div className={classes.root}>
-      {props.hits.map((hit, index) => {
-        let destination = destinations[hit.destination_id]
+      {props.hotels.map((hotel, index) => {
+        let destination = destinations[hotel.destination_id]
         let destinationText = destination
           ? `${destination.location}, ${
               destination.state_abbreviation || destination.country_abbreviation
@@ -71,20 +68,20 @@ function HotelGrid(props: HotelGridProps) {
         return (
           <AppHotelCard
             budget={
-              hit.price && hit.price.length < 4
-                ? (hit.price.length as 1 | 2 | 3 | 4)
+              hotel.price && hotel.price.length < 4
+                ? (hotel.price.length as 1 | 2 | 3 | 4)
                 : 3
             }
-            description={hit.description_short}
+            description={hotel.description_short}
             destination={destinationText}
-            img={hit.spotlight_img.image_url}
-            name={hit.name}
-            rooms={hit.num_rooms}
-            stars={hit.rating}
+            img={hotel.spotlight_img.image_url}
+            name={hotel.name}
+            rooms={hotel.num_rooms}
+            stars={hotel.rating}
             key={index}
-            onExplore={() => props.onExplore(hit)}
-            onSelect={() => props.onSelect(hit)}
-            selected={props.isSelected(hit)}
+            onExplore={() => props.onExplore(hotel)}
+            onSelect={() => props.onSelect(hotel)}
+            selected={props.isSelected(hotel)}
           />
         )
       })}
@@ -92,8 +89,6 @@ function HotelGrid(props: HotelGridProps) {
     </div>
   )
 }
-
-export default connectInfiniteHits<HotelGridProps, HotelModel>(HotelGrid)
 
 const useFilterStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -150,9 +145,10 @@ const useFilterBodyStyles = makeStyles((theme: Theme) => ({
 }))
 
 export function HotelGridLocationFilterBody(props: {
+  locations: DestinationModel[]
+  selected: number[]
+  setSelected: (selected: number[]) => void
   onClose: () => void
-  selected: string[]
-  setSelected: (value: string[]) => void
 }) {
   let classes = useFilterBodyStyles(props)
   return (
@@ -164,22 +160,22 @@ export function HotelGridLocationFilterBody(props: {
         Destinations
       </AppTypography>
       <div className={classes.checkBoxOptionList}>
-        {["1", "2", "3", "4", "5", "6", "7", "8"].map((curr) => (
+        {props.locations.map((curr) => (
           <div className={classes.checkBoxOption}>
             <Checkbox
               color="primary"
-              checked={props.selected.includes(curr)}
+              checked={props.selected.includes(curr.id)}
               onChange={() => {
-                if (props.selected.includes(curr)) {
+                if (props.selected.includes(curr.id)) {
                   props.setSelected(
-                    props.selected.filter((val) => val !== curr)
+                    props.selected.filter((val) => val !== curr.id)
                   )
                 } else {
-                  props.setSelected([...props.selected, curr])
+                  props.setSelected([...props.selected, curr.id])
                 }
               }}
             />
-            <ListItemText primary={curr} />
+            <ListItemText primary={DestinationUtils.getLocationName(curr)} />
           </div>
         ))}
       </div>
