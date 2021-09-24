@@ -5,9 +5,11 @@ import ChooseDestinationPage from "./pages/ChooseDestinationPage"
 import ChooseHotelPage from "./pages/ChooseHotelPage"
 import DestinationPage from "./pages/DestinationPage"
 import HotelPage from "./pages/HotelPage"
-import {default as LodgingFormPage} from "./pages/LodgingFormPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"
+import NewRetreatFormPage from "./pages/NewRetreatFormPage"
+import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
+import RetreatRoutingPage from "./pages/RetreatRoutingPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
@@ -26,19 +28,14 @@ type FlokRoute = {
 export class AppRoutes {
   static routes: FlokRoute[] = [
     {
-      name: "LodgingFormPage",
-      component: <LodgingFormPage />,
-      path: "/lodging",
+      name: "NewRetreatFormPage",
+      component: <NewRetreatFormPage />,
+      path: "/getting-started",
     },
     {
-      name: "RFPLiteResponsePage",
-      component: <RFPLiteResponsePage />,
-      path: "/rfp-lite",
-    },
-    {
-      name: "RedirectHome",
-      component: <RedirectPage pageName="LodgingFormPage" />,
-      path: "/",
+      name: "RetreatPreferencesFormPage",
+      component: <RetreatPreferencesFormPage />,
+      path: "/:retreatGuid/preferences",
     },
     {
       name: "ChooseDestinationPage",
@@ -59,6 +56,21 @@ export class AppRoutes {
       name: "HotelPage",
       component: <HotelPage />,
       path: "/:retreatGuid/hotels/:hotelGuid",
+    },
+    {
+      name: "RFPLiteResponsePage",
+      component: <RFPLiteResponsePage />,
+      path: "/rfp-lite",
+    },
+    {
+      name: "RetreatRoutingPage",
+      component: <RetreatRoutingPage />,
+      path: "/:retreatGuid",
+    },
+    {
+      name: "RedirectHome",
+      component: <RedirectPage pageName="NewRetreatFormPage" />,
+      path: "/",
     },
     {
       name: "NotFoundPage",

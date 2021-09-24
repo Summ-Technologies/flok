@@ -96,7 +96,8 @@ export function postLodgingRequestForm(
   preferredMonths?: string[],
   preferredStartDow?: string[],
   startDate?: Date,
-  endDate?: Date
+  endDate?: Date,
+  budget?: string[]
 ) {
   let endpoint = "/v1.0/lodging/proposal-requests"
   return async (
@@ -124,6 +125,7 @@ export function postLodgingRequestForm(
           preferredStartDow,
           startDate: toDate(startDate),
           endDate: toDate(endDate),
+          budget,
         }),
         types: [
           POST_LODGING_REQUEST_FORM_REQUEST,

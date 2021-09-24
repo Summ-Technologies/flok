@@ -48,10 +48,9 @@ let useStyles = makeStyles((theme) => ({
   start: {},
   end: {},
   popperBody: {
-    padding: theme.spacing(2),
-    maxWidth: 690,
+    width: 690,
     [theme.breakpoints.down("sm")]: {
-      maxWidth: 350,
+      width: 350,
     },
     backgroundColor: theme.palette.common.white,
     border: `solid 1px ${theme.palette.primary.main}`,
@@ -72,7 +71,7 @@ let useStyles = makeStyles((theme) => ({
       },
       width: 150,
     },
-    "& > *:not(:first-child)": {
+    "& > *": {
       marginTop: theme.spacing(1),
     },
     "& > * > h4": {
@@ -81,6 +80,8 @@ let useStyles = makeStyles((theme) => ({
   },
   calendar: {
     borderRadius: theme.shape.borderRadius,
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   exactDatesToggle: {
     display: "flex",
@@ -93,12 +94,28 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
   },
   monthsSection: {
     width: "100%",
     "& > * > p": {
       marginBottom: theme.spacing(0.25),
       marginTop: theme.spacing(0.5),
+    },
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  },
+  doneCta: {
+    padding: theme.spacing(2),
+    backgroundColor: theme.palette.grey[100],
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    borderBottomRightRadius: theme.shape.borderRadius,
+    borderBottomLeftRadius: theme.shape.borderRadius,
+    "& > button": {
+      marginLeft: "auto",
     },
   },
 }))
@@ -249,6 +266,11 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                 </div>
               </>
             )}
+            <div className={classes.doneCta}>
+              <Button variant="contained" color="primary" onClick={closePopper}>
+                Done
+              </Button>
+            </div>
           </div>
         </Popper>
       </div>

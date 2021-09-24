@@ -29,17 +29,17 @@ let useStyles = makeStyles((theme) => ({
 }))
 
 type LodgingFlowStep =
-  | "INTAKE_FORM"
-  | "SELECT_DESTINATION"
-  | "SELECT_HOTEL_RFPS"
-  | "REVIEW_HOTEL_RFPS"
-  | "BOOK_HOTEL"
+  | "INTAKE_1"
+  | "INTAKE_2"
+  | "DESTINATION_SELECT"
+  | "HOTEL_SELECT"
+  | "PROPOSAL"
 const ORDERED_STEPS: LodgingFlowStep[] = [
-  "INTAKE_FORM",
-  "SELECT_DESTINATION",
-  "SELECT_HOTEL_RFPS",
-  "REVIEW_HOTEL_RFPS",
-  "BOOK_HOTEL",
+  "INTAKE_1",
+  "INTAKE_2",
+  "DESTINATION_SELECT",
+  "HOTEL_SELECT",
+  "PROPOSAL",
 ]
 
 type AppLodgingFlowTimelineProps = {
