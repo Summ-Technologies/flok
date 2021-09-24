@@ -75,7 +75,7 @@ function DestinationPage(props: DestinationPageProps) {
             right={<AppImageGrid images={destination.imgs} />}>
             <PageHeader
               header={destination.location}
-              subheader=""
+              subheader={destination.tagline}
               preHeader={
                 <PageHeaderBackButton onClick={() => dispatch(goBack())} />
               }
