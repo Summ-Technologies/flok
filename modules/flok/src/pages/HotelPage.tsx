@@ -95,7 +95,7 @@ function HotelPage(props: HotelPageProps) {
             right={<AppImageGrid images={hotel.imgs} />}>
             <PageHeader
               header={hotel.name}
-              subheader={""}
+              subheader={hotel.tagline}
               preHeader={
                 <PageHeaderBackButton onClick={() => dispatch(goBack())} />
               }
@@ -103,12 +103,14 @@ function HotelPage(props: HotelPageProps) {
             <AppTypography variant="body1" paragraph>
               {hotel.description}
             </AppTypography>
-            <div className={classes.mapContainer}>
-              <AppHotelLocationMap
-                lat={36.96204259329413}
-                long={-122.02508367338864}
-              />
-            </div>
+            {hotel.address_coordinates ? (
+              <div className={classes.mapContainer}>
+                <AppHotelLocationMap
+                  lat={hotel.address_coordinates[0]}
+                  long={hotel.address_coordinates[1]}
+                />
+              </div>
+            ) : undefined}
           </PageOverlay>
         </PageContainer>
       )}

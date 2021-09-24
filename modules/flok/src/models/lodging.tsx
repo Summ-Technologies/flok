@@ -15,6 +15,7 @@ export type DestinationModel = {
   country: string
   country_abbreviation?: string
 
+  tagline: string
   description: string
   description_short: string
   detail_sections: {header: string; body: string}[]
@@ -36,8 +37,11 @@ export type HotelModel = {
   rating: number // should be 1 - 5
   num_rooms: number
   website_url: string
+  tagline: string
   description: string
   description_short: string
+  street_address?: string
+  address_coordinates?: [number, number]
 
   spotlight_img: ImageModel
   imgs: ImageModel[]

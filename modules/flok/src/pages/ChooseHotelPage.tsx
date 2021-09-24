@@ -72,7 +72,7 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
   }, [locationFilterParam])
   useEffect(() => {
     if (!initLocationFilter && retreat) {
-      if (locationFilterParam.length > 0) {
+      if (locationFilterParam.length === 0) {
         setLocationFilterParam(selectedDestinationIds.map((x) => x.toString()))
       }
       setInitLocationFilter(true)
