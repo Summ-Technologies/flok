@@ -76,7 +76,7 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
             <Box paddingBottom={4}>
               <PageHeader
                 preHeader={
-                  <AppLodgingFlowTimeline currentStep="SELECT_DESTINATION" />
+                  <AppLodgingFlowTimeline currentStep="DESTINATION_SELECT" />
                 }
                 header="Location"
                 subheader="Finding the right destination is the first step to a planning a great retreat!"

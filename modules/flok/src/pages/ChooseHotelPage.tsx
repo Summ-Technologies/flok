@@ -174,9 +174,7 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
           <PageHeader
             header="Lodging"
             subheader="Select some hotels to request a free proposal from!"
-            preHeader={
-              <AppLodgingFlowTimeline currentStep="SELECT_HOTEL_RFPS" />
-            }
+            preHeader={<AppLodgingFlowTimeline currentStep="HOTEL_SELECT" />}
             postHeader={
               <HotelGridFilters
                 filters={[
