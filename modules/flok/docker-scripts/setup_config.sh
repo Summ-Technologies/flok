@@ -19,11 +19,33 @@ else
 fi
 
 ####### Google & google maps config #######
-echo "window.appConfig.google_api_key=\"$GOOGLE_API_KEY\"" >> /usr/share/nginx/html/config.js
-echo "window.appConfig.google_maps_id_hotel_page=\"$GOOGLE_MAPS_ID_HOTEL_PAGE\"" >> /usr/share/nginx/html/config.js
+if [[ -z "$GOOGLE_API_KEY" ]]; then
+else
+    echo "window.appConfig.google_api_key=\"$GOOGLE_API_KEY\"" >> /usr/share/nginx/html/config.js
+fi
+
+if [[ -z "$GOOGLE_MAPS_ID_HOTEL_PAGE" ]]; then
+else
+    echo "window.appConfig.google_maps_id_hotel_page=\"$GOOGLE_MAPS_ID_HOTEL_PAGE\"" >> /usr/share/nginx/html/config.js
+fi
 
 ####### Algolia config #######
-echo "window.appConfig.algolia_api_key=\"$ALGOLIA_API_KEY\"" >> /usr/share/nginx/html/config.js
-echo "window.appConfig.algolia_app_id=\"$ALGOLIA_APP_ID\"" >> /usr/share/nginx/html/config.js
-echo "window.appConfig.algolia_destinations_index=\"$ALGOLIA_DESTINATIONS_INDEX\"" >> /usr/share/nginx/html/config.js
-echo "window.appConfig.algolia_hotels_index=\"$ALGOLIA_HOTELS_INDEX\"" >> /usr/share/nginx/html/config.js
+if [[ -z "$ALGOLIA_API_KEY" ]]; then
+else
+    echo "window.appConfig.algolia_api_key=\"$ALGOLIA_API_KEY\"" >> /usr/share/nginx/html/config.js
+fi
+if [[ -z "$ALGOLIA_APP_ID" ]]; then
+else
+    echo "window.appConfig.algolia_app_id=\"$ALGOLIA_APP_ID\"" >> /usr/share/nginx/html/config.js
+fi
+if [[ -z "$ALGOLIA_DESTINATIONS_INDEX" ]]; then
+else
+    echo "window.appConfig.algolia_destinations_index=\"$ALGOLIA_DESTINATIONS_INDEX\"" >> /usr/share/nginx/html/config.js
+fi
+if [[ -z "$ALGOLIA_HOTELS_INDEX" ]]; then
+else
+    echo "window.appConfig.algolia_hotels_index=\"$ALGOLIA_HOTELS_INDEX\"" >> /usr/share/nginx/html/config.js
+fi
+
+echo "Final config.js file"
+cat /usr/share/nginx/html/config.js
