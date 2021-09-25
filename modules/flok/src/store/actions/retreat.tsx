@@ -1,5 +1,6 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
+import {RetreatProgressState} from "../../models/retreat"
 import {ApiAction, createApiAction} from "./api"
 
 export const POST_NEW_RETREAT_REQUEST = "POST_NEW_RETREAT_REQUEST"
@@ -40,6 +41,30 @@ export function postNewRetreat(
       }
     }
   }
+}
+
+export const POST_ADVANCE_RETREAT_STATE_REQUEST =
+  "POST_ADVANCE_RETREAT_STATE_REQUEST"
+export const POST_ADVANCE_RETREAT_STATE_SUCCESS =
+  "POST_ADVANCE_RETREAT_STATE_SUCCESS"
+export const POST_ADVANCE_RETREAT_STATE_FAILURE =
+  "POST_ADVANCE_RETREAT_STATE_FAILURE"
+
+export function postAdvanceRetreatState(
+  retreatGuid: string,
+  currentState: RetreatProgressState
+) {
+  let endpoint = `/v1.0/retreats/${retreatGuid}/complete-state`
+  return createApiAction({
+    method: "POST",
+    body: JSON.stringify({current_state: currentState}),
+    endpoint,
+    types: [
+      POST_ADVANCE_RETREAT_STATE_REQUEST,
+      POST_ADVANCE_RETREAT_STATE_SUCCESS,
+      POST_ADVANCE_RETREAT_STATE_FAILURE,
+    ],
+  })
 }
 
 export const GET_RETREAT_REQUEST = "GET_RETREAT_REQUEST"

@@ -25,6 +25,7 @@ import {RootState} from "../store"
 import {updateHotels} from "../store/actions/lodging"
 import {
   deleteSelectedRetreatHotel,
+  postAdvanceRetreatState,
   postSelectedRetreatHotel,
 } from "../store/actions/retreat"
 import {convertGuid, useDestinations, useQuery, useQueryAsList} from "../utils"
@@ -167,7 +168,10 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
           OverlayFooterProps={{
             cta: "Next Step",
             onClick: () => {
-              alert("should goto next step")
+              if (retreat && retreat !== "NOT_FOUND") {
+                dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+              }
+              alert("Move to next page")
             },
             rightText: `${selectedHotelIds.length} hotels selected`,
           }}>

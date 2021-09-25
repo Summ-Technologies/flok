@@ -13,6 +13,7 @@ import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {
   deleteSelectedRetreatDestination,
+  postAdvanceRetreatState,
   postSelectedRetreatDestination,
 } from "../store/actions/retreat"
 import {convertGuid, useDestinations} from "../utils"
@@ -21,6 +22,9 @@ type ChooseDestinationPageProps = RouteComponentProps<{retreatGuid: string}>
 function ChooseDestinationPage(props: ChooseDestinationPageProps) {
   let dispatch = useDispatch()
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreat = useSelector(
+    (state: RootState) => state.retreat.retreats[retreatGuid]
+  )
   let destinations = Object.values(useDestinations())
 
   let selectedDestinationIds = useSelector((state: RootState) => {
@@ -63,6 +67,9 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
             OverlayFooterProps={{
               cta: "Next Step",
               onClick: () => {
+                if (retreat && retreat !== "NOT_FOUND") {
+                  dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+                }
                 dispatch(
                   push(
                     AppRoutes.getPath("ChooseHotelPage", {
