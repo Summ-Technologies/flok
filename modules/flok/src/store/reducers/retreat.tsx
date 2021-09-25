@@ -6,6 +6,7 @@ import {
   DELETE_SELECTED_RETREAT_HOTEL_REQUEST,
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
+  POST_ADVANCE_RETREAT_STATE_SUCCESS,
   POST_SELECTED_RETREAT_DESTINATION_FAILURE,
   POST_SELECTED_RETREAT_DESTINATION_REQUEST,
   POST_SELECTED_RETREAT_HOTEL_FAILURE,
@@ -32,6 +33,7 @@ export default function retreatReducer(
   var retreatGuid: string, hotelId: number, destinationId: number, retreat
   switch (action.type) {
     case GET_RETREAT_SUCCESS:
+    case POST_ADVANCE_RETREAT_STATE_SUCCESS:
       payload = (action as ApiAction).payload as RetreatModel
       newRetreatsState = {...state.retreats}
       newRetreatsState[payload.guid] = payload
