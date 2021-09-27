@@ -109,5 +109,8 @@ export const theme = createMuiTheme({
     MuiPaper: {
       root: {borderRadius: VALUES.borderRadius},
     },
+    MuiFormControl: {
+      root: {paddingBottom: '1rem'}
+    }
   },
 } as MuiThemeOptions)

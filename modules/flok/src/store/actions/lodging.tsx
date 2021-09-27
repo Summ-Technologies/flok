@@ -89,20 +89,20 @@ export const POST_RFP_LITE_RESPONSE_SUCCESS = "POST_RFP_LITE_RESPONSE_SUCCESS"
 export const POST_RFP_LITE_RESPONSE_FAILURE = "POST_RFP_LITE_RESPONSE_FAILURE"
 
 export function postRFPLiteResponse(
-  lodgingProposalRequestId: number,
-  availability: boolean,
-  hotel: string,
-  dates?: string
+  rfpLiteRequestGuid: string,
+  availability: string | null,
+  rohRate?: string | undefined,
+  notes?: string | undefined
 ) {
   let endpoint = "/v1.0/lodging/rfp-lite-responses"
   return createApiAction({
     endpoint,
     method: "POST",
     body: JSON.stringify({
-      lodgingProposalRequestId,
+      request_guid: rfpLiteRequestGuid,
       availability,
-      hotel,
-      dates,
+      roh_rate: rohRate,
+      notes
     }),
     types: [
       POST_RFP_LITE_RESPONSE_REQUEST,

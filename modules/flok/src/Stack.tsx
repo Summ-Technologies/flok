@@ -29,7 +29,7 @@ export class AppRoutes {
     {
       name: "RFPLiteResponsePage",
       component: <RFPLiteResponsePage />,
-      path: "/rfp-lite",
+      path: "/rfp-lite/:guid",
     },
     {
       name: "RedirectHome",
