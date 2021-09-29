@@ -8,7 +8,7 @@ import {
 import {useFormik} from "formik"
 import * as yup from "yup"
 import AppTypography from "../base/AppTypography"
-import AppAttendeesRangeInput from "./AppAttendeesRangeInput"
+import AppAttendeesInput from "./AppAttendeesInput"
 import AppDatesRangeInput from "./AppDatesRangeInput"
 
 const useStyles = makeStyles((theme) => ({
@@ -165,7 +165,6 @@ export function NewRetreatForm(props: NewRetreatFormProps) {
 
 export type RetreatPreferencesFormValues = {
   attendeesLower: number
-  attendeesUpper: number
   isFlexibleDates: boolean
   flexibleNumNights?: number
   flexibleMonths: string[]
@@ -183,7 +182,6 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
   let formik = useFormik<RetreatPreferencesFormValues>({
     validationSchema: yup.object().shape({
       attendeesLower: yup.number().required("Number of attendees is required."),
-      attendeesUpper: yup.number().required("Number of attendees is required."),
       isFlexibleDates: yup.boolean().required(),
       exactStartDate: yup.date().when("isFlexibleDates", {
         is: false,
@@ -207,7 +205,6 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
     }),
     initialValues: {
       attendeesLower: 0,
-      attendeesUpper: 0,
       isFlexibleDates: false,
       flexibleStartDow: [],
       flexibleMonths: [],
@@ -238,20 +235,16 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
                 </AppTypography>
               </Grid>
               <Grid item xs={12} md="auto">
-                <AppAttendeesRangeInput
+                <AppAttendeesInput
                   error={
                     !!(
                       formik.touched.attendeesLower &&
-                      formik.touched.attendeesUpper &&
-                      (formik.errors.attendeesLower ||
-                        formik.errors.attendeesUpper)
+                      formik.errors.attendeesLower
                     )
                   }
-                  lower={formik.values.attendeesLower}
-                  upper={formik.values.attendeesUpper}
-                  onChange={(lower, upper) => {
-                    formik.setFieldValue("attendeesLower", lower)
-                    formik.setFieldValue("attendeesUpper", upper)
+                  numAttendees={formik.values.attendeesLower}
+                  onChange={(attendees) => {
+                    formik.setFieldValue("attendeesLower", attendees)
                   }}
                 />
               </Grid>

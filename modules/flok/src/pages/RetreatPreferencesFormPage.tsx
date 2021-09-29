@@ -54,7 +54,6 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
       updateRetreatPreferences(
         retreatGuid,
         values.attendeesLower,
-        values.attendeesUpper,
         values.isFlexibleDates,
         values.flexibleNumNights,
         values.flexibleMonths,
