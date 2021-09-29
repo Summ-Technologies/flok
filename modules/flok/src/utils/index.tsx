@@ -1,31 +1,7 @@
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
-import {useDispatch, useSelector} from "react-redux"
+import {useDispatch} from "react-redux"
 import {useLocation} from "react-router-dom"
-import {DestinationModel} from "../models/lodging"
-import {RootState} from "../store"
-import {getDestinations} from "../store/actions/lodging"
-
-export class DestinationUtils {
-  static getLocationName(destination: DestinationModel) {
-    return `${destination.location}, ${
-      destination.state_abbreviation || destination.country
-    }`
-  }
-}
-
-export function useDestinations() {
-  let dispatch = useDispatch()
-  let destinations = useSelector(
-    (state: RootState) => state.lodging.destinations
-  )
-  useEffect(() => {
-    if (!Object.keys(destinations).length) {
-      dispatch(getDestinations())
-    }
-  }, [dispatch, destinations])
-  return destinations
-}
 
 /**
  * Converts given string to guid with hypens if possible, else return str unchanged

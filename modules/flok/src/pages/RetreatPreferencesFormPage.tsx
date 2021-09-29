@@ -25,17 +25,23 @@ type RetreatPreferencesFormPageProps = RouteComponentProps<{
   retreatGuid: string
 }>
 function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
+  // Setup
   let dispatch = useDispatch()
+
+  // Path params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
+
   let retreatPreferencesFormLoading = useSelector(
     (state: RootState) => state.api.retreatPreferencesFormLoading
   )
 
+  // analytics
   const {mixpanel} = useMixPanel()
   useEffect(() => {
     mixpanel.track("LODGING_FORM_START")
   }, [mixpanel])
 
+  // Action handlers
   function submitRetreatPreferences(values: RetreatPreferencesFormValues) {
     let onSuccess = () => {
       dispatch(

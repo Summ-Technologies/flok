@@ -7,12 +7,14 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
+import {ResourceNotFound} from "../models"
 import {RootState} from "../store"
 import {
   deleteSelectedRetreatDestination,
   postSelectedRetreatDestination,
 } from "../store/actions/retreat"
 import {convertGuid} from "../utils"
+import {useDestination} from "../utils/lodgingUtils"
 import NotFound404Page from "./misc/NotFound404Page"
 
 type DestinationPageProps = RouteComponentProps<{
@@ -20,57 +22,55 @@ type DestinationPageProps = RouteComponentProps<{
   retreatGuid: string
 }>
 function DestinationPage(props: DestinationPageProps) {
+  // Setup
   let dispatch = useDispatch()
+
+  // Path params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let destinationGuid = convertGuid(props.match.params.destinationGuid)
+
+  // API data
+  let [destination, isLoading] = useDestination(destinationGuid)
+
+  // Selected destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
     let retreat = state.retreat.retreats[retreatGuid]
-    if (retreat && retreat !== "NOT_FOUND") {
+    if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_destinations_ids
     }
     return []
   })
-  let destinationId = useSelector(
-    (state: RootState) =>
-      state.lodging.destinationsGuidMapping[props.match.params.destinationGuid]
-  )
-  let destinationsLoaded = useSelector(
-    (state: RootState) => state.lodging.destinationsLoaded
-  )
-  let destination = useSelector((state: RootState) => {
-    let destinationId =
-      state.lodging.destinationsGuidMapping[props.match.params.destinationGuid]
-    if (destinationId && state.lodging.destinations[destinationId]) {
-      return state.lodging.destinations[destinationId]
-    } else {
-      return undefined
+  function isSelected(destinationId: number) {
+    if (destination && destination !== ResourceNotFound) {
+      return selectedDestinationIds.includes(destinationId)
     }
-  })
+  }
+
+  function onClickSelectCta() {
+    if (destination && destination !== ResourceNotFound) {
+      if (isSelected(destination.id)) {
+        dispatch(deleteSelectedRetreatDestination(retreatGuid, destination.id))
+      } else {
+        dispatch(postSelectedRetreatDestination(retreatGuid, destination.id))
+      }
+    }
+  }
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
-      {!destinationsLoaded ? (
-        <>Loading...</>
-      ) : destination === undefined ? (
+      {destination === ResourceNotFound ? (
         <NotFound404Page />
-      ) : (
+      ) : isLoading ? (
+        <>Loading...</>
+      ) : destination !== null ? (
         <PageContainer>
           <PageOverlay
             size="small"
             OverlayFooterProps={{
-              cta: selectedDestinationIds.includes(destinationId)
+              cta: isSelected(destination.id)
                 ? "Unselect Location"
                 : "Select Location",
-              onClick: () => {
-                if (selectedDestinationIds.includes(destinationId)) {
-                  dispatch(
-                    deleteSelectedRetreatDestination(retreatGuid, destinationId)
-                  )
-                } else {
-                  dispatch(
-                    postSelectedRetreatDestination(retreatGuid, destinationId)
-                  )
-                }
-              },
+              onClick: onClickSelectCta,
             }}
             right={<AppImageGrid images={destination.imgs} />}>
             <PageHeader
@@ -93,6 +93,8 @@ function DestinationPage(props: DestinationPageProps) {
             ))}
           </PageOverlay>
         </PageContainer>
+      ) : (
+        <>Something went wrong</>
       )}
     </RetreatRequired>
   )

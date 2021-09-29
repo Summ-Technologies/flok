@@ -1,4 +1,5 @@
 import {Action} from "redux"
+import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {RetreatModel} from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
@@ -15,7 +16,7 @@ import {
 
 export type RetreatState = {
   retreats: {
-    [guid: string]: RetreatModel | "NOT_FOUND"
+    [guid: string]: RetreatModel | ResourceNotFoundType
   }
 }
 
@@ -29,7 +30,7 @@ export default function retreatReducer(
 ): RetreatState {
   var payload
   var meta
-  var newRetreatsState: {[guid: string]: RetreatModel | "NOT_FOUND"}
+  var newRetreatsState: {[guid: string]: RetreatModel | ResourceNotFoundType}
   var retreatGuid: string, hotelId: number, destinationId: number, retreat
   switch (action.type) {
     case GET_RETREAT_SUCCESS:
@@ -41,7 +42,7 @@ export default function retreatReducer(
     case GET_RETREAT_FAILURE:
       retreatGuid = (action as unknown as {meta: {guid: string}}).meta.guid
       newRetreatsState = {...state.retreats}
-      newRetreatsState[retreatGuid] = "NOT_FOUND"
+      newRetreatsState[retreatGuid] = ResourceNotFound
       return {...state, retreats: newRetreatsState}
     case POST_SELECTED_RETREAT_DESTINATION_REQUEST:
       meta = (
@@ -52,7 +53,7 @@ export default function retreatReducer(
       retreatGuid = meta.retreatGuid
       destinationId = meta.destinationId
       retreat = state.retreats[retreatGuid]
-      if (retreat && retreat !== "NOT_FOUND") {
+      if (retreat && retreat !== ResourceNotFound) {
         return {
           ...state,
           retreats: {
@@ -78,7 +79,7 @@ export default function retreatReducer(
       retreatGuid = meta.retreatGuid
       destinationId = meta.destinationId
       retreat = state.retreats[retreatGuid]
-      if (retreat && retreat !== "NOT_FOUND") {
+      if (retreat && retreat !== ResourceNotFound) {
         return {
           ...state,
           retreats: {
@@ -102,7 +103,7 @@ export default function retreatReducer(
       retreatGuid = meta.retreatGuid
       hotelId = meta.hotelId
       retreat = state.retreats[retreatGuid]
-      if (retreat && retreat !== "NOT_FOUND") {
+      if (retreat && retreat !== ResourceNotFound) {
         return {
           ...state,
           retreats: {
@@ -125,7 +126,7 @@ export default function retreatReducer(
       retreatGuid = meta.retreatGuid
       hotelId = meta.hotelId
       retreat = state.retreats[retreatGuid]
-      if (retreat && retreat !== "NOT_FOUND") {
+      if (retreat && retreat !== ResourceNotFound) {
         return {
           ...state,
           retreats: {

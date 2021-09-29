@@ -1,12 +1,13 @@
 import {Action} from "redux"
+import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {DestinationModel, HotelModel} from "../../models/lodging"
 import {
   GetDestinationsAction,
+  GetHotelByGuidAction,
+  GetHotelsAction,
   GET_DESTINATIONS,
-  UpdateHotelNotFoundAction,
-  UpdateHotelsAction,
-  UPDATE_HOTELS,
-  UPDATE_HOTEL_NOT_FOUND,
+  GET_HOTELS,
+  GET_HOTEL_BY_GUID,
 } from "../actions/lodging"
 
 export type LodgingState = {
@@ -20,8 +21,16 @@ export type LodgingState = {
   hotels: {
     [id: number]: HotelModel
   }
+  hotelsByFilter: {
+    [filterKey: string]: {
+      hotels: number[]
+      hasMore: boolean
+      currPage: number
+      numHits: number
+    }
+  }
   hotelsGuidMapping: {
-    [guid: string]: number | "NOT_FOUND"
+    [guid: string]: number | ResourceNotFoundType
   }
 }
 
@@ -31,6 +40,7 @@ const initialState: LodgingState = {
   destinationsGuidMapping: {},
 
   hotels: {},
+  hotelsByFilter: {},
   hotelsGuidMapping: {},
 }
 
@@ -39,7 +49,8 @@ export default function lodgingReducer(
   action: Action
 ): LodgingState {
   var newDestinationsGuidMapping: {[guid: string]: number}
-  var newHotelsGuidMapping: {[guid: string]: number | "NOT_FOUND"}
+  var newHotelsGuidMapping: {[guid: string]: number | ResourceNotFoundType}
+  var newHotels: {[id: number]: HotelModel}
   switch (action.type) {
     case GET_DESTINATIONS:
       let destinations = (action as GetDestinationsAction).destinations
@@ -55,9 +66,20 @@ export default function lodgingReducer(
         destinationsGuidMapping: newDestinationsGuidMapping,
         destinationsLoaded: true,
       }
-    case UPDATE_HOTELS:
-      let hotels = (action as UpdateHotelsAction).hotels
-      let newHotels = {...state.hotels}
+    case GET_HOTELS:
+      let {hotels, filterKey, currPage, hasMore, numHits} =
+        action as GetHotelsAction
+      newHotels = {...state.hotels}
+      let hotelIds = [
+        ...(state.hotelsByFilter[filterKey]
+          ? state.hotelsByFilter[filterKey].hotels
+          : []),
+        ...hotels.map((hotel) => hotel.id),
+      ]
+      let newHotelsByFilter = {
+        ...state.hotelsByFilter,
+        [filterKey]: {hotels: hotelIds, hasMore, currPage, numHits},
+      }
       newHotelsGuidMapping = {...state.hotelsGuidMapping}
       hotels.forEach((hotel) => {
         newHotels[hotel.id] = hotel
@@ -67,13 +89,21 @@ export default function lodgingReducer(
         ...state,
         hotels: newHotels,
         hotelsGuidMapping: newHotelsGuidMapping,
+        hotelsByFilter: newHotelsByFilter,
       }
-    case UPDATE_HOTEL_NOT_FOUND:
-      let guid = (action as UpdateHotelNotFoundAction).guid
+    case GET_HOTEL_BY_GUID:
+      let {guid, hotel} = action as GetHotelByGuidAction
       newHotelsGuidMapping = {...state.hotelsGuidMapping}
-      newHotelsGuidMapping[guid] = "NOT_FOUND"
+      newHotels = {...state.hotels}
+      if (hotel === ResourceNotFound) {
+        newHotelsGuidMapping[guid] = ResourceNotFound
+      } else {
+        newHotels[hotel.id] = hotel
+        newHotelsGuidMapping[hotel.guid] = hotel.id
+      }
       return {
         ...state,
+        hotels: newHotels,
         hotelsGuidMapping: newHotelsGuidMapping,
       }
     default:
