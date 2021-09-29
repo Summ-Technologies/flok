@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core"
 import {useEffect, useRef} from "react"
 import {BudgetType, DestinationModel, HotelModel} from "../../models/lodging"
-import {DestinationUtils, useDestinations} from "../../utils"
+import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import AppFilter, {AppFilterProps} from "../base/AppFilter"
 import {AppSliderInput} from "../base/AppSliderInputs"
 import AppTypography from "../base/AppTypography"
@@ -39,7 +39,7 @@ export default function HotelGrid(props: HotelGridProps) {
   let classes = useStyles(props)
   const {onReachEnd} = props
   let sentinelRef = useRef<HTMLLIElement>(null)
-  let destinations = useDestinations()
+  let [destinations] = useDestinations()
 
   useEffect(() => {
     function loadMoreHotels(entries: IntersectionObserverEntry[]) {

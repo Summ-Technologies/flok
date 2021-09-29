@@ -1,6 +1,5 @@
 import {makeStyles} from "@material-ui/core"
 import {goBack} from "connected-react-router"
-import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
@@ -10,13 +9,15 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
+import {ResourceNotFound} from "../models"
+import {HotelModel} from "../models/lodging"
 import {RootState} from "../store"
-import {getHotelById} from "../store/actions/lodging"
 import {
   deleteSelectedRetreatHotel,
   postSelectedRetreatHotel,
 } from "../store/actions/retreat"
 import {convertGuid} from "../utils"
+import {useHotel} from "../utils/lodgingUtils"
 import NotFound404Page from "./misc/NotFound404Page"
 
 let useStyles = makeStyles((theme) => ({
@@ -37,38 +38,43 @@ type HotelPageProps = RouteComponentProps<{
   hotelGuid: string
   retreatGuid: string
 }>
+
 function HotelPage(props: HotelPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
+
+  // Query params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let hotelGuid = convertGuid(props.match.params.hotelGuid)
+
+  // Get current hotel
+  let hotel = useHotel(hotelGuid)
+
+  // Check if current hotel selected
   let selectedHotelIds = useSelector((state: RootState) => {
     let retreat = state.retreat.retreats[retreatGuid]
-    if (retreat && retreat !== "NOT_FOUND") {
+    if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_hotels_ids
     }
     return []
   })
-  let hotelId = useSelector(
-    (state: RootState) =>
-      state.lodging.hotelsGuidMapping[props.match.params.hotelGuid]
-  )
-  let hotel = useSelector((state: RootState) => {
-    if (hotelId && hotelId !== "NOT_FOUND") {
-      return state.lodging.hotels[hotelId]
-    } else {
-      return undefined
-    }
-  })
+  function isHotelSelected(id: number) {
+    return selectedHotelIds.includes(id)
+  }
 
-  useEffect(() => {
-    if (!hotel && hotelId !== "NOT_FOUND") {
-      dispatch(getHotelById(props.match.params.hotelGuid))
+  function onClickCta() {
+    if (hotel && hotel !== ResourceNotFound) {
+      if (isHotelSelected((hotel as HotelModel).id)) {
+        dispatch(deleteSelectedRetreatHotel(retreatGuid, hotel.id))
+      } else {
+        dispatch(postSelectedRetreatHotel(retreatGuid, hotel.id))
+      }
     }
-  }, [props.match.params.hotelGuid, hotel, hotelId, dispatch])
+  }
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
-      {hotelId === "NOT_FOUND" ? (
+      {hotel === ResourceNotFound ? (
         <NotFound404Page />
       ) : hotel === undefined ? (
         <>Loading...</>
@@ -77,20 +83,10 @@ function HotelPage(props: HotelPageProps) {
           <PageOverlay
             size="small"
             OverlayFooterProps={{
-              cta: selectedHotelIds.includes(hotelId)
+              cta: isHotelSelected(hotel.id)
                 ? "Unselect location"
                 : "Select Location",
-              onClick: () => {
-                if (selectedHotelIds.includes(hotelId as number)) {
-                  dispatch(
-                    deleteSelectedRetreatHotel(retreatGuid, hotelId as number)
-                  )
-                } else {
-                  dispatch(
-                    postSelectedRetreatHotel(retreatGuid, hotelId as number)
-                  )
-                }
-              },
+              onClick: onClickCta,
             }}
             right={<AppImageGrid images={hotel.imgs} />}>
             <PageHeader

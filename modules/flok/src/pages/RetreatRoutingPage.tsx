@@ -3,6 +3,7 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router"
 import RetreatRequired from "../components/lodging/RetreatRequired"
+import {ResourceNotFound} from "../models"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {convertGuid} from "../utils"
@@ -17,7 +18,7 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
   )
   let [showError, setShowError] = useState(false)
   useEffect(() => {
-    if (retreat && retreat !== "NOT_FOUND") {
+    if (retreat && retreat !== ResourceNotFound) {
       switch (retreat.state) {
         case "INTAKE_1":
           dispatch(push(AppRoutes.getPath("NewRetreatFormPage")))

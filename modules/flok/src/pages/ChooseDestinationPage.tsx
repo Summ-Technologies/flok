@@ -1,4 +1,4 @@
-import {Box} from "@material-ui/core"
+import {makeStyles} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -8,6 +8,7 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
+import {ResourceNotFound} from "../models"
 import {DestinationModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
@@ -16,26 +17,39 @@ import {
   postAdvanceRetreatState,
   postSelectedRetreatDestination,
 } from "../store/actions/retreat"
-import {convertGuid, useDestinations} from "../utils"
+import {convertGuid} from "../utils"
+import {useDestinations, useRetreat} from "../utils/lodgingUtils"
+
+let useStyles = makeStyles((theme) => ({
+  headerContainer: {paddingBottom: theme.spacing(4)},
+}))
 
 type ChooseDestinationPageProps = RouteComponentProps<{retreatGuid: string}>
 function ChooseDestinationPage(props: ChooseDestinationPageProps) {
+  // Setup
+  let classes = useStyles(props)
   let dispatch = useDispatch()
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useSelector(
-    (state: RootState) => state.retreat.retreats[retreatGuid]
-  )
-  let destinations = Object.values(useDestinations())
 
+  // Query/path params
+  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+
+  // API data
+  let retreat = useRetreat(retreatGuid)
+  let destinationsList = Object.values(useDestinations()[0])
+
+  // Selected destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
     let retreat = state.retreat.retreats[retreatGuid]
-    if (retreat && retreat !== "NOT_FOUND") {
+    if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_destinations_ids
     }
     return []
   })
+  function isDestinationSelected(destination: DestinationModel) {
+    return selectedDestinationIds.includes(destination.id)
+  }
 
-  // Actions
+  // action handlers
   function explore(destination: DestinationModel) {
     dispatch(
       push(
@@ -46,41 +60,39 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
       )
     )
   }
-  function isSelected(destination: DestinationModel) {
-    return selectedDestinationIds.includes(destination.id)
-  }
   function toggleSelect(destination: DestinationModel) {
-    if (isSelected(destination)) {
+    if (isDestinationSelected(destination)) {
       dispatch(deleteSelectedRetreatDestination(retreatGuid, destination.id))
     } else {
       dispatch(postSelectedRetreatDestination(retreatGuid, destination.id))
     }
   }
+  function onClickNextSteps() {
+    if (retreat && retreat !== ResourceNotFound) {
+      dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+    }
+    dispatch(
+      push(
+        AppRoutes.getPath("ChooseHotelPage", {
+          retreatGuid: props.match.params.retreatGuid,
+        })
+      )
+    )
+  }
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
-      {!destinations ? (
+      {!destinationsList ? (
         <>Loading...</>
       ) : (
         <PageContainer backgroundImage="https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg">
           <PageOverlay
             OverlayFooterProps={{
               cta: "Next Step",
-              onClick: () => {
-                if (retreat && retreat !== "NOT_FOUND") {
-                  dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
-                }
-                dispatch(
-                  push(
-                    AppRoutes.getPath("ChooseHotelPage", {
-                      retreatGuid: props.match.params.retreatGuid,
-                    })
-                  )
-                )
-              },
+              onClick: onClickNextSteps,
               rightText: `${selectedDestinationIds.length} destinations selected`,
             }}>
-            <Box paddingBottom={4}>
+            <div className={classes.headerContainer}>
               <PageHeader
                 preHeader={
                   <AppLodgingFlowTimeline currentStep="DESTINATION_SELECT" />
@@ -88,12 +100,12 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
                 header="Location"
                 subheader="Finding the right destination is the first step to a planning a great retreat!"
               />
-            </Box>
+            </div>
             <DestinationsGrid
-              destinations={destinations}
+              destinations={destinationsList}
               onExplore={explore}
               onSelect={toggleSelect}
-              isSelected={isSelected}
+              isSelected={isDestinationSelected}
             />
           </PageOverlay>
         </PageContainer>

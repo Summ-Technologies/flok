@@ -3,6 +3,7 @@ import config, {
   ALGOLIA_DESTINATIONS_INDEX_KEY,
   ALGOLIA_HOTELS_INDEX_KEY,
 } from "../config"
+import {BudgetType} from "../models/lodging"
 
 class _AlgoliaClient {
   searchClient: SearchClient | undefined
@@ -39,3 +40,24 @@ class _AlgoliaClient {
 }
 
 export let AlgoliaClient = new _AlgoliaClient()
+
+/**
+ * Deterministic independent of ordering
+ */
+export function getAlgoliaFilterString(
+  destinationFilter: number[],
+  budgetFilter: BudgetType[]
+) {
+  return [
+    destinationFilter
+      .sort()
+      .map((destId) => `destination_id=${destId}`)
+      .join(" OR "),
+    budgetFilter
+      .sort()
+      .map((priceOption) => `price:"${priceOption}"`)
+      .join(" OR "),
+  ]
+    .filter((_) => _) // remove empty
+    .join(" AND ")
+}

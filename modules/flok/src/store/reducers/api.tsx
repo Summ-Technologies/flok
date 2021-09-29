@@ -8,11 +8,26 @@ import {
 export type ApiState = {
   newRetreatFormLoading: boolean
   retreatPreferencesFormLoading: boolean
+
+  getDestinationsLoading: boolean
+  getDestinationLoading: {
+    [guid: string]: boolean | undefined
+  }
+  getHotelsLoading: boolean
+  getHotelLoading: {
+    [guid: string]: boolean | undefined
+  }
+  getRetreatLoading: boolean
 }
 
 const initialState: ApiState = {
   newRetreatFormLoading: false,
   retreatPreferencesFormLoading: false,
+  getDestinationsLoading: false,
+  getDestinationLoading: {},
+  getHotelsLoading: false,
+  getHotelLoading: {},
+  getRetreatLoading: false,
 }
 
 export default function userReducer(

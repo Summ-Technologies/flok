@@ -1,5 +1,6 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
+import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {DestinationModel, HotelModel} from "../../models/lodging"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
@@ -34,28 +35,57 @@ export function getDestinations() {
   }
 }
 
-// hotels
-export const UPDATE_HOTELS = "UPDATE_HOTELS"
-export type UpdateHotelsAction = {
-  type: typeof UPDATE_HOTELS
+// destinations
+export const GET_HOTELS = "GET_HOTELS"
+export type GetHotelsAction = {
+  type: typeof GET_HOTELS
   hotels: HotelModel[]
+  filterKey: string
+  currPage: number
+  hasMore: boolean
+  numHits: number
 }
-export function updateHotels(hotels: HotelModel[]): UpdateHotelsAction {
-  return {
-    type: UPDATE_HOTELS,
-    hotels,
+export function getHotels(filter: string, page: number = 0) {
+  return async (
+    dispatch: ThunkDispatch<any, any, any>,
+    getState: () => RootState
+  ) => {
+    let hotelsIndex = AlgoliaClient.getHotelsIndex()
+    try {
+      let response = await hotelsIndex.search<HotelModel>("", {
+        filters: filter || undefined,
+        page: page || undefined,
+      })
+      if (response) {
+        dispatch({
+          type: GET_HOTELS,
+          hotels: response.hits,
+          filterKey: filter,
+          currPage: response.page,
+          hasMore: response.page + 1 <= response.nbPages,
+          numHits: response.nbHits,
+        } as GetHotelsAction)
+      }
+    } catch (err) {
+      // TODO err handling
+    }
   }
 }
 
-export const UPDATE_HOTEL_NOT_FOUND = "UPDATE_HOTEL_NOT_FOUND"
-export type UpdateHotelNotFoundAction = {
-  type: typeof UPDATE_HOTEL_NOT_FOUND
+export const GET_HOTEL_BY_GUID = "GET_HOTEL_BY_GUID"
+export type GetHotelByGuidAction = {
+  type: typeof GET_HOTEL_BY_GUID
+  hotel: HotelModel | ResourceNotFoundType
   guid: string
 }
-function updateHotelNotFound(guid: string): UpdateHotelNotFoundAction {
+function getHotelByGuid(
+  guid: string,
+  hotel: HotelModel | ResourceNotFoundType
+): GetHotelByGuidAction {
   return {
-    type: UPDATE_HOTEL_NOT_FOUND,
+    type: GET_HOTEL_BY_GUID,
     guid,
+    hotel,
   }
 }
 
@@ -68,9 +98,9 @@ export function getHotelById(guid: string) {
       let hotel = await AlgoliaClient.getHotelsIndex().getObject<HotelModel>(
         guid
       )
-      dispatch(updateHotels([hotel]))
+      dispatch(getHotelByGuid(guid, hotel))
     } catch (err) {
-      dispatch(updateHotelNotFound(guid))
+      dispatch(getHotelByGuid(guid, ResourceNotFound))
     }
   }
 }

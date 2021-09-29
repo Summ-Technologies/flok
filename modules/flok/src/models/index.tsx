@@ -15,3 +15,6 @@ export const samplePortrait: ImageModel = {
   orientation: "PORTRAIT",
   alt: "",
 }
+
+export type ResourceNotFoundType = "RESOURCE_NOT_FOUND"
+export const ResourceNotFound: ResourceNotFoundType = "RESOURCE_NOT_FOUND"

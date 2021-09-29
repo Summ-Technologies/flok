@@ -1,8 +1,8 @@
-import {makeStyles, Typography} from "@material-ui/core"
-import {PropsWithChildren, useEffect} from "react"
-import {useDispatch, useSelector} from "react-redux"
-import {RootState} from "../../store"
-import {getRetreat} from "../../store/actions/retreat"
+import {Typography} from "@material-ui/core"
+import {makeStyles} from "@material-ui/styles"
+import {PropsWithChildren} from "react"
+import {ResourceNotFound} from "../../models"
+import {useRetreat} from "../../utils/lodgingUtils"
 import PageContainer from "../page/PageContainer"
 
 let useStyles = makeStyles((theme) => ({
@@ -21,16 +21,8 @@ type RetreatRequiredProps = PropsWithChildren<{retreatGuid: string}>
 
 export default function RetreatRequired(props: RetreatRequiredProps) {
   let classes = useStyles(props)
-  let dispatch = useDispatch()
-  let retreat = useSelector(
-    (state: RootState) => state.retreat.retreats[props.retreatGuid]
-  )
-  useEffect(() => {
-    if (!retreat) {
-      dispatch(getRetreat(props.retreatGuid))
-    }
-  }, [retreat, dispatch, props.retreatGuid])
-  return retreat === "NOT_FOUND" ? (
+  let retreat = useRetreat(props.retreatGuid)
+  return retreat === ResourceNotFound ? (
     <PageContainer>
       <div className={classes.body}>
         <Typography variant="h1">Oops, we can't find your retreat.</Typography>
