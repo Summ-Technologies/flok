@@ -90,8 +90,9 @@ export const PUT_RETREAT_PREFERENCES_FAILURE = "PUT_RETREAT_PREFERENCES_FAILURE"
 
 export function updateRetreatPreferences(
   retreatGuid: string,
-  numAttendeesLower: number,
   isFlexDates: boolean,
+  numAttendeesLower: number,
+  numAttendeesUpper?: number,
   flexNumNights?: number,
   flexMonths: string[] = [],
   flexStartDow: string[] = [],
