@@ -191,7 +191,7 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
         is: false,
         then: yup.date().required("End date is required."),
       }),
-      numNights: yup.number().when("isFlexibleDates", {
+      flexibleNumNights: yup.number().when("isFlexibleDates", {
         is: true,
         then: yup.number().required("Number of nights is required."),
       }),
@@ -206,6 +206,7 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
     initialValues: {
       attendeesLower: 0,
       isFlexibleDates: false,
+      flexibleNumNights: 0,
       flexibleStartDow: [],
       flexibleMonths: [],
     },
@@ -281,11 +282,11 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
                   }}
                   numNights={formik.values.flexibleNumNights || 0}
                   onChangeNumNights={(val) =>
-                    formik.setFieldValue("numNights", val)
+                    formik.setFieldValue("flexibleNumNights", val)
                   }
                   preferredMonths={formik.values.flexibleMonths}
                   onChangePreferredMonths={(vals) => {
-                    formik.setFieldValue("preferredMonths", vals)
+                    formik.setFieldValue("flexibleMonths", vals)
                   }}
                   error={
                     !!(
