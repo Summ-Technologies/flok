@@ -3,6 +3,7 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
+import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
 import HotelGrid, {
   HotelGridBudgetFilterBody,
   HotelGridFilters,
@@ -131,7 +132,7 @@ function HotelsListPage(props: HotelsListPageProps) {
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
-      <PageContainer backgroundImage="https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg">
+      <PageContainer>
         <PageOverlay
           OverlayFooterProps={{
             cta: "Next Step",
@@ -142,7 +143,14 @@ function HotelsListPage(props: HotelsListPageProps) {
               alert("Move to next page")
             },
             rightText: `${selectedHotelIds.length} hotels selected`,
-          }}>
+          }}
+          right={
+            <AppPageSpotlightImage
+              imageUrl="https://images.unsplash.com/photo-1627334848323-6ce21facb54b"
+              imageAlt="Hotel image or something"
+              imagePosition="bottom-right"
+            />
+          }>
           <PageHeader
             header="Lodging"
             subheader="Select some hotels to request a free proposal from!"
