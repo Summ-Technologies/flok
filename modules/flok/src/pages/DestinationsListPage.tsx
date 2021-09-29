@@ -3,6 +3,7 @@ import {push} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
+import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
 import DestinationsGrid from "../components/lodging/DestinationsGrid"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
@@ -24,8 +25,8 @@ let useStyles = makeStyles((theme) => ({
   headerContainer: {paddingBottom: theme.spacing(4)},
 }))
 
-type ChooseDestinationPageProps = RouteComponentProps<{retreatGuid: string}>
-function ChooseDestinationPage(props: ChooseDestinationPageProps) {
+type DestinationsListPageProps = RouteComponentProps<{retreatGuid: string}>
+function DestinationsListPage(props: DestinationsListPageProps) {
   // Setup
   let classes = useStyles(props)
   let dispatch = useDispatch()
@@ -73,7 +74,7 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
     }
     dispatch(
       push(
-        AppRoutes.getPath("ChooseHotelPage", {
+        AppRoutes.getPath("HotelsListPage", {
           retreatGuid: props.match.params.retreatGuid,
         })
       )
@@ -85,13 +86,20 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
       {!destinationsList ? (
         <>Loading...</>
       ) : (
-        <PageContainer backgroundImage="https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg">
+        <PageContainer>
           <PageOverlay
             OverlayFooterProps={{
               cta: "Next Step",
               onClick: onClickNextSteps,
               rightText: `${selectedDestinationIds.length} destinations selected`,
-            }}>
+            }}
+            right={
+              <AppPageSpotlightImage
+                imageUrl="https://images.unsplash.com/photo-1627334848323-6ce21facb54b"
+                imageAlt="Hotel image or something"
+                imagePosition="bottom-right"
+              />
+            }>
             <div className={classes.headerContainer}>
               <PageHeader
                 preHeader={
@@ -113,4 +121,4 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
     </RetreatRequired>
   )
 }
-export default withRouter(ChooseDestinationPage)
+export default withRouter(DestinationsListPage)

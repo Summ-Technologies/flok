@@ -35,7 +35,7 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
         case "DESTINATION_SELECT":
           dispatch(
             push(
-              AppRoutes.getPath("ChooseDestinationPage", {
+              AppRoutes.getPath("DestinationsListPage", {
                 retreatGuid: retreat.guid,
               })
             )
@@ -44,7 +44,7 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
         case "HOTEL_SELECT":
           dispatch(
             push(
-              AppRoutes.getPath("ChooseHotelPage", {retreatGuid: retreat.guid})
+              AppRoutes.getPath("HotelsListPage", {retreatGuid: retreat.guid})
             )
           )
           break

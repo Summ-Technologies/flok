@@ -24,8 +24,8 @@ import {
 import {convertGuid, useQueryAsList} from "../utils"
 import {useDestinations, useHotels, useRetreat} from "../utils/lodgingUtils"
 
-type ChooseHotelPageProps = RouteComponentProps<{retreatGuid: string}>
-function ChooseHotelPage(props: ChooseHotelPageProps) {
+type HotelsListPageProps = RouteComponentProps<{retreatGuid: string}>
+function HotelsListPage(props: HotelsListPageProps) {
   // Setup
   let dispatch = useDispatch()
 
@@ -204,4 +204,4 @@ function ChooseHotelPage(props: ChooseHotelPageProps) {
     </RetreatRequired>
   )
 }
-export default withRouter(ChooseHotelPage)
+export default withRouter(HotelsListPage)
