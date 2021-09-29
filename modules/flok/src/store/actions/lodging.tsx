@@ -117,7 +117,6 @@ export function postLodgingRequestForm(
   onSuccess: (id: number) => void,
   email: string,
   companyName: string,
-  numberAttendeesUpper: number,
   numberAttendeesLower: number,
   flexibleDates: boolean,
   meetingSpaces: string[],
@@ -145,7 +144,6 @@ export function postLodgingRequestForm(
         body: JSON.stringify({
           email,
           companyName,
-          numberAttendeesUpper,
           numberAttendeesLower,
           flexibleDates,
           numberNights,

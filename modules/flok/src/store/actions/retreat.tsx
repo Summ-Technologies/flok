@@ -90,9 +90,9 @@ export const PUT_RETREAT_PREFERENCES_FAILURE = "PUT_RETREAT_PREFERENCES_FAILURE"
 
 export function updateRetreatPreferences(
   retreatGuid: string,
-  numAttendeesLower: number,
-  numAttendeesUpper: number,
   isFlexDates: boolean,
+  numAttendeesLower: number,
+  numAttendeesUpper?: number,
   flexNumNights?: number,
   flexMonths: string[] = [],
   flexStartDow: string[] = [],
@@ -120,7 +120,6 @@ export function updateRetreatPreferences(
         ],
         body: JSON.stringify({
           num_attendees_lower: numAttendeesLower,
-          num_attendees_upper: numAttendeesUpper,
           is_flexible_dates: isFlexDates,
           flexible_num_nights: flexNumNights,
           flexible_months: flexMonths,
