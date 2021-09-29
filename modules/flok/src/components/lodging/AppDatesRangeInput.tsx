@@ -175,6 +175,8 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
   }
   let thisYear = new Date().getFullYear()
   let thisMonth = new Date().getMonth()
+  let twoWeeksFromNow = new Date()
+  twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14)
 
   return (
     <ClickAwayListener onClickAway={closePopper}>
@@ -211,6 +213,7 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                 showMonthAndYearPickers={false}
                 showDateDisplay={false}
                 direction="horizontal"
+                minDate={twoWeeksFromNow}
                 months={isSmallScreen ? 1 : 2}
                 onChange={(item) =>
                   props.onChangeDateRange(
