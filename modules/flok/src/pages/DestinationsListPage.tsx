@@ -24,8 +24,8 @@ let useStyles = makeStyles((theme) => ({
   headerContainer: {paddingBottom: theme.spacing(4)},
 }))
 
-type ChooseDestinationPageProps = RouteComponentProps<{retreatGuid: string}>
-function ChooseDestinationPage(props: ChooseDestinationPageProps) {
+type DestinationsListPageProps = RouteComponentProps<{retreatGuid: string}>
+function DestinationsListPage(props: DestinationsListPageProps) {
   // Setup
   let classes = useStyles(props)
   let dispatch = useDispatch()
@@ -73,7 +73,7 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
     }
     dispatch(
       push(
-        AppRoutes.getPath("ChooseHotelPage", {
+        AppRoutes.getPath("HotelsListPage", {
           retreatGuid: props.match.params.retreatGuid,
         })
       )
@@ -113,4 +113,4 @@ function ChooseDestinationPage(props: ChooseDestinationPageProps) {
     </RetreatRequired>
   )
 }
-export default withRouter(ChooseDestinationPage)
+export default withRouter(DestinationsListPage)

@@ -46,7 +46,7 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
     let onSuccess = () => {
       dispatch(
         push(
-          AppRoutes.getPath("ChooseDestinationPage", {retreatGuid: retreatGuid})
+          AppRoutes.getPath("DestinationsListPage", {retreatGuid: retreatGuid})
         )
       )
     }

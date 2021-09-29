@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
-import ChooseDestinationPage from "./pages/ChooseDestinationPage"
-import ChooseHotelPage from "./pages/ChooseHotelPage"
 import DestinationPage from "./pages/DestinationPage"
+import DestinationsListPage from "./pages/DestinationsListPage"
 import HotelPage from "./pages/HotelPage"
+import HotelsListPage from "./pages/HotelsListPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import RedirectPage from "./pages/misc/RedirectPage"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
@@ -38,8 +38,8 @@ export class AppRoutes {
       path: "/:retreatGuid/preferences",
     },
     {
-      name: "ChooseDestinationPage",
-      component: <ChooseDestinationPage />,
+      name: "DestinationsListPage",
+      component: <DestinationsListPage />,
       path: "/:retreatGuid/destinations",
     },
     {
@@ -48,8 +48,8 @@ export class AppRoutes {
       path: "/:retreatGuid/destinations/:destinationGuid",
     },
     {
-      name: "ChooseHotelPage",
-      component: <ChooseHotelPage />,
+      name: "HotelsListPage",
+      component: <HotelsListPage />,
       path: "/:retreatGuid/hotels",
     },
     {
