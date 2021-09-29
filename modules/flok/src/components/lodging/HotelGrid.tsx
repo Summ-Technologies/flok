@@ -68,7 +68,7 @@ export default function HotelGrid(props: HotelGridProps) {
         return (
           <AppHotelCard
             budget={
-              hotel.price && hotel.price.length < 4
+              hotel.price && hotel.price.length <= 4
                 ? (hotel.price.length as 1 | 2 | 3 | 4)
                 : 3
             }
