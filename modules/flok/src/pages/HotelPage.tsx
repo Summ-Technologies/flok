@@ -1,5 +1,4 @@
 import {makeStyles} from "@material-ui/core"
-import {goBack} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
@@ -7,7 +6,7 @@ import AppTypography from "../components/base/AppTypography"
 import AppHotelLocationMap from "../components/lodging/AppHotelLocationMap"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
-import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
+import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {ResourceNotFound} from "../models"
 import {HotelModel} from "../models/lodging"
@@ -89,13 +88,7 @@ function HotelPage(props: HotelPageProps) {
               onClick: onClickCta,
             }}
             right={<AppImageGrid images={hotel.imgs} />}>
-            <PageHeader
-              header={hotel.name}
-              subheader={hotel.tagline}
-              preHeader={
-                <PageHeaderBackButton onClick={() => dispatch(goBack())} />
-              }
-            />
+            <PageHeader header={hotel.name} subheader={hotel.tagline} />
             <AppTypography variant="body1" paragraph>
               {hotel.description}
             </AppTypography>
