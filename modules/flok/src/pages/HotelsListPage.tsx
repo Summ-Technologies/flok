@@ -1,4 +1,3 @@
-import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -108,14 +107,14 @@ function HotelsListPage(props: HotelsListPageProps) {
 
   // Actions
   function explore(hotel: HotelModel) {
-    dispatch(
-      push(
-        AppRoutes.getPath("HotelPage", {
-          retreatGuid: props.match.params.retreatGuid,
-          hotelGuid: hotel.guid,
-        })
-      )
+    const newTab = window.open(
+      AppRoutes.getPath("HotelPage", {
+        retreatGuid: props.match.params.retreatGuid,
+        hotelGuid: hotel.guid,
+      }),
+      "_blank"
     )
+    newTab?.focus()
   }
   function toggleSelect(hotel: HotelModel) {
     if (isHotelSelected(hotel)) {
