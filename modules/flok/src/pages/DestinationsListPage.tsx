@@ -1,4 +1,4 @@
-import {makeStyles} from "@material-ui/core"
+import {Button} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -9,6 +9,7 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
+import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {ResourceNotFound} from "../models"
 import {DestinationModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
@@ -21,14 +22,8 @@ import {
 import {convertGuid} from "../utils"
 import {useDestinations, useRetreat} from "../utils/lodgingUtils"
 
-let useStyles = makeStyles((theme) => ({
-  headerContainer: {paddingBottom: theme.spacing(4)},
-}))
-
 type DestinationsListPageProps = RouteComponentProps<{retreatGuid: string}>
 function DestinationsListPage(props: DestinationsListPageProps) {
-  // Setup
-  let classes = useStyles(props)
   let dispatch = useDispatch()
 
   // Query/path params
@@ -88,11 +83,17 @@ function DestinationsListPage(props: DestinationsListPageProps) {
       ) : (
         <PageContainer>
           <PageOverlay
-            OverlayFooterProps={{
-              cta: "Next Step",
-              onClick: onClickNextSteps,
-              rightText: `${selectedDestinationIds.length} destinations selected`,
-            }}
+            footerBody={
+              <PageOverlayFooterDefaultBody
+                rightText={`${selectedDestinationIds.length} hotels selected`}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={onClickNextSteps}>
+                  Next step
+                </Button>
+              </PageOverlayFooterDefaultBody>
+            }
             right={
               <AppPageSpotlightImage
                 imageUrl="https://images.unsplash.com/photo-1627334848323-6ce21facb54b"
@@ -100,15 +101,13 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                 imagePosition="bottom-right"
               />
             }>
-            <div className={classes.headerContainer}>
-              <PageHeader
-                preHeader={
-                  <AppLodgingFlowTimeline currentStep="DESTINATION_SELECT" />
-                }
-                header="Location"
-                subheader="Finding the right destination is the first step to a planning a great retreat!"
-              />
-            </div>
+            <PageHeader
+              preHeader={
+                <AppLodgingFlowTimeline currentStep="DESTINATION_SELECT" />
+              }
+              header="Location"
+              subheader="Finding the right destination is the first step to a planning a great retreat!"
+            />
             <DestinationsGrid
               destinations={destinationsList}
               onExplore={explore}
