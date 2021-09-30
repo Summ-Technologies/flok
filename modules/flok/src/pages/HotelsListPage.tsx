@@ -1,3 +1,4 @@
+import {Button} from "@material-ui/core"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -12,6 +13,7 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
+import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {ResourceNotFound} from "../models"
 import {BudgetType, BudgetTypeVals, HotelModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
@@ -133,16 +135,24 @@ function HotelsListPage(props: HotelsListPageProps) {
     <RetreatRequired retreatGuid={retreatGuid}>
       <PageContainer>
         <PageOverlay
-          OverlayFooterProps={{
-            cta: "Next Step",
-            onClick: () => {
-              if (retreat && retreat !== ResourceNotFound) {
-                dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
-              }
-              alert("Move to next page")
-            },
-            rightText: `${selectedHotelIds.length} hotels selected`,
-          }}
+          footerBody={
+            <PageOverlayFooterDefaultBody
+              rightText={`${selectedHotelIds.length} hotels selected`}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  if (retreat && retreat !== ResourceNotFound) {
+                    dispatch(
+                      postAdvanceRetreatState(retreatGuid, retreat.state)
+                    )
+                  }
+                  alert("Move to next page")
+                }}>
+                Next step
+              </Button>
+            </PageOverlayFooterDefaultBody>
+          }
           right={
             <AppPageSpotlightImage
               imageUrl="https://images.unsplash.com/photo-1627334848323-6ce21facb54b"

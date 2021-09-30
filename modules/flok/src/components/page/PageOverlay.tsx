@@ -1,6 +1,6 @@
 import {Grid, makeStyles} from "@material-ui/core"
 import React, {PropsWithChildren} from "react"
-import PageOverlayFooter, {PageOverlayFooterProps} from "./PageOverlayFooter"
+import PageOverlayFooter from "./PageOverlayFooter"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -36,7 +36,7 @@ let useStyles = makeStyles((theme) => ({
 }))
 
 type PageOverlayProps = PropsWithChildren<{
-  OverlayFooterProps?: PageOverlayFooterProps
+  footerBody?: JSX.Element
   size?: "default" | "small"
   right?: JSX.Element
 }>
@@ -52,8 +52,8 @@ export default function PageOverlay(props: PageOverlayProps) {
         lg={props.size === "small" ? 5 : 7}
         className={classes.overlay}>
         <div className={classes.overlayBody}>{props.children}</div>
-        {props.OverlayFooterProps ? (
-          <PageOverlayFooter {...props.OverlayFooterProps} />
+        {props.footerBody ? (
+          <PageOverlayFooter>{props.footerBody}</PageOverlayFooter>
         ) : undefined}
       </Grid>
       {props.right ? (

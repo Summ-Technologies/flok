@@ -1,3 +1,4 @@
+import {Button} from "@material-ui/core"
 import {goBack} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -7,6 +8,7 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
+import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {ResourceNotFound} from "../models"
 import {RootState} from "../store"
 import {
@@ -66,13 +68,19 @@ function DestinationPage(props: DestinationPageProps) {
         <PageContainer>
           <PageOverlay
             size="small"
-            OverlayFooterProps={{
-              cta: isSelected(destination.id)
-                ? "Unselect Location"
-                : "Select Location",
-              onClick: onClickSelectCta,
-            }}
-            right={<AppImageGrid images={destination.imgs} />}>
+            right={<AppImageGrid images={destination.imgs} />}
+            footerBody={
+              <PageOverlayFooterDefaultBody>
+                <Button
+                  variant={
+                    isSelected(destination.id) ? "contained" : "outlined"
+                  }
+                  color="primary"
+                  onClick={onClickSelectCta}>
+                  {isSelected(destination.id) ? "Selected" : "Select"}
+                </Button>
+              </PageOverlayFooterDefaultBody>
+            }>
             <PageHeader
               header={destination.location}
               subheader={destination.tagline}
