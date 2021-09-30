@@ -101,7 +101,7 @@ function HotelsListPage(props: HotelsListPageProps) {
   ])
 
   // Hotels search state (algolia backed)
-  const [hotels, , loading, hasMore, getMore] = useHotels(
+  const [hotels, numHotels, loading, hasMore, getMore] = useHotels(
     destinationFilter,
     budgetFilter
   )
@@ -152,7 +152,7 @@ function HotelsListPage(props: HotelsListPageProps) {
             />
           }>
           <PageHeader
-            header="Lodging"
+            header={`Lodging (${numHotels})`}
             subheader="Select some hotels to request a free proposal from!"
             preHeader={<AppLodgingFlowTimeline currentStep="HOTEL_SELECT" />}
             postHeader={
