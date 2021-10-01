@@ -1,4 +1,5 @@
-import {Button} from "@material-ui/core"
+import {Button, makeStyles} from "@material-ui/core"
+import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -26,10 +27,22 @@ import {
 import {convertGuid, useQueryAsList} from "../utils"
 import {useDestinations, useHotels, useRetreat} from "../utils/lodgingUtils"
 
+let useStyles = makeStyles((theme) => ({
+  ctaSection: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    "& > :not(:first-child)": {
+      marginLeft: theme.spacing(1),
+    },
+  },
+}))
+
 type HotelsListPageProps = RouteComponentProps<{retreatGuid: string}>
 function HotelsListPage(props: HotelsListPageProps) {
   // Setup
   let dispatch = useDispatch()
+  let classes = useStyles(props)
 
   // Path and query params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
@@ -138,19 +151,33 @@ function HotelsListPage(props: HotelsListPageProps) {
           footerBody={
             <PageOverlayFooterDefaultBody
               rightText={`${selectedHotelIds.length} hotels selected`}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  if (retreat && retreat !== ResourceNotFound) {
+              <div className={classes.ctaSection}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    if (retreat && retreat !== ResourceNotFound) {
+                      dispatch(
+                        postAdvanceRetreatState(retreatGuid, retreat.state)
+                      )
+                    }
+                    alert("Move to next page")
+                  }}>
+                  Next step
+                </Button>
+                <Button
+                  variant="text"
+                  color="primary"
+                  onClick={() => {
                     dispatch(
-                      postAdvanceRetreatState(retreatGuid, retreat.state)
+                      push(
+                        AppRoutes.getPath("DestinationsListPage", {retreatGuid})
+                      )
                     )
-                  }
-                  alert("Move to next page")
-                }}>
-                Next step
-              </Button>
+                  }}>
+                  Back
+                </Button>
+              </div>
             </PageOverlayFooterDefaultBody>
           }
           right={
