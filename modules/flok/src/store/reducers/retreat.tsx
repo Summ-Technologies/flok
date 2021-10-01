@@ -1,6 +1,7 @@
 import {Action} from "redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {RetreatModel} from "../../models/retreat"
+import {LOCAL_STORAGE_RETREAT_KEY} from "../../utils"
 import {ApiAction} from "../actions/api"
 import {
   DELETE_SELECTED_RETREAT_DESTINATION_REQUEST,
@@ -38,6 +39,9 @@ export default function retreatReducer(
       payload = (action as ApiAction).payload as RetreatModel
       newRetreatsState = {...state.retreats}
       newRetreatsState[payload.guid] = payload
+      if (localStorage.getItem(LOCAL_STORAGE_RETREAT_KEY) !== payload.guid) {
+        localStorage.setItem(LOCAL_STORAGE_RETREAT_KEY, payload.guid)
+      }
       return {...state, retreats: newRetreatsState}
     case GET_RETREAT_FAILURE:
       retreatGuid = (action as unknown as {meta: {guid: string}}).meta.guid
