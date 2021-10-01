@@ -1,6 +1,7 @@
 import {makeStyles} from "@material-ui/core"
 import clsx from "clsx"
 import React from "react"
+import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -8,12 +9,21 @@ let useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   dot: {
+    position: "relative",
     height: 10,
     width: 10,
     borderRadius: "50%",
     backgroundColor: theme.palette.grey[200],
     "&.active": {
       backgroundColor: theme.palette.primary.main,
+    },
+    "&.current": {
+      backgroundColor: theme.palette.common.white,
+      borderColor: theme.palette.primary.main,
+      borderWidth: 1.5,
+      borderStyle: "dashed",
+      height: 18,
+      width: 18,
     },
   },
   connector: {
@@ -26,6 +36,36 @@ let useStyles = makeStyles((theme) => ({
       borderTopColor: theme.palette.primary.main,
     },
   },
+  itemTitle: {
+    position: "absolute",
+    overflow: "visible",
+    top: -30,
+    left: -10,
+    fontSize: 12,
+    lineHeight: 1,
+    textTransform: "uppercase",
+    padding: `${4}px ${6}px`,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    borderRadius: 3,
+  },
+  arrow: {
+    visibility: "hidden",
+    position: "absolute",
+    bottom: -3,
+    left: 11.5, // (width / 2) + (- itemTitle.left)
+    "&, &::before": {
+      position: "absolute",
+      width: 6,
+      height: 6,
+    },
+    "&::before": {
+      visibility: "visible",
+      content: '""',
+      transform: "rotate(45deg)",
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
 }))
 
 type LodgingFlowStep =
@@ -34,12 +74,12 @@ type LodgingFlowStep =
   | "DESTINATION_SELECT"
   | "HOTEL_SELECT"
   | "PROPOSAL"
-const ORDERED_STEPS: LodgingFlowStep[] = [
-  "INTAKE_1",
-  "INTAKE_2",
-  "DESTINATION_SELECT",
-  "HOTEL_SELECT",
-  "PROPOSAL",
+const ORDERED_STEPS: {step: LodgingFlowStep; title: string}[] = [
+  {step: "INTAKE_1", title: "Your Info"},
+  {step: "INTAKE_2", title: "Retreat Info"},
+  {step: "DESTINATION_SELECT", title: "Destinations"},
+  {step: "HOTEL_SELECT", title: "Request Proposals"},
+  {step: "PROPOSAL", title: "View Proposals"},
 ]
 
 type AppLodgingFlowTimelineProps = {
@@ -49,8 +89,12 @@ export default function AppLodgingFlowTimeline(
   props: AppLodgingFlowTimelineProps
 ) {
   let classes = useStyles(props)
-  let currentStepNumber = ORDERED_STEPS.indexOf(props.currentStep)
+  let currentStepNumber = ORDERED_STEPS.map((step) => step.step).indexOf(
+    props.currentStep
+  )
+  let currentStep = ORDERED_STEPS[currentStepNumber]
   let lastStepIndex = ORDERED_STEPS.length - 1
+
   return (
     <div className={classes.root}>
       {ORDERED_STEPS.map((step, i) => (
@@ -58,8 +102,19 @@ export default function AppLodgingFlowTimeline(
           <div
             className={clsx(
               classes.dot,
-              i <= currentStepNumber ? "active" : undefined
-            )}></div>
+              i + 1 <= currentStepNumber ? "active" : undefined,
+              i === currentStepNumber ? "current" : undefined
+            )}>
+            {i === currentStepNumber && (
+              <AppTypography
+                noWrap
+                align="center"
+                className={classes.itemTitle}>
+                {currentStep.title}
+                <div className={classes.arrow}></div>
+              </AppTypography>
+            )}
+          </div>
           {i < lastStepIndex ? (
             <div
               className={clsx(

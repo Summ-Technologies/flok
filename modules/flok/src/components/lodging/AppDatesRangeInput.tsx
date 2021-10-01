@@ -37,9 +37,6 @@ let useStyles = makeStyles((theme) => ({
     borderColor: (props: AppRetreatDatesInputProps) =>
       props.error ? theme.palette.error.main : theme.palette.grey[400],
   },
-  popper: {
-    paddingTop: theme.spacing(1),
-  },
   dash: {
     height: 25,
     width: 25,
@@ -194,9 +191,17 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
           />
         </Button>
         <Popper
-          className={classes.popper}
           open={active}
           anchorEl={anchorEl.current}
+          modifiers={{
+            offset: {
+              enabled: true,
+              offset: "0,8",
+            },
+            flip: {
+              enabled: false,
+            },
+          }}
           placement="bottom-end">
           <div className={classes.popperBody}>
             <div className={classes.exactDatesToggle}>
