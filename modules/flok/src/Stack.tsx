@@ -3,10 +3,10 @@ import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
 import DestinationPage from "./pages/DestinationPage"
 import DestinationsListPage from "./pages/DestinationsListPage"
+import HomeRoutingPage from "./pages/HomeRoutingPage"
 import HotelPage from "./pages/HotelPage"
 import HotelsListPage from "./pages/HotelsListPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
-import RedirectPage from "./pages/misc/RedirectPage"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 import RetreatRoutingPage from "./pages/RetreatRoutingPage"
@@ -68,8 +68,8 @@ export class AppRoutes {
       path: "/:retreatGuid",
     },
     {
-      name: "RedirectHome",
-      component: <RedirectPage pageName="NewRetreatFormPage" />,
+      name: "HomeRoutingPage",
+      component: <HomeRoutingPage />,
       path: "/",
     },
     {
