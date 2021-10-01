@@ -1,6 +1,6 @@
-import {makeStyles, Popper} from "@material-ui/core"
+import {makeStyles} from "@material-ui/core"
 import clsx from "clsx"
-import React, {useEffect, useRef} from "react"
+import React from "react"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -9,6 +9,7 @@ let useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   dot: {
+    position: "relative",
     height: 10,
     width: 10,
     borderRadius: "50%",
@@ -35,20 +36,35 @@ let useStyles = makeStyles((theme) => ({
       borderTopColor: theme.palette.primary.main,
     },
   },
-  popper: {
+  itemTitle: {
+    position: "absolute",
+    overflow: "visible",
+    top: -30,
+    left: -10,
+    fontSize: 12,
+    lineHeight: 1,
+    textTransform: "uppercase",
     padding: `${4}px ${6}px`,
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
     borderRadius: 3,
-    "&[x-out-of-boundaries]": {
-      visibility: "hidden",
-      pointerEvents: "none",
-    },
   },
-  itemTitle: {
-    fontSize: 12,
-    lineHeight: 1,
-    textTransform: "uppercase",
+  arrow: {
+    visibility: "hidden",
+    position: "absolute",
+    bottom: -3,
+    left: 11.5, // (width / 2) + (- itemTitle.left)
+    "&, &::before": {
+      position: "absolute",
+      width: 6,
+      height: 6,
+    },
+    "&::before": {
+      visibility: "visible",
+      content: '""',
+      transform: "rotate(45deg)",
+      backgroundColor: theme.palette.primary.main,
+    },
   },
 }))
 
@@ -78,24 +94,27 @@ export default function AppLodgingFlowTimeline(
   )
   let currentStep = ORDERED_STEPS[currentStepNumber]
   let lastStepIndex = ORDERED_STEPS.length - 1
-  const [dotEl, setDotEl] = React.useState<null | HTMLElement>(null)
-  let dotRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (dotRef.current) setDotEl(dotRef.current)
-  }, [currentStepNumber])
 
   return (
     <div className={classes.root}>
       {ORDERED_STEPS.map((step, i) => (
         <>
           <div
-            ref={currentStepNumber === i ? dotRef : undefined}
             className={clsx(
               classes.dot,
               i + 1 <= currentStepNumber ? "active" : undefined,
               i === currentStepNumber ? "current" : undefined
-            )}></div>
+            )}>
+            {i === currentStepNumber && (
+              <AppTypography
+                noWrap
+                align="center"
+                className={classes.itemTitle}>
+                {currentStep.title}
+                <div className={classes.arrow}></div>
+              </AppTypography>
+            )}
+          </div>
           {i < lastStepIndex ? (
             <div
               className={clsx(
@@ -103,29 +122,6 @@ export default function AppLodgingFlowTimeline(
                 i + 1 <= currentStepNumber ? "active" : undefined
               )}></div>
           ) : undefined}
-          {i === currentStepNumber && (
-            <Popper
-              className={classes.popper}
-              open
-              anchorEl={dotEl}
-              placement="top"
-              modifiers={{
-                hide: {
-                  enabled: true,
-                },
-                offset: {
-                  enabled: true,
-                  offset: "0,8",
-                },
-                flip: {
-                  enabled: false,
-                },
-              }}>
-              <AppTypography className={classes.itemTitle}>
-                {currentStep.title}
-              </AppTypography>
-            </Popper>
-          )}
         </>
       ))}
     </div>
