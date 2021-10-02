@@ -24,11 +24,6 @@ export function convertGuid(str: string) {
   }
 }
 
-/**
- * Retrieve most recently loaded active retreat from local storage
- */
-export const LOCAL_STORAGE_RETREAT_KEY = "activeRetreatGuid"
-
 export function useQuery(param: string) {
   let dispatch = useDispatch()
   let searchString = useLocation().search.substring(1)

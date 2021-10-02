@@ -15,8 +15,11 @@ import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
+import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
 import {BudgetType, BudgetTypeVals, HotelModel} from "../models/lodging"
+import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
+import {apiNotification} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {
@@ -135,12 +138,43 @@ function HotelsListPage(props: HotelsListPageProps) {
     if (isHotelSelected(hotel)) {
       dispatch(deleteSelectedRetreatHotel(retreatGuid, hotel.id))
     } else {
-      dispatch(postSelectedRetreatHotel(retreatGuid, hotel.id))
+      if (selectedHotelIds.length < Constants.maxHotelsSelected) {
+        dispatch(postSelectedRetreatHotel(retreatGuid, hotel.id))
+      } else {
+        dispatch(
+          enqueueSnackbar({
+            key: "tooManyHotelsSelected",
+            message: `Can't select more than ${Constants.maxHotelsSelected} hotels`,
+            options: {
+              autoHideDuration: 2000,
+              variant: "error",
+            },
+          })
+        )
+      }
     }
   }
   function onReachEnd() {
     if (hasMore) {
       getMore()
+    }
+  }
+
+  function onClickNextStep() {
+    if (retreat && retreat !== ResourceNotFound) {
+      if (selectedHotelIds.length >= Constants.minHotelsSelected) {
+        dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+      } else {
+        dispatch(
+          enqueueSnackbar(
+            apiNotification(
+              `Please select at least ${Constants.minHotelsSelected} hotels to advance`,
+              (key) => dispatch(closeSnackbar(key)),
+              true
+            )
+          )
+        )
+      }
     }
   }
 
@@ -150,19 +184,15 @@ function HotelsListPage(props: HotelsListPageProps) {
         <PageOverlay
           footerBody={
             <PageOverlayFooterDefaultBody
-              rightText={`${selectedHotelIds.length} hotels selected`}>
+              rightText={`${Math.max(
+                Constants.maxHotelsSelected - selectedHotelIds.length,
+                0
+              )} hotels remaining`}>
               <div className={classes.ctaSection}>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={() => {
-                    if (retreat && retreat !== ResourceNotFound) {
-                      dispatch(
-                        postAdvanceRetreatState(retreatGuid, retreat.state)
-                      )
-                    }
-                    alert("Move to next page")
-                  }}>
+                  onClick={onClickNextStep}>
                   Next step
                 </Button>
                 <Button

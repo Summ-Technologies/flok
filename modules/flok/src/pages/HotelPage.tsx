@@ -9,8 +9,10 @@ import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
+import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
 import {HotelModel} from "../models/lodging"
+import {enqueueSnackbar} from "../notistack-lib/actions"
 import {RootState} from "../store"
 import {
   deleteSelectedRetreatHotel,
@@ -67,7 +69,20 @@ function HotelPage(props: HotelPageProps) {
       if (isHotelSelected((hotel as HotelModel).id)) {
         dispatch(deleteSelectedRetreatHotel(retreatGuid, hotel.id))
       } else {
-        dispatch(postSelectedRetreatHotel(retreatGuid, hotel.id))
+        if (selectedHotelIds.length < Constants.maxHotelsSelected) {
+          dispatch(postSelectedRetreatHotel(retreatGuid, hotel.id))
+        } else {
+          dispatch(
+            enqueueSnackbar({
+              key: "tooManyHotelsSelected",
+              message: `Can't select more than ${Constants.maxHotelsSelected} hotels`,
+              options: {
+                autoHideDuration: 2000,
+                variant: "error",
+              },
+            })
+          )
+        }
       }
     }
   }

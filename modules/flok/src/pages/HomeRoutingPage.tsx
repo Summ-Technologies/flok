@@ -1,5 +1,5 @@
+import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
-import {LOCAL_STORAGE_RETREAT_KEY} from "../utils"
 import {useRetreat} from "../utils/lodgingUtils"
 import RedirectPage from "./misc/RedirectPage"
 
@@ -10,7 +10,7 @@ type HomeRoutingPageProps = {}
  * or your most recent active retreat if present
  */
 export default function HomeRoutingPage(props: HomeRoutingPageProps) {
-  let retreatGuid = localStorage.getItem(LOCAL_STORAGE_RETREAT_KEY)
+  let retreatGuid = localStorage.getItem(Constants.localStorageRetreatGuidKey)
   let retreat = useRetreat(retreatGuid ?? "")
 
   return retreatGuid === null ? (
