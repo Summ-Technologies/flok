@@ -93,3 +93,25 @@ class Config {
 
 var config = new Config()
 export default config
+
+/**
+ * Constants is very similiar to Config except these values are "hard-coded" into the app.
+ * Where the Config class has the ability to dynamically set values (from runtime variables, a app-config api call, etc.)
+ * Constants are "config" values that don't dynamically change without a code change. In this sense they
+ * are basically a grouping of "constants" that might change over time, but not during runtime.
+ */
+export const Constants = {
+  /**
+   * maxHotelsSelected, minHotelsSelected:
+   * When in the request hotel proposals step you...
+   *  Can't select more hotels than max
+   *  Can't move on to next step without min hotels selected
+   */
+  maxHotelsSelected: 10,
+  minHotelsSelected: 3,
+
+  /**
+   * The key used to save a retreat GUID in local storage
+   */
+  localStorageRetreatGuidKey: "activeRetreatGuid",
+}
