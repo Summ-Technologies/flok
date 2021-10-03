@@ -20,6 +20,7 @@ export type RetreatModel = {
   id: number
   guid: string
   company_name: string
+  contact_email: string
   state: RetreatProgressState
   selected_destinations_ids: number[]
   selected_hotels_ids: number[]

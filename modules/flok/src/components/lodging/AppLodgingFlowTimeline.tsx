@@ -35,6 +35,12 @@ let useStyles = makeStyles((theme) => ({
     "&.active": {
       borderTopColor: theme.palette.primary.main,
     },
+    "&.active.halfway": {
+      borderTopStyle: "dotted",
+    },
+    "&.halfway": {
+      width: 25,
+    },
   },
   itemTitle: {
     position: "absolute",
@@ -74,16 +80,18 @@ type LodgingFlowStep =
   | "DESTINATION_SELECT"
   | "HOTEL_SELECT"
   | "PROPOSAL"
-const ORDERED_STEPS: {step: LodgingFlowStep; title: string}[] = [
-  {step: "INTAKE_1", title: "Your Info"},
-  {step: "INTAKE_2", title: "Retreat Info"},
-  {step: "DESTINATION_SELECT", title: "Destinations"},
-  {step: "HOTEL_SELECT", title: "Request Proposals"},
-  {step: "PROPOSAL", title: "View Proposals"},
-]
+const ORDERED_STEPS: {step: LodgingFlowStep; title: string; half?: boolean}[] =
+  [
+    {step: "INTAKE_1", title: "Your Info"},
+    {step: "INTAKE_2", title: "Retreat Info"},
+    {step: "DESTINATION_SELECT", title: "Destinations"},
+    {step: "HOTEL_SELECT", title: "Request Proposals"},
+    {step: "PROPOSAL", title: "View Proposals"},
+  ]
 
 type AppLodgingFlowTimelineProps = {
   currentStep: LodgingFlowStep
+  halfway?: boolean
 }
 export default function AppLodgingFlowTimeline(
   props: AppLodgingFlowTimelineProps
@@ -102,8 +110,8 @@ export default function AppLodgingFlowTimeline(
           <div
             className={clsx(
               classes.dot,
-              i + 1 <= currentStepNumber ? "active" : undefined,
-              i === currentStepNumber ? "current" : undefined
+              i < currentStepNumber ? "active" : undefined,
+              i === currentStepNumber && !props.halfway ? "current" : undefined
             )}>
             {i === currentStepNumber && (
               <AppTypography
@@ -116,11 +124,21 @@ export default function AppLodgingFlowTimeline(
             )}
           </div>
           {i < lastStepIndex ? (
-            <div
-              className={clsx(
-                classes.connector,
-                i + 1 <= currentStepNumber ? "active" : undefined
-              )}></div>
+            <>
+              <div
+                className={clsx(
+                  classes.connector,
+                  i + 1 <= currentStepNumber ? "active" : undefined,
+                  i + 1 === currentStepNumber
+                    ? props.halfway
+                      ? "halfway"
+                      : undefined
+                    : undefined
+                )}></div>
+              {i + 1 === currentStepNumber && props.halfway ? (
+                <div className={clsx(classes.connector, "halfway")}></div>
+              ) : undefined}
+            </>
           ) : undefined}
         </>
       ))}
