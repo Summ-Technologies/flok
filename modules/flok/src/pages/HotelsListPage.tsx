@@ -164,6 +164,13 @@ function HotelsListPage(props: HotelsListPageProps) {
     if (retreat && retreat !== ResourceNotFound) {
       if (selectedHotelIds.length >= Constants.minHotelsSelected) {
         dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+        dispatch(
+          push(
+            AppRoutes.getPath("HotelProposalWaitingPage", {
+              retreatGuid: props.match.params.retreatGuid,
+            })
+          )
+        )
       } else {
         dispatch(
           enqueueSnackbar(
