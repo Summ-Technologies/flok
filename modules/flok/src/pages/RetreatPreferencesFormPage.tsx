@@ -1,5 +1,4 @@
 import {Box} from "@material-ui/core"
-import {push} from "connected-react-router"
 import {useEffect} from "react"
 import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
@@ -14,12 +13,14 @@ import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
+import {ResourceNotFound} from "../models"
+import {RetreatModel} from "../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
-import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {updateRetreatPreferences} from "../store/actions/retreat"
 import {convertGuid} from "../utils"
+import {useRetreat} from "../utils/lodgingUtils"
 
 type RetreatPreferencesFormPageProps = RouteComponentProps<{
   retreatGuid: string
@@ -30,6 +31,7 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
 
   // Path params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreat = useRetreat(retreatGuid)
 
   let retreatPreferencesFormLoading = useSelector(
     (state: RootState) => state.api.retreatPreferencesFormLoading
@@ -43,27 +45,38 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
 
   // Action handlers
   function submitRetreatPreferences(values: RetreatPreferencesFormValues) {
-    let onSuccess = () => {
+    if (retreat && retreat !== ResourceNotFound) {
+      let onSuccess = () => {
+        mixpanel.track("LODGING_FORM_SUBMITTED")
+        let q = new URLSearchParams({
+          email: (retreat as RetreatModel).contact_email,
+          a1: (retreat as RetreatModel).company_name,
+          utm_campaign: "intake_call",
+          utm_content: (retreat as RetreatModel).id.toString(),
+        }).toString()
+        // Add this line back once merged into master and picked up react-gtm
+        // TagManager.dataLayer({
+        //   dataLayer: {
+        //     event: "INTAKE_FORM_SUBMITTED",
+        //   },
+        // })
+        window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
+      }
       dispatch(
-        push(
-          AppRoutes.getPath("DestinationsListPage", {retreatGuid: retreatGuid})
+        updateRetreatPreferences(
+          retreatGuid,
+          values.isFlexibleDates,
+          values.attendeesLower,
+          undefined,
+          values.flexibleNumNights,
+          values.flexibleMonths,
+          values.flexibleStartDow,
+          values.exactStartDate,
+          values.exactEndDate,
+          onSuccess
         )
       )
     }
-    dispatch(
-      updateRetreatPreferences(
-        retreatGuid,
-        values.isFlexibleDates,
-        values.attendeesLower,
-        undefined,
-        values.flexibleNumNights,
-        values.flexibleMonths,
-        values.flexibleStartDow,
-        values.exactStartDate,
-        values.exactEndDate,
-        onSuccess
-      )
-    )
   }
 
   function showError(error: string) {

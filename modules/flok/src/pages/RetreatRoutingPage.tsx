@@ -49,6 +49,14 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
           )
           break
         case "PROPOSAL":
+          dispatch(
+            push(
+              AppRoutes.getPath("HotelProposalWaitingPage", {
+                retreatGuid: retreat.guid,
+              })
+            )
+          )
+          break
         default:
           setShowError(true)
       }
