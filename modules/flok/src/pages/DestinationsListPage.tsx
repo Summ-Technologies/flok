@@ -85,7 +85,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
           <PageOverlay
             footerBody={
               <PageOverlayFooterDefaultBody
-                rightText={`${selectedDestinationIds.length} hotels selected`}>
+                rightText={`${selectedDestinationIds.length} destinations selected`}>
                 <Button
                   variant="contained"
                   color="primary"

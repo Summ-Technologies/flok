@@ -36,32 +36,32 @@ export class AppRoutes {
     {
       name: "RetreatPreferencesFormPage",
       component: <RetreatPreferencesFormPage />,
-      path: "/:retreatGuid/preferences",
+      path: "/r/:retreatGuid/preferences",
     },
     {
       name: "DestinationsListPage",
       component: <DestinationsListPage />,
-      path: "/:retreatGuid/destinations",
+      path: "/r/:retreatGuid/destinations",
     },
     {
       name: "DestinationPage",
       component: <DestinationPage />,
-      path: "/:retreatGuid/destinations/:destinationGuid",
+      path: "/r/:retreatGuid/destinations/:destinationGuid",
     },
     {
       name: "HotelsListPage",
       component: <HotelsListPage />,
-      path: "/:retreatGuid/hotels",
+      path: "/r/:retreatGuid/hotels",
     },
     {
       name: "HotelPage",
       component: <HotelPage />,
-      path: "/:retreatGuid/hotels/:hotelGuid",
+      path: "/r/:retreatGuid/hotels/:hotelGuid",
     },
     {
       name: "HotelProposalWaitingPage",
       component: <HotelProposalWaitingPage />,
-      path: "/:retreatGuid/proposals",
+      path: "/r/:retreatGuid/proposals",
     },
     {
       name: "RFPLiteResponsePage",
@@ -71,7 +71,7 @@ export class AppRoutes {
     {
       name: "RetreatRoutingPage",
       component: <RetreatRoutingPage />,
-      path: "/:retreatGuid",
+      path: "/r/:retreatGuid",
     },
     {
       name: "HomeRoutingPage",
