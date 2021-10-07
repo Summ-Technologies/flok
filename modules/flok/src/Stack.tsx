@@ -1,9 +1,16 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
-import {default as LodgingFormPage} from "./pages/LodgingFormPage"
+import DestinationPage from "./pages/DestinationPage"
+import DestinationsListPage from "./pages/DestinationsListPage"
+import HomeRoutingPage from "./pages/HomeRoutingPage"
+import HotelPage from "./pages/HotelPage"
+import HotelProposalWaitingPage from "./pages/HotelProposalWaitingPage"
+import HotelsListPage from "./pages/HotelsListPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
-import RedirectPage from "./pages/misc/RedirectPage"
+import NewRetreatFormPage from "./pages/NewRetreatFormPage"
+import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
+import RetreatRoutingPage from "./pages/RetreatRoutingPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
@@ -22,9 +29,39 @@ type FlokRoute = {
 export class AppRoutes {
   static routes: FlokRoute[] = [
     {
-      name: "LodgingFormPage",
-      component: <LodgingFormPage />,
-      path: "/lodging",
+      name: "NewRetreatFormPage",
+      component: <NewRetreatFormPage />,
+      path: "/getting-started",
+    },
+    {
+      name: "RetreatPreferencesFormPage",
+      component: <RetreatPreferencesFormPage />,
+      path: "/r/:retreatGuid/preferences",
+    },
+    {
+      name: "DestinationsListPage",
+      component: <DestinationsListPage />,
+      path: "/r/:retreatGuid/destinations",
+    },
+    {
+      name: "DestinationPage",
+      component: <DestinationPage />,
+      path: "/r/:retreatGuid/destinations/:destinationGuid",
+    },
+    {
+      name: "HotelsListPage",
+      component: <HotelsListPage />,
+      path: "/r/:retreatGuid/hotels",
+    },
+    {
+      name: "HotelPage",
+      component: <HotelPage />,
+      path: "/r/:retreatGuid/hotels/:hotelGuid",
+    },
+    {
+      name: "HotelProposalWaitingPage",
+      component: <HotelProposalWaitingPage />,
+      path: "/r/:retreatGuid/proposals",
     },
     {
       name: "RFPLiteResponsePage",
@@ -32,8 +69,13 @@ export class AppRoutes {
       path: "/rfp-lite",
     },
     {
-      name: "RedirectHome",
-      component: <RedirectPage pageName="LodgingFormPage" />,
+      name: "RetreatRoutingPage",
+      component: <RetreatRoutingPage />,
+      path: "/r/:retreatGuid",
+    },
+    {
+      name: "HomeRoutingPage",
+      component: <HomeRoutingPage />,
       path: "/",
     },
     {

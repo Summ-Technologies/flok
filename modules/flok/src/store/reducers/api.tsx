@@ -1,26 +1,33 @@
 import {Action} from "redux"
 import {
-  POST_LODGING_REQUEST_FORM_FAILURE,
-  POST_LODGING_REQUEST_FORM_REQUEST,
-  POST_LODGING_REQUEST_FORM_SUCCESS,
-} from "../actions/lodging"
-
-export type ApiRequestState = {
-  loading: boolean
-  loaded?: boolean
-  error?: string
-}
-
-const initialRequestState = {
-  loading: false,
-}
+  POST_NEW_RETREAT_FAILURE,
+  POST_NEW_RETREAT_REQUEST,
+  POST_NEW_RETREAT_SUCCESS,
+} from "../actions/retreat"
 
 export type ApiState = {
-  postRfpForm: ApiRequestState
+  newRetreatFormLoading: boolean
+  retreatPreferencesFormLoading: boolean
+
+  getDestinationsLoading: boolean
+  getDestinationLoading: {
+    [guid: string]: boolean | undefined
+  }
+  getHotelsLoading: boolean
+  getHotelLoading: {
+    [guid: string]: boolean | undefined
+  }
+  getRetreatLoading: boolean
 }
 
 const initialState: ApiState = {
-  postRfpForm: initialRequestState,
+  newRetreatFormLoading: false,
+  retreatPreferencesFormLoading: false,
+  getDestinationsLoading: false,
+  getDestinationLoading: {},
+  getHotelsLoading: false,
+  getHotelLoading: {},
+  getRetreatLoading: false,
 }
 
 export default function userReducer(
@@ -28,21 +35,11 @@ export default function userReducer(
   action: Action
 ): ApiState {
   switch (action.type) {
-    case POST_LODGING_REQUEST_FORM_REQUEST:
-      return {
-        ...state,
-        postRfpForm: {
-          loading: true,
-        },
-      }
-    case POST_LODGING_REQUEST_FORM_SUCCESS:
-    case POST_LODGING_REQUEST_FORM_FAILURE:
-      return {
-        ...state,
-        postRfpForm: {
-          loading: false,
-        },
-      }
+    case POST_NEW_RETREAT_REQUEST:
+      return {...state, newRetreatFormLoading: true}
+    case POST_NEW_RETREAT_SUCCESS:
+    case POST_NEW_RETREAT_FAILURE:
+      return {...state, newRetreatFormLoading: false}
     default:
       return state
   }

@@ -37,9 +37,6 @@ let useStyles = makeStyles((theme) => ({
     borderColor: (props: AppRetreatDatesInputProps) =>
       props.error ? theme.palette.error.main : theme.palette.grey[400],
   },
-  popper: {
-    paddingTop: theme.spacing(1),
-  },
   dash: {
     height: 25,
     width: 25,
@@ -48,10 +45,9 @@ let useStyles = makeStyles((theme) => ({
   start: {},
   end: {},
   popperBody: {
-    padding: theme.spacing(2),
-    maxWidth: 690,
+    width: 690,
     [theme.breakpoints.down("sm")]: {
-      maxWidth: 350,
+      width: 350,
     },
     backgroundColor: theme.palette.common.white,
     border: `solid 1px ${theme.palette.primary.main}`,
@@ -72,7 +68,7 @@ let useStyles = makeStyles((theme) => ({
       },
       width: 150,
     },
-    "& > *:not(:first-child)": {
+    "& > *": {
       marginTop: theme.spacing(1),
     },
     "& > * > h4": {
@@ -81,6 +77,8 @@ let useStyles = makeStyles((theme) => ({
   },
   calendar: {
     borderRadius: theme.shape.borderRadius,
+    marginLeft: "auto",
+    marginRight: "auto",
   },
   exactDatesToggle: {
     display: "flex",
@@ -93,12 +91,28 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
   },
   monthsSection: {
     width: "100%",
     "& > * > p": {
       marginBottom: theme.spacing(0.25),
       marginTop: theme.spacing(0.5),
+    },
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+  },
+  doneCta: {
+    padding: theme.spacing(2),
+    backgroundColor: theme.palette.grey[100],
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    borderBottomRightRadius: theme.shape.borderRadius,
+    borderBottomLeftRadius: theme.shape.borderRadius,
+    "& > button": {
+      marginLeft: "auto",
     },
   },
 }))
@@ -158,6 +172,8 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
   }
   let thisYear = new Date().getFullYear()
   let thisMonth = new Date().getMonth()
+  let twoWeeksFromNow = new Date()
+  twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14)
 
   return (
     <ClickAwayListener onClickAway={closePopper}>
@@ -175,9 +191,17 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
           />
         </Button>
         <Popper
-          className={classes.popper}
           open={active}
           anchorEl={anchorEl.current}
+          modifiers={{
+            offset: {
+              enabled: true,
+              offset: "0,8",
+            },
+            flip: {
+              enabled: false,
+            },
+          }}
           placement="bottom-end">
           <div className={classes.popperBody}>
             <div className={classes.exactDatesToggle}>
@@ -194,6 +218,7 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                 showMonthAndYearPickers={false}
                 showDateDisplay={false}
                 direction="horizontal"
+                minDate={twoWeeksFromNow}
                 months={isSmallScreen ? 1 : 2}
                 onChange={(item) =>
                   props.onChangeDateRange(
@@ -234,7 +259,7 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                           )
                         : [...Array(12)].map((v, i) => getOption(i, year))
                     return (
-                      <div>
+                      <div key={year}>
                         <AppTypography variant="body2" fontWeight="bold">
                           {year}
                         </AppTypography>
@@ -249,6 +274,11 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                 </div>
               </>
             )}
+            <div className={classes.doneCta}>
+              <Button variant="contained" color="primary" onClick={closePopper}>
+                Done
+              </Button>
+            </div>
           </div>
         </Popper>
       </div>
