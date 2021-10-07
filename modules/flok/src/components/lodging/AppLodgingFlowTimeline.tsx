@@ -106,7 +106,7 @@ export default function AppLodgingFlowTimeline(
   return (
     <div className={classes.root}>
       {ORDERED_STEPS.map((step, i) => (
-        <>
+        <React.Fragment key={i}>
           <div
             className={clsx(
               classes.dot,
@@ -119,7 +119,7 @@ export default function AppLodgingFlowTimeline(
                 align="center"
                 className={classes.itemTitle}>
                 {currentStep.title}
-                <div className={classes.arrow}></div>
+                <span className={classes.arrow}></span>
               </AppTypography>
             )}
           </div>
@@ -140,7 +140,7 @@ export default function AppLodgingFlowTimeline(
               ) : undefined}
             </>
           ) : undefined}
-        </>
+        </React.Fragment>
       ))}
     </div>
   )

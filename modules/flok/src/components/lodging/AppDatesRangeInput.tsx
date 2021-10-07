@@ -259,7 +259,7 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                           )
                         : [...Array(12)].map((v, i) => getOption(i, year))
                     return (
-                      <div>
+                      <div key={year}>
                         <AppTypography variant="body2" fontWeight="bold">
                           {year}
                         </AppTypography>
