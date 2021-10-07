@@ -1,6 +1,8 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
 import {RetreatProgressState} from "../../models/retreat"
+import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
+import {apiNotification} from "../../notistack-lib/utils"
 import {ApiAction, createApiAction} from "./api"
 
 export const POST_NEW_RETREAT_REQUEST = "POST_NEW_RETREAT_REQUEST"
@@ -39,6 +41,16 @@ export function postNewRetreat(
       if (guid) {
         onSuccess(guid)
       }
+    } else {
+      dispatch(
+        enqueueSnackbar(
+          apiNotification(
+            "An error occurred, try again.",
+            (key) => dispatch(closeSnackbar(key)),
+            true
+          )
+        )
+      )
     }
   }
 }
@@ -132,6 +144,16 @@ export function updateRetreatPreferences(
     )) as unknown as ApiAction
     if (!apiResponse.error) {
       onSuccess()
+    } else {
+      dispatch(
+        enqueueSnackbar(
+          apiNotification(
+            "An error occurred, try again.",
+            (key) => dispatch(closeSnackbar(key)),
+            true
+          )
+        )
+      )
     }
   }
 }

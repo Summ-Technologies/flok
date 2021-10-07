@@ -141,11 +141,17 @@ export function NewRetreatForm(props: NewRetreatFormProps) {
               size="large"
               disabled={props.isLoading}
               onClick={() => {
-                if (Object.values(formik.errors).length > 0) {
-                  Object.values(formik.errors)
-                    .slice(0, 3)
-                    .forEach((err) => {})
-                }
+                formik.validateForm().then((errs) => {
+                  if (Object.values(errs).length > 0) {
+                    Object.values(errs)
+                      .slice(0, 3)
+                      .forEach((err) => {
+                        if (typeof err === "string") {
+                          props.onError(err)
+                        }
+                      })
+                  }
+                })
               }}>
               {props.isLoading ? (
                 <CircularProgress
@@ -181,7 +187,10 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
   const classes = useStyles()
   let formik = useFormik<RetreatPreferencesFormValues>({
     validationSchema: yup.object().shape({
-      attendeesLower: yup.number().required("Number of attendees is required."),
+      attendeesLower: yup
+        .number()
+        .required("Number of attendees is required.")
+        .min(5, "At least 5 attendees required."),
       isFlexibleDates: yup.boolean().required(),
       exactStartDate: yup.date().when("isFlexibleDates", {
         is: false,
@@ -193,7 +202,10 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
       }),
       flexibleNumNights: yup.number().when("isFlexibleDates", {
         is: true,
-        then: yup.number().required("Number of nights is required."),
+        then: yup
+          .number()
+          .required("Number of nights is required.")
+          .min(1, "At least one night required."),
       }),
       flexibleMonths: yup.array().when("isFlexibleDates", {
         is: true,
@@ -310,11 +322,19 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
               size="large"
               disabled={props.isLoading}
               onClick={() => {
-                if (Object.values(formik.errors).length > 0) {
-                  Object.values(formik.errors)
-                    .slice(0, 3)
-                    .forEach((err) => {})
-                }
+                formik.validateForm().then((errs) => {
+                  if (Object.values(errs).length > 0) {
+                    Object.values(errs)
+                      .slice(0, 3)
+                      .forEach((err) => {
+                        if (typeof err === "string") {
+                          props.onError(err)
+                        } else if (err && err.length > 0) {
+                          props.onError(err[0])
+                        }
+                      })
+                  }
+                })
               }}>
               {props.isLoading ? (
                 <CircularProgress
