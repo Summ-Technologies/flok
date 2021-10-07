@@ -1,5 +1,6 @@
 import {Box} from "@material-ui/core"
 import {useEffect} from "react"
+import TagManager from "react-gtm-module"
 import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -54,12 +55,12 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
           utm_campaign: "intake_call",
           utm_content: (retreat as RetreatModel).id.toString(),
         }).toString()
-        // Add this line back once merged into master and picked up react-gtm
-        // TagManager.dataLayer({
-        //   dataLayer: {
-        //     event: "INTAKE_FORM_SUBMITTED",
-        //   },
-        // })
+
+        TagManager.dataLayer({
+          dataLayer: {
+            event: "INTAKE_FORM_SUBMITTED",
+          },
+        })
         window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
       }
       dispatch(
