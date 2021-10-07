@@ -10,6 +10,7 @@ export const ALGOLIA_API_KEY = "algolia_api_key"
 export const ALGOLIA_APP_ID_KEY = "algolia_app_id"
 export const ALGOLIA_DESTINATIONS_INDEX_KEY = "algolia_destinations_index"
 export const ALGOLIA_HOTELS_INDEX_KEY = "algolia_hotels_index"
+export const GOOGLE_TAG_MANAGER_ID_KEY = "google_tag_manager_id"
 type ConfigKey =
   | typeof APP_VERSION_KEY
   | typeof SERVER_BASE_URL_KEY
@@ -21,6 +22,7 @@ type ConfigKey =
   | typeof ALGOLIA_APP_ID_KEY
   | typeof ALGOLIA_DESTINATIONS_INDEX_KEY
   | typeof ALGOLIA_HOTELS_INDEX_KEY
+  | typeof GOOGLE_TAG_MANAGER_ID_KEY
 
 class Config {
   appConfig: {[key: string]: any}
