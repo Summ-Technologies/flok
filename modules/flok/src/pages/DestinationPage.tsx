@@ -1,9 +1,9 @@
-import {Button} from "@material-ui/core"
+import {Button, Hidden} from "@material-ui/core"
 import {goBack} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import AppImageGrid from "../components/base/AppImageGrid"
 import AppTypography from "../components/base/AppTypography"
+import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader, {PageHeaderBackButton} from "../components/page/PageHeader"
@@ -68,7 +68,15 @@ function DestinationPage(props: DestinationPageProps) {
         <PageContainer>
           <PageOverlay
             size="small"
-            right={<AppImageGrid images={destination.imgs} />}
+            right={
+              destination.imgs && destination.imgs.length ? (
+                <AppPageSpotlightImage
+                  imageUrl={destination.imgs[0].image_url}
+                  imageAlt={destination.imgs[0].alt}
+                  imagePosition="centered"
+                />
+              ) : undefined
+            }
             footerBody={
               <PageOverlayFooterDefaultBody>
                 <Button
@@ -99,6 +107,15 @@ function DestinationPage(props: DestinationPageProps) {
                 </AppTypography>
               </>
             ))}
+            {destination.imgs && destination.imgs.length ? (
+              <Hidden mdUp>
+                <AppPageSpotlightImage
+                  imageUrl={destination.imgs[0].image_url}
+                  imageAlt={destination.imgs[0].alt}
+                  imagePosition="centered"
+                />
+              </Hidden>
+            ) : undefined}
           </PageOverlay>
         </PageContainer>
       ) : (

@@ -1,4 +1,4 @@
-import {Grid, makeStyles} from "@material-ui/core"
+import {Grid, Hidden, makeStyles} from "@material-ui/core"
 import React, {PropsWithChildren} from "react"
 import PageOverlayFooter from "./PageOverlayFooter"
 
@@ -46,8 +46,8 @@ export default function PageOverlay(props: PageOverlayProps) {
     <Grid container className={classes.root}>
       <Grid
         item
-        xs={11}
-        sm={10}
+        xs={12}
+        sm={12}
         md={props.size === "small" ? 6 : 9}
         lg={props.size === "small" ? 5 : 7}
         className={classes.overlay}>
@@ -57,7 +57,9 @@ export default function PageOverlay(props: PageOverlayProps) {
         ) : undefined}
       </Grid>
       {props.right ? (
-        <div className={classes.right}>{props.right}</div>
+        <Hidden smDown={true}>
+          <div className={classes.right}>{props.right}</div>
+        </Hidden>
       ) : undefined}
     </Grid>
   )

@@ -7,8 +7,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: "100vw",
     maxWidth: "100vw",
-    height: "100vh",
-    maxHeight: "100vh",
     display: "flex",
     flexWrap: "nowrap",
   },
@@ -34,7 +32,8 @@ export default function PageContainer(
         classes.root,
         props.backgroundImage ? classes.backgroundImage : undefined
       )}
-      height={height100vh ? height100vh : undefined}>
+      maxHeight={height100vh ? height100vh : "100vh"}
+      height={height100vh ? height100vh : "100vh"}>
       {props.children}
     </Box>
   )

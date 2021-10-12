@@ -1,4 +1,4 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Button, Hidden, makeStyles} from "@material-ui/core"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppImageGrid from "../components/base/AppImageGrid"
@@ -25,6 +25,7 @@ import NotFound404Page from "./misc/NotFound404Page"
 let useStyles = makeStyles((theme) => ({
   mapContainer: {
     maxHeight: 430,
+    minHeight: 400,
     height: "100%",
     marginTop: "auto",
 
@@ -120,6 +121,9 @@ function HotelPage(props: HotelPageProps) {
                 />
               </div>
             ) : undefined}
+            <Hidden mdUp>
+              <AppImageGrid images={hotel.imgs} />
+            </Hidden>
           </PageOverlay>
         </PageContainer>
       )}

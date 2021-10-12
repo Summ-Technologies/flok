@@ -96,8 +96,8 @@ function DestinationsListPage(props: DestinationsListPageProps) {
             }
             right={
               <AppPageSpotlightImage
-                imageUrl="https://images.unsplash.com/photo-1627334848323-6ce21facb54b"
-                imageAlt="Hotel image or something"
+                imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/acqualina_sidebar.png"
+                imageAlt="Acqualina beach front with red umbrellas and palm trees"
                 imagePosition="bottom-right"
               />
             }>
