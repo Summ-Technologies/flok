@@ -1,6 +1,7 @@
 import {RouteComponentProps, withRouter} from "react-router"
 import AppTypography from "../components/base/AppTypography"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
+import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -17,7 +18,15 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
       <PageContainer>
-        <PageOverlay size="small">
+        <PageOverlay
+          size="small"
+          right={
+            <AppPageSpotlightImage
+              imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
+              imageAlt="Fairmont Austin pool overview in the evening"
+              imagePosition="bottom-right"
+            />
+          }>
           <PageHeader
             header={`Almost done!`}
             subheader="We’re negotiating with hotels on your behalf and are waiting to hear back about availability and pricing."
@@ -35,13 +44,14 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
               }`}>
               {retreat && retreat !== ResourceNotFound && retreat.contact_email}
             </a>{" "}
-            within the next 72 hours.
+            within 5 business days from Flok's hotel sourcing team.
           </AppTypography>
           <br />
           <AppTypography variant="h4">Have any questions?</AppTypography>
           <AppTypography variant="body1">
-            Booking is a retreat is a big committment, please feel free to reach
-            out to our hotel
+            Booking a retreat is a big commitment. If you have any questions
+            about the process, please email our Head of Sales at{" "}
+            <a href={"mailto:sam@goflok.com"}>sam@goflok.com</a>{" "}
           </AppTypography>
         </PageOverlay>
       </PageContainer>
