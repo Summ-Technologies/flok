@@ -219,8 +219,8 @@ function HotelsListPage(props: HotelsListPageProps) {
           }
           right={
             <AppPageSpotlightImage
-              imageUrl="https://images.unsplash.com/photo-1627334848323-6ce21facb54b"
-              imageAlt="Hotel image or something"
+              imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
+              imageAlt="Fairmont Austin pool overview in the evening"
               imagePosition="bottom-right"
             />
           }>
