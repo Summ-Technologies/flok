@@ -20,6 +20,10 @@ let useStyles = makeStyles((theme) => ({
   },
   description: {
     height: `${0.875 * 1.2 * 6}rem`, // is theme.typography.body2.lineHeight or body2.fontSize changes adjust this line
+    overflow: "hidden",
+    display: "-webkit-box",
+    boxOrient: "vertical",
+    lineClamp: 6,
   },
 }))
 
