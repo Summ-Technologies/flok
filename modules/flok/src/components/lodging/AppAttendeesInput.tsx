@@ -91,6 +91,9 @@ export default function AppAttendeesInput(props: AppAttendeesInputProps) {
                   fullWidth
                   value={props.numAttendees}
                   onChange={(e) => {
+                    if (e.target.value === "") {
+                      props.onChange(undefined)
+                    }
                     let newVal = parseInt(e.target.value)
                     if (!isNaN(newVal)) {
                       props.onChange(newVal)
