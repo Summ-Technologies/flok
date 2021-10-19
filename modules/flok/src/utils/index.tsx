@@ -34,9 +34,13 @@ export function useQuery(param: string) {
     setParamVal(new URLSearchParams(searchString).get(param))
   }, [searchString, setParamVal, param])
 
-  function setParam(newParamVal: string) {
+  function setParam(newParamVal?: string) {
     let allParams = new URLSearchParams(searchString)
-    allParams.set(param, newParamVal)
+    if (newParamVal !== undefined) {
+      allParams.set(param, newParamVal)
+    } else {
+      allParams.delete(param)
+    }
     dispatch(
       push({
         search: `${allParams.toString() ? "?" + allParams.toString() : ""}`,

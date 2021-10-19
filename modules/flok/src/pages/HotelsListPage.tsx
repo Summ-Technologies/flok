@@ -3,10 +3,11 @@ import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import {AppSliderInput} from "../components/base/AppSliderInputs"
+import AppTypography from "../components/base/AppTypography"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
 import HotelGrid, {
-  HotelGridBudgetFilterBody,
   HotelGridFilters,
   HotelGridLocationFilterBody,
 } from "../components/lodging/HotelGrid"
@@ -17,7 +18,7 @@ import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
-import {BudgetType, BudgetTypeVals, HotelModel} from "../models/lodging"
+import {HotelModel} from "../models/lodging"
 import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
@@ -27,10 +28,26 @@ import {
   postAdvanceRetreatState,
   postSelectedRetreatHotel,
 } from "../store/actions/retreat"
-import {convertGuid, useQueryAsList} from "../utils"
+import {convertGuid, useQuery, useQueryAsList} from "../utils"
 import {useDestinations, useHotels, useRetreat} from "../utils/lodgingUtils"
 
 let useStyles = makeStyles((theme) => ({
+  filterBody: {
+    border: "solid thin grey",
+    borderColor: "rgba(0, 0, 0, 0.23)",
+    borderRadius: 20,
+    minWidth: 200,
+    display: "flex",
+    padding: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    flexDirection: "column",
+  },
+  bigFilters: {
+    display: "flex",
+    "& > *:not(:first-child)": {
+      marginLeft: theme.spacing(1),
+    },
+  },
   ctaSection: {
     display: "flex",
     flexDirection: "row",
@@ -51,7 +68,11 @@ function HotelsListPage(props: HotelsListPageProps) {
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
   let [locationFilterParam, setLocationFilterParam] =
     useQueryAsList("locations")
-  let [priceFilterParam, setPriceFilterParam] = useQueryAsList("price")
+  let [priceFilterParam, setPriceFilterParam] = useQuery("price")
+  let [hotelSizeFilterParam, setHotelSizeFilterParam] = useQuery("hotel_size")
+  let [recommendedFilterParam, setRecommendedFilterParam] =
+    useQuery("recommended")
+  let [boutiqueFilterParam, setBoutiqueFilterParam] = useQuery("boutique")
 
   let retreat = useRetreat(retreatGuid)
   let destinations = Object.values(useDestinations()[0])
@@ -77,11 +98,12 @@ function HotelsListPage(props: HotelsListPageProps) {
 
   // Local filter state
   let [destinationFilter, setDestinationFilter] = useState<number[]>([])
-  let [budgetFilter, setBudgetFilter] = useState<BudgetType[]>([])
+  let [budgetFilter, setBudgetFilter] = useState<number>(0)
+  let [recommendedFilter, setRecommendedFilter] = useState<boolean>(false)
+  let [boutiqueFilter, setBoutiqueFilter] = useState<boolean>(false)
 
   // Filters active state
   let [locationFilterOpen, setLocationFilterOpen] = useState(false)
-  let [priceFilterOpen, setPriceFilterOpen] = useState(false)
 
   // Update local state to match query params
   useEffect(() => {
@@ -92,12 +114,16 @@ function HotelsListPage(props: HotelsListPageProps) {
     )
   }, [locationFilterParam])
   useEffect(() => {
-    setBudgetFilter(
-      priceFilterParam.filter((val) =>
-        BudgetTypeVals.includes(val)
-      ) as BudgetType[]
-    )
+    if (priceFilterParam !== null && !isNaN(parseInt(priceFilterParam))) {
+      setBudgetFilter(parseInt(priceFilterParam))
+    }
   }, [priceFilterParam])
+  useEffect(() => {
+    setRecommendedFilter(recommendedFilterParam === "1")
+  }, [recommendedFilterParam])
+  useEffect(() => {
+    setBoutiqueFilter(boutiqueFilterParam === "1")
+  }, [boutiqueFilterParam])
 
   // On page load filters logic
   let [initLocationFilter, setInitLocationFilter] = useState(false)
@@ -120,7 +146,7 @@ function HotelsListPage(props: HotelsListPageProps) {
   // Hotels search state (algolia backed)
   const [hotels, numHotels, loading, hasMore, getMore] = useHotels(
     destinationFilter,
-    budgetFilter
+    []
   )
 
   // Actions
@@ -254,22 +280,58 @@ function HotelsListPage(props: HotelsListPageProps) {
                     },
                   },
                   {
-                    filter: "Price",
-                    filterSelected: budgetFilter.length
-                      ? `${budgetFilter.length} selected`
-                      : undefined,
-                    popper: (
-                      <HotelGridBudgetFilterBody
-                        onClose={() => setPriceFilterOpen(false)}
-                        selected={budgetFilter}
-                        setSelected={(newVals) => setPriceFilterParam(newVals)}
-                      />
-                    ),
-                    open: priceFilterOpen,
-                    toggleOpen: () => setPriceFilterOpen(!priceFilterOpen),
+                    filter: "Flok Recommended",
+                    filterSelected: recommendedFilter ? "\u2713" : "",
+                    popper: <></>,
+                    open: false,
+                    toggleOpen: () => {
+                      setRecommendedFilterParam(
+                        recommendedFilter ? undefined : "1"
+                      )
+                    },
                   },
-                ]}
-              />
+                  {
+                    filter: "Boutique",
+                    filterSelected: boutiqueFilter ? "\u2713" : "",
+                    popper: <></>,
+                    open: false,
+                    toggleOpen: () => {
+                      setBoutiqueFilterParam(boutiqueFilter ? undefined : "1")
+                    },
+                  },
+                ]}>
+                <div className={classes.bigFilters}>
+                  <div className={classes.filterBody}>
+                    <AppTypography variant="body2">Budget Size</AppTypography>
+                    <AppSliderInput
+                      defaultThumb
+                      value={budgetFilter}
+                      onChange={(newVal) =>
+                        setPriceFilterParam(newVal.toString())
+                      }
+                      min={0}
+                      max={5}
+                    />
+                  </div>
+                  <div className={classes.filterBody}>
+                    <AppTypography variant="body2">Hotel Size</AppTypography>
+                    <AppSliderInput
+                      defaultThumb
+                      onChange={(val) =>
+                        setHotelSizeFilterParam(val.toString())
+                      }
+                      value={
+                        hotelSizeFilterParam !== null &&
+                        !isNaN(parseInt(hotelSizeFilterParam))
+                          ? parseInt(hotelSizeFilterParam)
+                          : 2
+                      }
+                      min={0}
+                      max={5}
+                    />
+                  </div>
+                </div>
+              </HotelGridFilters>
             }
           />
           <HotelGrid

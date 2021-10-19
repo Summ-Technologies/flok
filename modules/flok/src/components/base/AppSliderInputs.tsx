@@ -28,6 +28,7 @@ let useStyles = makeStyles((theme) => ({
 type AppSliderInputProps = {
   value: number
   onChange: (value: number) => void
+  defaultThumb?: boolean
   max: number
   min: number
 }
@@ -44,7 +45,7 @@ export function AppSliderInput(props: AppSliderInputProps) {
       onChange={handleChange}
       min={props.min}
       max={props.max}
-      ThumbComponent={SliderThumb}
+      ThumbComponent={props.defaultThumb ? SliderThumb : SliderThumbWithValue}
     />
   )
 }
@@ -81,5 +82,9 @@ export function AppSliderRangeInput(props: AppSliderRangeInputProps) {
 }
 
 function SliderThumb(props: any) {
+  return <span {...props}>&nbsp;&nbsp;</span>
+}
+
+function SliderThumbWithValue(props: any) {
   return <span {...props}>{props["aria-valuenow"]}</span>
 }

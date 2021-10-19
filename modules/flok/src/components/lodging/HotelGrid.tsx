@@ -6,8 +6,8 @@ import {
   Paper,
   Theme,
 } from "@material-ui/core"
-import {useEffect, useRef} from "react"
-import {BudgetType, DestinationModel, HotelModel} from "../../models/lodging"
+import {PropsWithChildren, useEffect, useRef} from "react"
+import {DestinationModel, HotelModel} from "../../models/lodging"
 import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import AppFilter, {AppFilterProps} from "../base/AppFilter"
 import {AppSliderInput} from "../base/AppSliderInputs"
@@ -94,13 +94,13 @@ const useFilterStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
+    flexWrap: "wrap",
     "& > *:not(:first-child)": {
       marginLeft: theme.spacing(1),
     },
   },
 }))
-type HotelGridFiltersProps = {filters: AppFilterProps[]}
+type HotelGridFiltersProps = PropsWithChildren<{filters: AppFilterProps[]}>
 export function HotelGridFilters(props: HotelGridFiltersProps) {
   let classes = useFilterStyles(props)
   return (
@@ -108,6 +108,7 @@ export function HotelGridFilters(props: HotelGridFiltersProps) {
       {props.filters.map((filter) => {
         return <AppFilter {...filter} />
       })}
+      {props.children}
     </div>
   )
 }
@@ -234,8 +235,8 @@ export function HotelGridRoomsFilterBody(props: {
 
 export function HotelGridBudgetFilterBody(props: {
   onClose: () => void
-  selected: BudgetType[]
-  setSelected: (newVals: BudgetType[]) => void
+  selected: number
+  setSelected: (newVals: number) => void
 }) {
   let classes = useFilterBodyStyles(props)
   return (
@@ -247,37 +248,15 @@ export function HotelGridBudgetFilterBody(props: {
         Budget
       </AppTypography>
       <div className={classes.checkBoxOptionList}>
-        {(["$", "$$", "$$$", "$$$$"] as BudgetType[]).map(
-          (curr: BudgetType) => {
-            return (
-              <div className={classes.checkBoxOption}>
-                <Checkbox
-                  color="primary"
-                  checked={props.selected.includes(curr)}
-                  onChange={() => {
-                    if (props.selected.includes(curr)) {
-                      props.setSelected(
-                        props.selected.filter((val) => val !== curr)
-                      )
-                    } else {
-                      props.setSelected([...props.selected, curr])
-                    }
-                  }}
-                />
-                <ListItemText primary={curr} />
-              </div>
-            )
-          }
-        )}
+        <AppSliderInput
+          value={props.selected}
+          min={0}
+          max={5}
+          defaultThumb
+          onChange={props.setSelected}
+        />
       </div>
       <div className={classes.ctaContainer}>
-        <Button
-          size="small"
-          variant="outlined"
-          disabled={props.selected.length === 0}
-          onClick={() => props.setSelected([])}>
-          Clear
-        </Button>
         <Button
           size="small"
           variant="contained"
