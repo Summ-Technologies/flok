@@ -1,7 +1,7 @@
 import {Action} from "redux"
 import {Constants} from "../../config"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
-import {RetreatModel} from "../../models/retreat"
+import {RetreatModel, RetreatPreferencesModel} from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
   DELETE_SELECTED_RETREAT_DESTINATION_REQUEST,
@@ -13,6 +13,7 @@ import {
   POST_SELECTED_RETREAT_DESTINATION_REQUEST,
   POST_SELECTED_RETREAT_HOTEL_FAILURE,
   POST_SELECTED_RETREAT_HOTEL_REQUEST,
+  UPDATE_RETREAT_PREFERENCES,
 } from "../actions/retreat"
 
 export type RetreatState = {
@@ -148,6 +149,35 @@ export default function retreatReducer(
         }
       }
       return state
+    case UPDATE_RETREAT_PREFERENCES:
+      retreatGuid = (
+        action as unknown as {
+          retreatGuid: string
+          retreatPreferences: RetreatPreferencesModel
+        }
+      ).retreatGuid
+      let retreatPreferences = (
+        action as unknown as {
+          retreatGuid: string
+          retreatPreferences: RetreatPreferencesModel
+        }
+      ).retreatPreferences
+      retreat = state.retreats[retreatGuid]
+
+      if (retreat && retreat !== ResourceNotFound) {
+        return {
+          ...state,
+          retreats: {
+            ...state.retreats,
+            [retreatGuid]: {
+              ...retreat,
+              retreat_preferences: retreatPreferences,
+            },
+          },
+        }
+      }
+      return state
+
     default:
       return state
   }

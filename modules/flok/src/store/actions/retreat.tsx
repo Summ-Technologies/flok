@@ -1,6 +1,9 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
-import {RetreatProgressState} from "../../models/retreat"
+import {
+  RetreatPreferencesModel,
+  RetreatProgressState,
+} from "../../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
 import {ApiAction, createApiAction} from "./api"
@@ -263,4 +266,17 @@ export function deleteSelectedRetreatHotel(
       },
     ],
   })
+}
+
+export const UPDATE_RETREAT_PREFERENCES = "UPDATE_RETREAT_PREFERENCES"
+
+export function updateRetreatFilterPreferences(
+  retreatGuid: string,
+  retreatPreferences: RetreatPreferencesModel
+) {
+  return {
+    type: UPDATE_RETREAT_PREFERENCES,
+    retreatPreferences: retreatPreferences,
+    retreatGuid: retreatGuid,
+  }
 }

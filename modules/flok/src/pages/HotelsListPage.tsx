@@ -4,12 +4,12 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
 import HotelGrid, {
   HotelGridBudgetFilterBody,
   HotelGridFilters,
   HotelGridLocationFilterBody,
 } from "../components/lodging/HotelGrid"
+import RetreatPreferences from "../components/lodging/RetreatPreferences"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -217,13 +217,7 @@ function HotelsListPage(props: HotelsListPageProps) {
               </div>
             </PageOverlayFooterDefaultBody>
           }
-          right={
-            <AppPageSpotlightImage
-              imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
-              imageAlt="Fairmont Austin pool overview in the evening"
-              imagePosition="bottom-right"
-            />
-          }>
+          right={<RetreatPreferences retreatGuid={retreatGuid} />}>
           <PageHeader
             header={`Lodging (${numHotels})`}
             subheader="Select some hotels to request a free proposal from!"

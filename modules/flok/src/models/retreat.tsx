@@ -16,6 +16,14 @@ export type RetreatProgressState =
   | "HOTEL_SELECT"
   | "PROPOSAL"
 
+export type RetreatPreferencesModel = {
+  convenient_filter: number
+  work_filter: number
+  budget_filter: number
+  hotel_size_filter: number
+  other_considerations: string[]
+}
+
 export type RetreatModel = {
   id: number
   guid: string
@@ -25,4 +33,5 @@ export type RetreatModel = {
   selected_destinations_ids: number[]
   selected_hotels_ids: number[]
   selected_hotels_proposals: RetreatSelectedHotelProposal[]
+  retreat_preferences?: RetreatPreferencesModel
 }

@@ -3,8 +3,8 @@ import {push} from "connected-react-router"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
 import DestinationsGrid from "../components/lodging/DestinationsGrid"
+import RetreatPreferences from "../components/lodging/RetreatPreferences"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -94,13 +94,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                 </Button>
               </PageOverlayFooterDefaultBody>
             }
-            right={
-              <AppPageSpotlightImage
-                imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/acqualina_sidebar.png"
-                imageAlt="Acqualina beach front with red umbrellas and palm trees"
-                imagePosition="bottom-right"
-              />
-            }>
+            right={<RetreatPreferences retreatGuid={retreatGuid} />}>
             <PageHeader
               preHeader={
                 <AppLodgingFlowTimeline currentStep="DESTINATION_SELECT" />
