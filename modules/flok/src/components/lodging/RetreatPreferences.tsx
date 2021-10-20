@@ -106,14 +106,16 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
               color="primary"
               exclusive
               value={retreatPreferencesState.convenient_filter}
-              onChange={(event, value: number) =>
-                dispatch(
-                  updateRetreatFilterPreferences(props.retreatGuid, {
-                    ...retreatPreferencesState,
-                    convenient_filter: value,
-                  })
-                )
-              }
+              onChange={(event, value: number) => {
+                if (value !== null) {
+                  dispatch(
+                    updateRetreatFilterPreferences(props.retreatGuid, {
+                      ...retreatPreferencesState,
+                      convenient_filter: value,
+                    })
+                  )
+                }
+              }}
               className={classes.convenienceButtonGroup}>
               <ToggleButton value={-1}>Convenience</ToggleButton>
               <ToggleButton value={0}>No Preference</ToggleButton>
@@ -138,14 +140,16 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
           <Grid item xs={12} container justify="center">
             <ToggleButtonGroup
               value={retreatPreferencesState.work_filter}
-              onChange={(event, value: number) =>
-                dispatch(
-                  updateRetreatFilterPreferences(props.retreatGuid, {
-                    ...retreatPreferencesState,
-                    work_filter: value,
-                  })
-                )
-              }
+              onChange={(event, value: number) => {
+                if (value !== null) {
+                  dispatch(
+                    updateRetreatFilterPreferences(props.retreatGuid, {
+                      ...retreatPreferencesState,
+                      work_filter: value,
+                    })
+                  )
+                }
+              }}
               exclusive
               className={classes.workPlayButtonGroup}>
               <ToggleButton value={-1}>Work</ToggleButton>
@@ -171,14 +175,16 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
           <Grid item xs={12} container justify="center">
             <ToggleButtonGroup
               value={retreatPreferencesState?.budget_filter}
-              onChange={(event, value: number) =>
-                dispatch(
-                  updateRetreatFilterPreferences(props.retreatGuid, {
-                    ...retreatPreferencesState,
-                    budget_filter: value,
-                  })
-                )
-              }
+              onChange={(event, value: number) => {
+                if (value !== null) {
+                  dispatch(
+                    updateRetreatFilterPreferences(props.retreatGuid, {
+                      ...retreatPreferencesState,
+                      budget_filter: value,
+                    })
+                  )
+                }
+              }}
               exclusive
               className={classes.workPlayButtonGroup}>
               <ToggleButton value={-1}>Budget Conscious</ToggleButton>
@@ -204,14 +210,16 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
           <Grid item xs={12} container justify="center">
             <ToggleButtonGroup
               value={retreatPreferencesState.hotel_size_filter}
-              onChange={(event, value: number) =>
-                dispatch(
-                  updateRetreatFilterPreferences(props.retreatGuid, {
-                    ...retreatPreferencesState,
-                    hotel_size_filter: value,
-                  })
-                )
-              }
+              onChange={(event, value: number) => {
+                if (value !== null) {
+                  dispatch(
+                    updateRetreatFilterPreferences(props.retreatGuid, {
+                      ...retreatPreferencesState,
+                      hotel_size_filter: value,
+                    })
+                  )
+                }
+              }}
               exclusive
               color="primary"
               className={classes.workPlayButtonGroup}>
