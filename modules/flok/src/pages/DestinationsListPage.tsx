@@ -1,5 +1,6 @@
 import {Button} from "@material-ui/core"
 import {push} from "connected-react-router"
+import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
@@ -76,6 +77,50 @@ function DestinationsListPage(props: DestinationsListPageProps) {
     )
   }
 
+  let retreatPreferencesFilter = useSelector((state: RootState) => {
+    let retreat = state.retreat.retreats[retreatGuid]
+    if (retreat && retreat !== ResourceNotFound) {
+      return retreat.retreat_preferences
+    }
+  })
+
+  let [sortedDestinationsList, setSortedDestinationsList] =
+    useState(destinationsList)
+  let [lastConvenientFilter, setLastConvenientFilter] = useState(0)
+
+  useEffect(() => {
+    const CONVENIENT_DESTINATIONS = [1, 4, 7, 9, 24, 23, 19, 15, 12, 11, 6]
+    const EXOTIC_DESTINATIONS = [10, 29, 28, 26, 25, 22, 20, 17, 14, 8, 6, 5]
+    /* Randomize array in-place using Durstenfeld shuffle algorithm */
+    function shuffleArray(array: any[]) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1))
+        var temp = array[i]
+        array[i] = array[j]
+        array[j] = temp
+      }
+    }
+
+    if (!retreatPreferencesFilter) {
+      return
+    }
+    let sorted = destinationsList
+    if (retreatPreferencesFilter.convenient_filter === -1) {
+      sorted = destinationsList.filter((val) =>
+        CONVENIENT_DESTINATIONS.includes(val.id)
+      )
+    } else if (retreatPreferencesFilter.convenient_filter === 1) {
+      sorted = destinationsList.filter((val) =>
+        EXOTIC_DESTINATIONS.includes(val.id)
+      )
+    }
+    if (lastConvenientFilter === retreatPreferencesFilter.convenient_filter) {
+      shuffleArray(sorted)
+    }
+    setLastConvenientFilter(retreatPreferencesFilter.convenient_filter)
+    setSortedDestinationsList(sorted)
+  }, [retreatPreferencesFilter, setLastConvenientFilter])
+
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
       {!destinationsList ? (
@@ -103,7 +148,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
               subheader="Finding the right destination is the first step to a planning a great retreat!"
             />
             <DestinationsGrid
-              destinations={destinationsList}
+              destinations={sortedDestinationsList}
               onExplore={explore}
               onSelect={toggleSelect}
               isSelected={isDestinationSelected}
