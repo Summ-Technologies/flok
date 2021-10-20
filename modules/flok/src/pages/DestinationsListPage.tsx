@@ -101,25 +101,28 @@ function DestinationsListPage(props: DestinationsListPageProps) {
       }
     }
 
-    if (!retreatPreferencesFilter) {
-      return
-    }
     let sorted = destinationsList
-    if (retreatPreferencesFilter.convenient_filter === -1) {
-      sorted = destinationsList.filter((val) =>
-        CONVENIENT_DESTINATIONS.includes(val.id)
-      )
-    } else if (retreatPreferencesFilter.convenient_filter === 1) {
-      sorted = destinationsList.filter((val) =>
-        EXOTIC_DESTINATIONS.includes(val.id)
-      )
+    if (retreatPreferencesFilter) {
+      if (retreatPreferencesFilter.convenient_filter === -1) {
+        sorted = destinationsList.filter((val) =>
+          CONVENIENT_DESTINATIONS.includes(val.id)
+        )
+      } else if (retreatPreferencesFilter.convenient_filter === 1) {
+        sorted = destinationsList.filter((val) =>
+          EXOTIC_DESTINATIONS.includes(val.id)
+        )
+      }
+      if (lastConvenientFilter === retreatPreferencesFilter.convenient_filter) {
+        shuffleArray(sorted)
+      }
+      setLastConvenientFilter(retreatPreferencesFilter.convenient_filter)
     }
-    if (lastConvenientFilter === retreatPreferencesFilter.convenient_filter) {
-      shuffleArray(sorted)
-    }
-    setLastConvenientFilter(retreatPreferencesFilter.convenient_filter)
     setSortedDestinationsList(sorted)
-  }, [retreatPreferencesFilter, setLastConvenientFilter])
+  }, [
+    retreatPreferencesFilter,
+    destinationsList.length,
+    setLastConvenientFilter,
+  ])
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
