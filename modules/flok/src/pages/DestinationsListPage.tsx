@@ -5,7 +5,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import DestinationsGrid from "../components/lodging/DestinationsGrid"
-import RetreatPreferences from "../components/lodging/RetreatPreferences"
+import {RetreatPreferencesSidebar} from "../components/lodging/RetreatPreferences"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -142,7 +142,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                 </Button>
               </PageOverlayFooterDefaultBody>
             }
-            right={<RetreatPreferences retreatGuid={retreatGuid} />}>
+            right={<RetreatPreferencesSidebar retreatGuid={retreatGuid} />}>
             <PageHeader
               preHeader={
                 <AppLodgingFlowTimeline currentStep="DESTINATION_SELECT" />

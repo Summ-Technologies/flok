@@ -9,22 +9,17 @@ import {updateRetreatFilterPreferences} from "../../store/actions/retreat"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
-  root: {
+  root: {},
+  sidebar: {
     padding: theme.spacing(2),
     paddingTop: theme.spacing(4),
-  },
-  convenienceButtonGroup: {
-    "& .MuiToggleButton-label": {
-      minWidth: "14ch",
-    },
-    "& .MuiToggleButton-root.Mui-selected": {
-      color: theme.palette.common.white,
-      backgroundColor: theme.palette.primary.main,
+    "& > *:not(:last-child)": {
+      marginBottom: theme.spacing(2),
     },
   },
-  workPlayButtonGroup: {
+  preferencesButtonGroup: {
     "& .MuiToggleButton-label": {
-      minWidth: "14ch",
+      minWidth: "16ch",
     },
     "& .MuiToggleButton-root.Mui-selected": {
       color: theme.palette.common.white,
@@ -38,6 +33,9 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       marginLeft: theme.spacing(1),
     },
+  },
+  sectionName: {
+    minWidth: 250,
   },
 }))
 
@@ -80,11 +78,6 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
       direction="column"
       justify="space-between">
       <Grid item xs={12} container spacing={4}>
-        <Grid item xs={12}>
-          <AppTypography variant="h2" align="center">
-            Retreat Preferences
-          </AppTypography>
-        </Grid>
         <Grid
           container
           spacing={2}
@@ -93,15 +86,10 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
           justify="space-between"
           item
           xs={12}>
-          <Grid item>
+          <Grid xs={12} md={3} item className={classes.sectionName}>
             <AppTypography variant="h4">Convenient vs. Exotic</AppTypography>
-            <AppTypography variant="body2" color="textSecondary">
-              Is it more important that your retreat is easy to get to, with
-              good infrastructure, and a hub airport? Or do you want to go to
-              white sand beaches, mountain tops, or other exotic options?
-            </AppTypography>
           </Grid>
-          <Grid item xs={12} container justify="center">
+          <Grid item xs={12} md="auto">
             <ToggleButtonGroup
               color="primary"
               exclusive
@@ -116,7 +104,7 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
                   )
                 }
               }}
-              className={classes.convenienceButtonGroup}>
+              className={classes.preferencesButtonGroup}>
               <ToggleButton value={-1}>Convenience</ToggleButton>
               <ToggleButton value={0}>No Preference</ToggleButton>
               <ToggleButton value={1}>Exotic</ToggleButton>
@@ -130,14 +118,10 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
           justify="space-between"
           item
           xs={12}>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={3} className={classes.sectionName}>
             <AppTypography variant="h4">Work vs. Play</AppTypography>
-            <AppTypography variant="body2" color="textSecondary">
-              Will your retreat be more about getting work done, or more about
-              having together as a team?
-            </AppTypography>
           </Grid>
-          <Grid item xs={12} container justify="center">
+          <Grid item xs={12} md="auto">
             <ToggleButtonGroup
               value={retreatPreferencesState.work_filter}
               onChange={(event, value: number) => {
@@ -151,7 +135,7 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
                 }
               }}
               exclusive
-              className={classes.workPlayButtonGroup}>
+              className={classes.preferencesButtonGroup}>
               <ToggleButton value={-1}>Work</ToggleButton>
               <ToggleButton value={0}>No Preference</ToggleButton>
               <ToggleButton value={1}>Social</ToggleButton>
@@ -165,14 +149,10 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
           justify="space-between"
           item
           xs={12}>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={3} className={classes.sectionName}>
             <AppTypography variant="h4">Budget</AppTypography>
-            <AppTypography variant="body2" color="textSecondary">
-              How much would you like to spend? Should we find you 5 star
-              resorts? Or something more budget concious?
-            </AppTypography>
           </Grid>
-          <Grid item xs={12} container justify="center">
+          <Grid item xs={12} md="auto">
             <ToggleButtonGroup
               value={retreatPreferencesState?.budget_filter}
               onChange={(event, value: number) => {
@@ -186,7 +166,7 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
                 }
               }}
               exclusive
-              className={classes.workPlayButtonGroup}>
+              className={classes.preferencesButtonGroup}>
               <ToggleButton value={-1}>Budget Conscious</ToggleButton>
               <ToggleButton value={0}>No Preference</ToggleButton>
               <ToggleButton value={1}>5 star</ToggleButton>
@@ -200,14 +180,10 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
           justify="space-between"
           item
           xs={12}>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={3} className={classes.sectionName}>
             <AppTypography variant="h4">Hotel Size</AppTypography>
-            <AppTypography variant="body2" color="textSecondary">
-              Do you want to stay in a large property with all the amenities? Or
-              something more boutiquey and intimate?
-            </AppTypography>
           </Grid>
-          <Grid item xs={12} container justify="center">
+          <Grid item xs={12} md="auto">
             <ToggleButtonGroup
               value={retreatPreferencesState.hotel_size_filter}
               onChange={(event, value: number) => {
@@ -222,7 +198,7 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
               }}
               exclusive
               color="primary"
-              className={classes.workPlayButtonGroup}>
+              className={classes.preferencesButtonGroup}>
               <ToggleButton value={-1}>Small</ToggleButton>
               <ToggleButton value={0}>No Preference</ToggleButton>
               <ToggleButton value={1}>Large</ToggleButton>
@@ -236,7 +212,7 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
           justify="space-between"
           item
           xs={12}>
-          <Grid item xs={12}>
+          <Grid item xs={12} className={classes.sectionName}>
             <AppTypography variant="h4">Other considerations</AppTypography>
           </Grid>
           <Grid
@@ -406,5 +382,15 @@ export default function RetreatPreferences(props: RetreatPreferencesProps) {
         </Grid>
       </Grid>
     </Grid>
+  )
+}
+
+export function RetreatPreferencesSidebar(props: RetreatPreferencesProps) {
+  let classes = useStyles()
+  return (
+    <div className={classes.sidebar}>
+      <AppTypography variant="h2">Retreat Preferences</AppTypography>
+      <RetreatPreferences {...props} />
+    </div>
   )
 }
