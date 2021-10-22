@@ -4,7 +4,7 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import DestinationsGrid from "../components/lodging/DestinationsGrid"
+import DestinationsList from "../components/lodging/DestinationsList"
 import {RetreatPreferencesSidebar} from "../components/lodging/RetreatPreferences"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
@@ -117,6 +117,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
       }
       setLastConvenientFilter(retreatPreferencesFilter.convenient_filter)
     }
+
     setSortedDestinationsList(sorted)
   }, [
     retreatPreferencesFilter,
@@ -150,8 +151,18 @@ function DestinationsListPage(props: DestinationsListPageProps) {
               header="Location"
               subheader="Finding the right destination is the first step to a planning a great retreat!"
             />
-            <DestinationsGrid
-              destinations={sortedDestinationsList}
+            <DestinationsList
+              destinations={sortedDestinationsList.sort((a, b) => {
+                let _a = 0
+                let _b = 0
+                if (isDestinationSelected(a)) {
+                  _a = 1
+                }
+                if (isDestinationSelected(b)) {
+                  _b = 1
+                }
+                return _b - _a
+              })}
               onExplore={explore}
               onSelect={toggleSelect}
               isSelected={isDestinationSelected}

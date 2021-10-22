@@ -9,7 +9,7 @@ import HotelGrid, {
   HotelGridFilters,
   HotelGridLocationFilterBody,
 } from "../components/lodging/HotelGrid"
-import RetreatPreferences from "../components/lodging/RetreatPreferences"
+import {RetreatPreferencesSidebar} from "../components/lodging/RetreatPreferences"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -217,7 +217,7 @@ function HotelsListPage(props: HotelsListPageProps) {
               </div>
             </PageOverlayFooterDefaultBody>
           }
-          right={<RetreatPreferences retreatGuid={retreatGuid} />}>
+          right={<RetreatPreferencesSidebar retreatGuid={retreatGuid} />}>
           <PageHeader
             header={`Lodging (${numHotels})`}
             subheader="Select some hotels to request a free proposal from!"
