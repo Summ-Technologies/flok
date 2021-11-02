@@ -26,3 +26,26 @@ export type RetreatModel = {
   selected_hotels_ids: number[]
   selected_hotels_proposals: RetreatSelectedHotelProposal[]
 }
+
+export type FilterAnswerModel = {
+  id: number
+  question_id: number
+  title: string
+  is_default_answer: boolean
+}
+
+export type FilterQuestionModel = {
+  id: number
+  title: string
+  more_info: string
+  is_multi_select: boolean
+  question_affinity: string
+  default_answer: FilterAnswerModel
+  answers: FilterAnswerModel[]
+}
+
+export type FilterResponseModel = {
+  id: number
+  retreat_id: number
+  answer_id: number
+}

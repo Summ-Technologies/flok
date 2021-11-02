@@ -8,7 +8,7 @@ import {
   getHotelById,
   getHotels,
 } from "../store/actions/lodging"
-import {getRetreat} from "../store/actions/retreat"
+import {getRetreat, getRetreatFilters} from "../store/actions/retreat"
 import {getAlgoliaFilterString} from "./algoliaUtils"
 
 // HOOKS
@@ -163,4 +163,20 @@ export class DestinationUtils {
       destination.state_abbreviation || destination.country
     }`
   }
+}
+
+export function useRetreatFilters(retreatGuid: string) {
+  let dispatch = useDispatch()
+  let questions = useSelector(
+    (state: RootState) => state.retreat.retreatFilterQuestions[retreatGuid]
+  )
+  let responses = useSelector(
+    (state: RootState) => state.retreat.retreatFilterResponses[retreatGuid]
+  )
+  useEffect(() => {
+    if (!questions || !responses) {
+      dispatch(getRetreatFilters(retreatGuid))
+    }
+  }, [questions, responses, retreatGuid, dispatch])
+  return [questions, responses] as const
 }

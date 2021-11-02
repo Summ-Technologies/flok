@@ -1,28 +1,39 @@
 import {Action} from "redux"
 import {Constants} from "../../config"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
-import {RetreatModel} from "../../models/retreat"
+import {RetreatFiltersApiResponse} from "../../models/api"
+import {
+  FilterQuestionModel,
+  FilterResponseModel,
+  RetreatModel,
+} from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
   DELETE_SELECTED_RETREAT_DESTINATION_REQUEST,
   DELETE_SELECTED_RETREAT_HOTEL_REQUEST,
   GET_RETREAT_FAILURE,
+  GET_RETREAT_FILTERS_SUCCESS,
   GET_RETREAT_SUCCESS,
   POST_ADVANCE_RETREAT_STATE_SUCCESS,
   POST_SELECTED_RETREAT_DESTINATION_FAILURE,
   POST_SELECTED_RETREAT_DESTINATION_REQUEST,
   POST_SELECTED_RETREAT_HOTEL_FAILURE,
   POST_SELECTED_RETREAT_HOTEL_REQUEST,
+  PUT_RETREAT_FILTERS_SUCCESS,
 } from "../actions/retreat"
 
 export type RetreatState = {
   retreats: {
     [guid: string]: RetreatModel | ResourceNotFoundType
   }
+  retreatFilterQuestions: {[guid: string]: FilterQuestionModel[] | undefined}
+  retreatFilterResponses: {[guid: string]: FilterResponseModel[] | undefined}
 }
 
 const initialState: RetreatState = {
   retreats: {},
+  retreatFilterQuestions: {},
+  retreatFilterResponses: {},
 }
 
 export default function retreatReducer(
@@ -148,6 +159,32 @@ export default function retreatReducer(
         }
       }
       return state
+    case GET_RETREAT_FILTERS_SUCCESS:
+    case PUT_RETREAT_FILTERS_SUCCESS:
+      meta = (action as unknown as {meta: {retreatGuid: string}}).meta
+      payload = (action as ApiAction).payload as RetreatFiltersApiResponse
+      let filterQuestions = payload.retreat_filter_questions
+      let filterResponses = payload.retreat_filter_responses
+      let newState = {...state}
+      if (filterQuestions) {
+        newState = {
+          ...newState,
+          retreatFilterQuestions: {
+            ...newState.retreatFilterQuestions,
+            [meta.retreatGuid]: filterQuestions,
+          },
+        }
+      }
+      if (filterResponses) {
+        newState = {
+          ...newState,
+          retreatFilterResponses: {
+            ...state.retreatFilterResponses,
+            [meta.retreatGuid]: filterResponses,
+          },
+        }
+      }
+      return newState
     default:
       return state
   }
