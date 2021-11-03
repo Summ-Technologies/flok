@@ -1,10 +1,14 @@
-import {Button} from "@material-ui/core"
+import {Button, Grid, Hidden} from "@material-ui/core"
 import {push} from "connected-react-router"
+import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
-import DestinationsGrid from "../components/lodging/DestinationsGrid"
+import {FiltersSection} from "../components/lodging/LodgingFilters"
+import {
+  AppDestinationListItem,
+  AppLodgingList,
+} from "../components/lodging/LodgingLists"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -20,7 +24,11 @@ import {
   postSelectedRetreatDestination,
 } from "../store/actions/retreat"
 import {convertGuid} from "../utils"
-import {useDestinations, useRetreat} from "../utils/lodgingUtils"
+import {
+  useDestinations,
+  useRetreat,
+  useRetreatFilters,
+} from "../utils/lodgingUtils"
 
 type DestinationsListPageProps = RouteComponentProps<{retreatGuid: string}>
 function DestinationsListPage(props: DestinationsListPageProps) {
@@ -32,6 +40,17 @@ function DestinationsListPage(props: DestinationsListPageProps) {
   // API data
   let retreat = useRetreat(retreatGuid)
   let destinationsList = Object.values(useDestinations()[0])
+
+  // Filters
+  let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
+  let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
+  useEffect(() => {
+    setSelectedResponsesIds(
+      filterResponses
+        ? filterResponses.map((resp) => resp.answer_id.toString())
+        : []
+    )
+  }, [filterResponses, setSelectedResponsesIds])
 
   // Selected destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
@@ -93,13 +112,6 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                   Next step
                 </Button>
               </PageOverlayFooterDefaultBody>
-            }
-            right={
-              <AppPageSpotlightImage
-                imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/acqualina_sidebar.png"
-                imageAlt="Acqualina beach front with red umbrellas and palm trees"
-                imagePosition="bottom-right"
-              />
             }>
             <PageHeader
               preHeader={
@@ -108,12 +120,35 @@ function DestinationsListPage(props: DestinationsListPageProps) {
               header="Location"
               subheader="Finding the right destination is the first step to a planning a great retreat!"
             />
-            <DestinationsGrid
-              destinations={destinationsList}
-              onExplore={explore}
-              onSelect={toggleSelect}
-              isSelected={isDestinationSelected}
-            />
+            <Grid container>
+              <Grid item xs={4}>
+                <Hidden smDown>
+                  <FiltersSection
+                    type={"LOCATION"}
+                    questions={
+                      filterQuestions?.filter(
+                        (ques) => ques.question_affinity === "LOCATION"
+                      ) ?? []
+                    }
+                    selectedResponsesIds={selectedResponsesIds}
+                    onSelect={() => undefined}
+                  />
+                </Hidden>
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <AppLodgingList>
+                  {destinationsList.map((dest) => (
+                    <AppDestinationListItem
+                      img={dest.spotlight_img.image_url}
+                      name={dest.location}
+                      subheader={`${dest.state}, ${dest.country_abbreviation} 🇺🇸`}
+                      onSelect={() => toggleSelect(dest)}
+                      tags={["tag 1", "tag 2"]}
+                    />
+                  ))}
+                </AppLodgingList>
+              </Grid>
+            </Grid>
           </PageOverlay>
         </PageContainer>
       )}

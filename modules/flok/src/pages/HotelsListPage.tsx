@@ -1,15 +1,14 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Button, Grid, Hidden, makeStyles} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
-import HotelGrid, {
-  HotelGridBudgetFilterBody,
-  HotelGridFilters,
-  HotelGridLocationFilterBody,
-} from "../components/lodging/HotelGrid"
+import {FiltersSection} from "../components/lodging/LodgingFilters"
+import {
+  AppHotelListItem,
+  AppLodgingList,
+} from "../components/lodging/LodgingLists"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -28,7 +27,13 @@ import {
   postSelectedRetreatHotel,
 } from "../store/actions/retreat"
 import {convertGuid, useQueryAsList} from "../utils"
-import {useDestinations, useHotels, useRetreat} from "../utils/lodgingUtils"
+import {
+  DestinationUtils,
+  useDestinations,
+  useHotels,
+  useRetreat,
+  useRetreatFilters,
+} from "../utils/lodgingUtils"
 
 let useStyles = makeStyles((theme) => ({
   ctaSection: {
@@ -116,6 +121,17 @@ function HotelsListPage(props: HotelsListPageProps) {
     setLocationFilterParam,
     locationFilterParam,
   ])
+
+  // Filters
+  let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
+  let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
+  useEffect(() => {
+    setSelectedResponsesIds(
+      filterResponses
+        ? filterResponses.map((resp) => resp.answer_id.toString())
+        : []
+    )
+  }, [filterResponses, setSelectedResponsesIds])
 
   // Hotels search state (algolia backed)
   const [hotels, numHotels, loading, hasMore, getMore] = useHotels(
@@ -216,69 +232,50 @@ function HotelsListPage(props: HotelsListPageProps) {
                 </Button>
               </div>
             </PageOverlayFooterDefaultBody>
-          }
-          right={
-            <AppPageSpotlightImage
-              imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
-              imageAlt="Fairmont Austin pool overview in the evening"
-              imagePosition="bottom-right"
-            />
           }>
           <PageHeader
             header={`Lodging (${numHotels})`}
             subheader="Select some hotels to request a free proposal from!"
             preHeader={<AppLodgingFlowTimeline currentStep="HOTEL_SELECT" />}
-            postHeader={
-              <HotelGridFilters
-                filters={[
-                  {
-                    filter: "Location",
-                    filterSelected: destinationFilter.length
-                      ? `${destinationFilter.length} selected`
-                      : undefined,
-                    popper: (
-                      <HotelGridLocationFilterBody
-                        locations={destinations}
-                        onClose={() => setLocationFilterOpen(false)}
-                        selected={destinationFilter}
-                        setSelected={(vals) =>
-                          setLocationFilterParam(
-                            vals.map((val) => val.toString())
+          />
+          <Grid container>
+            <Grid item xs={4}>
+              <Hidden smDown>
+                <FiltersSection
+                  type={"HOTEL"}
+                  questions={
+                    filterQuestions?.filter(
+                      (ques) => ques.question_affinity === "LOCATION"
+                    ) ?? []
+                  }
+                  selectedResponsesIds={selectedResponsesIds}
+                  onSelect={() => undefined}
+                />
+              </Hidden>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <AppLodgingList onReachEnd={onReachEnd}>
+                {hotels.map((hotel) => (
+                  <AppHotelListItem
+                    name={hotel.name}
+                    airportDistance={100}
+                    budget={hotel.price}
+                    img={hotel.spotlight_img.image_url}
+                    onSelect={() => toggleSelect(hotel)}
+                    numRooms={hotel.num_rooms}
+                    subheader={
+                      destinations[hotel.destination_id]
+                        ? DestinationUtils.getLocationName(
+                            destinations[hotel.destination_id]
                           )
-                        }
-                      />
-                    ),
-                    open: locationFilterOpen,
-                    toggleOpen: () => {
-                      setLocationFilterOpen(!locationFilterOpen)
-                    },
-                  },
-                  {
-                    filter: "Price",
-                    filterSelected: budgetFilter.length
-                      ? `${budgetFilter.length} selected`
-                      : undefined,
-                    popper: (
-                      <HotelGridBudgetFilterBody
-                        onClose={() => setPriceFilterOpen(false)}
-                        selected={budgetFilter}
-                        setSelected={(newVals) => setPriceFilterParam(newVals)}
-                      />
-                    ),
-                    open: priceFilterOpen,
-                    toggleOpen: () => setPriceFilterOpen(!priceFilterOpen),
-                  },
-                ]}
-              />
-            }
-          />
-          <HotelGrid
-            hotels={hotels}
-            onReachEnd={onReachEnd}
-            onExplore={explore}
-            onSelect={toggleSelect}
-            isSelected={isHotelSelected}
-          />
+                        : ""
+                    }
+                    tags={["this", "is", "a", "tag"]}
+                  />
+                ))}
+              </AppLodgingList>
+            </Grid>
+          </Grid>
           {loading && <>Loading</>}
         </PageOverlay>
       </PageContainer>

@@ -1,15 +1,18 @@
-import {Box, Grid, makeStyles} from "@material-ui/core"
+import {Box, Button, Grid, makeStyles} from "@material-ui/core"
+import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import {AppMultiSelect, AppSingleSelect} from "../components/base/AppFilters"
-import AppTypography from "../components/base/AppTypography"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
+import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
+import {FiltersSection} from "../components/lodging/LodgingFilters"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
+import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
+import {AppRoutes} from "../Stack"
 import {putRetreatFilters} from "../store/actions/retreat"
 import {convertGuid} from "../utils"
 import {useRetreat, useRetreatFilters} from "../utils/lodgingUtils"
@@ -65,12 +68,36 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
-      <PageContainer
-        backgroundImage={
-          "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
-        }>
+      <PageContainer>
         <PageBody>
-          <PageOverlay>
+          <PageOverlay
+            footerBody={
+              <PageOverlayFooterDefaultBody>
+                <div>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() =>
+                      dispatch(
+                        push(
+                          AppRoutes.getPath("DestinationsListPage", {
+                            retreatGuid,
+                          })
+                        )
+                      )
+                    }>
+                    Next step
+                  </Button>
+                </div>
+              </PageOverlayFooterDefaultBody>
+            }
+            right={
+              <AppPageSpotlightImage
+                imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
+                imageAlt="Fairmont Austin pool overview in the evening"
+                imagePosition="bottom-right"
+              />
+            }>
             <Box paddingBottom={4}>
               <PageHeader
                 preHeader={<AppLodgingFlowTimeline currentStep="INTAKE_2" />}
@@ -79,62 +106,26 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
               />
             </Box>
             <Grid container>
-              {filterQuestions &&
-                filterQuestions
-                  .filter((question) => !!question.is_multi_select)
-                  .map((filterQuestion) => {
-                    let options: {label: string; value: string}[] = []
-                    let selectedValues: string[] = []
-                    filterQuestion.answers.forEach((answer) => {
-                      let answerIdStr = answer.id.toString()
-                      options.push({label: answer.title, value: answerIdStr})
-                      if (selectedResponsesIds.includes(answerIdStr)) {
-                        selectedValues.push(answerIdStr)
-                      }
-                    })
-                    return (
-                      <Grid item xs={12} className={classes.filterSection}>
-                        <AppTypography variant="h4">
-                          {filterQuestion.title}
-                        </AppTypography>
-                        <AppMultiSelect
-                          onSelect={onSelect}
-                          selectedValues={selectedResponsesIds}
-                          options={options}
-                        />
-                      </Grid>
-                    )
-                  })}
-              {filterQuestions &&
-                filterQuestions
-                  .filter((question) => !question.is_multi_select)
-                  .map((filterQuestion) => {
-                    let options: {label: string; value: string}[] = []
-                    let selectedValues: string[] = []
-                    filterQuestion.answers.forEach((answer) => {
-                      let answerIdStr = answer.id.toString()
-                      options.push({label: answer.title, value: answerIdStr})
-                      if (selectedResponsesIds.includes(answerIdStr)) {
-                        selectedValues.push(answerIdStr)
-                      }
-                    })
-                    return (
-                      <Grid item xs={12} className={classes.filterSection}>
-                        <AppTypography variant="h4">
-                          {filterQuestion.title}
-                        </AppTypography>
-                        <AppSingleSelect
-                          onSelect={onSelect}
-                          selectedValue={
-                            options.filter((option) =>
-                              selectedResponsesIds.includes(option.value)
-                            )[0]?.value
-                          }
-                          options={options}
-                        />
-                      </Grid>
-                    )
-                  })}
+              <Grid item xs={12} md={6}>
+                <FiltersSection
+                  type="LOCATION"
+                  onSelect={onSelect}
+                  questions={(filterQuestions ?? []).filter(
+                    (question) => question.question_affinity === "LOCATION"
+                  )}
+                  selectedResponsesIds={selectedResponsesIds}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <FiltersSection
+                  type="HOTEL"
+                  onSelect={onSelect}
+                  questions={(filterQuestions ?? []).filter(
+                    (question) => question.question_affinity === "LODGING"
+                  )}
+                  selectedResponsesIds={selectedResponsesIds}
+                />
+              </Grid>
             </Grid>
           </PageOverlay>
         </PageBody>

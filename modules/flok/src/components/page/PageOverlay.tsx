@@ -48,8 +48,8 @@ export default function PageOverlay(props: PageOverlayProps) {
         item
         xs={12}
         sm={12}
-        md={props.size === "small" ? 6 : 9}
-        lg={props.size === "small" ? 5 : 7}
+        md={props.right ? (props.size === "small" ? 6 : 9) : undefined}
+        lg={props.right ? (props.size === "small" ? 5 : 7) : undefined}
         className={classes.overlay}>
         <div className={classes.overlayBody}>{props.children}</div>
         {props.footerBody ? (
