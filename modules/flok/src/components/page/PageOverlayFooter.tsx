@@ -8,7 +8,7 @@ let useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
     height: 90,
     width: "100%",
-    backgroundColor: theme.palette.grey[50],
+    backgroundColor: theme.palette.common.white,
     boxShadow: "-2px -2px 1px 1px rgba(0, 0, 0, 0.2)",
     zIndex: theme.zIndex.appBar,
   },

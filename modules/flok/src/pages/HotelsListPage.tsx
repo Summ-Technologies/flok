@@ -239,7 +239,6 @@ function HotelsListPage(props: HotelsListPageProps) {
                     airportDistance={100}
                     budget={hotel.price}
                     img={hotel.spotlight_img.image_url}
-                    onSelect={() => toggleSelect(hotel)}
                     numRooms={hotel.num_rooms}
                     subheader={
                       destinations[hotel.destination_id]
@@ -249,6 +248,8 @@ function HotelsListPage(props: HotelsListPageProps) {
                         : ""
                     }
                     tags={["this", "is", "a", "tag"]}
+                    onSelect={() => toggleSelect(hotel)}
+                    onExplore={() => explore(hotel)}
                   />
                 ))}
               </AppLodgingList>

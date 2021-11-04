@@ -1,4 +1,5 @@
-import {Checkbox, Chip, makeStyles, Paper} from "@material-ui/core"
+import {ButtonBase, Checkbox, Chip, makeStyles, Paper} from "@material-ui/core"
+import {ArrowRight} from "@material-ui/icons"
 import clsx from "clsx"
 import React, {PropsWithChildren, useEffect, useRef} from "react"
 import AppTypography from "../base/AppTypography"
@@ -47,6 +48,7 @@ export function AppLodgingList(props: AppLodgingListProps) {
 let useListItemStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
+    display: "flex",
     cursor: "pointer",
     "&:hover": {
       boxShadow: theme.shadows[4],
@@ -80,11 +82,21 @@ let useListItemStyles = makeStyles((theme) => ({
     outlineWidth: 1,
     outlineStyle: "solid",
   },
+  exploreArrow: {
+    width: 40,
+    "&:hover": {
+      backgroundColor: theme.palette.grey[200],
+    },
+    borderTopRightRadius: theme.shape.borderRadius,
+    borderBottomRightRadius: theme.shape.borderRadius,
+    marginLeft: "auto",
+  },
 }))
 
 type LodgingListItemProps = PropsWithChildren<{
   selected?: boolean
   onSelect: () => void
+  onExplore?: () => void
 }>
 
 function LodgingListItem(props: LodgingListItemProps) {
@@ -105,6 +117,11 @@ function LodgingListItem(props: LodgingListItemProps) {
         className={classes.checkbox}
       />
       {props.children}
+      {props.onExplore && (
+        <ButtonBase className={classes.exploreArrow} onClick={props.onSelect}>
+          <ArrowRight fontSize="large" />
+        </ButtonBase>
+      )}
     </Paper>
   )
 }
@@ -116,9 +133,6 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
-    "& > *:not(:first-child)": {
-      marginBottom: theme.spacing(1),
-    },
   },
   imgContainer: {
     height: 100,
@@ -137,13 +151,13 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
   body: {
     display: "flex",
     flexDirection: "column",
-    marginLeft: theme.spacing(2),
-    "& > *:not(:first-child)": {
+    height: "100%",
+    padding: theme.spacing(2),
+    "& > *:not(:first-child):not($tagsContainer)": {
       marginTop: theme.spacing(1),
     },
   },
   headerContainer: {
-    height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -151,7 +165,7 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
   },
   tagsContainer: {
     display: "flex",
-    height: "100%",
+    marginTop: "auto",
     alignItems: "center",
     "& > *:not(:first-child)": {
       marginLeft: theme.spacing(1),
@@ -208,7 +222,6 @@ let useHotelListItemStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
   },
   imgContainer: {
     marginLeft: theme.spacing(1),
@@ -229,14 +242,12 @@ let useHotelListItemStyles = makeStyles((theme) => ({
     flexDirection: "column",
     width: "100%",
     height: "100%",
-    justifyContent: "space-between",
-    marginLeft: theme.spacing(2),
-    "& > *:not(:first-child)": {
+    padding: theme.spacing(2),
+    "& > *:not(:first-child):not($tagsContainer)": {
       marginTop: theme.spacing(1),
     },
   },
   headerContainer: {
-    height: "100%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -262,6 +273,7 @@ let useHotelListItemStyles = makeStyles((theme) => ({
   },
   tagsContainer: {
     display: "flex",
+    marginTop: "auto",
     alignItems: "center",
     "& > *:not(:first-child)": {
       marginLeft: theme.spacing(0.5),
@@ -272,6 +284,7 @@ let useHotelListItemStyles = makeStyles((theme) => ({
 type AppHotelListItemProps = {
   selected?: boolean
   onSelect: () => void
+  onExplore: () => void
   img: string
   name: string
   subheader: string
@@ -288,7 +301,10 @@ export function AppHotelListItem(props: AppHotelListItemProps) {
     airportHours &&
     `${airportHours}${airportHours > 0 ? "h " : ""}${airportMins}m`
   return (
-    <LodgingListItem selected={props.selected} onSelect={props.onSelect}>
+    <LodgingListItem
+      selected={props.selected}
+      onSelect={props.onSelect}
+      onExplore={props.onExplore}>
       <div className={classes.root}>
         <div className={classes.imgContainer}>
           <img src={props.img} alt={`${props.name} spotlight`} />

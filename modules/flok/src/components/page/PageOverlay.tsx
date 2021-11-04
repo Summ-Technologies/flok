@@ -15,7 +15,6 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     borderTopRightRadius: theme.shape.borderRadius,
     borderBottomRightRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.common.white,
   },
   overlayBody: {
     [theme.breakpoints.down("xs")]: {
