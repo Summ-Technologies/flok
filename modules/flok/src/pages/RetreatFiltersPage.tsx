@@ -3,15 +3,17 @@ import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import {RetreatFilter} from "../components/base/AppFilters"
+import AppTypography from "../components/base/AppTypography"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
-import {FiltersSection} from "../components/lodging/LodgingFilters"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
+import {ResourceNotFound} from "../models"
 import {AppRoutes} from "../Stack"
 import {putRetreatFilters} from "../store/actions/retreat"
 import {convertGuid} from "../utils"
@@ -22,6 +24,10 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(2),
+    },
+    marginBottom: theme.spacing(3),
   },
 }))
 
@@ -103,28 +109,43 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
                 preHeader={<AppLodgingFlowTimeline currentStep="INTAKE_2" />}
                 header="Let's Get Started"
                 subheader="We need just a few details to plan your perfect retreat."
+                retreat={
+                  retreat && retreat !== ResourceNotFound ? retreat : undefined
+                }
               />
             </Box>
             <Grid container>
-              <Grid item xs={12} md={6}>
-                <FiltersSection
-                  type="LOCATION"
-                  onSelect={onSelect}
-                  questions={(filterQuestions ?? []).filter(
-                    (question) => question.question_affinity === "LOCATION"
-                  )}
-                  selectedResponsesIds={selectedResponsesIds}
-                />
+              <Grid item xs={12} md={6} className={classes.filterSection}>
+                <AppTypography variant="h3" underline>
+                  Location Preferences
+                </AppTypography>
+                {(
+                  filterQuestions?.filter(
+                    (ques) => ques.question_affinity === "LOCATION"
+                  ) ?? []
+                ).map((question) => (
+                  <RetreatFilter
+                    filterQuestion={question}
+                    selectedResponsesIds={selectedResponsesIds}
+                    onSelect={() => undefined}
+                  />
+                ))}
               </Grid>
-              <Grid item xs={12} md={6}>
-                <FiltersSection
-                  type="HOTEL"
-                  onSelect={onSelect}
-                  questions={(filterQuestions ?? []).filter(
-                    (question) => question.question_affinity === "LODGING"
-                  )}
-                  selectedResponsesIds={selectedResponsesIds}
-                />
+              <Grid item xs={12} md={6} className={classes.filterSection}>
+                <AppTypography variant="h3" underline>
+                  Hotel Preferences
+                </AppTypography>
+                {(
+                  filterQuestions?.filter(
+                    (ques) => ques.question_affinity === "LODGING"
+                  ) ?? []
+                ).map((question) => (
+                  <RetreatFilter
+                    filterQuestion={question}
+                    selectedResponsesIds={selectedResponsesIds}
+                    onSelect={() => undefined}
+                  />
+                ))}
               </Grid>
             </Grid>
           </PageOverlay>

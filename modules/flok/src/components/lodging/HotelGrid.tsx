@@ -9,7 +9,6 @@ import {
 import {useEffect, useRef} from "react"
 import {BudgetType, DestinationModel, HotelModel} from "../../models/lodging"
 import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
-import AppFilter, {AppFilterProps} from "../base/AppFilter"
 import {AppSliderInput} from "../base/AppSliderInputs"
 import AppTypography from "../base/AppTypography"
 import AppHotelCard from "./AppHotelCard"
@@ -100,16 +99,10 @@ const useFilterStyles = makeStyles((theme: Theme) => ({
     },
   },
 }))
-type HotelGridFiltersProps = {filters: AppFilterProps[]}
+type HotelGridFiltersProps = {filters: []}
 export function HotelGridFilters(props: HotelGridFiltersProps) {
   let classes = useFilterStyles(props)
-  return (
-    <div className={classes.root}>
-      {props.filters.map((filter) => {
-        return <AppFilter {...filter} />
-      })}
-    </div>
-  )
+  return <div className={classes.root}>{props.filters.map((filter) => {})}</div>
 }
 
 const useFilterBodyStyles = makeStyles((theme: Theme) => ({
@@ -153,12 +146,6 @@ export function HotelGridLocationFilterBody(props: {
   let classes = useFilterBodyStyles(props)
   return (
     <Paper className={classes.root}>
-      <AppTypography
-        className={classes.header}
-        variant="body1"
-        fontWeight="bold">
-        Destinations
-      </AppTypography>
       <div className={classes.checkBoxOptionList}>
         {props.locations.map((curr) => (
           <div className={classes.checkBoxOption}>

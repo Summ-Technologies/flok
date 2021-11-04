@@ -3,8 +3,9 @@ import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import PopperFilter, {RetreatFilter} from "../components/base/AppFilters"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import {FiltersSection} from "../components/lodging/LodgingFilters"
+import {HotelGridLocationFilterBody} from "../components/lodging/HotelGrid"
 import {
   AppHotelListItem,
   AppLodgingList,
@@ -16,7 +17,7 @@ import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
-import {BudgetType, BudgetTypeVals, HotelModel} from "../models/lodging"
+import {BudgetType, HotelModel} from "../models/lodging"
 import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
@@ -26,7 +27,7 @@ import {
   postAdvanceRetreatState,
   postSelectedRetreatHotel,
 } from "../store/actions/retreat"
-import {convertGuid, useQueryAsList} from "../utils"
+import {convertGuid} from "../utils"
 import {
   DestinationUtils,
   useDestinations,
@@ -54,9 +55,6 @@ function HotelsListPage(props: HotelsListPageProps) {
 
   // Path and query params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let [locationFilterParam, setLocationFilterParam] =
-    useQueryAsList("locations")
-  let [priceFilterParam, setPriceFilterParam] = useQueryAsList("price")
 
   let retreat = useRetreat(retreatGuid)
   let destinations = Object.values(useDestinations()[0])
@@ -80,49 +78,11 @@ function HotelsListPage(props: HotelsListPageProps) {
     return selectedHotelIds.includes(hotel.id)
   }
 
-  // Local filter state
+  // Filters
   let [destinationFilter, setDestinationFilter] = useState<number[]>([])
   let [budgetFilter, setBudgetFilter] = useState<BudgetType[]>([])
-
-  // Filters active state
   let [locationFilterOpen, setLocationFilterOpen] = useState(false)
-  let [priceFilterOpen, setPriceFilterOpen] = useState(false)
 
-  // Update local state to match query params
-  useEffect(() => {
-    setDestinationFilter(
-      locationFilterParam
-        .map((strVal) => parseInt(strVal))
-        .filter((intVal) => !isNaN(intVal))
-    )
-  }, [locationFilterParam])
-  useEffect(() => {
-    setBudgetFilter(
-      priceFilterParam.filter((val) =>
-        BudgetTypeVals.includes(val)
-      ) as BudgetType[]
-    )
-  }, [priceFilterParam])
-
-  // On page load filters logic
-  let [initLocationFilter, setInitLocationFilter] = useState(false)
-  useEffect(() => {
-    if (!initLocationFilter && retreat) {
-      if (locationFilterParam.length === 0) {
-        setLocationFilterParam(selectedDestinationIds.map((x) => x.toString()))
-      }
-      setInitLocationFilter(true)
-    }
-  }, [
-    retreat,
-    selectedDestinationIds,
-    setInitLocationFilter,
-    initLocationFilter,
-    setLocationFilterParam,
-    locationFilterParam,
-  ])
-
-  // Filters
   let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
   let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
   useEffect(() => {
@@ -237,20 +197,38 @@ function HotelsListPage(props: HotelsListPageProps) {
             header={`Lodging (${numHotels})`}
             subheader="Select some hotels to request a free proposal from!"
             preHeader={<AppLodgingFlowTimeline currentStep="HOTEL_SELECT" />}
+            retreat={
+              retreat && retreat !== ResourceNotFound ? retreat : undefined
+            }
           />
           <Grid container>
             <Grid item xs={4}>
               <Hidden smDown>
-                <FiltersSection
-                  type={"HOTEL"}
-                  questions={
-                    filterQuestions?.filter(
-                      (ques) => ques.question_affinity === "LOCATION"
-                    ) ?? []
+                <PopperFilter
+                  open={locationFilterOpen}
+                  toggleOpen={() => setLocationFilterOpen(!locationFilterOpen)}
+                  title={"Destinations"}
+                  popper={
+                    <HotelGridLocationFilterBody
+                      locations={destinations}
+                      onClose={() => setLocationFilterOpen(false)}
+                      selected={selectedDestinationIds}
+                      setSelected={() => undefined}
+                    />
                   }
-                  selectedResponsesIds={selectedResponsesIds}
-                  onSelect={() => undefined}
+                  filter={`${selectedDestinationIds.length} selected`}
                 />
+                {(
+                  filterQuestions?.filter(
+                    (ques) => ques.question_affinity === "LOCATION"
+                  ) ?? []
+                ).map((question) => (
+                  <RetreatFilter
+                    filterQuestion={question}
+                    selectedResponsesIds={selectedResponsesIds}
+                    onSelect={() => undefined}
+                  />
+                ))}
               </Hidden>
             </Grid>
             <Grid item xs={12} md={8}>

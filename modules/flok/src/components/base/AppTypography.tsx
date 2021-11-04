@@ -21,6 +21,8 @@ let useStyles = makeStyles((theme) => ({
       props.italic ? "italic" : undefined,
     textDecoration: (props: AppTypographyProps) =>
       props.underline ? "underline" : undefined,
+    textTransform: (props: AppTypographyProps) =>
+      props.uppercase ? "uppercase" : undefined,
   },
 }))
 
@@ -28,6 +30,7 @@ interface AppTypographyProps extends TypographyProps {
   fontWeight?: "light" | "regular" | "medium" | "bold"
   italic?: boolean
   underline?: boolean
+  uppercase?: boolean
 }
 
 export default function AppTypography(props: AppTypographyProps) {

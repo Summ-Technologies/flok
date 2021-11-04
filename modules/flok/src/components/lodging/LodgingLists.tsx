@@ -1,5 +1,5 @@
-import {Chip, makeStyles, Paper} from "@material-ui/core"
-import {CheckCircle} from "@material-ui/icons"
+import {Checkbox, Chip, makeStyles, Paper} from "@material-ui/core"
+import clsx from "clsx"
 import React, {PropsWithChildren, useEffect, useRef} from "react"
 import AppTypography from "../base/AppTypography"
 
@@ -44,12 +44,74 @@ export function AppLodgingList(props: AppLodgingListProps) {
   )
 }
 
-let useDestinationListItemStyles = makeStyles((theme) => ({
+let useListItemStyles = makeStyles((theme) => ({
   root: {
+    position: "relative",
     cursor: "pointer",
     "&:hover": {
       boxShadow: theme.shadows[4],
     },
+    borderRadius: theme.shape.borderRadius,
+    width: "100%",
+    border: (props: LodgingListItemProps) =>
+      props.selected ? `solid 2px ${theme.palette.primary.main}` : undefined,
+  },
+  checkbox: {
+    position: "absolute",
+    top: theme.spacing(2),
+    left: theme.spacing(2),
+    height: 16,
+    width: 16,
+    padding: 0,
+  },
+  checkboxIcon: {
+    height: 16,
+    width: 16,
+    borderWidth: 2,
+    backgroundColor: "rgba(255, 255, 255, .5)",
+    borderColor: "rgba(255, 255, 255, .8)",
+    borderStyle: "solid",
+    borderRadius: 3,
+  },
+  checkboxCheckedIcon: {
+    backgroundColor: theme.palette.primary.main,
+    borderColor: theme.palette.common.white,
+    outlineColor: theme.palette.primary.main,
+    outlineWidth: 1,
+    outlineStyle: "solid",
+  },
+}))
+
+type LodgingListItemProps = PropsWithChildren<{
+  selected?: boolean
+  onSelect: () => void
+}>
+
+function LodgingListItem(props: LodgingListItemProps) {
+  let classes = useListItemStyles(props)
+  return (
+    <Paper className={classes.root}>
+      <Checkbox
+        disableRipple
+        size="small"
+        icon={<span className={classes.checkboxIcon} />}
+        checkedIcon={
+          <span
+            className={clsx(classes.checkboxIcon, classes.checkboxCheckedIcon)}
+          />
+        }
+        checked={props.selected === true}
+        onChange={props.onSelect}
+        className={classes.checkbox}
+      />
+      {props.children}
+    </Paper>
+  )
+}
+
+let useDestinationListItemStyles = makeStyles((theme) => ({
+  root: {
+    cursor: "pointer",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -60,12 +122,24 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
   },
   imgContainer: {
     height: 100,
-    width: 150,
+    width: 133,
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
     "& img": {
+      borderRadius: theme.shape.borderRadius,
       objectFit: "cover",
       verticalAlign: "center",
       height: "100%",
       width: "100%",
+    },
+  },
+  body: {
+    display: "flex",
+    flexDirection: "column",
+    marginLeft: theme.spacing(2),
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(1),
     },
   },
   headerContainer: {
@@ -73,15 +147,14 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    marginLeft: theme.spacing(1),
     width: 200,
   },
   tagsContainer: {
     display: "flex",
     height: "100%",
     alignItems: "center",
-    "& > *": {
-      margin: theme.spacing(0.5),
+    "& > *:not(:first-child)": {
+      marginLeft: theme.spacing(1),
     },
   },
   checkContainer: {
@@ -91,19 +164,6 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
     justifyContent: "flex-end",
     marginLeft: "auto",
     marginRight: theme.spacing(2),
-  },
-  budgetColumn: {width: 80},
-  roomsColumn: {
-    width: 100,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  airportColumn: {
-    width: 140,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
   },
 }))
 
@@ -118,31 +178,96 @@ type AppDestinationListItemProps = {
 export function AppDestinationListItem(props: AppDestinationListItemProps) {
   let classes = useDestinationListItemStyles(props)
   return (
-    <Paper className={classes.root} onClick={props.onSelect}>
-      <div className={classes.imgContainer}>
-        <img src={props.img} alt={`${props.name} spotlight`} />
-      </div>
-      <div className={classes.headerContainer}>
-        <AppTypography variant="body2" color="textSecondary">
-          {props.subheader ? props.subheader : "\u00A0"}
-        </AppTypography>
-        <AppTypography variant="h4">
-          {props.name ? props.name : "\u00A0"}
-        </AppTypography>
-      </div>
-      <div className={classes.tagsContainer}>
-        {props.tags.map((label) => (
-          <Chip label={label} />
-        ))}
-      </div>
-      {props.selected && (
-        <div className={classes.checkContainer}>
-          <CheckCircle color="primary" />
+    <LodgingListItem selected={props.selected} onSelect={props.onSelect}>
+      <div className={classes.root}>
+        <div className={classes.imgContainer}>
+          <img src={props.img} alt={`${props.name} spotlight`} />
         </div>
-      )}
-    </Paper>
+        <div className={classes.body}>
+          <div className={classes.headerContainer}>
+            <AppTypography variant="body2" color="textSecondary">
+              {props.subheader ? props.subheader : "\u00A0"}
+            </AppTypography>
+            <AppTypography variant="h4">
+              {props.name ? props.name : "\u00A0"}
+            </AppTypography>
+          </div>
+          <div className={classes.tagsContainer}>
+            {props.tags.map((label) => (
+              <Chip size="small" label={label} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </LodgingListItem>
   )
 }
+
+let useHotelListItemStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+  },
+  imgContainer: {
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    height: 150,
+    width: 220,
+    "& img": {
+      borderRadius: theme.shape.borderRadius,
+      objectFit: "cover",
+      verticalAlign: "center",
+      height: "100%",
+      width: "100%",
+    },
+  },
+  body: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    height: "100%",
+    justifyContent: "space-between",
+    marginLeft: theme.spacing(2),
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(1),
+    },
+  },
+  headerContainer: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    width: 200,
+  },
+  attributesContainer: {
+    display: "flex",
+    flexDirection: "row",
+    "& > *:not(:first-child)": {
+      marginLeft: theme.spacing(1),
+    },
+  },
+  attributeTag: {
+    borderRadius: theme.shape.borderRadius,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    padding: theme.spacing(0.5),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    backgroundColor: theme.palette.grey[300], // matching chip default background color
+  },
+  tagsContainer: {
+    display: "flex",
+    alignItems: "center",
+    "& > *:not(:first-child)": {
+      marginLeft: theme.spacing(0.5),
+    },
+  },
+}))
 
 type AppHotelListItemProps = {
   selected?: boolean
@@ -156,50 +281,60 @@ type AppHotelListItemProps = {
   tags: string[]
 }
 export function AppHotelListItem(props: AppHotelListItemProps) {
-  let classes = useDestinationListItemStyles(props)
+  let classes = useHotelListItemStyles(props)
   let airportHours = Math.floor(props.airportDistance / 60)
   let airportMins = props.airportDistance % 60
   let airportTime =
     airportHours &&
-    `${airportHours} hr${airportHours > 1 ? "s " : " "} ${airportMins} mins`
+    `${airportHours}${airportHours > 0 ? "h " : ""}${airportMins}m`
   return (
-    <Paper className={classes.root} onClick={props.onSelect}>
-      <div className={classes.imgContainer}>
-        <img src={props.img} alt={`${props.name} spotlight`} />
-      </div>
-      <div className={classes.headerContainer}>
-        <AppTypography variant="body2" color="textSecondary">
-          {props.subheader ? props.subheader : "\u00A0"}
-        </AppTypography>
-        <AppTypography variant="h4">
-          {props.name ? props.name : "\u00A0"}
-        </AppTypography>
-      </div>
-      <div className={classes.budgetColumn}>
-        <AppTypography variant="body1">{props.budget}</AppTypography>
-      </div>
-      <div className={classes.roomsColumn}>
-        <AppTypography variant="body2" noWrap>
-          Num rooms
-        </AppTypography>
-        <AppTypography variant="body1">{props.numRooms}</AppTypography>
-      </div>
-      <div className={classes.airportColumn}>
-        <AppTypography variant="body2" noWrap>
-          Distance to airport
-        </AppTypography>
-        <AppTypography variant="body1">{airportTime}</AppTypography>
-      </div>
-      <div className={classes.tagsContainer}>
-        {props.tags.map((label) => (
-          <Chip label={label} />
-        ))}
-      </div>
-      {props.selected && (
-        <div className={classes.checkContainer}>
-          <CheckCircle color="primary" />
+    <LodgingListItem selected={props.selected} onSelect={props.onSelect}>
+      <div className={classes.root}>
+        <div className={classes.imgContainer}>
+          <img src={props.img} alt={`${props.name} spotlight`} />
         </div>
-      )}
-    </Paper>
+        <div className={classes.body}>
+          <div className={classes.headerContainer}>
+            <AppTypography variant="body2" color="textSecondary">
+              {props.subheader ? props.subheader : "\u00A0"}
+            </AppTypography>
+            <AppTypography variant="h4">
+              {props.name ? props.name : "\u00A0"}
+            </AppTypography>
+          </div>
+          <div className={classes.attributesContainer}>
+            <div className={classes.attributeTag}>
+              <AppTypography variant="body2" noWrap uppercase>
+                Budget
+              </AppTypography>
+              <AppTypography variant="body1" fontWeight="bold">
+                {props.budget}
+              </AppTypography>
+            </div>
+            <div className={classes.attributeTag}>
+              <AppTypography variant="body2" noWrap uppercase>
+                Rooms
+              </AppTypography>
+              <AppTypography variant="body1" fontWeight="bold">
+                {props.numRooms}
+              </AppTypography>
+            </div>
+            <div className={classes.attributeTag}>
+              <AppTypography variant="body2" noWrap uppercase>
+                Distance to airport
+              </AppTypography>
+              <AppTypography variant="body1" fontWeight="bold">
+                {airportTime}
+              </AppTypography>
+            </div>
+          </div>
+          <div className={classes.tagsContainer}>
+            {props.tags.map((label) => (
+              <Chip size="small" label={label} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </LodgingListItem>
   )
 }

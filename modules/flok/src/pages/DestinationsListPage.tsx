@@ -3,8 +3,8 @@ import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import {RetreatFilter} from "../components/base/AppFilters"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import {FiltersSection} from "../components/lodging/LodgingFilters"
 import {
   AppDestinationListItem,
   AppLodgingList,
@@ -65,16 +65,6 @@ function DestinationsListPage(props: DestinationsListPageProps) {
   }
 
   // action handlers
-  function explore(destination: DestinationModel) {
-    dispatch(
-      push(
-        AppRoutes.getPath("DestinationPage", {
-          retreatGuid: retreatGuid,
-          destinationGuid: destination.guid,
-        })
-      )
-    )
-  }
   function toggleSelect(destination: DestinationModel) {
     if (isDestinationSelected(destination)) {
       dispatch(deleteSelectedRetreatDestination(retreatGuid, destination.id))
@@ -119,20 +109,22 @@ function DestinationsListPage(props: DestinationsListPageProps) {
               }
               header="Location"
               subheader="Finding the right destination is the first step to a planning a great retreat!"
+              retreat={retreat !== ResourceNotFound ? retreat : undefined}
             />
             <Grid container>
               <Grid item xs={4}>
                 <Hidden smDown>
-                  <FiltersSection
-                    type={"LOCATION"}
-                    questions={
-                      filterQuestions?.filter(
-                        (ques) => ques.question_affinity === "LOCATION"
-                      ) ?? []
-                    }
-                    selectedResponsesIds={selectedResponsesIds}
-                    onSelect={() => undefined}
-                  />
+                  {(
+                    filterQuestions?.filter(
+                      (ques) => ques.question_affinity === "LODGING"
+                    ) ?? []
+                  ).map((question) => (
+                    <RetreatFilter
+                      filterQuestion={question}
+                      selectedResponsesIds={selectedResponsesIds}
+                      onSelect={() => undefined}
+                    />
+                  ))}
                 </Hidden>
               </Grid>
               <Grid item xs={12} md={8}>
