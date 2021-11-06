@@ -26,6 +26,7 @@ import {
   deleteSelectedRetreatHotel,
   postAdvanceRetreatState,
   postSelectedRetreatHotel,
+  putRetreatFilters,
 } from "../store/actions/retreat"
 import {convertGuid} from "../utils"
 import {
@@ -43,6 +44,14 @@ let useStyles = makeStyles((theme) => ({
     alignItems: "center",
     "& > :not(:first-child)": {
       marginLeft: theme.spacing(1),
+    },
+  },
+  filterSection: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(2),
     },
   },
 }))
@@ -139,7 +148,9 @@ function HotelsListPage(props: HotelsListPageProps) {
   function onClickNextStep() {
     if (retreat && retreat !== ResourceNotFound) {
       if (selectedHotelIds.length >= Constants.minHotelsSelected) {
-        dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+        if (retreat.state === "HOTEL_SELECT") {
+          dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+        }
         dispatch(
           push(
             AppRoutes.getPath("HotelProposalWaitingPage", {
@@ -159,6 +170,15 @@ function HotelsListPage(props: HotelsListPageProps) {
         )
       }
     }
+  }
+
+  function onUpdateFilters(values: string[]) {
+    dispatch(
+      putRetreatFilters(
+        retreatGuid,
+        values.map((val) => parseInt(val))
+      )
+    )
   }
 
   return (
@@ -204,31 +224,35 @@ function HotelsListPage(props: HotelsListPageProps) {
           <Grid container>
             <Grid item xs={4}>
               <Hidden smDown>
-                <PopperFilter
-                  open={locationFilterOpen}
-                  toggleOpen={() => setLocationFilterOpen(!locationFilterOpen)}
-                  title={"Destinations"}
-                  popper={
-                    <HotelGridLocationFilterBody
-                      locations={destinations}
-                      onClose={() => setLocationFilterOpen(false)}
-                      selected={selectedDestinationIds}
-                      setSelected={() => undefined}
-                    />
-                  }
-                  filter={`${selectedDestinationIds.length} selected`}
-                />
-                {(
-                  filterQuestions?.filter(
-                    (ques) => ques.question_affinity === "LOCATION"
-                  ) ?? []
-                ).map((question) => (
-                  <RetreatFilter
-                    filterQuestion={question}
-                    selectedResponsesIds={selectedResponsesIds}
-                    onSelect={() => undefined}
+                <div className={classes.filterSection}>
+                  <PopperFilter
+                    open={locationFilterOpen}
+                    toggleOpen={() =>
+                      setLocationFilterOpen(!locationFilterOpen)
+                    }
+                    title={"Destinations"}
+                    popper={
+                      <HotelGridLocationFilterBody
+                        locations={destinations}
+                        onClose={() => setLocationFilterOpen(false)}
+                        selected={selectedDestinationIds}
+                        setSelected={() => undefined}
+                      />
+                    }
+                    filter={`${selectedDestinationIds.length} selected`}
                   />
-                ))}
+                  {(
+                    filterQuestions?.filter(
+                      (ques) => ques.question_affinity === "LODGING"
+                    ) ?? []
+                  ).map((question) => (
+                    <RetreatFilter
+                      filterQuestion={question}
+                      selectedResponsesIds={selectedResponsesIds}
+                      onSelect={onUpdateFilters}
+                    />
+                  ))}
+                </div>
               </Hidden>
             </Grid>
             <Grid item xs={12} md={8}>
@@ -250,6 +274,7 @@ function HotelsListPage(props: HotelsListPageProps) {
                     tags={["this", "is", "a", "tag"]}
                     onSelect={() => toggleSelect(hotel)}
                     onExplore={() => explore(hotel)}
+                    selected={isHotelSelected(hotel)}
                   />
                 ))}
               </AppLodgingList>

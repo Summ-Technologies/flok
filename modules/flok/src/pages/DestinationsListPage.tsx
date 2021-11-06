@@ -1,4 +1,4 @@
-import {Button, Grid, Hidden} from "@material-ui/core"
+import {Button, Grid, Hidden, makeStyles} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
@@ -22,6 +22,7 @@ import {
   deleteSelectedRetreatDestination,
   postAdvanceRetreatState,
   postSelectedRetreatDestination,
+  putRetreatFilters,
 } from "../store/actions/retreat"
 import {convertGuid} from "../utils"
 import {
@@ -30,9 +31,22 @@ import {
   useRetreatFilters,
 } from "../utils/lodgingUtils"
 
+let useStyles = makeStyles((theme) => ({
+  filterSection: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(2),
+    },
+    marginBottom: theme.spacing(3),
+  },
+}))
+
 type DestinationsListPageProps = RouteComponentProps<{retreatGuid: string}>
 function DestinationsListPage(props: DestinationsListPageProps) {
   let dispatch = useDispatch()
+  let classes = useStyles(props)
 
   // Query/path params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
@@ -73,7 +87,11 @@ function DestinationsListPage(props: DestinationsListPageProps) {
     }
   }
   function onClickNextSteps() {
-    if (retreat && retreat !== ResourceNotFound) {
+    if (
+      retreat &&
+      retreat !== ResourceNotFound &&
+      retreat.state === "DESTINATION_SELECT"
+    ) {
       dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
     }
     dispatch(
@@ -81,6 +99,15 @@ function DestinationsListPage(props: DestinationsListPageProps) {
         AppRoutes.getPath("HotelsListPage", {
           retreatGuid: props.match.params.retreatGuid,
         })
+      )
+    )
+  }
+
+  function onUpdateFilters(values: string[]) {
+    dispatch(
+      putRetreatFilters(
+        retreatGuid,
+        values.map((val) => parseInt(val))
       )
     )
   }
@@ -114,30 +141,36 @@ function DestinationsListPage(props: DestinationsListPageProps) {
             <Grid container>
               <Grid item xs={4}>
                 <Hidden smDown>
-                  {(
-                    filterQuestions?.filter(
-                      (ques) => ques.question_affinity === "LODGING"
-                    ) ?? []
-                  ).map((question) => (
-                    <RetreatFilter
-                      filterQuestion={question}
-                      selectedResponsesIds={selectedResponsesIds}
-                      onSelect={() => undefined}
-                    />
-                  ))}
+                  <div className={classes.filterSection}>
+                    {(
+                      filterQuestions?.filter(
+                        (ques) => ques.question_affinity === "LOCATION"
+                      ) ?? []
+                    ).map((question) => (
+                      <RetreatFilter
+                        filterQuestion={question}
+                        selectedResponsesIds={selectedResponsesIds}
+                        onSelect={onUpdateFilters}
+                      />
+                    ))}
+                  </div>
                 </Hidden>
               </Grid>
               <Grid item xs={12} md={8}>
                 <AppLodgingList>
-                  {destinationsList.map((dest) => (
-                    <AppDestinationListItem
-                      img={dest.spotlight_img.image_url}
-                      name={dest.location}
-                      subheader={`${dest.state}, ${dest.country_abbreviation} 🇺🇸`}
-                      onSelect={() => toggleSelect(dest)}
-                      tags={["tag 1", "tag 2"]}
-                    />
-                  ))}
+                  {destinationsList.map((dest) => {
+                    return (
+                      <AppDestinationListItem
+                        key={dest.id}
+                        img={dest.spotlight_img.image_url}
+                        name={dest.location}
+                        subheader={`${dest.state}, ${dest.country_abbreviation} 🇺🇸`}
+                        onSelect={() => toggleSelect(dest)}
+                        tags={["tag 1", "tag 2"]}
+                        selected={isDestinationSelected(dest)}
+                      />
+                    )
+                  })}
                 </AppLodgingList>
               </Grid>
             </Grid>

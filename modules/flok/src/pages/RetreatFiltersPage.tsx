@@ -1,4 +1,4 @@
-import {Box, Button, Grid, makeStyles} from "@material-ui/core"
+import {Button, Grid, makeStyles} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
@@ -52,24 +52,13 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
     )
   }, [filterResponses, setSelectedResponsesIds])
 
-  function onSelect(val: string) {
-    if (selectedResponsesIds.includes(val)) {
-      dispatch(
-        putRetreatFilters(
-          retreatGuid,
-          selectedResponsesIds
-            .filter((id) => id !== val)
-            .map((id) => parseInt(id))
-        )
+  function onSelect(values: string[]) {
+    dispatch(
+      putRetreatFilters(
+        retreatGuid,
+        values.map((val) => parseInt(val))
       )
-    } else {
-      dispatch(
-        putRetreatFilters(retreatGuid, [
-          ...selectedResponsesIds.map((id) => parseInt(id)),
-          parseInt(val),
-        ])
-      )
-    }
+    )
   }
 
   return (
@@ -104,16 +93,14 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
                 imagePosition="bottom-right"
               />
             }>
-            <Box paddingBottom={4}>
-              <PageHeader
-                preHeader={<AppLodgingFlowTimeline currentStep="INTAKE_2" />}
-                header="Let's Get Started"
-                subheader="We need just a few details to plan your perfect retreat."
-                retreat={
-                  retreat && retreat !== ResourceNotFound ? retreat : undefined
-                }
-              />
-            </Box>
+            <PageHeader
+              preHeader={<AppLodgingFlowTimeline currentStep="FILTER_SELECT" />}
+              header="Tell us about your perfect retreat"
+              subheader="We’ve planned dozens of retreats, and these questions come up a lot."
+              retreat={
+                retreat && retreat !== ResourceNotFound ? retreat : undefined
+              }
+            />
             <Grid container>
               <Grid item xs={12} md={6} className={classes.filterSection}>
                 <AppTypography variant="h3" underline>
@@ -127,7 +114,7 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
                   <RetreatFilter
                     filterQuestion={question}
                     selectedResponsesIds={selectedResponsesIds}
-                    onSelect={() => undefined}
+                    onSelect={onSelect}
                   />
                 ))}
               </Grid>
@@ -143,7 +130,7 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
                   <RetreatFilter
                     filterQuestion={question}
                     selectedResponsesIds={selectedResponsesIds}
-                    onSelect={() => undefined}
+                    onSelect={onSelect}
                   />
                 ))}
               </Grid>

@@ -96,7 +96,7 @@ let useFilterStyles = makeStyles((theme) => ({
 type RetreatFilterProps = {
   filterQuestion: FilterQuestionModel
   selectedResponsesIds: string[]
-  onSelect: (value: string) => void
+  onSelect: (newValues: string[]) => void
 }
 
 export function RetreatFilter(props: RetreatFilterProps) {
@@ -110,6 +110,27 @@ export function RetreatFilter(props: RetreatFilterProps) {
       selectedValues.push(answerIdStr)
     }
   })
+
+  function onSelect(val: string) {
+    if (props.filterQuestion.is_multi_select) {
+      if (props.selectedResponsesIds.includes(val)) {
+        props.onSelect(props.selectedResponsesIds.filter((id) => id !== val))
+      } else {
+        props.onSelect([...props.selectedResponsesIds.map((id) => id), val])
+      }
+    } else {
+      let answerIds = props.filterQuestion.answers.map((ans) =>
+        ans.id.toString()
+      )
+      props.onSelect([
+        ...props.selectedResponsesIds
+          .filter((id) => !answerIds.includes(id))
+          .map((id) => id),
+        val,
+      ])
+    }
+  }
+
   return (
     <div className={classes.root}>
       <AppTypography variant="h4">
@@ -122,17 +143,27 @@ export function RetreatFilter(props: RetreatFilterProps) {
       </AppTypography>
       {props.filterQuestion.is_multi_select ? (
         <AppMultiSelect
-          onSelect={props.onSelect}
+          onSelect={onSelect}
           selectedValues={props.selectedResponsesIds}
           options={options}
         />
       ) : (
         <AppSingleSelect
-          onSelect={props.onSelect}
+          onSelect={onSelect}
           selectedValue={
             options.filter((option) =>
               props.selectedResponsesIds.includes(option.value)
-            )[0]?.value
+            )[0]
+              ? options.filter((option) =>
+                  props.selectedResponsesIds.includes(option.value)
+                )[0].value
+              : props.filterQuestion.answers.filter(
+                  (ans) => ans.is_default_answer
+                )[0]
+              ? props.filterQuestion.answers
+                  .filter((ans) => ans.is_default_answer)[0]
+                  .id.toString()
+              : ""
           }
           options={options}
         />

@@ -56,7 +56,9 @@ let useListItemStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     width: "100%",
     border: (props: LodgingListItemProps) =>
-      props.selected ? `solid 2px ${theme.palette.primary.main}` : undefined,
+      props.selected ? `solid 1px ${theme.palette.primary.main}` : "",
+    boxShadow: (props: LodgingListItemProps) =>
+      props.selected ? theme.shadows[2] : "",
   },
   checkbox: {
     position: "absolute",
@@ -102,7 +104,7 @@ type LodgingListItemProps = PropsWithChildren<{
 function LodgingListItem(props: LodgingListItemProps) {
   let classes = useListItemStyles(props)
   return (
-    <Paper className={classes.root}>
+    <Paper className={classes.root} onClick={props.onSelect}>
       <Checkbox
         disableRipple
         size="small"
@@ -113,12 +115,16 @@ function LodgingListItem(props: LodgingListItemProps) {
           />
         }
         checked={props.selected === true}
-        onChange={props.onSelect}
         className={classes.checkbox}
       />
       {props.children}
       {props.onExplore && (
-        <ButtonBase className={classes.exploreArrow} onClick={props.onSelect}>
+        <ButtonBase
+          className={classes.exploreArrow}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (props.onExplore) props.onExplore()
+          }}>
           <ArrowRight fontSize="large" />
         </ButtonBase>
       )}
@@ -199,7 +205,7 @@ export function AppDestinationListItem(props: AppDestinationListItemProps) {
         </div>
         <div className={classes.body}>
           <div className={classes.headerContainer}>
-            <AppTypography variant="body2" color="textSecondary">
+            <AppTypography variant="body2" color="textSecondary" uppercase>
               {props.subheader ? props.subheader : "\u00A0"}
             </AppTypography>
             <AppTypography variant="h4">
@@ -311,7 +317,7 @@ export function AppHotelListItem(props: AppHotelListItemProps) {
         </div>
         <div className={classes.body}>
           <div className={classes.headerContainer}>
-            <AppTypography variant="body2" color="textSecondary">
+            <AppTypography variant="body2" color="textSecondary" uppercase>
               {props.subheader ? props.subheader : "\u00A0"}
             </AppTypography>
             <AppTypography variant="h4">

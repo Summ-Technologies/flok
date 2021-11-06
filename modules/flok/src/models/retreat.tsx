@@ -12,6 +12,7 @@ export type RetreatSelectedHotelProposal = {
 export type RetreatProgressState =
   | "INTAKE_1"
   | "INTAKE_2"
+  | "FILTER_SELECT"
   | "DESTINATION_SELECT"
   | "HOTEL_SELECT"
   | "PROPOSAL"
@@ -40,7 +41,6 @@ export type FilterQuestionModel = {
   more_info: string
   is_multi_select: boolean
   question_affinity: string
-  default_answer: FilterAnswerModel
   answers: FilterAnswerModel[]
 }
 
