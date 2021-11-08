@@ -284,9 +284,13 @@ function HotelsListPage(props: HotelsListPageProps) {
                     img={hotel.spotlight_img.image_url}
                     numRooms={hotel.num_rooms}
                     subheader={
-                      destinations[hotel.destination_id]
+                      destinations.filter(
+                        (dest) => dest.id === hotel.destination_id
+                      )[0]
                         ? DestinationUtils.getLocationName(
-                            destinations[hotel.destination_id]
+                            destinations.filter(
+                              (dest) => dest.id === hotel.destination_id
+                            )[0]
                           )
                         : ""
                     }
