@@ -33,7 +33,10 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
         ~{numAttendees} attendees
       </AppTypography>
       <AppTypography variant="body1">
-        <Link href={AppRoutes.getPath("RetreatPreferencesFormPage")}>
+        <Link
+          href={AppRoutes.getPath("RetreatPreferencesFormPage", {
+            retreatGuid: props.retreat.guid,
+          })}>
           Change
         </Link>
       </AppTypography>
