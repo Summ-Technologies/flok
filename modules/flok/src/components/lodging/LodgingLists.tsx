@@ -2,6 +2,7 @@ import {ButtonBase, Checkbox, Chip, makeStyles, Paper} from "@material-ui/core"
 import {ArrowRight} from "@material-ui/icons"
 import clsx from "clsx"
 import React, {PropsWithChildren, useEffect, useRef} from "react"
+import {HotelUtils} from "../../utils/lodgingUtils"
 import AppTypography from "../base/AppTypography"
 
 let useLodgingListStyles = makeStyles((theme) => ({
@@ -208,7 +209,7 @@ export function AppDestinationListItem(props: AppDestinationListItemProps) {
             <AppTypography variant="body2" color="textSecondary" uppercase>
               {props.subheader ? props.subheader : "\u00A0"}
             </AppTypography>
-            <AppTypography variant="h4">
+            <AppTypography variant="h4" noWrap>
               {props.name ? props.name : "\u00A0"}
             </AppTypography>
           </div>
@@ -294,18 +295,14 @@ type AppHotelListItemProps = {
   img: string
   name: string
   subheader: string
-  airportDistance: number
+  airportDistance?: number
   budget: string
   numRooms: number
   tags: string[]
 }
 export function AppHotelListItem(props: AppHotelListItemProps) {
   let classes = useHotelListItemStyles(props)
-  let airportHours = Math.floor(props.airportDistance / 60)
-  let airportMins = props.airportDistance % 60
-  let airportTime =
-    airportHours &&
-    `${airportHours}${airportHours > 0 ? "h " : ""}${airportMins}m`
+
   return (
     <LodgingListItem
       selected={props.selected}
@@ -317,10 +314,14 @@ export function AppHotelListItem(props: AppHotelListItemProps) {
         </div>
         <div className={classes.body}>
           <div className={classes.headerContainer}>
-            <AppTypography variant="body2" color="textSecondary" uppercase>
+            <AppTypography
+              variant="body2"
+              color="textSecondary"
+              uppercase
+              noWrap>
               {props.subheader ? props.subheader : "\u00A0"}
             </AppTypography>
-            <AppTypography variant="h4">
+            <AppTypography variant="h4" noWrap>
               {props.name ? props.name : "\u00A0"}
             </AppTypography>
           </div>
@@ -341,14 +342,16 @@ export function AppHotelListItem(props: AppHotelListItemProps) {
                 {props.numRooms}
               </AppTypography>
             </div>
-            <div className={classes.attributeTag}>
-              <AppTypography variant="body2" noWrap uppercase>
-                Distance to airport
-              </AppTypography>
-              <AppTypography variant="body1" fontWeight="bold">
-                {airportTime}
-              </AppTypography>
-            </div>
+            {props.airportDistance ? (
+              <div className={classes.attributeTag}>
+                <AppTypography variant="body2" noWrap uppercase>
+                  Airport distance
+                </AppTypography>
+                <AppTypography variant="body1" fontWeight="bold">
+                  {HotelUtils.getAirportTravelTime(props.airportDistance)}
+                </AppTypography>
+              </div>
+            ) : undefined}
           </div>
           <div className={classes.tagsContainer}>
             {props.tags.map((label) => (

@@ -12,8 +12,9 @@ export const GET_DESTINATIONS = "GET_DESTINATIONS"
 export type GetDestinationsAction = {
   type: typeof GET_DESTINATIONS
   destinations: DestinationModel[]
+  filterKey: string
 }
-export function getDestinations() {
+export function getDestinations(filter: string) {
   return async (
     dispatch: ThunkDispatch<any, any, any>,
     getState: () => RootState
@@ -21,12 +22,15 @@ export function getDestinations() {
     let destinationsIndex = AlgoliaClient.getDestinationsIndex()
     try {
       let response = await destinationsIndex.search<DestinationModel>("", {
-        hitsPerPage: 50,
+        filters: filter || undefined,
+        sumOrFiltersScores: true,
+        hitsPerPage: 100,
       })
       if (response) {
         dispatch({
           type: GET_DESTINATIONS,
           destinations: response.hits,
+          filterKey: filter,
         })
       }
     } catch (err) {
@@ -55,6 +59,7 @@ export function getHotels(filter: string, page: number = 0) {
       let response = await hotelsIndex.search<HotelModel>("", {
         filters: filter || undefined,
         page: page || undefined,
+        sumOrFiltersScores: true,
       })
       if (response) {
         dispatch({

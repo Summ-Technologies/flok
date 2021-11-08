@@ -32,6 +32,7 @@ export type FilterAnswerModel = {
   id: number
   question_id: number
   title: string
+  algolia_filter: string
   is_default_answer: boolean
 }
 

@@ -3,9 +3,11 @@ import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import PopperFilter, {RetreatFilter} from "../components/base/AppFilters"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import {HotelGridLocationFilterBody} from "../components/lodging/HotelGrid"
+import PopperFilter, {
+  HotelGridLocationFilterBody,
+  RetreatFilter,
+} from "../components/lodging/LodgingFilters"
 import {
   AppHotelListItem,
   AppLodgingList,
@@ -17,14 +19,17 @@ import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
-import {BudgetType, HotelModel} from "../models/lodging"
+import {HotelModel} from "../models/lodging"
+import {FilterAnswerModel} from "../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {
+  deleteSelectedRetreatDestination,
   deleteSelectedRetreatHotel,
   postAdvanceRetreatState,
+  postSelectedRetreatDestination,
   postSelectedRetreatHotel,
   putRetreatFilters,
 } from "../store/actions/retreat"
@@ -88,8 +93,6 @@ function HotelsListPage(props: HotelsListPageProps) {
   }
 
   // Filters
-  let [destinationFilter, setDestinationFilter] = useState<number[]>([])
-  let [budgetFilter, setBudgetFilter] = useState<BudgetType[]>([])
   let [locationFilterOpen, setLocationFilterOpen] = useState(false)
 
   let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
@@ -104,8 +107,15 @@ function HotelsListPage(props: HotelsListPageProps) {
 
   // Hotels search state (algolia backed)
   const [hotels, numHotels, loading, hasMore, getMore] = useHotels(
-    destinationFilter,
-    budgetFilter
+    selectedResponsesIds.map((id) => parseInt(id)),
+    filterQuestions
+      ? filterQuestions
+          .filter((ques) => ques.question_affinity === "LODGING")
+          .reduce((prev, resp) => {
+            return [...prev, ...resp.answers]
+          }, [] as FilterAnswerModel[])
+      : [],
+    selectedDestinationIds
   )
 
   // Actions
@@ -139,6 +149,15 @@ function HotelsListPage(props: HotelsListPageProps) {
       }
     }
   }
+
+  function toggleDestinationSelect(destinationId: number) {
+    if (selectedDestinationIds.includes(destinationId)) {
+      dispatch(deleteSelectedRetreatDestination(retreatGuid, destinationId))
+    } else {
+      dispatch(postSelectedRetreatDestination(retreatGuid, destinationId))
+    }
+  }
+
   function onReachEnd() {
     if (hasMore) {
       getMore()
@@ -236,7 +255,7 @@ function HotelsListPage(props: HotelsListPageProps) {
                         locations={destinations}
                         onClose={() => setLocationFilterOpen(false)}
                         selected={selectedDestinationIds}
-                        setSelected={() => undefined}
+                        toggleSelect={toggleDestinationSelect}
                       />
                     }
                     filter={`${selectedDestinationIds.length} selected`}
@@ -260,7 +279,7 @@ function HotelsListPage(props: HotelsListPageProps) {
                 {hotels.map((hotel) => (
                   <AppHotelListItem
                     name={hotel.name}
-                    airportDistance={100}
+                    airportDistance={hotel.airport_travel_time}
                     budget={hotel.price}
                     img={hotel.spotlight_img.image_url}
                     numRooms={hotel.num_rooms}
@@ -271,7 +290,11 @@ function HotelsListPage(props: HotelsListPageProps) {
                           )
                         : ""
                     }
-                    tags={["this", "is", "a", "tag"]}
+                    tags={
+                      hotel.lodging_tags
+                        ? hotel.lodging_tags.map((tag) => tag.name)
+                        : []
+                    }
                     onSelect={() => toggleSelect(hotel)}
                     onExplore={() => explore(hotel)}
                     selected={isHotelSelected(hotel)}

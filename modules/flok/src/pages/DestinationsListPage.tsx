@@ -3,8 +3,8 @@ import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import {RetreatFilter} from "../components/base/AppFilters"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
+import {RetreatFilter} from "../components/lodging/LodgingFilters"
 import {
   AppDestinationListItem,
   AppLodgingList,
@@ -16,6 +16,7 @@ import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {ResourceNotFound} from "../models"
 import {DestinationModel} from "../models/lodging"
+import {FilterAnswerModel} from "../models/retreat"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {
@@ -26,7 +27,7 @@ import {
 } from "../store/actions/retreat"
 import {convertGuid} from "../utils"
 import {
-  useDestinations,
+  useFilteredDestinations,
   useRetreat,
   useRetreatFilters,
 } from "../utils/lodgingUtils"
@@ -36,6 +37,15 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(2),
+    },
+    marginBottom: theme.spacing(3),
+  },
+  filterSectionMobile: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     "& > *:not(:first-child)": {
       marginTop: theme.spacing(2),
     },
@@ -51,10 +61,6 @@ function DestinationsListPage(props: DestinationsListPageProps) {
   // Query/path params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
 
-  // API data
-  let retreat = useRetreat(retreatGuid)
-  let destinationsList = Object.values(useDestinations()[0])
-
   // Filters
   let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
   let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
@@ -65,6 +71,19 @@ function DestinationsListPage(props: DestinationsListPageProps) {
         : []
     )
   }, [filterResponses, setSelectedResponsesIds])
+
+  // API data
+  let retreat = useRetreat(retreatGuid)
+  let destinationsList = useFilteredDestinations(
+    selectedResponsesIds.map((id) => parseInt(id)),
+    filterQuestions
+      ? filterQuestions
+          .filter((ques) => ques.question_affinity === "LOCATION")
+          .reduce((prev, resp) => {
+            return [...prev, ...resp.answers]
+          }, [] as FilterAnswerModel[])
+      : []
+  )
 
   // Selected destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
@@ -166,7 +185,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                         name={dest.location}
                         subheader={`${dest.state}, ${dest.country_abbreviation} 🇺🇸`}
                         onSelect={() => toggleSelect(dest)}
-                        tags={["tag 1", "tag 2"]}
+                        tags={dest.lodging_tags.map((tag) => tag.name)}
                         selected={isDestinationSelected(dest)}
                       />
                     )

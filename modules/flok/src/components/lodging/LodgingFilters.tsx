@@ -1,35 +1,44 @@
 import {
+  Button,
+  Checkbox,
   Chip,
   ClickAwayListener,
+  ListItemText,
   makeStyles,
+  Paper,
   Popper,
   Tooltip,
 } from "@material-ui/core"
 import {ArrowDropDown, ArrowDropUp, Info} from "@material-ui/icons"
 import {ToggleButtonGroup} from "@material-ui/lab"
 import React, {useRef} from "react"
+import {DestinationModel} from "../../models/lodging"
 import {FilterQuestionModel} from "../../models/retreat"
-import AppTypography from "./AppTypography"
+import {DestinationUtils} from "../../utils/lodgingUtils"
+import AppTypography from "../base/AppTypography"
 
 let useMultiSelectStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     flexWrap: "wrap",
-    "& > *:not(:first-child)": {
-      marginLeft: theme.spacing(1),
+    "& > *": {
+      marginBottom: theme.spacing(1),
+    },
+    "& > *:not(:last-child)": {
+      marginRight: theme.spacing(1),
     },
   },
 }))
 
-type AppMultiSelectProps = {
+type LodgingMultiSelectProps = {
   options: {value: string; label: string}[]
   selectedValues: string[]
   onSelect: (value: string) => void
 }
-export function AppMultiSelect(props: AppMultiSelectProps) {
+export function LodgingMultiSelect(props: LodgingMultiSelectProps) {
   let classes = useMultiSelectStyles(props)
   return (
     <div className={classes.root}>
@@ -53,13 +62,13 @@ let useSingleSelectStyles = makeStyles((theme) => ({
   root: {},
 }))
 
-type AppSingleSelectProps = {
+type LodgingSingleSelectProps = {
   options: {value: string; label: string}[]
   selectedValue: string
   onSelect: (value: string) => void
 }
 
-export function AppSingleSelect(props: AppSingleSelectProps) {
+export function LodgingSingleSelect(props: LodgingSingleSelectProps) {
   let classes = useSingleSelectStyles(props)
   return (
     <ToggleButtonGroup className={classes.root}>
@@ -142,13 +151,13 @@ export function RetreatFilter(props: RetreatFilterProps) {
         )}
       </AppTypography>
       {props.filterQuestion.is_multi_select ? (
-        <AppMultiSelect
+        <LodgingMultiSelect
           onSelect={onSelect}
           selectedValues={props.selectedResponsesIds}
           options={options}
         />
       ) : (
-        <AppSingleSelect
+        <LodgingSingleSelect
           onSelect={onSelect}
           selectedValue={
             options.filter((option) =>
@@ -172,14 +181,14 @@ export function RetreatFilter(props: RetreatFilterProps) {
   )
 }
 
-export type AppFilterProps = {
+export type LodgingFilterProps = {
   title: string
   filter: string
   open?: boolean
   toggleOpen: () => void
   popper: JSX.Element
 }
-export default function PopperFilter(props: AppFilterProps) {
+export default function PopperFilter(props: LodgingFilterProps) {
   let classes = useFilterStyles(props)
   let btnRef = useRef<HTMLDivElement>(null)
 
@@ -211,5 +220,80 @@ export default function PopperFilter(props: AppFilterProps) {
         </ClickAwayListener>
       ) : undefined}
     </div>
+  )
+}
+
+const useFilterBodyStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    padding: theme.spacing(2),
+    minWidth: 200,
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  header: {
+    width: "100%",
+    textAlign: "left",
+  },
+  checkBoxOptionList: {
+    width: "100%",
+    maxHeight: 300,
+    overflow: "auto",
+  },
+  checkBoxOption: {
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    width: "100%",
+  },
+  ctaContainer: {
+    display: "flex",
+    width: "100%",
+    "& > *:not(:first-child)": {
+      marginLeft: theme.spacing(1),
+    },
+  },
+}))
+
+export function HotelGridLocationFilterBody(props: {
+  locations: DestinationModel[]
+  selected: number[]
+  toggleSelect: (selected: number) => void
+  onClose: () => void
+}) {
+  let classes = useFilterBodyStyles(props)
+  return (
+    <Paper className={classes.root}>
+      <div className={classes.checkBoxOptionList}>
+        {props.locations.map((curr) => (
+          <div className={classes.checkBoxOption}>
+            <Checkbox
+              color="primary"
+              checked={props.selected.includes(curr.id)}
+              onChange={() => props.toggleSelect(curr.id)}
+            />
+            <ListItemText primary={DestinationUtils.getLocationName(curr)} />
+          </div>
+        ))}
+      </div>
+      <div className={classes.ctaContainer}>
+        <Button
+          size="small"
+          variant="outlined"
+          disabled={props.selected.length === 0}
+          onClick={() =>
+            props.selected.forEach((id) => props.toggleSelect(id))
+          }>
+          Clear
+        </Button>
+        <Button
+          size="small"
+          variant="contained"
+          color="primary"
+          onClick={props.onClose}>
+          Done
+        </Button>
+      </div>
+    </Paper>
   )
 }
