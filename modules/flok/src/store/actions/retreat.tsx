@@ -264,3 +264,57 @@ export function deleteSelectedRetreatHotel(
     ],
   })
 }
+
+export const GET_RETREAT_FILTERS_REQUEST = "GET_RETREAT_FILTERS_REQUEST"
+export const GET_RETREAT_FILTERS_SUCCESS = "GET_RETREAT_FILTERS_SUCCESS"
+export const GET_RETREAT_FILTERS_FAILURE = "GET_RETREAT_FILTERS_FAILURE"
+export function getRetreatFilters(retreatGuid: string) {
+  let endpoint = `/v1.0/retreats/${retreatGuid}/filters`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {
+        type: GET_RETREAT_FILTERS_REQUEST,
+        meta: {retreatGuid},
+      },
+      {
+        type: GET_RETREAT_FILTERS_SUCCESS,
+        meta: {retreatGuid},
+      },
+      {
+        type: GET_RETREAT_FILTERS_FAILURE,
+        meta: {retreatGuid},
+      },
+    ],
+  })
+}
+
+export const PUT_RETREAT_FILTERS_REQUEST = "PUT_RETREAT_FILTERS_REQUEST"
+export const PUT_RETREAT_FILTERS_SUCCESS = "PUT_RETREAT_FILTERS_SUCCESS"
+export const PUT_RETREAT_FILTERS_FAILURE = "PUT_RETREAT_FILTERS_FAILURE"
+export function putRetreatFilters(
+  retreatGuid: string,
+  selectedAnswerIds: number[]
+) {
+  let endpoint = `/v1.0/retreats/${retreatGuid}/filters`
+  return createApiAction({
+    method: "PUT",
+    body: JSON.stringify({filter_responses_ids: selectedAnswerIds}),
+    endpoint,
+    types: [
+      {
+        type: PUT_RETREAT_FILTERS_REQUEST,
+        meta: {retreatGuid},
+      },
+      {
+        type: PUT_RETREAT_FILTERS_SUCCESS,
+        meta: {retreatGuid},
+      },
+      {
+        type: PUT_RETREAT_FILTERS_FAILURE,
+        meta: {retreatGuid},
+      },
+    ],
+  })
+}

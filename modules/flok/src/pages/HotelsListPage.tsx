@@ -1,15 +1,17 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Button, Grid, Hidden, makeStyles} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
-import HotelGrid, {
-  HotelGridBudgetFilterBody,
-  HotelGridFilters,
+import PopperFilter, {
   HotelGridLocationFilterBody,
-} from "../components/lodging/HotelGrid"
+  RetreatFilter,
+} from "../components/lodging/LodgingFilters"
+import {
+  AppHotelListItem,
+  AppLodgingList,
+} from "../components/lodging/LodgingLists"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -17,18 +19,28 @@ import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
-import {BudgetType, BudgetTypeVals, HotelModel} from "../models/lodging"
+import {HotelModel} from "../models/lodging"
+import {FilterAnswerModel} from "../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {
+  deleteSelectedRetreatDestination,
   deleteSelectedRetreatHotel,
   postAdvanceRetreatState,
+  postSelectedRetreatDestination,
   postSelectedRetreatHotel,
+  putRetreatFilters,
 } from "../store/actions/retreat"
-import {convertGuid, useQueryAsList} from "../utils"
-import {useDestinations, useHotels, useRetreat} from "../utils/lodgingUtils"
+import {convertGuid} from "../utils"
+import {
+  DestinationUtils,
+  useDestinations,
+  useHotels,
+  useRetreat,
+  useRetreatFilters,
+} from "../utils/lodgingUtils"
 
 let useStyles = makeStyles((theme) => ({
   ctaSection: {
@@ -37,6 +49,14 @@ let useStyles = makeStyles((theme) => ({
     alignItems: "center",
     "& > :not(:first-child)": {
       marginLeft: theme.spacing(1),
+    },
+  },
+  filterSection: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(2),
     },
   },
 }))
@@ -49,9 +69,6 @@ function HotelsListPage(props: HotelsListPageProps) {
 
   // Path and query params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let [locationFilterParam, setLocationFilterParam] =
-    useQueryAsList("locations")
-  let [priceFilterParam, setPriceFilterParam] = useQueryAsList("price")
 
   let retreat = useRetreat(retreatGuid)
   let destinations = Object.values(useDestinations()[0])
@@ -75,52 +92,30 @@ function HotelsListPage(props: HotelsListPageProps) {
     return selectedHotelIds.includes(hotel.id)
   }
 
-  // Local filter state
-  let [destinationFilter, setDestinationFilter] = useState<number[]>([])
-  let [budgetFilter, setBudgetFilter] = useState<BudgetType[]>([])
-
-  // Filters active state
+  // Filters
   let [locationFilterOpen, setLocationFilterOpen] = useState(false)
-  let [priceFilterOpen, setPriceFilterOpen] = useState(false)
 
-  // Update local state to match query params
+  let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
+  let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
   useEffect(() => {
-    setDestinationFilter(
-      locationFilterParam
-        .map((strVal) => parseInt(strVal))
-        .filter((intVal) => !isNaN(intVal))
+    setSelectedResponsesIds(
+      filterResponses
+        ? filterResponses.map((resp) => resp.answer_id.toString())
+        : []
     )
-  }, [locationFilterParam])
-  useEffect(() => {
-    setBudgetFilter(
-      priceFilterParam.filter((val) =>
-        BudgetTypeVals.includes(val)
-      ) as BudgetType[]
-    )
-  }, [priceFilterParam])
-
-  // On page load filters logic
-  let [initLocationFilter, setInitLocationFilter] = useState(false)
-  useEffect(() => {
-    if (!initLocationFilter && retreat) {
-      if (locationFilterParam.length === 0) {
-        setLocationFilterParam(selectedDestinationIds.map((x) => x.toString()))
-      }
-      setInitLocationFilter(true)
-    }
-  }, [
-    retreat,
-    selectedDestinationIds,
-    setInitLocationFilter,
-    initLocationFilter,
-    setLocationFilterParam,
-    locationFilterParam,
-  ])
+  }, [filterResponses, setSelectedResponsesIds])
 
   // Hotels search state (algolia backed)
   const [hotels, numHotels, loading, hasMore, getMore] = useHotels(
-    destinationFilter,
-    budgetFilter
+    selectedResponsesIds.map((id) => parseInt(id)),
+    filterQuestions
+      ? filterQuestions
+          .filter((ques) => ques.question_affinity === "LODGING")
+          .reduce((prev, resp) => {
+            return [...prev, ...resp.answers]
+          }, [] as FilterAnswerModel[])
+      : [],
+    selectedDestinationIds
   )
 
   // Actions
@@ -154,6 +149,15 @@ function HotelsListPage(props: HotelsListPageProps) {
       }
     }
   }
+
+  function toggleDestinationSelect(destinationId: number) {
+    if (selectedDestinationIds.includes(destinationId)) {
+      dispatch(deleteSelectedRetreatDestination(retreatGuid, destinationId))
+    } else {
+      dispatch(postSelectedRetreatDestination(retreatGuid, destinationId))
+    }
+  }
+
   function onReachEnd() {
     if (hasMore) {
       getMore()
@@ -163,7 +167,9 @@ function HotelsListPage(props: HotelsListPageProps) {
   function onClickNextStep() {
     if (retreat && retreat !== ResourceNotFound) {
       if (selectedHotelIds.length >= Constants.minHotelsSelected) {
-        dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+        if (retreat.state === "HOTEL_SELECT") {
+          dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+        }
         dispatch(
           push(
             AppRoutes.getPath("HotelProposalWaitingPage", {
@@ -183,6 +189,15 @@ function HotelsListPage(props: HotelsListPageProps) {
         )
       }
     }
+  }
+
+  function onUpdateFilters(values: string[]) {
+    dispatch(
+      putRetreatFilters(
+        retreatGuid,
+        values.map((val) => parseInt(val))
+      )
+    )
   }
 
   return (
@@ -216,69 +231,78 @@ function HotelsListPage(props: HotelsListPageProps) {
                 </Button>
               </div>
             </PageOverlayFooterDefaultBody>
-          }
-          right={
-            <AppPageSpotlightImage
-              imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
-              imageAlt="Fairmont Austin pool overview in the evening"
-              imagePosition="bottom-right"
-            />
           }>
           <PageHeader
             header={`Lodging (${numHotels})`}
             subheader="Select some hotels to request a free proposal from!"
             preHeader={<AppLodgingFlowTimeline currentStep="HOTEL_SELECT" />}
-            postHeader={
-              <HotelGridFilters
-                filters={[
-                  {
-                    filter: "Location",
-                    filterSelected: destinationFilter.length
-                      ? `${destinationFilter.length} selected`
-                      : undefined,
-                    popper: (
+            retreat={
+              retreat && retreat !== ResourceNotFound ? retreat : undefined
+            }
+          />
+          <Grid container>
+            <Grid item xs={4}>
+              <Hidden smDown>
+                <div className={classes.filterSection}>
+                  <PopperFilter
+                    open={locationFilterOpen}
+                    toggleOpen={() =>
+                      setLocationFilterOpen(!locationFilterOpen)
+                    }
+                    title={"Destinations"}
+                    popper={
                       <HotelGridLocationFilterBody
                         locations={destinations}
                         onClose={() => setLocationFilterOpen(false)}
-                        selected={destinationFilter}
-                        setSelected={(vals) =>
-                          setLocationFilterParam(
-                            vals.map((val) => val.toString())
+                        selected={selectedDestinationIds}
+                        toggleSelect={toggleDestinationSelect}
+                      />
+                    }
+                    filter={`${selectedDestinationIds.length} selected`}
+                  />
+                  {(
+                    filterQuestions?.filter(
+                      (ques) => ques.question_affinity === "LODGING"
+                    ) ?? []
+                  ).map((question) => (
+                    <RetreatFilter
+                      filterQuestion={question}
+                      selectedResponsesIds={selectedResponsesIds}
+                      onSelect={onUpdateFilters}
+                    />
+                  ))}
+                </div>
+              </Hidden>
+            </Grid>
+            <Grid item xs={12} md={8}>
+              <AppLodgingList onReachEnd={onReachEnd}>
+                {hotels.map((hotel) => (
+                  <AppHotelListItem
+                    name={hotel.name}
+                    airportDistance={hotel.airport_travel_time}
+                    budget={hotel.price}
+                    img={hotel.spotlight_img.image_url}
+                    numRooms={hotel.num_rooms}
+                    subheader={
+                      destinations[hotel.destination_id]
+                        ? DestinationUtils.getLocationName(
+                            destinations[hotel.destination_id]
                           )
-                        }
-                      />
-                    ),
-                    open: locationFilterOpen,
-                    toggleOpen: () => {
-                      setLocationFilterOpen(!locationFilterOpen)
-                    },
-                  },
-                  {
-                    filter: "Price",
-                    filterSelected: budgetFilter.length
-                      ? `${budgetFilter.length} selected`
-                      : undefined,
-                    popper: (
-                      <HotelGridBudgetFilterBody
-                        onClose={() => setPriceFilterOpen(false)}
-                        selected={budgetFilter}
-                        setSelected={(newVals) => setPriceFilterParam(newVals)}
-                      />
-                    ),
-                    open: priceFilterOpen,
-                    toggleOpen: () => setPriceFilterOpen(!priceFilterOpen),
-                  },
-                ]}
-              />
-            }
-          />
-          <HotelGrid
-            hotels={hotels}
-            onReachEnd={onReachEnd}
-            onExplore={explore}
-            onSelect={toggleSelect}
-            isSelected={isHotelSelected}
-          />
+                        : ""
+                    }
+                    tags={
+                      hotel.lodging_tags
+                        ? hotel.lodging_tags.map((tag) => tag.name)
+                        : []
+                    }
+                    onSelect={() => toggleSelect(hotel)}
+                    onExplore={() => explore(hotel)}
+                    selected={isHotelSelected(hotel)}
+                  />
+                ))}
+              </AppLodgingList>
+            </Grid>
+          </Grid>
           {loading && <>Loading</>}
         </PageOverlay>
       </PageContainer>

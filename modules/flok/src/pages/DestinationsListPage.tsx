@@ -1,10 +1,14 @@
-import {Button} from "@material-ui/core"
+import {Button, Grid, Hidden, makeStyles} from "@material-ui/core"
 import {push} from "connected-react-router"
+import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
-import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
-import DestinationsGrid from "../components/lodging/DestinationsGrid"
+import {RetreatFilter} from "../components/lodging/LodgingFilters"
+import {
+  AppDestinationListItem,
+  AppLodgingList,
+} from "../components/lodging/LodgingLists"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -12,26 +16,74 @@ import PageOverlay from "../components/page/PageOverlay"
 import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter"
 import {ResourceNotFound} from "../models"
 import {DestinationModel} from "../models/lodging"
+import {FilterAnswerModel} from "../models/retreat"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {
   deleteSelectedRetreatDestination,
   postAdvanceRetreatState,
   postSelectedRetreatDestination,
+  putRetreatFilters,
 } from "../store/actions/retreat"
 import {convertGuid} from "../utils"
-import {useDestinations, useRetreat} from "../utils/lodgingUtils"
+import {
+  useFilteredDestinations,
+  useRetreat,
+  useRetreatFilters,
+} from "../utils/lodgingUtils"
+
+let useStyles = makeStyles((theme) => ({
+  filterSection: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(2),
+    },
+    marginBottom: theme.spacing(3),
+  },
+  filterSectionMobile: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(2),
+    },
+    marginBottom: theme.spacing(3),
+  },
+}))
 
 type DestinationsListPageProps = RouteComponentProps<{retreatGuid: string}>
 function DestinationsListPage(props: DestinationsListPageProps) {
   let dispatch = useDispatch()
+  let classes = useStyles(props)
 
   // Query/path params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
 
+  // Filters
+  let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
+  let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
+  useEffect(() => {
+    setSelectedResponsesIds(
+      filterResponses
+        ? filterResponses.map((resp) => resp.answer_id.toString())
+        : []
+    )
+  }, [filterResponses, setSelectedResponsesIds])
+
   // API data
   let retreat = useRetreat(retreatGuid)
-  let destinationsList = Object.values(useDestinations()[0])
+  let destinationsList = useFilteredDestinations(
+    selectedResponsesIds.map((id) => parseInt(id)),
+    filterQuestions
+      ? filterQuestions
+          .filter((ques) => ques.question_affinity === "LOCATION")
+          .reduce((prev, resp) => {
+            return [...prev, ...resp.answers]
+          }, [] as FilterAnswerModel[])
+      : []
+  )
 
   // Selected destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
@@ -46,16 +98,6 @@ function DestinationsListPage(props: DestinationsListPageProps) {
   }
 
   // action handlers
-  function explore(destination: DestinationModel) {
-    dispatch(
-      push(
-        AppRoutes.getPath("DestinationPage", {
-          retreatGuid: retreatGuid,
-          destinationGuid: destination.guid,
-        })
-      )
-    )
-  }
   function toggleSelect(destination: DestinationModel) {
     if (isDestinationSelected(destination)) {
       dispatch(deleteSelectedRetreatDestination(retreatGuid, destination.id))
@@ -64,7 +106,11 @@ function DestinationsListPage(props: DestinationsListPageProps) {
     }
   }
   function onClickNextSteps() {
-    if (retreat && retreat !== ResourceNotFound) {
+    if (
+      retreat &&
+      retreat !== ResourceNotFound &&
+      retreat.state === "DESTINATION_SELECT"
+    ) {
       dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
     }
     dispatch(
@@ -72,6 +118,15 @@ function DestinationsListPage(props: DestinationsListPageProps) {
         AppRoutes.getPath("HotelsListPage", {
           retreatGuid: props.match.params.retreatGuid,
         })
+      )
+    )
+  }
+
+  function onUpdateFilters(values: string[]) {
+    dispatch(
+      putRetreatFilters(
+        retreatGuid,
+        values.map((val) => parseInt(val))
       )
     )
   }
@@ -93,13 +148,6 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                   Next step
                 </Button>
               </PageOverlayFooterDefaultBody>
-            }
-            right={
-              <AppPageSpotlightImage
-                imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/acqualina_sidebar.png"
-                imageAlt="Acqualina beach front with red umbrellas and palm trees"
-                imagePosition="bottom-right"
-              />
             }>
             <PageHeader
               preHeader={
@@ -107,13 +155,44 @@ function DestinationsListPage(props: DestinationsListPageProps) {
               }
               header="Location"
               subheader="Finding the right destination is the first step to a planning a great retreat!"
+              retreat={retreat !== ResourceNotFound ? retreat : undefined}
             />
-            <DestinationsGrid
-              destinations={destinationsList}
-              onExplore={explore}
-              onSelect={toggleSelect}
-              isSelected={isDestinationSelected}
-            />
+            <Grid container>
+              <Grid item xs={4}>
+                <Hidden smDown>
+                  <div className={classes.filterSection}>
+                    {(
+                      filterQuestions?.filter(
+                        (ques) => ques.question_affinity === "LOCATION"
+                      ) ?? []
+                    ).map((question) => (
+                      <RetreatFilter
+                        filterQuestion={question}
+                        selectedResponsesIds={selectedResponsesIds}
+                        onSelect={onUpdateFilters}
+                      />
+                    ))}
+                  </div>
+                </Hidden>
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <AppLodgingList>
+                  {destinationsList.map((dest) => {
+                    return (
+                      <AppDestinationListItem
+                        key={dest.id}
+                        img={dest.spotlight_img.image_url}
+                        name={dest.location}
+                        subheader={`${dest.state}, ${dest.country_abbreviation} 🇺🇸`}
+                        onSelect={() => toggleSelect(dest)}
+                        tags={dest.lodging_tags.map((tag) => tag.name)}
+                        selected={isDestinationSelected(dest)}
+                      />
+                    )
+                  })}
+                </AppLodgingList>
+              </Grid>
+            </Grid>
           </PageOverlay>
         </PageContainer>
       )}

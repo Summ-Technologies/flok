@@ -5,6 +5,7 @@ import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
+import AppPageSpotlightImage from "../components/lodging/AppPageSpotlightImage"
 import {
   RetreatPreferencesForm,
   RetreatPreferencesFormValues,
@@ -90,12 +91,16 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
-      <PageContainer
-        backgroundImage={
-          "https://flok-b32d43c.s3.us-east-1.amazonaws.com/misc/david-vives-ELf8M_YWRTY-unsplash.jpg"
-        }>
+      <PageContainer>
         <PageBody>
-          <PageOverlay>
+          <PageOverlay
+            right={
+              <AppPageSpotlightImage
+                imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
+                imageAlt="Fairmont Austin pool overview in the evening"
+                imagePosition="bottom-right"
+              />
+            }>
             <Box paddingBottom={4}>
               <PageHeader
                 preHeader={<AppLodgingFlowTimeline currentStep="INTAKE_2" />}

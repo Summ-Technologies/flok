@@ -4,6 +4,11 @@ import {ImageModel} from "."
 export type BudgetType = "$" | "$$" | "$$$" | "$$$$"
 export const BudgetTypeVals = ["$", "$$", "$$$", "$$$$"]
 
+export type LodgingTag = {
+  id: number
+  name: string
+}
+
 // Destinations
 export type DestinationModel = {
   id: number
@@ -22,6 +27,7 @@ export type DestinationModel = {
 
   spotlight_img: ImageModel
   imgs: ImageModel[]
+  lodging_tags: LodgingTag[]
 }
 
 // Hotels
@@ -42,7 +48,9 @@ export type HotelModel = {
   description_short: string
   street_address?: string
   address_coordinates?: [number, number]
+  airport_travel_time?: number
 
   spotlight_img: ImageModel
   imgs: ImageModel[]
+  lodging_tags: LodgingTag[]
 }

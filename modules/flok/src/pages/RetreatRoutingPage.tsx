@@ -32,6 +32,15 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
             )
           )
           break
+        case "FILTER_SELECT":
+          dispatch(
+            push(
+              AppRoutes.getPath("RetreatFiltersPage", {
+                retreatGuid: retreat.guid,
+              })
+            )
+          )
+          break
         case "DESTINATION_SELECT":
           dispatch(
             push(

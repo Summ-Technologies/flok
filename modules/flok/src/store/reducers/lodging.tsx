@@ -18,6 +18,11 @@ export type LodgingState = {
   destinationsGuidMapping: {
     [guid: string]: number
   }
+  destinationsByFilter: {
+    [filterKey: string]: {
+      destinations: number[]
+    }
+  }
   hotels: {
     [id: number]: HotelModel
   }
@@ -38,7 +43,7 @@ const initialState: LodgingState = {
   destinations: {},
   destinationsLoaded: false,
   destinationsGuidMapping: {},
-
+  destinationsByFilter: {},
   hotels: {},
   hotelsByFilter: {},
   hotelsGuidMapping: {},
@@ -55,6 +60,12 @@ export default function lodgingReducer(
     case GET_DESTINATIONS:
       let destinations = (action as GetDestinationsAction).destinations
       let newDestinations = {...state.destinations}
+      let newDestinationsByFilter = {
+        ...state.destinationsByFilter,
+        [(action as GetDestinationsAction).filterKey]: {
+          destinations: destinations.map((dest) => dest.id),
+        },
+      }
       newDestinationsGuidMapping = {...state.destinationsGuidMapping}
       destinations.forEach((destination) => {
         newDestinations[destination.id] = destination
@@ -63,6 +74,7 @@ export default function lodgingReducer(
       return {
         ...state,
         destinations: newDestinations,
+        destinationsByFilter: newDestinationsByFilter,
         destinationsGuidMapping: newDestinationsGuidMapping,
         destinationsLoaded: true,
       }

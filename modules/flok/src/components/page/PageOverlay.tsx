@@ -15,7 +15,6 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     borderTopRightRadius: theme.shape.borderRadius,
     borderBottomRightRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.common.white,
   },
   overlayBody: {
     [theme.breakpoints.down("xs")]: {
@@ -48,8 +47,8 @@ export default function PageOverlay(props: PageOverlayProps) {
         item
         xs={12}
         sm={12}
-        md={props.size === "small" ? 6 : 9}
-        lg={props.size === "small" ? 5 : 7}
+        md={props.right ? (props.size === "small" ? 6 : 9) : undefined}
+        lg={props.right ? (props.size === "small" ? 5 : 7) : undefined}
         className={classes.overlay}>
         <div className={classes.overlayBody}>{props.children}</div>
         {props.footerBody ? (

@@ -13,7 +13,7 @@ let useStyles = makeStyles((theme) => ({
     height: 10,
     width: 10,
     borderRadius: "50%",
-    backgroundColor: theme.palette.grey[200],
+    backgroundColor: theme.palette.grey[400],
     "&.active": {
       backgroundColor: theme.palette.primary.main,
     },
@@ -31,7 +31,7 @@ let useStyles = makeStyles((theme) => ({
     width: 50,
     borderTopWidth: 2,
     borderTopStyle: "solid",
-    borderTopColor: theme.palette.grey[200],
+    borderTopColor: theme.palette.grey[400],
     "&.active": {
       borderTopColor: theme.palette.primary.main,
     },
@@ -77,6 +77,7 @@ let useStyles = makeStyles((theme) => ({
 type LodgingFlowStep =
   | "INTAKE_1"
   | "INTAKE_2"
+  | "FILTER_SELECT"
   | "DESTINATION_SELECT"
   | "HOTEL_SELECT"
   | "PROPOSAL"
@@ -84,6 +85,7 @@ const ORDERED_STEPS: {step: LodgingFlowStep; title: string; half?: boolean}[] =
   [
     {step: "INTAKE_1", title: "Your Info"},
     {step: "INTAKE_2", title: "Retreat Info"},
+    {step: "FILTER_SELECT", title: "Retreat Preferences"},
     {step: "DESTINATION_SELECT", title: "Destinations"},
     {step: "HOTEL_SELECT", title: "Request Proposals"},
     {step: "PROPOSAL", title: "View Proposals"},
