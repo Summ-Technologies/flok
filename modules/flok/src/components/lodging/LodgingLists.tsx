@@ -56,6 +56,7 @@ let useListItemStyles = makeStyles((theme) => ({
     },
     borderRadius: theme.shape.borderRadius,
     width: "100%",
+    maxWidth: "100%",
     border: (props: LodgingListItemProps) =>
       props.selected ? `solid 1px ${theme.palette.primary.main}` : "",
     boxShadow: (props: LodgingListItemProps) =>
@@ -86,7 +87,7 @@ let useListItemStyles = makeStyles((theme) => ({
     outlineStyle: "solid",
   },
   exploreArrow: {
-    width: 40,
+    width: 40, // edit children max width if changing this value
     "&:hover": {
       backgroundColor: theme.palette.grey[200],
     },
@@ -228,7 +229,7 @@ let useHotelListItemStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   imgContainer: {
     marginLeft: theme.spacing(1),
@@ -236,6 +237,10 @@ let useHotelListItemStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     height: 150,
     width: 220,
+    [theme.breakpoints.down("xs")]: {
+      height: 100,
+      width: 133,
+    },
     "& img": {
       borderRadius: theme.shape.borderRadius,
       objectFit: "cover",
@@ -247,7 +252,6 @@ let useHotelListItemStyles = makeStyles((theme) => ({
   body: {
     display: "flex",
     flexDirection: "column",
-    width: "100%",
     height: "100%",
     padding: theme.spacing(2),
     "& > *:not(:first-child):not($tagsContainer)": {
@@ -258,13 +262,20 @@ let useHotelListItemStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    width: 200,
+    maxWidth: 200,
+    [theme.breakpoints.down("xs")]: {
+      maxWidth: 140,
+    },
   },
   attributesContainer: {
     display: "flex",
     flexDirection: "row",
-    "& > *:not(:first-child)": {
-      marginLeft: theme.spacing(1),
+    flexWrap: "wrap",
+    marginLeft: theme.spacing(-0.5),
+    marginBottom: theme.spacing(0.5),
+    "& > *": {
+      marginBottom: theme.spacing(0.5),
+      marginLeft: theme.spacing(0.5),
     },
   },
   attributeTag: {
@@ -280,10 +291,13 @@ let useHotelListItemStyles = makeStyles((theme) => ({
   },
   tagsContainer: {
     display: "flex",
-    marginTop: "auto",
+    flexDirection: "row",
     alignItems: "center",
-    "& > *:not(:first-child)": {
+    flexWrap: "wrap",
+    marginLeft: theme.spacing(-0.5),
+    "& > *": {
       marginLeft: theme.spacing(0.5),
+      marginBottom: theme.spacing(0.5),
     },
   },
 }))
