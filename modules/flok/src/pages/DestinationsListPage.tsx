@@ -27,6 +27,7 @@ import {
 } from "../store/actions/retreat"
 import {convertGuid} from "../utils"
 import {
+  DestinationUtils,
   useFilteredDestinations,
   useRetreat,
   useRetreatFilters,
@@ -183,7 +184,10 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                         key={dest.id}
                         img={dest.spotlight_img.image_url}
                         name={dest.location}
-                        subheader={`${dest.state}, ${dest.country_abbreviation} 🇺🇸`}
+                        subheader={DestinationUtils.getLocationNameShort(
+                          dest,
+                          true
+                        )}
                         onSelect={() => toggleSelect(dest)}
                         tags={dest.lodging_tags.map((tag) => tag.name)}
                         selected={isDestinationSelected(dest)}

@@ -290,7 +290,8 @@ function HotelsListPage(props: HotelsListPageProps) {
                         ? DestinationUtils.getLocationName(
                             destinations.filter(
                               (dest) => dest.id === hotel.destination_id
-                            )[0]
+                            )[0],
+                            true
                           )
                         : ""
                     }

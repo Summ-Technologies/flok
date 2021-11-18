@@ -219,10 +219,57 @@ export function useRetreat(retreatGuid: string) {
 }
 
 export class DestinationUtils {
-  static getLocationName(destination: DestinationModel) {
-    return `${destination.location}, ${
+  static EMOJIS_BY_COUNTRY: {[key: string]: string} = {
+    USA: "🇺🇸",
+    MX: "🇲🇽",
+    ESP: "🇪🇸",
+  }
+  static EMOJIS_BY_LOCATION: {[key: string]: string} = {}
+
+  static getCountryEmoji(destination: DestinationModel) {
+    let emoji = DestinationUtils.EMOJIS_BY_LOCATION[destination.location]
+    if (!emoji && destination.country_abbreviation) {
+      emoji =
+        DestinationUtils.EMOJIS_BY_COUNTRY[destination.country_abbreviation]
+    }
+    return emoji
+  }
+
+  /**
+   * Location name short is the state (if available) and country the
+   * location (usually city or area) is a part of. Return value doesn't
+   * include location (city/area) itself as it will often be displayed
+   * elsewhere like in the destination list item.
+   */
+  static getLocationNameShort(
+    destination: DestinationModel,
+    includeEmoji: boolean = false
+  ) {
+    let locationStr = destination.state
+      ? `${destination.state}, ${destination.country_abbreviation}`
+      : `${destination.country}`
+    if (includeEmoji) {
+      let emoji = DestinationUtils.getCountryEmoji(destination)
+      if (emoji) {
+        locationStr += ` ${emoji}`
+      }
+    }
+    return locationStr
+  }
+  static getLocationName(
+    destination: DestinationModel,
+    includeEmoji: boolean = false
+  ) {
+    let locationStr = `${destination.location}, ${
       destination.state_abbreviation || destination.country
     }`
+    if (includeEmoji) {
+      let emoji = DestinationUtils.getCountryEmoji(destination)
+      if (emoji) {
+        locationStr += ` ${emoji}`
+      }
+    }
+    return locationStr
   }
 }
 
