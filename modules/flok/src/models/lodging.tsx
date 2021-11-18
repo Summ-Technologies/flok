@@ -49,6 +49,7 @@ export type HotelModel = {
   street_address?: string
   address_coordinates?: [number, number]
   airport_travel_time?: number
+  is_flok_recommended?: boolean
 
   spotlight_img: ImageModel
   imgs: ImageModel[]
