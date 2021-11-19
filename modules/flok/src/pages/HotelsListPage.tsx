@@ -303,6 +303,7 @@ function HotelsListPage(props: HotelsListPageProps) {
                     onSelect={() => toggleSelect(hotel)}
                     onExplore={() => explore(hotel)}
                     selected={isHotelSelected(hotel)}
+                    recommended={hotel.is_flok_recommended}
                   />
                 ))}
               </AppLodgingList>

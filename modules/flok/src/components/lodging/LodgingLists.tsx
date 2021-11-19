@@ -1,7 +1,15 @@
-import {ButtonBase, Checkbox, Chip, makeStyles, Paper} from "@material-ui/core"
+import {
+  ButtonBase,
+  Checkbox,
+  Chip,
+  makeStyles,
+  Paper,
+  useMediaQuery,
+} from "@material-ui/core"
 import {ArrowRight} from "@material-ui/icons"
 import clsx from "clsx"
 import React, {PropsWithChildren, useEffect, useRef} from "react"
+import {FlokTheme} from "../../theme"
 import {HotelUtils} from "../../utils/lodgingUtils"
 import AppTypography from "../base/AppTypography"
 
@@ -64,6 +72,7 @@ let useListItemStyles = makeStyles((theme) => ({
   },
   checkbox: {
     position: "absolute",
+    zIndex: 100,
     top: theme.spacing(2),
     left: theme.spacing(2),
     height: 16,
@@ -232,6 +241,7 @@ let useHotelListItemStyles = makeStyles((theme) => ({
     alignItems: "flex-start",
   },
   imgContainer: {
+    position: "relative",
     marginLeft: theme.spacing(1),
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
@@ -248,6 +258,21 @@ let useHotelListItemStyles = makeStyles((theme) => ({
       height: "100%",
       width: "100%",
     },
+  },
+  flokRecommendedTag: {
+    position: "absolute",
+    borderRadius: 4,
+    top: theme.spacing(0.75),
+    right: 0,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    paddingTop: theme.spacing(0.25),
+    paddingBottom: theme.spacing(0.25),
+    paddingLeft: theme.spacing(0.5),
+    paddingRight: theme.spacing(0.5),
   },
   body: {
     display: "flex",
@@ -313,9 +338,14 @@ type AppHotelListItemProps = {
   budget: string
   numRooms: number
   tags: string[]
+  recommended?: boolean
 }
 export function AppHotelListItem(props: AppHotelListItemProps) {
   let classes = useHotelListItemStyles(props)
+
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
+  )
 
   return (
     <LodgingListItem
@@ -324,6 +354,13 @@ export function AppHotelListItem(props: AppHotelListItemProps) {
       onExplore={props.onExplore}>
       <div className={classes.root}>
         <div className={classes.imgContainer}>
+          {props.recommended ? (
+            <AppTypography
+              variant="caption"
+              className={classes.flokRecommendedTag}>
+              Flok {isSmallScreen ? "🤍" : "Recommended"}
+            </AppTypography>
+          ) : undefined}
           <img src={props.img} alt={`${props.name} spotlight`} />
         </div>
         <div className={classes.body}>
