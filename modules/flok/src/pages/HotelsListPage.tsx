@@ -25,6 +25,7 @@ import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
+import {getHotels} from "../store/actions/lodging"
 import {
   deleteSelectedRetreatDestination,
   deleteSelectedRetreatHotel,
@@ -72,6 +73,7 @@ function HotelsListPage(props: HotelsListPageProps) {
 
   let retreat = useRetreat(retreatGuid)
   let destinations = Object.values(useDestinations()[0])
+  let allLoadedHotels = useSelector((state: RootState) => state.lodging.hotels)
 
   // selected hotels/destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
@@ -117,6 +119,14 @@ function HotelsListPage(props: HotelsListPageProps) {
       : [],
     selectedDestinationIds
   )
+
+  useEffect(() => {
+    let missingHotelIds = selectedHotelIds.filter((id) => !allLoadedHotels[id])
+    if (missingHotelIds.length) {
+      let filter = missingHotelIds.map((id) => `id=${id}`).join(" OR ")
+      dispatch(getHotels(filter))
+    }
+  }, [selectedHotelIds, allLoadedHotels, dispatch])
 
   // Actions
   function explore(hotel: HotelModel) {
@@ -276,7 +286,12 @@ function HotelsListPage(props: HotelsListPageProps) {
             </Grid>
             <Grid item xs={12} md={8}>
               <AppLodgingList onReachEnd={onReachEnd}>
-                {hotels.map((hotel) => (
+                {[
+                  ...selectedHotelIds
+                    .map((hotId) => allLoadedHotels[hotId])
+                    .filter((hotel) => hotel),
+                  ...hotels.filter((hotel) => !isHotelSelected(hotel)),
+                ].map((hotel) => (
                   <AppHotelListItem
                     name={hotel.name}
                     airportDistance={hotel.airport_travel_time}

@@ -28,6 +28,7 @@ import {
 import {convertGuid} from "../utils"
 import {
   DestinationUtils,
+  useDestinations,
   useFilteredDestinations,
   useRetreat,
   useRetreatFilters,
@@ -73,18 +74,9 @@ function DestinationsListPage(props: DestinationsListPageProps) {
     )
   }, [filterResponses, setSelectedResponsesIds])
 
-  // API data
   let retreat = useRetreat(retreatGuid)
-  let destinationsList = useFilteredDestinations(
-    selectedResponsesIds.map((id) => parseInt(id)),
-    filterQuestions
-      ? filterQuestions
-          .filter((ques) => ques.question_affinity === "LOCATION")
-          .reduce((prev, resp) => {
-            return [...prev, ...resp.answers]
-          }, [] as FilterAnswerModel[])
-      : []
-  )
+
+  let [destinations] = useDestinations()
 
   // Selected destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
@@ -97,6 +89,17 @@ function DestinationsListPage(props: DestinationsListPageProps) {
   function isDestinationSelected(destination: DestinationModel) {
     return selectedDestinationIds.includes(destination.id)
   }
+
+  let destinationsList = useFilteredDestinations(
+    selectedResponsesIds.map((id) => parseInt(id)),
+    filterQuestions
+      ? filterQuestions
+          .filter((ques) => ques.question_affinity === "LOCATION")
+          .reduce((prev, resp) => {
+            return [...prev, ...resp.answers]
+          }, [] as FilterAnswerModel[])
+      : []
+  )
 
   // action handlers
   function toggleSelect(destination: DestinationModel) {
@@ -178,7 +181,14 @@ function DestinationsListPage(props: DestinationsListPageProps) {
               </Grid>
               <Grid item xs={12} md={8}>
                 <AppLodgingList>
-                  {destinationsList.map((dest) => {
+                  {[
+                    ...selectedDestinationIds
+                      .map((id) => destinations[id])
+                      .filter((dest) => dest),
+                    ...destinationsList.filter(
+                      (dest) => !isDestinationSelected(dest)
+                    ),
+                  ].map((dest) => {
                     return (
                       <AppDestinationListItem
                         key={dest.id}
