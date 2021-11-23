@@ -1,5 +1,6 @@
 import {Box} from "@material-ui/core"
-import {useEffect} from "react"
+import {push} from "connected-react-router"
+import {useEffect, useState} from "react"
 import TagManager from "react-gtm-module"
 import {useMixPanel} from "react-mixpanel-provider-component"
 import {useDispatch, useSelector} from "react-redux"
@@ -19,9 +20,10 @@ import {ResourceNotFound} from "../models"
 import {RetreatModel} from "../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
+import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {updateRetreatPreferences} from "../store/actions/retreat"
-import {convertGuid} from "../utils"
+import {convertGuid, useQuery} from "../utils"
 import {useRetreat} from "../utils/lodgingUtils"
 
 type RetreatPreferencesFormPageProps = RouteComponentProps<{
@@ -39,30 +41,95 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
     (state: RootState) => state.api.retreatPreferencesFormLoading
   )
 
+  // Query param for last page (used when retreatState > INTAKE_2)
+  let [lastQueryParam] = useQuery("last")
+  let [previouslyCompleted, setPreviouslyCompleted] = useState(false)
+  let [prefilledValues, setPrefilledValues] = useState<
+    Partial<RetreatPreferencesFormValues>
+  >({})
+
+  useEffect(() => {
+    let initValues: Partial<RetreatPreferencesFormValues> = {}
+    if (retreat && retreat !== ResourceNotFound) {
+      if (retreat.preferences_dates_exact_end) {
+        let ds = retreat.preferences_dates_exact_end
+          .split(/\D/)
+          .map((s) => parseInt(s))
+        if (ds.length >= 3) {
+          ds[1] = ds[1] - 1
+          initValues.exactEndDate = new Date(ds[0], ds[1], ds[2])
+        }
+      }
+      if (retreat.preferences_dates_exact_start) {
+        let ds = retreat.preferences_dates_exact_start
+          .split(/\D/)
+          .map((s) => parseInt(s))
+        if (ds.length >= 3) {
+          ds[1] = ds[1] - 1
+          initValues.exactStartDate = new Date(ds[0], ds[1], ds[2])
+        }
+      }
+      if (retreat.preferences_is_dates_flexible !== undefined) {
+        initValues.isFlexibleDates = retreat.preferences_is_dates_flexible
+      }
+      if (retreat.preferences_dates_flexible_months) {
+        initValues.flexibleMonths = retreat.preferences_dates_flexible_months
+      }
+      if (retreat.preferences_num_attendees_lower) {
+        initValues.attendeesLower = retreat.preferences_num_attendees_lower
+      }
+      if (retreat.preferences_dates_flexible_num_nights !== undefined) {
+        initValues.flexibleNumNights =
+          retreat.preferences_dates_flexible_num_nights
+      }
+    }
+    setPrefilledValues(initValues)
+  }, [retreat, setPrefilledValues])
+
+  useEffect(() => {
+    if (
+      retreat &&
+      retreat !== ResourceNotFound &&
+      retreat.state !== "INTAKE_2"
+    ) {
+      setPreviouslyCompleted(true)
+    }
+  }, [retreat, setPreviouslyCompleted])
+
   // analytics
   const {mixpanel} = useMixPanel()
   useEffect(() => {
-    mixpanel.track("LODGING_FORM_START")
-  }, [mixpanel])
+    if (!previouslyCompleted) {
+      mixpanel.track("LODGING_FORM_START")
+    }
+  }, [mixpanel, previouslyCompleted])
 
   // Action handlers
   function submitRetreatPreferences(values: RetreatPreferencesFormValues) {
     if (retreat && retreat !== ResourceNotFound) {
       let onSuccess = () => {
-        mixpanel.track("LODGING_FORM_SUBMITTED")
-        let q = new URLSearchParams({
-          email: (retreat as RetreatModel).contact_email,
-          a1: (retreat as RetreatModel).company_name,
-          utm_campaign: "intake_call",
-          utm_content: (retreat as RetreatModel).id.toString(),
-        }).toString()
-
-        TagManager.dataLayer({
-          dataLayer: {
-            event: "INTAKE_FORM_SUBMITTED",
-          },
-        })
-        window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
+        if (!previouslyCompleted) {
+          mixpanel.track("LODGING_FORM_SUBMITTED")
+          let q = new URLSearchParams({
+            email: (retreat as RetreatModel).contact_email,
+            a1: (retreat as RetreatModel).company_name,
+            utm_campaign: "intake_call",
+            utm_content: (retreat as RetreatModel).id.toString(),
+          }).toString()
+          TagManager.dataLayer({
+            dataLayer: {
+              event: "INTAKE_FORM_SUBMITTED",
+            },
+          })
+          window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
+        } else {
+          dispatch(
+            push(
+              lastQueryParam ??
+                AppRoutes.getPath("RetreatFiltersPage", {retreatGuid})
+            )
+          )
+        }
       }
       dispatch(
         updateRetreatPreferences(
@@ -103,7 +170,7 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
             }>
             <Box paddingBottom={4}>
               <PageHeader
-                preHeader={<AppLodgingFlowTimeline currentStep="INTAKE_2" />}
+                preHeader={<AppLodgingFlowTimeline currentStep={"INTAKE_2"} />}
                 header="Let's Get Started"
                 subheader="We need just a few details to plan your perfect retreat."
               />
@@ -112,6 +179,10 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
               onSubmit={submitRetreatPreferences}
               onError={showError}
               isLoading={retreatPreferencesFormLoading}
+              initialVals={prefilledValues}
+              submitButtonText={
+                previouslyCompleted ? "Update" : "Start planning!"
+              }
             />
           </PageOverlay>
         </PageBody>

@@ -6,6 +6,7 @@ import {
   TextField,
 } from "@material-ui/core"
 import {useFormik} from "formik"
+import {useEffect} from "react"
 import * as yup from "yup"
 import AppTypography from "../base/AppTypography"
 import AppAttendeesInput from "./AppAttendeesInput"
@@ -180,8 +181,10 @@ export type RetreatPreferencesFormValues = {
 }
 type RetreatPreferencesFormProps = {
   onSubmit: (vals: RetreatPreferencesFormValues) => void
+  initialVals: Partial<RetreatPreferencesFormValues>
   onError: (error: string) => void
   isLoading?: boolean
+  submitButtonText: string
 }
 export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
   const classes = useStyles()
@@ -224,6 +227,10 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
     },
     onSubmit: props.onSubmit,
   })
+  let {setValues, initialValues} = {...formik}
+  useEffect(() => {
+    setValues({...initialValues, ...props.initialVals})
+  }, [props.initialVals, initialValues, setValues])
   return (
     <div className={classes.root}>
       <form onSubmit={formik.handleSubmit}>
@@ -342,7 +349,7 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
                   color="inherit"
                 />
               ) : (
-                "Start planning!"
+                props.submitButtonText
               )}
             </Button>
           </Grid>
