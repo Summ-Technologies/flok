@@ -69,7 +69,7 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
           initValues.exactStartDate = new Date(ds[0], ds[1], ds[2])
         }
       }
-      if (retreat.preferences_is_dates_flexible !== undefined) {
+      if (retreat.preferences_is_dates_flexible != null) {
         initValues.isFlexibleDates = retreat.preferences_is_dates_flexible
       }
       if (retreat.preferences_dates_flexible_months) {
@@ -78,7 +78,7 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
       if (retreat.preferences_num_attendees_lower) {
         initValues.attendeesLower = retreat.preferences_num_attendees_lower
       }
-      if (retreat.preferences_dates_flexible_num_nights !== undefined) {
+      if (retreat.preferences_dates_flexible_num_nights != null) {
         initValues.flexibleNumNights =
           retreat.preferences_dates_flexible_num_nights
       }
