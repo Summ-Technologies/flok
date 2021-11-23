@@ -148,6 +148,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                 <Button
                   variant="contained"
                   color="primary"
+                  size="large"
                   onClick={onClickNextSteps}>
                   Next step
                 </Button>
