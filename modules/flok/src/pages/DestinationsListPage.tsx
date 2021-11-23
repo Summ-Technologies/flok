@@ -1,8 +1,18 @@
-import {Button, Grid, Hidden, makeStyles} from "@material-ui/core"
+import {
+  Button,
+  Grid,
+  Hidden,
+  IconButton,
+  makeStyles,
+  SwipeableDrawer,
+} from "@material-ui/core"
+import {ArrowBack, Menu} from "@material-ui/icons"
+import clsx from "clsx"
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import AppTypography from "../components/base/AppTypography"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import {RetreatFilter} from "../components/lodging/LodgingFilters"
 import {
@@ -51,6 +61,10 @@ let useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
     },
     marginBottom: theme.spacing(3),
+  },
+  mobileFilterSection: {
+    paddingLeft: theme.spacing(3),
+    paddingTop: theme.spacing(4),
   },
   filterSectionMobile: {
     display: "flex",
@@ -109,6 +123,9 @@ function DestinationsListPage(props: DestinationsListPageProps) {
       : []
   )
 
+  // Mobile filter state
+  let [filtersOpen, setFiltersOpen] = useState(false)
+
   // action handlers
   function toggleSelect(destination: DestinationModel) {
     if (isDestinationSelected(destination)) {
@@ -164,7 +181,49 @@ function DestinationsListPage(props: DestinationsListPageProps) {
             }>
             <PageHeader
               preHeader={
-                <AppLodgingFlowTimeline currentStep="DESTINATION_SELECT" />
+                <>
+                  <Hidden smDown>
+                    <AppLodgingFlowTimeline currentStep="DESTINATION_SELECT" />
+                  </Hidden>
+                  <Hidden mdUp>
+                    <IconButton
+                      size="small"
+                      onClick={() => setFiltersOpen(!filtersOpen)}>
+                      <Menu />
+                    </IconButton>
+                    <SwipeableDrawer
+                      anchor="left"
+                      open={filtersOpen}
+                      onOpen={() => setFiltersOpen(true)}
+                      onClose={() => setFiltersOpen(false)}>
+                      <div
+                        className={clsx(
+                          classes.filterSection,
+                          classes.mobileFilterSection
+                        )}>
+                        <IconButton
+                          size="small"
+                          onClick={() => setFiltersOpen(false)}>
+                          <ArrowBack />
+                        </IconButton>
+                        <AppTypography variant="h3" underline>
+                          Filters
+                        </AppTypography>
+                        {(
+                          filterQuestions?.filter(
+                            (ques) => ques.question_affinity === "LOCATION"
+                          ) ?? []
+                        ).map((question) => (
+                          <RetreatFilter
+                            filterQuestion={question}
+                            selectedResponsesIds={selectedResponsesIds}
+                            onSelect={onUpdateFilters}
+                          />
+                        ))}
+                      </div>
+                    </SwipeableDrawer>
+                  </Hidden>
+                </>
               }
               header="Location"
               subheader="Finding the right destination is the first step to a planning a great retreat!"

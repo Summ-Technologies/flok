@@ -148,7 +148,7 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
     cursor: "pointer",
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     width: "100%",
   },
   imgContainer: {
@@ -161,8 +161,8 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
       borderRadius: theme.shape.borderRadius,
       objectFit: "cover",
       verticalAlign: "center",
-      height: "100%",
-      width: "100%",
+      height: 100,
+      width: 133,
     },
   },
   body: {
@@ -184,8 +184,11 @@ let useDestinationListItemStyles = makeStyles((theme) => ({
     display: "flex",
     marginTop: "auto",
     alignItems: "center",
-    "& > *:not(:first-child)": {
-      marginLeft: theme.spacing(1),
+    flexWrap: "wrap",
+    marginLeft: theme.spacing(-0.5),
+    "& > *": {
+      marginLeft: theme.spacing(0.5),
+      marginBottom: theme.spacing(0.5),
     },
   },
   checkContainer: {
@@ -219,7 +222,7 @@ export function AppDestinationListItem(props: AppDestinationListItemProps) {
             <AppTypography variant="body2" color="textSecondary" uppercase>
               {props.subheader ? props.subheader : "\u00A0"}
             </AppTypography>
-            <AppTypography variant="h4" noWrap>
+            <AppTypography variant="h4" noWrap paragraph>
               {props.name ? props.name : "\u00A0"}
             </AppTypography>
           </div>
@@ -255,8 +258,12 @@ let useHotelListItemStyles = makeStyles((theme) => ({
       borderRadius: theme.shape.borderRadius,
       objectFit: "cover",
       verticalAlign: "center",
-      height: "100%",
-      width: "100%",
+      height: 150,
+      width: 220,
+      [theme.breakpoints.down("xs")]: {
+        height: 100,
+        width: 133,
+      },
     },
   },
   flokRecommendedTag: {

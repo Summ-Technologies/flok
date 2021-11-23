@@ -1,8 +1,18 @@
-import {Button, Grid, Hidden, makeStyles} from "@material-ui/core"
+import {
+  Button,
+  Grid,
+  Hidden,
+  IconButton,
+  makeStyles,
+  SwipeableDrawer,
+} from "@material-ui/core"
+import {ArrowBack, Menu} from "@material-ui/icons"
+import clsx from "clsx"
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import AppTypography from "../components/base/AppTypography"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import PopperFilter, {
   HotelGridLocationFilterBody,
@@ -67,6 +77,13 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       marginTop: theme.spacing(2),
     },
+  },
+  mobileFilterSection: {
+    paddingLeft: theme.spacing(3),
+    paddingTop: theme.spacing(4),
+  },
+  filterBody: {
+    zIndex: 100000,
   },
 }))
 
@@ -135,6 +152,9 @@ function HotelsListPage(props: HotelsListPageProps) {
       dispatch(getHotels(filter))
     }
   }, [selectedHotelIds, allLoadedHotels, dispatch])
+
+  // Mobile filter state
+  let [filtersOpen, setFiltersOpen] = useState(false)
 
   // Actions
   function explore(hotel: HotelModel) {
@@ -255,7 +275,65 @@ function HotelsListPage(props: HotelsListPageProps) {
           <PageHeader
             header={`Lodging (${numHotels})`}
             subheader="Select some hotels to request a free proposal from!"
-            preHeader={<AppLodgingFlowTimeline currentStep="HOTEL_SELECT" />}
+            preHeader={
+              <>
+                <Hidden smDown>
+                  <AppLodgingFlowTimeline currentStep="HOTEL_SELECT" />
+                </Hidden>
+                <Hidden mdUp>
+                  <IconButton size="small" onClick={() => setFiltersOpen(true)}>
+                    <Menu />
+                  </IconButton>
+                  <SwipeableDrawer
+                    anchor="left"
+                    open={filtersOpen}
+                    onOpen={() => setFiltersOpen(true)}
+                    onClose={() => setFiltersOpen(false)}>
+                    <div
+                      className={clsx(
+                        classes.filterSection,
+                        classes.mobileFilterSection
+                      )}>
+                      <IconButton
+                        size="small"
+                        onClick={() => setFiltersOpen(false)}>
+                        <ArrowBack />
+                      </IconButton>
+                      <AppTypography variant="h3" underline>
+                        Filters
+                      </AppTypography>
+                      <PopperFilter
+                        open={locationFilterOpen}
+                        toggleOpen={() =>
+                          setLocationFilterOpen(!locationFilterOpen)
+                        }
+                        title={"Destinations"}
+                        popper={
+                          <HotelGridLocationFilterBody
+                            locations={destinations}
+                            onClose={() => setLocationFilterOpen(false)}
+                            selected={selectedDestinationIds}
+                            toggleSelect={toggleDestinationSelect}
+                          />
+                        }
+                        filter={`${selectedDestinationIds.length} selected`}
+                      />
+                      {(
+                        filterQuestions?.filter(
+                          (ques) => ques.question_affinity === "LODGING"
+                        ) ?? []
+                      ).map((question) => (
+                        <RetreatFilter
+                          filterQuestion={question}
+                          selectedResponsesIds={selectedResponsesIds}
+                          onSelect={onUpdateFilters}
+                        />
+                      ))}
+                    </div>
+                  </SwipeableDrawer>
+                </Hidden>
+              </>
+            }
             retreat={
               retreat && retreat !== ResourceNotFound ? retreat : undefined
             }

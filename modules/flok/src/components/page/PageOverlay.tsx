@@ -22,6 +22,9 @@ let useStyles = makeStyles((theme) => ({
       paddingRight: theme.spacing(1),
     },
     padding: theme.spacing(4),
+    [theme.breakpoints.down("sm")]: {
+      paddingBottom: theme.spacing(1),
+    },
     display: "flex",
     flexDirection: "column",
     flex: 1,
