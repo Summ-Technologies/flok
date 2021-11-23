@@ -26,6 +26,12 @@ export type RetreatModel = {
   selected_destinations_ids: number[]
   selected_hotels_ids: number[]
   selected_hotels_proposals: RetreatSelectedHotelProposal[]
+  preferences_num_attendees_lower?: number
+  preferences_is_dates_flexible?: boolean
+  preferences_dates_exact_start?: string
+  preferences_dates_exact_end?: string
+  preferences_dates_flexible_months?: string[]
+  preferences_dates_flexible_num_nights?: number
 }
 
 export type FilterAnswerModel = {

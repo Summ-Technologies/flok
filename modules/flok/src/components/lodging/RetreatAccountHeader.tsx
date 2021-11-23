@@ -34,9 +34,14 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
       </AppTypography>
       <AppTypography variant="body1">
         <Link
-          href={AppRoutes.getPath("RetreatPreferencesFormPage", {
-            retreatGuid: props.retreat.guid,
-          })}>
+          href={
+            AppRoutes.getPath("RetreatPreferencesFormPage", {
+              retreatGuid: props.retreat.guid,
+            }) +
+            `?${new URLSearchParams({
+              last: window.location.pathname + window.location.search,
+            })}`
+          }>
           Change
         </Link>
       </AppTypography>

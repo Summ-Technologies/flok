@@ -20,6 +20,7 @@ import {
   POST_SELECTED_RETREAT_HOTEL_FAILURE,
   POST_SELECTED_RETREAT_HOTEL_REQUEST,
   PUT_RETREAT_FILTERS_SUCCESS,
+  PUT_RETREAT_PREFERENCES_SUCCESS,
 } from "../actions/retreat"
 
 export type RetreatState = {
@@ -47,7 +48,19 @@ export default function retreatReducer(
   switch (action.type) {
     case GET_RETREAT_SUCCESS:
     case POST_ADVANCE_RETREAT_STATE_SUCCESS:
-      payload = (action as ApiAction).payload as RetreatModel
+    case PUT_RETREAT_PREFERENCES_SUCCESS:
+      if (
+        [
+          PUT_RETREAT_PREFERENCES_SUCCESS,
+          POST_ADVANCE_RETREAT_STATE_SUCCESS,
+        ].includes(action.type)
+      ) {
+        payload = ((action as ApiAction).payload as {retreat: RetreatModel})
+          .retreat
+      } else {
+        payload = (action as ApiAction).payload as RetreatModel
+      }
+
       newRetreatsState = {...state.retreats}
       newRetreatsState[payload.guid] = payload
       if (
