@@ -44,6 +44,14 @@ import {
 } from "../utils/lodgingUtils"
 
 let useStyles = makeStyles((theme) => ({
+  bodyContainer: {
+    height: "100%",
+    overflow: "hidden",
+  },
+  listContainer: {
+    overflowY: "auto",
+    height: "100%",
+  },
   ctaSection: {
     display: "flex",
     flexDirection: "row",
@@ -252,7 +260,7 @@ function HotelsListPage(props: HotelsListPageProps) {
               retreat && retreat !== ResourceNotFound ? retreat : undefined
             }
           />
-          <Grid container>
+          <Grid container className={classes.bodyContainer}>
             <Grid item xs={4}>
               <Hidden smDown>
                 <div className={classes.filterSection}>
@@ -286,7 +294,7 @@ function HotelsListPage(props: HotelsListPageProps) {
                 </div>
               </Hidden>
             </Grid>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={8} className={classes.listContainer}>
               <AppLodgingList onReachEnd={onReachEnd}>
                 {[
                   ...selectedHotelIds

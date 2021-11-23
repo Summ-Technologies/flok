@@ -35,6 +35,14 @@ import {
 } from "../utils/lodgingUtils"
 
 let useStyles = makeStyles((theme) => ({
+  bodyContainer: {
+    height: "100%",
+    overflow: "hidden",
+  },
+  listContainer: {
+    overflowY: "auto",
+    height: "100%",
+  },
   filterSection: {
     display: "flex",
     flexDirection: "column",
@@ -162,7 +170,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
               subheader="Finding the right destination is the first step to a planning a great retreat!"
               retreat={retreat !== ResourceNotFound ? retreat : undefined}
             />
-            <Grid container>
+            <Grid container className={classes.bodyContainer}>
               <Grid item xs={4}>
                 <Hidden smDown>
                   <div className={classes.filterSection}>
@@ -180,7 +188,7 @@ function DestinationsListPage(props: DestinationsListPageProps) {
                   </div>
                 </Hidden>
               </Grid>
-              <Grid item xs={12} md={8}>
+              <Grid item xs={12} md={8} className={classes.listContainer}>
                 <AppLodgingList>
                   {[
                     ...selectedDestinationIds
