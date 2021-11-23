@@ -10,6 +10,11 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "flex-end",
     justifyContent: "flex-start",
+    maxWidth: 300,
+    [theme.breakpoints.down("sm")]: {
+      maxWidth: 150,
+    },
+    overflow: "hidden",
   },
 }))
 

@@ -117,8 +117,8 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
             }>
             <PageHeader
               preHeader={<AppLodgingFlowTimeline currentStep="FILTER_SELECT" />}
-              header="Tell us about your perfect retreat"
-              subheader="We’ve planned dozens of retreats, and these questions come up a lot."
+              header="Your perfect retreat"
+              subheader="Help us, help you! We’ve planned dozens of retreats, and these questions come up a lot."
               retreat={
                 retreat && retreat !== ResourceNotFound ? retreat : undefined
               }

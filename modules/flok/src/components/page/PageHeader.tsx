@@ -1,4 +1,4 @@
-import {Button, Chip, makeStyles} from "@material-ui/core"
+import {Button, Chip, Hidden, makeStyles} from "@material-ui/core"
 import {KeyboardBackspace} from "@material-ui/icons"
 import React from "react"
 import {RetreatModel} from "../../models/retreat"
@@ -14,7 +14,7 @@ let useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   preHeader: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(1),
   },
   title: {
     "& > *:not(:last-child)": {
@@ -57,7 +57,11 @@ export default function PageHeader(props: PageHeaderProps) {
           <div className={classes.postHeader}>{props.postHeader}</div>
         ) : undefined}
       </div>
-      {props.retreat && <RetreatAccountHeader retreat={props.retreat} />}
+      {props.retreat && (
+        <Hidden smDown>
+          <RetreatAccountHeader retreat={props.retreat} />
+        </Hidden>
+      )}
     </div>
   )
 }

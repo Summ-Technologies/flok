@@ -16,6 +16,7 @@ let useStyles = makeStyles((theme) => ({
   defaultBody: {
     display: "flex",
     alignItems: "center",
+    flexWrap: "wrap",
     justifyContent: "space-between",
     height: "100%",
   },

@@ -1,4 +1,4 @@
-import {makeStyles} from "@material-ui/core"
+import {Hidden, makeStyles} from "@material-ui/core"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router"
@@ -90,7 +90,9 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
           <PageHeader
             header={`Hotel Proposals Submitted 🕑`}
             preHeader={
-              <AppLodgingFlowTimeline currentStep="PROPOSAL" halfway />
+              <Hidden xsDown>
+                <AppLodgingFlowTimeline currentStep="PROPOSAL" halfway />
+              </Hidden>
             }
           />
           <div className={classes.body}>

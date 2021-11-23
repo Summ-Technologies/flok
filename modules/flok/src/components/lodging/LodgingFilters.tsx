@@ -100,6 +100,9 @@ let useFilterStyles = makeStyles((theme) => ({
   infoIcon: {
     marginLeft: theme.spacing(0.5),
   },
+  popper: {
+    zIndex: theme.zIndex.drawer + 100,
+  },
 }))
 
 type RetreatFilterProps = {
@@ -214,7 +217,11 @@ export default function PopperFilter(props: LodgingFilterProps) {
       />
       {props.open ? (
         <ClickAwayListener onClickAway={props.toggleOpen}>
-          <Popper anchorEl={btnRef.current} placement="bottom-start" open>
+          <Popper
+            className={classes.popper} // needed for popper to appear over drawer
+            anchorEl={btnRef.current}
+            placement="bottom-start"
+            open>
             {props.popper}
           </Popper>
         </ClickAwayListener>
