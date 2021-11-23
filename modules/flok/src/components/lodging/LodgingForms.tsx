@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
   },
   ctaContainer: {
-    flexDirection: "row-reverse",
     display: "flex",
     justifyContent: "space-between",
     width: "100%",

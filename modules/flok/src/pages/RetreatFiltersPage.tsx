@@ -20,6 +20,11 @@ import {convertGuid} from "../utils"
 import {useRetreat, useRetreatFilters} from "../utils/lodgingUtils"
 
 let useStyles = makeStyles((theme) => ({
+  footerContainer: {
+    "& > *:not(:first-child)": {
+      marginLeft: theme.spacing(2),
+    },
+  },
   filterSection: {
     display: "flex",
     flexDirection: "column",
@@ -68,10 +73,11 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
           <PageOverlay
             footerBody={
               <PageOverlayFooterDefaultBody>
-                <div>
+                <div className={classes.footerContainer}>
                   <Button
                     variant="contained"
                     color="primary"
+                    size="large"
                     onClick={() =>
                       dispatch(
                         push(
@@ -82,6 +88,22 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
                       )
                     }>
                     Next step
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="large"
+                    onClick={() =>
+                      dispatch(
+                        push(
+                          AppRoutes.getPath("DestinationsListPage", {
+                            retreatGuid,
+                          })
+                        )
+                      )
+                    }>
+                    {/*Padded to match size of "next steps" button*/}
+                    &nbsp;&nbsp;&nbsp;Skip&nbsp;&nbsp;&nbsp;{" "}
                   </Button>
                 </div>
               </PageOverlayFooterDefaultBody>

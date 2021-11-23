@@ -49,7 +49,7 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     alignItems: "center",
     "& > :not(:first-child)": {
-      marginLeft: theme.spacing(1),
+      marginLeft: theme.spacing(2),
     },
   },
   filterSection: {
@@ -223,13 +223,15 @@ function HotelsListPage(props: HotelsListPageProps) {
               <div className={classes.ctaSection}>
                 <Button
                   variant="contained"
+                  size="large"
                   color="primary"
                   onClick={onClickNextStep}>
                   Next step
                 </Button>
                 <Button
-                  variant="text"
+                  variant="outlined"
                   color="primary"
+                  size="large"
                   onClick={() => {
                     dispatch(
                       push(
@@ -237,7 +239,7 @@ function HotelsListPage(props: HotelsListPageProps) {
                       )
                     )
                   }}>
-                  Back
+                  &nbsp;&nbsp;&nbsp;Back&nbsp;&nbsp;&nbsp;
                 </Button>
               </div>
             </PageOverlayFooterDefaultBody>
