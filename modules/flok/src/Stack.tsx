@@ -10,6 +10,7 @@ import HotelsListPage from "./pages/HotelsListPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import ProposalPage from "./pages/ProposalPage"
+import ProposalsListPage from "./pages/ProposalsListPage"
 import RetreatFiltersPage from "./pages/RetreatFiltersPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 import RetreatRoutingPage from "./pages/RetreatRoutingPage"
@@ -19,7 +20,7 @@ import UserGetters from "./store/getters/user"
 
 type FlokRoute = {
   name: string
-  component: JSX.Element
+  component: JSX.Element | (() => JSX.Element)
   path: string | string[]
   loginStatus?:
     | ("UNKNOWN" | "LOGGED_IN" | "LOGGED_OUT")[]
@@ -67,7 +68,8 @@ export class AppRoutes {
     },
     {
       name: "HotelProposalWaitingPage",
-      component: <HotelProposalWaitingPage />,
+      component: () =>
+        true ? <ProposalsListPage /> : <HotelProposalWaitingPage />,
       path: "/r/:retreatGuid/proposals",
     },
     {
@@ -102,7 +104,11 @@ export class AppRoutes {
         path={route.path}
         key={route.name}
         exact
-        render={() => route.component}></Route>
+        render={
+          typeof route.component === "function"
+            ? route.component
+            : () => route.component
+        }></Route>
     ))
   }
 
