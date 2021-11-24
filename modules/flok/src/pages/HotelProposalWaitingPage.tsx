@@ -1,7 +1,6 @@
 import {Hidden, makeStyles} from "@material-ui/core"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RouteComponentProps, withRouter} from "react-router"
 import AppTypography from "../components/base/AppTypography"
 import {AppHotelCarousel} from "../components/lodging/AppHotelCarousel"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
@@ -18,7 +17,7 @@ import {getHotels} from "../store/actions/lodging"
 import {convertGuid} from "../utils"
 import {useRetreat} from "../utils/lodgingUtils"
 
-type HotelProposalWaitingPageProps = RouteComponentProps<{retreatGuid: string}>
+type HotelProposalWaitingPageProps = {retreatGuid: string}
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -47,7 +46,7 @@ let useStyles = makeStyles((theme) => ({
 
 function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
   let classes = useStyles(props)
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatGuid = convertGuid(props.retreatGuid)
   let retreat = useRetreat(retreatGuid)
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
@@ -67,7 +66,7 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
   function onViewHotel(hotel: HotelModel) {
     const newTab = window.open(
       AppRoutes.getPath("HotelPage", {
-        retreatGuid: props.match.params.retreatGuid,
+        retreatGuid: props.retreatGuid,
         hotelGuid: hotel.guid,
       }),
       "_blank"
@@ -186,4 +185,4 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
   )
 }
 
-export default withRouter(HotelProposalWaitingPage)
+export default HotelProposalWaitingPage

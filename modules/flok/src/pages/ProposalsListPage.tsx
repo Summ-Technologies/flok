@@ -2,7 +2,6 @@ import {Button, ButtonBase, makeStyles, Paper} from "@material-ui/core"
 import {ArrowRight} from "@material-ui/icons"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import RetreatRequired from "../components/lodging/RetreatRequired"
@@ -135,14 +134,14 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type ProposalsListPageProps = RouteComponentProps<{retreatGuid: string}>
+type ProposalsListPageProps = {retreatGuid: string}
 function ProposalsListPage(props: ProposalsListPageProps) {
   // Setup
   let dispatch = useDispatch()
   let classes = useStyles(props)
 
   // Path and query params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatGuid = convertGuid(props.retreatGuid)
   let retreat = useRetreat(retreatGuid)
 
   // TODO: replace w hotels loaded from retreat
@@ -260,4 +259,4 @@ function ProposalsListPage(props: ProposalsListPageProps) {
     </RetreatRequired>
   )
 }
-export default withRouter(ProposalsListPage)
+export default ProposalsListPage
