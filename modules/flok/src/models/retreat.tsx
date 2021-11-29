@@ -1,3 +1,5 @@
+import {FlokInternalAdminModel} from "./user"
+
 export type RetreatSelectedHotelProposalState =
   | "SELECTED"
   | "PENDING"
@@ -32,6 +34,7 @@ export type RetreatModel = {
   preferences_dates_exact_end?: string
   preferences_dates_flexible_months?: string[]
   preferences_dates_flexible_num_nights?: number
+  flok_sourcing_admin?: FlokInternalAdminModel
 }
 
 export type FilterAnswerModel = {
