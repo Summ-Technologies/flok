@@ -99,8 +99,7 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
             <div className={classes.section}>
               <AppTypography variant="h3">What's next?</AppTypography>
               <AppTypography variant="body1">
-                We will now negotiate with hotels on your behalf. Once we have
-                an update, we will contact you at{" "}
+                It's time for us to get to work! We'll reach out to you at{" "}
                 <a
                   href={`mailto:${
                     retreat &&
@@ -111,6 +110,8 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
                     retreat !== ResourceNotFound &&
                     retreat.contact_email}
                 </a>{" "}
+                with updates as we hear back on availability and pricing for
+                your selected hotels.
               </AppTypography>
             </div>
             <div className={classes.section}>
@@ -138,43 +139,43 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
               />
             </div>
             <div className={classes.section}>
-              <AppTypography variant="h3">
-                We're with you the whole way
-              </AppTypography>{" "}
+              <AppTypography variant="h3">We're here for you!</AppTypography>{" "}
               <div className={classes.contact_body}>
-                {retreat && retreat !== ResourceNotFound && (
-                  <img
-                    className={classes.contact_img}
-                    src={
-                      "https://t4.ftcdn.net/jpg/02/19/63/31/360_F_219633151_BW6TD8D1EA9OqZu4JgdmeJGg4JBaiAHj.jpg"
-                    }
-                    alt="TODO"
-                  />
-                )}
+                {retreat &&
+                  retreat !== ResourceNotFound &&
+                  retreat.flok_sourcing_admin?.avatar_img && (
+                    <img
+                      className={classes.contact_img}
+                      src={retreat.flok_sourcing_admin.avatar_img.image_url}
+                      alt={retreat.flok_sourcing_admin.avatar_img.alt}
+                    />
+                  )}
                 <AppTypography variant="body1">
-                  You've been assigned{" "}
-                  <strong>
-                    {retreat && retreat !== ResourceNotFound && "TODO"}
-                  </strong>{" "}
-                  as your bookng concierge! If you have any questions, you can
-                  email him at{" "}
-                  <a
-                    href={`mailto:${
-                      retreat &&
-                      retreat !== ResourceNotFound &&
-                      "sam@goflok.com"
-                    }`}>
-                    {retreat && retreat !== ResourceNotFound && "TODO"}
-                  </a>{" "}
-                  or reach him during business hours (9am - 6pm) at{" "}
-                  <a
-                    href={`tel:${
-                      retreat &&
-                      retreat !== ResourceNotFound &&
-                      "(555)-123-4567"
-                    }`}>
-                    {retreat && retreat !== ResourceNotFound && "TODO"}
-                  </a>
+                  {retreat &&
+                  retreat !== ResourceNotFound &&
+                  retreat.flok_sourcing_admin ? (
+                    <>
+                      <strong>
+                        {retreat.flok_sourcing_admin.first_name}
+                        {retreat.flok_sourcing_admin.last_name &&
+                          ` ${retreat.flok_sourcing_admin.last_name}`}
+                      </strong>{" "}
+                      has been assigned as your booking concierge! If you have
+                      any questions about the process, feel free to reach out at{" "}
+                      <a href={`mailto:${retreat.flok_sourcing_admin.email}`}>
+                        {retreat.flok_sourcing_admin.email}
+                      </a>{" "}
+                      and we'll get back to you ASAP!
+                    </>
+                  ) : (
+                    <>
+                      Flok's team of hospitality professionals is here to guide
+                      you through every step of your retreat! At any point if
+                      you have questions, please reach out to us at{" "}
+                      <a href={`mailto:sam@goflok.com`}>sam@goflok.com</a> and
+                      we'll get back to you ASAP.
+                    </>
+                  )}
                 </AppTypography>
               </div>
             </div>
