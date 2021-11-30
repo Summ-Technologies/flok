@@ -9,6 +9,7 @@ import HotelProposalWaitingPage from "./pages/HotelProposalWaitingPage"
 import HotelsListPage from "./pages/HotelsListPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
+import ProposalPage from "./pages/ProposalPage"
 import RetreatFiltersPage from "./pages/RetreatFiltersPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 import RetreatRoutingPage from "./pages/RetreatRoutingPage"
@@ -68,6 +69,11 @@ export class AppRoutes {
       name: "HotelProposalWaitingPage",
       component: <HotelProposalWaitingPage />,
       path: "/r/:retreatGuid/proposals",
+    },
+    {
+      name: "ProposalPage",
+      component: <ProposalPage />,
+      path: "/r/:retreatGuid/proposals/:proposalGuid",
     },
     {
       name: "RFPLiteResponsePage",
