@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
+import AgendaSelectionPage from "./pages/AgendaSelectionPage"
 import DestinationPage from "./pages/DestinationPage"
 import DestinationsListPage from "./pages/DestinationsListPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
@@ -68,6 +69,11 @@ export class AppRoutes {
       name: "HotelProposalWaitingPage",
       component: <HotelProposalWaitingPage />,
       path: "/r/:retreatGuid/proposals",
+    },
+    {
+      name: "AgendaSelectionPage",
+      component: <AgendaSelectionPage />,
+      path: "/r/:retreatGuid/agendas",
     },
     {
       name: "RFPLiteResponsePage",
