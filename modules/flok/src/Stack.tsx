@@ -13,6 +13,7 @@ import RetreatFiltersPage from "./pages/RetreatFiltersPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 import RetreatRoutingPage from "./pages/RetreatRoutingPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
+import SowPage from "./pages/SowPage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
 
@@ -33,6 +34,11 @@ export class AppRoutes {
       name: "NewRetreatFormPage",
       component: <NewRetreatFormPage />,
       path: "/getting-started",
+    },
+    {
+      name: "SowPage",
+      component: <SowPage />,
+      path: "/sow",
     },
     {
       name: "RetreatPreferencesFormPage",
