@@ -30,7 +30,7 @@ let useStyles = makeStyles((theme) => ({
 }))
 
 export type PageHeaderProps = {
-  header: string
+  header: JSX.Element | string
   subheader?: string
   preHeader?: JSX.Element
   postHeader?: JSX.Element
@@ -46,9 +46,13 @@ export default function PageHeader(props: PageHeaderProps) {
         ) : undefined}
 
         <div className={classes.title}>
-          <AppTypography variant="h1" noWrap>
-            {props.header}
-          </AppTypography>
+          {typeof props.header === "string" ? (
+            <AppTypography variant="h1" noWrap>
+              {props.header}
+            </AppTypography>
+          ) : (
+            props.header
+          )}
           {props.subheader ? (
             <AppTypography variant="body1">{props.subheader}</AppTypography>
           ) : undefined}
