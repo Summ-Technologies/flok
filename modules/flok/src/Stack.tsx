@@ -73,7 +73,7 @@ export class AppRoutes {
     {
       name: "ProposalPage",
       component: <ProposalPage />,
-      path: "/r/:retreatGuid/proposals/:proposalGuid",
+      path: "/r/:retreatGuid/proposals/:hotelGuid",
     },
     {
       name: "RFPLiteResponsePage",

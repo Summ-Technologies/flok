@@ -1,5 +1,4 @@
-import {Button, ButtonBase, makeStyles, Paper} from "@material-ui/core"
-import {ArrowRight} from "@material-ui/icons"
+import {Button, makeStyles, Paper} from "@material-ui/core"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import AppTypography from "../components/base/AppTypography"
@@ -9,7 +8,8 @@ import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
 import {ResourceNotFound} from "../models"
-import {RetreatSelectedHotelProposal} from "../models/retreat"
+import {HotelModel} from "../models/lodging"
+import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotels} from "../store/actions/lodging"
 import {convertGuid} from "../utils"
@@ -32,19 +32,11 @@ let useStyles = makeStyles((theme) => ({
   card: {
     position: "relative",
     display: "flex",
-    cursor: "pointer",
-    "&:hover": {
-      boxShadow: theme.shadows[4],
-    },
     borderRadius: theme.shape.borderRadius,
     width: "100%",
     maxWidth: "100%",
     flexDirection: "row",
     alignItems: "center",
-    // border: (props: LodgingListItemProps) =>
-    //   props.selected ? `solid 1px ${theme.palette.primary.main}` : "",
-    // boxShadow: (props: LodgingListItemProps) =>
-    //   props.selected ? theme.shadows[2] : "",
   },
   cardBody: {
     display: "flex",
@@ -59,7 +51,6 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    maxWidth: 200,
     [theme.breakpoints.down("xs")]: {
       maxWidth: 140,
     },
@@ -116,21 +107,12 @@ let useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(0.5),
     },
   },
-  exploreArrow: {
-    width: 40, // edit children max width if changing this value
-    "&:hover": {
-      backgroundColor: theme.palette.grey[200],
-    },
-    borderTopRightRadius: theme.shape.borderRadius,
-    borderBottomRightRadius: theme.shape.borderRadius,
-    marginLeft: "auto",
-    height: "100%",
-  },
   spacer: {
-    flexGrow: 2,
+    flexGrow: 1,
   },
-  chooseButton: {
+  viewProposalButton: {
     padding: "8px 22px",
+    marginRight: theme.spacing(2),
   },
 }))
 
@@ -144,25 +126,39 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   let retreatGuid = convertGuid(props.retreatGuid)
   let retreat = useRetreat(retreatGuid)
 
-  // TODO: replace w hotels loaded from retreat
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
-  let hotelIds = [235, 236, 237, 238, 239, 240, 241, 242, 243]
-  useEffect(() => {
+  let selectedHotels = useSelector((state: RootState) => {
+    let retreat = state.retreat.retreats[retreatGuid]
     if (retreat && retreat !== ResourceNotFound) {
-      let filters = hotelIds
-        .map((id) => ` OR id=${id}`)
-        .reduce((prev, curr) => prev + curr, "")
-        .substr(4)
-      console.log(filters)
-      dispatch(getHotels(filters))
-      console.log(hotelsById)
+      return retreat.selected_hotels
     }
-  }, [retreat, dispatch])
+    return []
+  })
+  useEffect(() => {
+    let missingHotels = selectedHotels.filter(
+      (selectedHotel) => hotelsById[selectedHotel.hotel_id] === undefined
+    )
+    if (missingHotels.length > 0) {
+      let filter = missingHotels
+        .map((selectedHotel) => `id=${selectedHotel.hotel_id}`)
+        .join(" OR ")
+      dispatch(getHotels(filter))
+    }
+  }, [selectedHotels, hotelsById, dispatch])
+
   let destinations = Object.values(useDestinations()[0])
 
   // Actions
-  function onExplore(hotelProposal: RetreatSelectedHotelProposal) {}
-  function onChooseProposal(hotelProposal: RetreatSelectedHotelProposal) {}
+  function onExplore(hotel: HotelModel) {
+    const newTab = window.open(
+      AppRoutes.getPath("ProposalPage", {
+        retreatGuid: props.retreatGuid,
+        hotelGuid: hotel.guid,
+      }),
+      "_blank"
+    )
+    newTab?.focus()
+  }
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
@@ -180,79 +176,87 @@ function ProposalsListPage(props: ProposalsListPageProps) {
             {hotelsById &&
               retreat &&
               retreat !== ResourceNotFound &&
-              hotelIds //TODO
-                .map((k) => hotelsById[k])
-                .filter((hotel) => hotel)
-                .map((hotel) => (
-                  <Paper className={classes.card}>
-                    <div className={classes.imgContainer}>
-                      <img
-                        src={hotel.spotlight_img.image_url}
-                        alt={`${hotel.name} spotlight`}
-                      />
-                    </div>
-                    <div className={classes.cardBody}>
-                      <div className={classes.headerContainer}>
-                        <AppTypography
-                          variant="body2"
-                          color="textSecondary"
-                          uppercase
-                          noWrap>
-                          {destinations.filter(
-                            (dest) => dest.id === hotel.destination_id
-                          )[0]
-                            ? DestinationUtils.getLocationName(
-                                destinations.filter(
-                                  (dest) => dest.id === hotel.destination_id
-                                )[0],
-                                false
-                              )
-                            : ""}
-                        </AppTypography>
-                        <AppTypography variant="h4" noWrap>
-                          {hotel.name}
-                        </AppTypography>
+              selectedHotels //TODO
+                .filter((selectedHotel) => hotelsById[selectedHotel.hotel_id])
+                .sort(
+                  (a, b) =>
+                    hotelsById[a.hotel_id].destination_id -
+                    hotelsById[b.hotel_id].destination_id
+                )
+                .map((selectedHotel) => {
+                  let hotel = hotelsById[selectedHotel.hotel_id]
+                  let proposal = selectedHotel.hotel_proposal
+                  let proposalReady = false
+                  if (proposal && selectedHotel.state === "REVIEW") {
+                    proposalReady = true
+                  }
+                  return (
+                    <Paper className={classes.card}>
+                      <div className={classes.imgContainer}>
+                        <img
+                          src={hotel.spotlight_img.image_url}
+                          alt={`${hotel.name} spotlight`}
+                        />
                       </div>
-                      <div className={classes.attributesContainer}>
-                        <div className={classes.attributeTag}>
-                          <AppTypography variant="body2" noWrap uppercase>
-                            Avg Room Cost
+                      <div className={classes.cardBody}>
+                        <div className={classes.headerContainer}>
+                          <AppTypography
+                            variant="body2"
+                            color="textSecondary"
+                            uppercase
+                            noWrap>
+                            {destinations.filter(
+                              (dest) => dest.id === hotel.destination_id
+                            )[0]
+                              ? DestinationUtils.getLocationName(
+                                  destinations.filter(
+                                    (dest) => dest.id === hotel.destination_id
+                                  )[0],
+                                  false
+                                )
+                              : ""}
                           </AppTypography>
-                          <AppTypography variant="body1" fontWeight="bold">
-                            TODO
+                          <AppTypography variant="h4" noWrap>
+                            {hotel.name}
                           </AppTypography>
                         </div>
-                        <div className={classes.attributeTag}>
-                          <AppTypography variant="body2" noWrap uppercase>
-                            FlokIq Cost Estimate
-                          </AppTypography>
-                          <AppTypography variant="body1" fontWeight="bold">
-                            TODO
-                          </AppTypography>
-                        </div>
+                        {proposalReady ?? (
+                          <div className={classes.attributesContainer}>
+                            <div className={classes.attributeTag}>
+                              <AppTypography variant="body2" noWrap uppercase>
+                                Avg Room Cost
+                              </AppTypography>
+                              <AppTypography variant="body1" fontWeight="bold">
+                                {proposal.guestroom_rates}
+                              </AppTypography>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    <div className={classes.spacer}></div>
-                    <Button
-                      className={classes.chooseButton}
-                      variant="contained"
-                      color="primary"
-                      onClick={() =>
-                        onChooseProposal({} as RetreatSelectedHotelProposal)
-                      }>
-                      Choose Proposal
-                    </Button>
-                    <div className={classes.spacer}></div>
-                    <ButtonBase
-                      className={classes.exploreArrow}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onExplore({} as RetreatSelectedHotelProposal)
-                      }}>
-                      <ArrowRight fontSize="large" />
-                    </ButtonBase>
-                  </Paper>
-                ))}
+                      <div className={classes.spacer}></div>
+                      {proposalReady ? (
+                        <Button
+                          className={classes.viewProposalButton}
+                          variant="outlined"
+                          color="primary"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onExplore(hotel)
+                          }}>
+                          View Proposal
+                        </Button>
+                      ) : (
+                        <Button
+                          className={classes.viewProposalButton}
+                          variant="contained"
+                          color="default"
+                          disabled>
+                          No Availability
+                        </Button>
+                      )}
+                    </Paper>
+                  )
+                })}
           </div>
         </PageOverlay>
       </PageContainer>
