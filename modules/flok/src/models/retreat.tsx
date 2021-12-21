@@ -5,10 +5,33 @@ export type RetreatSelectedHotelProposalState =
   | "PENDING"
   | "NOT_AVAILABLE"
   | "REVIEW"
+
+export type HotelLodgingProposal = {
+  id: number
+  summary: string
+  hold_status: string
+  guestroom_rates: string
+  approx_room_total: string
+  resort_fee: string
+  tax_rates: string
+  additional_fees: string
+  suggested_meeting_spaces: string
+  meeting_room_rates: string
+  meeting_room_tax_rates: string
+  food_bev_minimum: string
+  food_bev_service_fee: string
+  avg_breakfast_price: string
+  avg_snack_price: string
+  avg_lunch_price: string
+  avg_dinner_price: string
+  cost_saving_notes: string
+}
+
 export type RetreatSelectedHotelProposal = {
   retreat_id: number
   hotel_id: number
   state: RetreatSelectedHotelProposalState
+  hotel_proposal: HotelLodgingProposal
 }
 
 export type RetreatProgressState =
@@ -27,7 +50,7 @@ export type RetreatModel = {
   state: RetreatProgressState
   selected_destinations_ids: number[]
   selected_hotels_ids: number[]
-  selected_hotels_proposals: RetreatSelectedHotelProposal[]
+  selected_hotels: RetreatSelectedHotelProposal[]
   preferences_num_attendees_lower?: number
   preferences_is_dates_flexible?: boolean
   preferences_dates_exact_start?: string

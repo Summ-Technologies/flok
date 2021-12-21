@@ -1,7 +1,5 @@
-import {Hidden, IconButton, makeStyles, Popover} from "@material-ui/core"
-import {Info} from "@material-ui/icons"
-import {useState} from "react"
-import {useSelector} from "react-redux"
+import {Hidden, makeStyles} from "@material-ui/core"
+import {useEffect, useState} from "react"
 import {RouteComponentProps, withRouter} from "react-router"
 import AppImageGrid from "../components/base/AppImageGrid"
 import AppTypography from "../components/base/AppTypography"
@@ -9,15 +7,17 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import {ResourceNotFound} from "../models"
-import {RootState} from "../store"
+import {ResourceNotFound, ResourceNotFoundType} from "../models"
+import {HotelModel} from "../models/lodging"
+import {HotelLodgingProposal} from "../models/retreat"
+import {AppRoutes} from "../Stack"
 import {convertGuid} from "../utils"
-import {useDestinations, useHotel, useRetreat} from "../utils/lodgingUtils"
+import {useHotel, useRetreat} from "../utils/lodgingUtils"
 import NotFound404Page from "./misc/NotFound404Page"
 
 type ProposalPageProps = RouteComponentProps<{
   retreatGuid: string
-  proposalGuid: string
+  hotelGuid: string
 }>
 
 let useStyles = makeStyles((theme) => ({
@@ -40,35 +40,33 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
   },
-  priceRow: {
-    display: "flex",
-    alignItems: "flex-start",
-    alignContent: "flex-start",
-    paddingTop: 5,
-  },
   infoButton: {
     padding: "0 0 0 5px",
   },
   details: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginLeft: -theme.spacing(2),
+    marginTop: -theme.spacing(2),
+    "& > $detailsSection": {
+      marginLeft: theme.spacing(2),
+      marginTop: theme.spacing(2),
+    },
   },
   detailsSection: {
     display: "flex",
     flexDirection: "column",
-    width: "50%",
-    [theme.breakpoints.down("sm")]: {
+    width: `calc(50% - ${theme.spacing(2)}px)`,
+    [theme.breakpoints.down("md")]: {
       width: "100%",
-      alignItems: "center",
     },
-    padding: "5%",
   },
-  detailsRow: {
-    display: "flex",
+  detail: {
+    marginTop: theme.spacing(0.5),
     width: "100%",
-    [theme.breakpoints.down("sm")]: {
-      flexDirection: "column",
-      alignItems: "center",
+    "& > .MuiTypography-body1": {
+      whiteSpace: "pre-wrap",
     },
   },
 }))
@@ -77,61 +75,29 @@ function ProposalPage(props: ProposalPageProps) {
   let classes = useStyles(props)
 
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let proposalGuid = convertGuid(props.match.params.proposalGuid)
-
+  let hotelGuid = convertGuid(props.match.params.hotelGuid)
+  let hotel = useHotel(hotelGuid)
   let retreat = useRetreat(retreatGuid)
-  let proposal = {
-    retreat_id: 0,
-    hotel_id: 243,
-    state: "REVIEW",
-
-    price_estimate: 19000,
-    food_cost: 5000,
-    taxes_cost: 4000,
-
-    room_cost: 10000,
-    avg_room_cost: 300,
-    room_notes: ["16 rooms at $199", "8 rooms at $239"],
-
-    fb_min: 5000,
-    fb_percent: 0.25,
-    fb_notes: [
-      "Breakfast Buffet: $45++",
-      "Avg. AM/PM Break: $35++",
-      "Avg. Lunch Buffet: $65++",
-      "Avg. Plated Dinner: $125++",
-    ],
-
-    resort_fee: 28.25,
-    env_fee: 35,
-    ft_notes: [
-      "Occupancy tax: 13%",
-      "Business Improvement Area Tax: 2%",
-      "CA Tourism Assessment Fee: 0.2%",
-      "State Tax: $0.43",
-      "Meeting Room Tax Rates: 7.75%",
-    ],
-
-    notes: [
-      "1 Comp Upgrade to Junior Suite",
-      "1 VIP Welcome Amenity",
-      "Group Rate Available 1 day pre & post event",
-      "Included:",
-      "Nightly bonfires",
-      "Coordinated nature walks",
-      "Complimentary WiFi",
-      "Sanctuary bicycles for loan",
-      "Concierge services",
-      "Complimentary self-parking",
-    ],
-  }
-  let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
-  console.log(hotelsById)
-  let hotel = useHotel("eec6ee8b-a907-4d66-89de-106670c99a0c")
-
-  let destinations = Object.values(useDestinations()[0])
-
-  let [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  let [proposal, setProposal] = useState<
+    HotelLodgingProposal | ResourceNotFoundType | undefined
+  >(undefined)
+  useEffect(() => {
+    if (
+      retreat &&
+      retreat !== ResourceNotFound &&
+      hotel &&
+      hotel !== ResourceNotFound
+    ) {
+      let _selectedHotels = retreat.selected_hotels.filter(
+        (selectedHotel) => selectedHotel.hotel_id === (hotel as HotelModel)!.id
+      )
+      if (_selectedHotels.length && _selectedHotels[0].hotel_proposal) {
+        setProposal(_selectedHotels[0].hotel_proposal)
+      } else {
+        setProposal(ResourceNotFound)
+      }
+    }
+  }, [retreat, hotel, setProposal])
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
@@ -142,205 +108,211 @@ function ProposalPage(props: ProposalPageProps) {
       ) : (
         <PageContainer>
           <PageOverlay
-            size="default"
-            right={<AppImageGrid images={hotel.imgs} />}>
+            size="small"
+            right={
+              hotel.imgs && hotel.imgs.length ? (
+                <AppImageGrid images={hotel.imgs} />
+              ) : undefined
+            }>
             <PageHeader
               header={
-                <AppTypography variant="h1" noWrap>
-                  <b>{hotel.name}</b>{" "}
-                  <span className={classes.lightText}>Proposal</span>
+                <AppTypography variant="h1" fontWeight="bold" noWrap>
+                  {hotel.name}{" "}
+                  <AppTypography variant="inherit" fontWeight="light">
+                    Proposal
+                  </AppTypography>
                 </AppTypography>
               }
-              subheader={hotel.description_short} // TODO: tagline or description short
+              subheader={hotel.description_short}
             />
-            <div className={classes.overviewContent}>
-              <AppTypography variant="h2">
-                <b>FlokIQ</b> Hotel Cost Estimate
+            {proposal === undefined ? (
+              <>Loading...</>
+            ) : proposal === ResourceNotFound ? (
+              <AppTypography variant="body1">
+                Proposal missing or unavailable. View your{" "}
+                <a
+                  href={AppRoutes.getPath("HotelProposalWaitingPage", {
+                    retreatGuid,
+                  })}>
+                  proposals list
+                </a>
               </AppTypography>
-              <br />
-              <div className={classes.priceRow}>
-                <AppTypography fontWeight="bold" variant="h2">
-                  ~${proposal.price_estimate}
-                </AppTypography>
-                <IconButton
-                  aria-owns="mouse-over-popover"
-                  onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-                  onMouseLeave={() => setAnchorEl(null)}
-                  className={classes.infoButton}>
-                  <Info fontSize="small" />
-                </IconButton>
-                <Popover
-                  id="mouse-over-popover"
-                  open={Boolean(anchorEl)}
-                  anchorEl={anchorEl}
-                  className={classes.popover}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
-                  }}
-                  onClose={() => setAnchorEl(null)}
-                  onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
-                  onMouseLeave={() => setAnchorEl(null)}
-                  disableRestoreFocus>
-                  <div className={classes.popoverText}>
-                    <AppTypography variant="body1">
-                      This is our best guess at what your all in cost will be
-                      for this Hotel. Note that this is only an estimate and can
-                      vary greatly depending on a number of factors.
+            ) : (
+              <>
+                <div className={classes.details}>
+                  <div className={classes.detailsSection}>
+                    <AppTypography variant="h3" fontWeight="bold">
+                      Room Rates
                     </AppTypography>
+                    {proposal.guestroom_rates && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Guestroom Rates
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.guestroom_rates}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.approx_room_total && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Approx. Room Total (PRE TAX)
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.approx_room_total}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.resort_fee && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Resort Fee
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.resort_fee}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.tax_rates && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Tax Rates
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.tax_rates}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.additional_fees && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Additional Fees
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.additional_fees}
+                        </AppTypography>
+                      </div>
+                    )}
                   </div>
-                </Popover>
-              </div>
-              <br />
-              <div className={classes.priceRow}>
-                <AppTypography fontWeight="bold">
-                  ${proposal.room_cost}
-                </AppTypography>
-                &nbsp;
-                <AppTypography fontWeight="light">
-                  Approx Room Total
-                </AppTypography>
-              </div>
-              <div className={classes.priceRow}>
-                <AppTypography fontWeight="bold">
-                  ${proposal.food_cost}
-                </AppTypography>
-                &nbsp;
-                <AppTypography fontWeight="light">
-                  Food {"&"} Beverage
-                </AppTypography>
-              </div>
-              <div className={classes.priceRow}>
-                <AppTypography fontWeight="bold">
-                  ${proposal.taxes_cost}
-                </AppTypography>
-                &nbsp;
-                <AppTypography fontWeight="light">
-                  Taxes {"&"} Fees
-                </AppTypography>
-              </div>
-            </div>
-
-            <div className={classes.details}>
-              <div className={classes.detailsRow}>
-                <div className={classes.detailsSection}>
-                  <AppTypography variant="h3" fontWeight="bold">
-                    Room Rates
-                  </AppTypography>
-                  <div className={classes.priceRow}>
-                    <AppTypography fontWeight="bold">
-                      ${proposal.avg_room_cost}
+                  <div className={classes.detailsSection}>
+                    <AppTypography variant="h3" fontWeight="bold">
+                      Food and beverage
                     </AppTypography>
-                    &nbsp;
-                    <AppTypography fontWeight="light">
-                      Average Room Cost
-                    </AppTypography>
+                    {proposal.food_bev_minimum && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          F&B Minimum
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.food_bev_minimum}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.food_bev_service_fee && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          F&B Service Fee
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.food_bev_service_fee}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.avg_breakfast_price && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Avg. Breakfast Buffet
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.avg_breakfast_price}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.avg_snack_price && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Avg. AM/PM Break
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.avg_snack_price}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.avg_lunch_price && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Avg. Lunch Buffet
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.avg_lunch_price}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.avg_dinner_price && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Avg. Plated Dinner
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.avg_dinner_price}
+                        </AppTypography>
+                      </div>
+                    )}
                   </div>
-                  <div className={classes.priceRow}>
-                    <AppTypography fontWeight="bold">
-                      ${proposal.room_cost}
+                  <div className={classes.detailsSection}>
+                    <AppTypography variant="h3" fontWeight="bold">
+                      Meeting Space
                     </AppTypography>
-                    &nbsp;
-                    <AppTypography fontWeight="light">
-                      Approx Room Total
-                    </AppTypography>
+                    {proposal.meeting_room_rates && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Suggested Meeting Spaces
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.meeting_room_rates}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.meeting_room_tax_rates && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Meeting Room Rates
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.meeting_room_tax_rates}
+                        </AppTypography>
+                      </div>
+                    )}
+                    {proposal.meeting_room_tax_rates && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Meeting Room Tax Rates
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.meeting_room_tax_rates}
+                        </AppTypography>
+                      </div>
+                    )}
                   </div>
-                  <br />
-                  <AppTypography variant="h4" fontWeight="bold">
-                    Room Rate Breakdown
-                  </AppTypography>
-                  <div>
-                    {proposal.room_notes.map((s) => (
-                      <AppTypography>{s}</AppTypography>
-                    ))}
-                  </div>
+                  {proposal.cost_saving_notes && (
+                    <div className={classes.detailsSection}>
+                      <AppTypography variant="h3" fontWeight="bold">
+                        Additional Notes
+                      </AppTypography>
+                      <div className={classes.detail}>
+                        <AppTypography variant="body1">
+                          {proposal.cost_saving_notes}
+                        </AppTypography>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className={classes.detailsSection}>
-                  <AppTypography variant="h3" fontWeight="bold">
-                    Food and beverage
-                  </AppTypography>
-                  <div className={classes.priceRow}>
-                    <AppTypography fontWeight="bold">
-                      ${proposal.fb_min}
-                    </AppTypography>
-                    &nbsp;
-                    <AppTypography fontWeight="light">
-                      {"F&B Minimum"}
-                    </AppTypography>
-                  </div>
-                  <div className={classes.priceRow}>
-                    <AppTypography fontWeight="bold">
-                      {proposal.fb_percent * 100}%
-                    </AppTypography>
-                    &nbsp;
-                    <AppTypography fontWeight="light">
-                      {"F&B Minimum"}
-                    </AppTypography>
-                  </div>
-                  <br />
-                  <AppTypography variant="h4" fontWeight="bold">
-                    Average Meal Costs
-                  </AppTypography>
-                  <div>
-                    {proposal.fb_notes.map((s) => (
-                      <AppTypography>{s}</AppTypography>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className={classes.detailsRow}>
-                <div className={classes.detailsSection}>
-                  <AppTypography variant="h3" fontWeight="bold">
-                    Fees and Taxes
-                  </AppTypography>
-                  <div className={classes.priceRow}>
-                    <AppTypography fontWeight="bold">
-                      ${proposal.resort_fee}
-                    </AppTypography>
-                    &nbsp;
-                    <AppTypography fontWeight="light">
-                      Resort Fee (per room per night)
-                    </AppTypography>
-                  </div>
-                  <div className={classes.priceRow}>
-                    <AppTypography fontWeight="bold">
-                      ${proposal.env_fee}
-                    </AppTypography>
-                    &nbsp;
-                    <AppTypography fontWeight="light">
-                      Environmental fee (per room per night)
-                    </AppTypography>
-                  </div>
-                  <br />
-                  <AppTypography variant="h4" fontWeight="bold">
-                    Tax Rates
-                  </AppTypography>
-                  <div>
-                    {proposal.ft_notes.map((s) => (
-                      <AppTypography>{s}</AppTypography>
-                    ))}
-                  </div>
-                </div>
-                <div className={classes.detailsSection}>
-                  <AppTypography variant="h3" fontWeight="bold">
-                    Notes
-                  </AppTypography>
-                  <br />
-                  <div>
-                    {proposal.notes.map((s) => (
-                      <AppTypography>{s}</AppTypography>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Hidden mdUp>
-              <AppImageGrid images={hotel.imgs} />
-            </Hidden>
+                <Hidden mdUp>
+                  <AppImageGrid images={hotel.imgs} />
+                </Hidden>
+              </>
+            )}
           </PageOverlay>
         </PageContainer>
       )}
