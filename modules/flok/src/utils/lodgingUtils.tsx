@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../models"
 import {DestinationModel, HotelModel} from "../models/lodging"
-import {FilterAnswerModel} from "../models/retreat"
+import {FilterAnswerModel, RetreatModel} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getDestinations,
@@ -215,7 +215,7 @@ export function useRetreat(retreatGuid: string) {
       dispatch(getRetreat(retreatGuid))
     }
   }, [retreat, dispatch, retreatGuid])
-  return retreat
+  return retreat as RetreatModel | ResourceNotFoundType | undefined
 }
 
 export class DestinationUtils {
