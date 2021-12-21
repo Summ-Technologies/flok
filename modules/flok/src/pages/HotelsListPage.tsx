@@ -210,7 +210,7 @@ function HotelsListPage(props: HotelsListPageProps) {
         }
         dispatch(
           push(
-            AppRoutes.getPath("HotelProposalWaitingPage", {
+            AppRoutes.getPath("ProposalsListPage", {
               retreatGuid: props.match.params.retreatGuid,
             })
           )

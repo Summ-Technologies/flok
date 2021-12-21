@@ -41,6 +41,7 @@ export type RetreatProgressState =
   | "DESTINATION_SELECT"
   | "HOTEL_SELECT"
   | "PROPOSAL"
+  | "PROPOSAL_READY"
 
 export type RetreatModel = {
   id: number

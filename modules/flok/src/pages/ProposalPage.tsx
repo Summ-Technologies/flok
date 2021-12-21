@@ -131,7 +131,7 @@ function ProposalPage(props: ProposalPageProps) {
               <AppTypography variant="body1">
                 Proposal missing or unavailable. View your{" "}
                 <a
-                  href={AppRoutes.getPath("HotelProposalWaitingPage", {
+                  href={AppRoutes.getPath("ProposalsListPage", {
                     retreatGuid,
                   })}>
                   proposals list

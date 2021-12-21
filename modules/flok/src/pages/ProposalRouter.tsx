@@ -12,14 +12,13 @@ function ProposalRouter(props: ProposalRouterProps) {
   // Path and query params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
   let retreat = useRetreat(retreatGuid) as RetreatModel | undefined
-
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
       {retreat ? (
         retreat.state === "PROPOSAL" ? (
-          <ProposalsListPage retreatGuid={retreatGuid} />
-        ) : retreat.state === "FILTER_SELECT" ? (
-          <HotelProposalWaitingPage retreatGuid={retreatGuid} />
+          <HotelProposalWaitingPage />
+        ) : retreat.state === "PROPOSAL_READY" ? (
+          <ProposalsListPage />
         ) : (
           <RedirectPage
             pageName="RetreatRoutingPage"

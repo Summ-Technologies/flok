@@ -1,6 +1,7 @@
 import {Button, makeStyles, Paper} from "@material-ui/core"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
+import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import RetreatRequired from "../components/lodging/RetreatRequired"
@@ -116,14 +117,16 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type ProposalsListPageProps = {retreatGuid: string}
+type ProposalsListPageProps = RouteComponentProps<{
+  retreatGuid: string
+}>
 function ProposalsListPage(props: ProposalsListPageProps) {
   // Setup
   let dispatch = useDispatch()
   let classes = useStyles(props)
 
   // Path and query params
-  let retreatGuid = convertGuid(props.retreatGuid)
+  let retreatGuid = convertGuid(props.match.params.retreatGuid)
   let retreat = useRetreat(retreatGuid)
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
@@ -152,7 +155,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   function onExplore(hotel: HotelModel) {
     const newTab = window.open(
       AppRoutes.getPath("ProposalPage", {
-        retreatGuid: props.retreatGuid,
+        retreatGuid: retreatGuid,
         hotelGuid: hotel.guid,
       }),
       "_blank"
@@ -263,4 +266,4 @@ function ProposalsListPage(props: ProposalsListPageProps) {
     </RetreatRequired>
   )
 }
-export default ProposalsListPage
+export default withRouter(ProposalsListPage)

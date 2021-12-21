@@ -66,7 +66,7 @@ export class AppRoutes {
       path: "/r/:retreatGuid/hotels/:hotelGuid",
     },
     {
-      name: "HotelProposalWaitingPage",
+      name: "ProposalsListPage",
       component: <ProposalRouter />,
       path: "/r/:retreatGuid/proposals",
     },
