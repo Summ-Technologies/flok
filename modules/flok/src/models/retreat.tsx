@@ -8,6 +8,10 @@ export type RetreatSelectedHotelProposalState =
 
 export type HotelLodgingProposal = {
   id: number
+  dates: string
+  compare_room_rate: number
+  compare_room_total: number
+  on_hold: boolean
   summary: string
   hold_status: string
   guestroom_rates: string

@@ -179,13 +179,23 @@ function ProposalsListPage(props: ProposalsListPageProps) {
             {hotelsById &&
               retreat &&
               retreat !== ResourceNotFound &&
-              selectedHotels //TODO
+              selectedHotels
                 .filter((selectedHotel) => hotelsById[selectedHotel.hotel_id])
+                .filter((selectedHotel) =>
+                  ["NOT_AVAILABLE", "REVIEW"].includes(selectedHotel.state)
+                )
                 .sort(
                   (a, b) =>
                     hotelsById[a.hotel_id].destination_id -
                     hotelsById[b.hotel_id].destination_id
                 )
+                .sort((a, b) => {
+                  // sort by state so non-available are on bottom
+                  return (
+                    (a.state === "REVIEW" ? 0 : 1) -
+                    (b.state === "REVIEW" ? 0 : 1)
+                  )
+                })
                 .map((selectedHotel) => {
                   let hotel = hotelsById[selectedHotel.hotel_id]
                   let proposal = selectedHotel.hotel_proposal
@@ -223,16 +233,32 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                             {hotel.name}
                           </AppTypography>
                         </div>
-                        {proposalReady ?? (
+                        {proposalReady && (
                           <div className={classes.attributesContainer}>
-                            <div className={classes.attributeTag}>
-                              <AppTypography variant="body2" noWrap uppercase>
-                                Avg Room Cost
-                              </AppTypography>
-                              <AppTypography variant="body1" fontWeight="bold">
-                                {proposal.guestroom_rates}
-                              </AppTypography>
-                            </div>
+                            {proposal.compare_room_rate && (
+                              <div className={classes.attributeTag}>
+                                <AppTypography variant="body2" noWrap uppercase>
+                                  Avg Room Cost
+                                </AppTypography>
+                                <AppTypography
+                                  variant="body1"
+                                  fontWeight="bold">
+                                  {proposal.compare_room_rate}
+                                </AppTypography>
+                              </div>
+                            )}
+                            {proposal.compare_room_total && (
+                              <div className={classes.attributeTag}>
+                                <AppTypography variant="body2" noWrap uppercase>
+                                  Avg Room Total
+                                </AppTypography>
+                                <AppTypography
+                                  variant="body1"
+                                  fontWeight="bold">
+                                  {proposal.compare_room_total}
+                                </AppTypography>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
