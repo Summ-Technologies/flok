@@ -1,4 +1,5 @@
 import {Hidden, makeStyles} from "@material-ui/core"
+import clsx from "clsx"
 import {useEffect, useState} from "react"
 import {RouteComponentProps, withRouter} from "react-router"
 import AppImageGrid from "../components/base/AppImageGrid"
@@ -43,6 +44,34 @@ let useStyles = makeStyles((theme) => ({
   infoButton: {
     padding: "0 0 0 5px",
   },
+  attributesContainer: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginLeft: theme.spacing(-1),
+    marginBottom: theme.spacing(1),
+    "& > *": {
+      marginBottom: theme.spacing(1),
+      marginLeft: theme.spacing(1),
+    },
+  },
+  attributeTag: {
+    borderRadius: theme.shape.borderRadius,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    padding: theme.spacing(0.5),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    backgroundColor: theme.palette.grey[300], // matching chip default background color
+    "&.noHold": {
+      backgroundColor: theme.palette.error.light,
+    },
+    "&.onHold": {
+      backgroundColor: theme.palette.success.main,
+    },
+  },
   details: {
     display: "flex",
     flexDirection: "row",
@@ -52,21 +81,34 @@ let useStyles = makeStyles((theme) => ({
     "& > $detailsSection": {
       marginLeft: theme.spacing(2),
       marginTop: theme.spacing(2),
+      width: `calc(50% - ${theme.spacing(2)}px)`,
+      [theme.breakpoints.down("lg")]: {
+        width: "100%",
+      },
+    },
+  },
+  detailsNoGallery: {
+    "& $detailsSection": {
+      width: `calc(50% - ${theme.spacing(2)}px)`,
+      [theme.breakpoints.down("sm")]: {
+        width: "100%",
+      },
     },
   },
   detailsSection: {
     display: "flex",
     flexDirection: "column",
-    width: `calc(50% - ${theme.spacing(2)}px)`,
-    [theme.breakpoints.down("md")]: {
-      width: "100%",
-    },
   },
   detail: {
-    marginTop: theme.spacing(0.5),
+    marginTop: theme.spacing(1),
+    "&:first-child": {
+      marginTop: theme.spacing(1.5),
+    },
     width: "100%",
+    paddingLeft: theme.spacing(0.5),
     "& > .MuiTypography-body1": {
       whiteSpace: "pre-wrap",
+      paddingLeft: theme.spacing(1),
     },
   },
 }))
@@ -139,7 +181,39 @@ function ProposalPage(props: ProposalPageProps) {
               </AppTypography>
             ) : (
               <>
-                <div className={classes.details}>
+                <div className={classes.attributesContainer}>
+                  {proposal.dates && (
+                    <div className={classes.attributeTag}>
+                      <AppTypography variant="body2" noWrap uppercase>
+                        Dates
+                      </AppTypography>
+                      <AppTypography variant="body1" fontWeight="bold">
+                        {proposal.dates}
+                      </AppTypography>
+                    </div>
+                  )}
+                  {proposal.hold_status && (
+                    <div
+                      className={clsx(
+                        classes.attributeTag,
+                        proposal.on_hold ? "onHold" : "noHold"
+                      )}>
+                      <AppTypography variant="body2" noWrap uppercase>
+                        Hold Status
+                      </AppTypography>
+                      <AppTypography variant="body1" fontWeight="bold">
+                        {proposal.on_hold ? "ON HOLD" : "NOT ON HOLD"}
+                      </AppTypography>
+                    </div>
+                  )}
+                </div>
+                <div
+                  className={clsx(
+                    classes.details,
+                    hotel && hotel.imgs.length
+                      ? undefined
+                      : classes.detailsNoGallery
+                  )}>
                   <div className={classes.detailsSection}>
                     <AppTypography variant="h3" fontWeight="bold">
                       Room Rates
