@@ -8,11 +8,11 @@ import {
   makeStyles,
 } from "@material-ui/core"
 import {
+  ApartmentRounded,
   FlightRounded,
   HomeRounded,
   ListRounded,
   MapRounded,
-  PersonRounded,
   SvgIconComponent,
 } from "@material-ui/icons"
 import {push} from "connected-react-router"
@@ -37,6 +37,10 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
+  company: {
+    marginTop: "auto",
+    marginBottom: theme.spacing(2),
+  },
 }))
 
 let navItem = (title: string, Icon: SvgIconComponent, pageName: string) => [
@@ -46,23 +50,24 @@ let navItem = (title: string, Icon: SvgIconComponent, pageName: string) => [
 ]
 
 let navItems = {
-  overview: navItem("Overview", ListRounded, "OverviewPage"),
-  lodging: navItem("Lodging", HomeRounded, "LodgingFormPage"),
-  attendees: navItem("Attendees", PersonRounded, "AttendeesPage"),
-  flights: navItem("Flights", FlightRounded, "FlightsPage"),
-  itinerary: navItem("Itinerary", MapRounded, "ItineraryPage"),
+  overview: navItem("Overview", HomeRounded, "RetreatHomePage"),
+  details: navItem("Details", ListRounded, "RetreatHomePage"),
+  lodging: navItem("Lodging", ApartmentRounded, "RetreatHomePage"),
+  flights: navItem("Flights", FlightRounded, "RetreatHomePage"),
+  itinerary: navItem("Itinerary", MapRounded, "RetreatHomePage"),
 }
 
 type SidenavItemType = keyof typeof navItems
 type PageSidenavProps = {
+  retreatGuid: string
   activeItem?: SidenavItemType
+  companyName?: string
 }
 export default function PageSidenav(
   props: PropsWithChildren<PageSidenavProps>
 ) {
   let dispatch = useDispatch()
   const classes = useStyles()
-
   return (
     <Drawer
       classes={{root: classes.root, paper: classes.paper}}
@@ -82,13 +87,26 @@ export default function PageSidenav(
             <ListItem
               button
               selected={props.activeItem === sidenavItem}
-              onClick={() => dispatch(push(AppRoutes.getPath(itemTup[2])))}>
+              onClick={() => {
+                dispatch(
+                  push(
+                    AppRoutes.getPath(itemTup[2], {
+                      retreatGuid: props.retreatGuid!,
+                    })
+                  )
+                )
+              }}>
               <ListItemIcon>{itemTup[1]}</ListItemIcon>
               <ListItemText>{itemTup[0]}</ListItemText>
             </ListItem>
           )
         })}
       </List>
+      {props.companyName && (
+        <ListItem className={classes.company}>
+          <ListItemText>{props.companyName}</ListItemText>
+        </ListItem>
+      )}
     </Drawer>
   )
 }

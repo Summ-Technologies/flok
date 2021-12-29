@@ -11,8 +11,8 @@ import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import ProposalPage from "./pages/ProposalPage"
 import ProposalRouter from "./pages/ProposalRouter"
 import RetreatFiltersPage from "./pages/RetreatFiltersPage"
+import RetreatOverviewPage from "./pages/RetreatOverviewPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
-import RetreatRoutingPage from "./pages/RetreatRoutingPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
 import {getUserHome} from "./store/actions/user"
 import UserGetters from "./store/getters/user"
@@ -81,8 +81,8 @@ export class AppRoutes {
       path: "/rfp-lite",
     },
     {
-      name: "RetreatRoutingPage",
-      component: <RetreatRoutingPage />,
+      name: "RetreatHomePage",
+      component: <RetreatOverviewPage />,
       path: "/r/:retreatGuid",
     },
     {

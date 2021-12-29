@@ -1,5 +1,18 @@
 import {FlokInternalAdminModel} from "./user"
 
+export type RetreatToTaskState = "TODO" | "COMPLETED" | "NEXT"
+export type RetreatTask = {
+  id: number
+  description: string
+  link: string
+}
+export type RetreatToTask = {
+  retreat_id: number
+  state: RetreatToTaskState
+  task: RetreatTask
+  task_id: number
+}
+
 export type RetreatSelectedHotelProposalState =
   | "SELECTED"
   | "PENDING"
@@ -47,12 +60,24 @@ export type RetreatProgressState =
   | "PROPOSAL"
   | "PROPOSAL_READY"
 
+export type RetreatLodgingState =
+  | "NOT_STARTED"
+  | "PROPOSALS_WAITING"
+  | "PROPOSALS_VIEW"
+  | "CONTRACT_NEGOTIATION"
+  | "BOOKED"
+export type FlightState = "NOT_STARTED" | "POLICY_REVIEW" | "BOOKING"
+export type ItineraryState = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
+
 export type RetreatModel = {
   id: number
   guid: string
   company_name: string
   contact_email: string
   state: RetreatProgressState
+  state_lodging: RetreatLodgingState
+  state_flights: FlightState
+  state_itinerary: ItineraryState
   selected_destinations_ids: number[]
   selected_hotels_ids: number[]
   selected_hotels: RetreatSelectedHotelProposal[]
@@ -63,6 +88,9 @@ export type RetreatModel = {
   preferences_dates_flexible_months?: string[]
   preferences_dates_flexible_num_nights?: number
   flok_sourcing_admin?: FlokInternalAdminModel
+  tasks_todo: RetreatToTask[]
+  tasks_next: RetreatToTask[]
+  tasks_completed: RetreatToTask[]
 }
 
 export type FilterAnswerModel = {

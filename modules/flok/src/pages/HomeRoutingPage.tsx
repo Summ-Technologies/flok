@@ -18,7 +18,7 @@ export default function HomeRoutingPage(props: HomeRoutingPageProps) {
   ) : retreat === ResourceNotFound ? (
     <RedirectPage pageName="NewRetreatFormPage" />
   ) : retreat !== undefined ? (
-    <RedirectPage pageName="RetreatRoutingPage" pathParams={{retreatGuid}} />
+    <RedirectPage pageName="RetreatHomePage" pathParams={{retreatGuid}} />
   ) : (
     <></>
   )
