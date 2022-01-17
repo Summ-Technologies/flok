@@ -1,16 +1,21 @@
 import {Action} from "redux"
 import {Constants} from "../../config"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
-import {RetreatFiltersApiResponse} from "../../models/api"
+import {
+  RetreatAttendeesApiResponse,
+  RetreatFiltersApiResponse,
+} from "../../models/api"
 import {
   FilterQuestionModel,
   FilterResponseModel,
+  RetreatAttendeeModel,
   RetreatModel,
 } from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
   DELETE_SELECTED_RETREAT_DESTINATION_REQUEST,
   DELETE_SELECTED_RETREAT_HOTEL_REQUEST,
+  GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_FAILURE,
   GET_RETREAT_FILTERS_SUCCESS,
   GET_RETREAT_SUCCESS,
@@ -29,12 +34,14 @@ export type RetreatState = {
   }
   retreatFilterQuestions: {[guid: string]: FilterQuestionModel[] | undefined}
   retreatFilterResponses: {[guid: string]: FilterResponseModel[] | undefined}
+  retreatAttendees: {[guid: string]: RetreatAttendeeModel[] | undefined}
 }
 
 const initialState: RetreatState = {
   retreats: {},
   retreatFilterQuestions: {},
   retreatFilterResponses: {},
+  retreatAttendees: {},
 }
 
 export default function retreatReducer(
@@ -195,6 +202,20 @@ export default function retreatReducer(
             ...state.retreatFilterResponses,
             [meta.retreatGuid]: filterResponses,
           },
+        }
+      }
+      return newState
+    case GET_RETREAT_ATTENDEES_SUCCESS:
+      meta = (action as unknown as {meta: {retreatGuid: string}}).meta
+      payload = (action as ApiAction).payload as RetreatAttendeesApiResponse
+      if (payload.message.toLowerCase() !== "success") {
+        return state
+      }
+      newState = {...state}
+      if (payload) {
+        newState.retreatAttendees = {
+          ...newState.retreatAttendees,
+          [meta.retreatGuid]: payload.attendees,
         }
       }
       return newState

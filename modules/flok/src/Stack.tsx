@@ -11,6 +11,7 @@ import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import ProposalPage from "./pages/ProposalPage"
 import ProposalRouter from "./pages/ProposalRouter"
 import RetreatFiltersPage from "./pages/RetreatFiltersPage"
+import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatOverviewPage from "./pages/RetreatOverviewPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
@@ -44,6 +45,11 @@ export class AppRoutes {
       name: "RetreatFiltersPage",
       component: <RetreatFiltersPage />,
       path: "/r/:retreatGuid/filters",
+    },
+    {
+      name: "RetreatFlightsPage",
+      component: <RetreatFlightsPage />,
+      path: "/r/:retreatGuid/flights",
     },
     {
       name: "DestinationsListPage",

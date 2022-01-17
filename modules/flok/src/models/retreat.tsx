@@ -115,3 +115,32 @@ export type FilterResponseModel = {
   retreat_id: number
   answer_id: number
 }
+
+export type RetreatTripModel = {
+  id: number
+  cost: number
+  duration: number
+  confirmation_number: string
+  arr_airport: string
+  dep_airport: string
+  arr_datetime: Date
+  dep_datetime: Date
+  airline: string
+}
+
+export type RetreatTravelModel = {
+  id: number
+  cost: number
+  dep_trip?: RetreatTripModel
+  arr_trip?: RetreatTripModel
+  email_address: string
+  name: string
+  status: string
+}
+
+export type RetreatAttendeeModel = {
+  id: number
+  email_address: string
+  name: string
+  travel?: RetreatTravelModel
+}

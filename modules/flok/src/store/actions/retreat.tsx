@@ -318,3 +318,20 @@ export function putRetreatFilters(
     ],
   })
 }
+
+export const GET_RETREAT_ATTENDEES_REQUEST = "GET_RETREAT_REQUEST"
+export const GET_RETREAT_ATTENDEES_SUCCESS = "GET_RETREAT_SUCCESS"
+export const GET_RETREAT_ATTENDEES_FAILURE = "GET_RETREAT_FAILURE"
+
+export function getRetreatAttendees(guid: string) {
+  let endpoint = `/v1.0/retreats/${guid}/flights`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      GET_RETREAT_ATTENDEES_REQUEST,
+      GET_RETREAT_ATTENDEES_SUCCESS,
+      {type: GET_RETREAT_ATTENDEES_FAILURE, meta: {guid}},
+    ],
+  })
+}
