@@ -52,6 +52,7 @@ export default function retreatReducer(
   var meta
   var newRetreatsState: {[guid: string]: RetreatModel | ResourceNotFoundType}
   var retreatGuid: string, hotelId: number, destinationId: number, retreat
+  var newState: RetreatState
   switch (action.type) {
     case GET_RETREAT_SUCCESS:
     case POST_ADVANCE_RETREAT_STATE_SUCCESS:
@@ -185,7 +186,7 @@ export default function retreatReducer(
       payload = (action as ApiAction).payload as RetreatFiltersApiResponse
       let filterQuestions = payload.retreat_filter_questions
       let filterResponses = payload.retreat_filter_responses
-      let newState = {...state}
+      newState = {...state}
       if (filterQuestions) {
         newState = {
           ...newState,
@@ -206,16 +207,39 @@ export default function retreatReducer(
       }
       return newState
     case GET_RETREAT_ATTENDEES_SUCCESS:
-      meta = (action as unknown as {meta: {retreatGuid: string}}).meta
+      console.log("Nowhere")
+      meta = (action as unknown as {meta: {guid: string}}).meta
+      console.log(meta)
       payload = (action as ApiAction).payload as RetreatAttendeesApiResponse
+      console.log(payload)
       if (payload.message.toLowerCase() !== "success") {
         return state
       }
       newState = {...state}
       if (payload) {
+        let attendees = payload.attendees.map((a) => {
+          if (a.travel && a.travel.arr_trip) {
+            a.travel.arr_trip.arr_datetime = new Date(
+              a.travel.arr_trip.arr_datetime
+            )
+            a.travel.arr_trip.dep_datetime = new Date(
+              a.travel.arr_trip.dep_datetime
+            )
+          }
+          if (a.travel && a.travel.dep_trip) {
+            a.travel.dep_trip.arr_datetime = new Date(
+              a.travel.dep_trip.arr_datetime
+            )
+            a.travel.dep_trip.dep_datetime = new Date(
+              a.travel.dep_trip.dep_datetime
+            )
+          }
+          return a
+        }) as RetreatAttendeeModel[]
+        console.log(attendees)
         newState.retreatAttendees = {
           ...newState.retreatAttendees,
-          [meta.retreatGuid]: payload.attendees,
+          [meta.guid]: attendees,
         }
       }
       return newState

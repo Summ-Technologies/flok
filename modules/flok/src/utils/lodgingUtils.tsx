@@ -13,7 +13,11 @@ import {
   getHotelById,
   getHotels,
 } from "../store/actions/lodging"
-import {getRetreat, getRetreatFilters} from "../store/actions/retreat"
+import {
+  getRetreat,
+  getRetreatAttendees,
+  getRetreatFilters,
+} from "../store/actions/retreat"
 import {
   getAlgoliaDestinationFilterString,
   getAlgoliaHotelFilterString,
@@ -302,84 +306,14 @@ export function useRetreatFilters(retreatGuid: string) {
 }
 
 export function useRetreatFlightInfo(retreatGuid: string) {
-  return [
-    {
-      id: 1,
-      travel: {
-        cost: 350.5,
-        dep_trip: {
-          dep_airport: "OAK",
-          cost: 150.69,
-          confirmation_number: "A200",
-          arr_datetime: new Date(),
-          dep_datetime: new Date(),
-          airline: "Lufthansa AIrlines",
-          id: 2,
-          duration: 36000,
-          arr_airport: "SFO",
-        },
-        id: 1,
-        status: "PENDING",
-        name: "Jacob Burgundy",
-        arr_trip: {
-          dep_airport: "SFO",
-          cost: 100.4,
-          confirmation_number: "A1000",
-          arr_datetime: new Date(),
-          dep_datetime: new Date(),
-          airline: "Spirit Airlines",
-          id: 1,
-          duration: 144000,
-          arr_airport: "OAK",
-        },
-        email_address: "jared@goflok.com",
-      },
-      name: "Jacob Burgundy",
-      email_address: "jared@goflok.com",
-    },
-    {
-      id: 1,
-      travel: {
-        cost: 350.5,
-        dep_trip: {
-          dep_airport: "OAK",
-          cost: 150.69,
-          confirmation_number: "A200",
-          arr_datetime: new Date(),
-          dep_datetime: new Date(),
-          airline: "Lufthansa AIrlines",
-          id: 2,
-          duration: 36000,
-          arr_airport: "SFO",
-        },
-        id: 1,
-        status: "PENDING",
-        name: "Jacob tha Busta",
-        arr_trip: {
-          dep_airport: "SFO",
-          cost: 100.4,
-          confirmation_number: "A1000",
-          arr_datetime: new Date(),
-          dep_datetime: new Date(),
-          airline: "Spirit Airlines",
-          id: 1,
-          duration: 144000,
-          arr_airport: "OAK",
-        },
-        email_address: "jared@goflok.com",
-      },
-      name: "Jacob tha Busta",
-      email_address: "jared@goflok.com",
-    },
-  ] as RetreatAttendeeModel[] | ResourceNotFoundType | undefined
-  // let dispatch = useDispatch()
-  // let attendees = useSelector(
-  //   (state: RootState) => state.retreat.retreatAttendees[retreatGuid]
-  // )
-  // useEffect(() => {
-  //   if (!attendees) {
-  //     dispatch(getRetreatAttendees(retreatGuid))
-  //   }
-  // }, [attendees, dispatch, retreatGuid])
-  // return attendees as RetreatAttendeeModel[] | ResourceNotFoundType | undefined
+  let dispatch = useDispatch()
+  let attendees = useSelector(
+    (state: RootState) => state.retreat.retreatAttendees[retreatGuid]
+  )
+  useEffect(() => {
+    if (!attendees) {
+      dispatch(getRetreatAttendees(retreatGuid))
+    }
+  }, [attendees, dispatch, retreatGuid])
+  return attendees as RetreatAttendeeModel[] | ResourceNotFoundType | undefined
 }
