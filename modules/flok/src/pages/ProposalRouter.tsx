@@ -20,7 +20,10 @@ function ProposalRouter(props: ProposalRouterProps) {
         ) : retreat.state === "PROPOSAL_READY" ? (
           <ProposalsListPage />
         ) : (
-          <RedirectPage pageName="RetreatHomePage" pathParams={{retreatGuid}} />
+          <RedirectPage
+            pageName="RetreatRoutingPage"
+            pathParams={{retreatGuid}}
+          />
         )
       ) : (
         "Loading..."
