@@ -40,7 +40,6 @@ function dateFormat(date: Date | undefined) {
   if (date === undefined) {
     return ""
   }
-  console.log(date)
   return date.toLocaleDateString("en-US", {
     weekday: "short",
     month: "long",

@@ -207,11 +207,8 @@ export default function retreatReducer(
       }
       return newState
     case GET_RETREAT_ATTENDEES_SUCCESS:
-      console.log("Nowhere")
       meta = (action as unknown as {meta: {guid: string}}).meta
-      console.log(meta)
       payload = (action as ApiAction).payload as RetreatAttendeesApiResponse
-      console.log(payload)
       if (payload.message.toLowerCase() !== "success") {
         return state
       }
@@ -236,7 +233,6 @@ export default function retreatReducer(
           }
           return a
         }) as RetreatAttendeeModel[]
-        console.log(attendees)
         newState.retreatAttendees = {
           ...newState.retreatAttendees,
           [meta.guid]: attendees,
