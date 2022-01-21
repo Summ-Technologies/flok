@@ -6,9 +6,12 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+import UnderConstructionView from "../components/page/UnderConstructionView"
 import {RetreatModel} from "../models/retreat"
 import {convertGuid} from "../utils"
 import {useRetreat, useRetreatFlightInfo} from "../utils/lodgingUtils"
+
+const UNDER_CONSTRUCTION = true
 
 let useStyles = makeStyles((theme) => ({
   section: {
@@ -68,45 +71,51 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
           companyName={retreat?.company_name}
         />
         <PageBody>
-          <AppTypography variant="h1" paragraph>
-            Flights
-          </AppTypography>
-          <AppExpandableTable
-            headers={[
-              {
-                name: "Employee",
-                comparator: (r1, r2) => r1[0].localeCompare(r2[0]),
-              },
-              {name: "Retreat Arrival"},
-              {name: "Retreat Departure"},
-              {name: "Cost"},
-              {
-                name: "Status",
-                comparator: (r1, r2) => {
-                  let comp = 0
-                  if (r1[4].toLowerCase() === "pending") {
-                    comp += 1
-                  }
-                  if (r2[4].toLowerCase() === "pending") {
-                    comp -= 1
-                  }
-                  return comp
-                },
-              },
-            ]}
-            rows={
-              attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
-              attendeeTravelInfo !== undefined
-                ? attendeeTravelInfo.map((info) => [
-                    info.name,
-                    dateFormat(info.travel?.arr_trip?.arr_datetime),
-                    dateFormat(info.travel?.dep_trip?.dep_datetime),
-                    info.travel ? currencyFormat(info.travel.cost) : "",
-                    info.travel ? info.travel.status : "PENDING",
-                  ])
-                : []
-            }
-          />
+          {UNDER_CONSTRUCTION ? (
+            <UnderConstructionView />
+          ) : (
+            <>
+              <AppTypography variant="h1" paragraph>
+                Flights
+              </AppTypography>
+              <AppExpandableTable
+                headers={[
+                  {
+                    name: "Employee",
+                    comparator: (r1, r2) => r1[0].localeCompare(r2[0]),
+                  },
+                  {name: "Retreat Arrival"},
+                  {name: "Retreat Departure"},
+                  {name: "Cost"},
+                  {
+                    name: "Status",
+                    comparator: (r1, r2) => {
+                      let comp = 0
+                      if (r1[4].toLowerCase() === "pending") {
+                        comp += 1
+                      }
+                      if (r2[4].toLowerCase() === "pending") {
+                        comp -= 1
+                      }
+                      return comp
+                    },
+                  },
+                ]}
+                rows={
+                  attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
+                  attendeeTravelInfo !== undefined
+                    ? attendeeTravelInfo.map((info) => [
+                        info.name,
+                        dateFormat(info.travel?.arr_trip?.arr_datetime),
+                        dateFormat(info.travel?.dep_trip?.dep_datetime),
+                        info.travel ? currencyFormat(info.travel.cost) : "",
+                        info.travel ? info.travel.status : "PENDING",
+                      ])
+                    : []
+                }
+              />
+            </>
+          )}
         </PageBody>
       </PageContainer>
     </RetreatRequired>
