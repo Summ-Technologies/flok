@@ -90,9 +90,9 @@ export default function UnderConstructionView(
             </>
           )}
           <br />
-          <AppTypography>
+          {/* <AppTypography>
             Enter your email below to subscribe to our mailing list:
-          </AppTypography>
+          </AppTypography> */}
           {/* <div className={classes.emailInput}>
             <TextField label="Email Address" />
             <IconButton>
