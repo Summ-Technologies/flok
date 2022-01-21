@@ -12,7 +12,7 @@ import {ResourceNotFound, ResourceNotFoundType} from "../models"
 import {HotelModel} from "../models/lodging"
 import {HotelLodgingProposal} from "../models/retreat"
 import {AppRoutes} from "../Stack"
-import {convertGuid} from "../utils"
+import {convertGuid, useQuery} from "../utils"
 import {useHotel, useRetreat} from "../utils/lodgingUtils"
 import NotFound404Page from "./misc/NotFound404Page"
 
@@ -123,6 +123,7 @@ function ProposalPage(props: ProposalPageProps) {
   let [proposal, setProposal] = useState<
     HotelLodgingProposal | ResourceNotFoundType | undefined
   >(undefined)
+  let [proposalIndexQuery, setProposalIndexQuery] = useQuery("proposal")
   useEffect(() => {
     if (
       retreat &&
@@ -133,13 +134,22 @@ function ProposalPage(props: ProposalPageProps) {
       let _selectedHotels = retreat.selected_hotels.filter(
         (selectedHotel) => selectedHotel.hotel_id === (hotel as HotelModel)!.id
       )
-      if (_selectedHotels.length && _selectedHotels[0].hotel_proposal) {
-        setProposal(_selectedHotels[0].hotel_proposal)
+      let proposalIndex = parseInt(proposalIndexQuery || "0") || 0
+      if (
+        _selectedHotels.length &&
+        _selectedHotels[0].hotel_proposals?.length
+      ) {
+        if (_selectedHotels[0].hotel_proposals.length > proposalIndex) {
+          setProposal(_selectedHotels[0].hotel_proposals[proposalIndex])
+        } else {
+          setProposalIndexQuery(null)
+          setProposal(_selectedHotels[0].hotel_proposals[0])
+        }
       } else {
         setProposal(ResourceNotFound)
       }
     }
-  }, [retreat, hotel, setProposal])
+  }, [retreat, hotel, setProposal, proposalIndexQuery, setProposalIndexQuery])
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
