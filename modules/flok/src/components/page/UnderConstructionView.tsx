@@ -1,5 +1,5 @@
-import {Icon, IconButton, makeStyles, TextField} from "@material-ui/core"
-import {KeyboardArrowRight, LockRounded} from "@material-ui/icons"
+import {Icon, makeStyles} from "@material-ui/core"
+import {LockRounded} from "@material-ui/icons"
 import AppTypography from "../base/AppTypography"
 
 type UnderConstructionViewProps = {
@@ -93,12 +93,12 @@ export default function UnderConstructionView(
           <AppTypography>
             Enter your email below to subscribe to our mailing list:
           </AppTypography>
-          <div className={classes.emailInput}>
+          {/* <div className={classes.emailInput}>
             <TextField label="Email Address" />
             <IconButton>
               <KeyboardArrowRight />
             </IconButton>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
