@@ -1,7 +1,6 @@
-import {Link, makeStyles} from "@material-ui/core"
+import {makeStyles} from "@material-ui/core"
 import React from "react"
 import {RetreatModel} from "../../models/retreat"
-import {AppRoutes} from "../../Stack"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -106,6 +105,8 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
           ~{numAttendees} attendees
         </AppTypography>
       ) : undefined}
+      {/*
+      Disabling change button for now
       <AppTypography variant="body1">
         <Link
           href={
@@ -118,7 +119,7 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
           }>
           Change
         </Link>
-      </AppTypography>
+      </AppTypography> */}
     </div>
   )
 }

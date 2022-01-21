@@ -160,3 +160,15 @@ export function useScript(src: string): [boolean, ScriptLoadingState] {
 
   return [ready, status]
 }
+
+/**
+ * Given an integer, returns dollar formatted string.
+ */
+export function formatDollars(dollars: number): string {
+  let formatter = Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  })
+  return formatter.format(dollars)
+}

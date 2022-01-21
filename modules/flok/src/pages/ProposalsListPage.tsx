@@ -13,7 +13,7 @@ import {HotelModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotels} from "../store/actions/lodging"
-import {convertGuid} from "../utils"
+import {convertGuid, formatDollars} from "../utils"
 import {
   DestinationUtils,
   useDestinations,
@@ -204,12 +204,26 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                   let hotel = hotelsById[selectedHotel.hotel_id]
                   let proposals = selectedHotel.hotel_proposals
                   let proposalReady = false
+                  let avgRoomCost: string | null = null
+                  let avgRoomTotal: string | null = null
                   if (
                     proposals &&
                     proposals.length &&
                     selectedHotel.state === "REVIEW"
                   ) {
                     proposalReady = true
+                    let lowestRoomRate = getLowestCompare(
+                      proposals!.map((proposal) => proposal.compare_room_rate)
+                    )
+                    let lowestRoomTotal = getLowestCompare(
+                      proposals!.map((proposal) => proposal.compare_room_total)
+                    )
+                    if (lowestRoomRate) {
+                      avgRoomCost = formatDollars(lowestRoomRate)
+                    }
+                    if (lowestRoomTotal) {
+                      avgRoomTotal = formatDollars(lowestRoomTotal)
+                    }
                   }
                   return (
                     <Paper className={classes.card}>
@@ -243,11 +257,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                         </div>
                         {proposalReady && (
                           <div className={classes.attributesContainer}>
-                            {getLowestCompare(
-                              proposals!.map(
-                                (proposal) => proposal.compare_room_rate
-                              )
-                            ) && (
+                            {avgRoomCost && (
                               <div className={classes.attributeTag}>
                                 <AppTypography variant="body2" noWrap uppercase>
                                   Avg Room Cost
@@ -255,39 +265,22 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                                 <AppTypography
                                   variant="body1"
                                   fontWeight="bold">
-                                  {getLowestCompare(
-                                    proposals!.map(
-                                      (proposal) => proposal.compare_room_rate
-                                    )
-                                  )}
+                                  {avgRoomCost}
                                 </AppTypography>
                               </div>
                             )}
-                            {proposalReady &&
-                              getLowestCompare(
-                                proposals!.map(
-                                  (proposal) => proposal.compare_room_total
-                                )
-                              ) && (
-                                <div className={classes.attributeTag}>
-                                  <AppTypography
-                                    variant="body2"
-                                    noWrap
-                                    uppercase>
-                                    Avg Room Total
-                                  </AppTypography>
-                                  <AppTypography
-                                    variant="body1"
-                                    fontWeight="bold">
-                                    {getLowestCompare(
-                                      proposals!.map(
-                                        (proposal) =>
-                                          proposal.compare_room_total
-                                      )
-                                    )}
-                                  </AppTypography>
-                                </div>
-                              )}
+                            {avgRoomTotal && (
+                              <div className={classes.attributeTag}>
+                                <AppTypography variant="body2" noWrap uppercase>
+                                  Est. Room Total
+                                </AppTypography>
+                                <AppTypography
+                                  variant="body1"
+                                  fontWeight="bold">
+                                  {avgRoomTotal}
+                                </AppTypography>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -301,7 +294,8 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                             e.stopPropagation()
                             onExplore(hotel)
                           }}>
-                          View Proposal{proposals!.length > 1 && `s (${proposals!.length})`}
+                          View Proposal
+                          {proposals!.length > 1 && `s (${proposals!.length})`}
                         </Button>
                       ) : (
                         <Button
