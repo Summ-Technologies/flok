@@ -35,7 +35,7 @@ export type RetreatSelectedHotelProposal = {
   retreat_id: number
   hotel_id: number
   state: RetreatSelectedHotelProposalState
-  hotel_proposal: HotelLodgingProposal
+  hotel_proposals?: HotelLodgingProposal[]
 }
 
 export type RetreatProgressState =
