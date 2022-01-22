@@ -1,4 +1,6 @@
-import {Hidden, makeStyles} from "@material-ui/core"
+import {Hidden, Link, makeStyles, Paper} from "@material-ui/core"
+import {InsertLink} from "@material-ui/icons"
+import {ToggleButton, ToggleButtonGroup} from "@material-ui/lab"
 import clsx from "clsx"
 import {useEffect, useState} from "react"
 import {RouteComponentProps, withRouter} from "react-router"
@@ -12,7 +14,7 @@ import {ResourceNotFound, ResourceNotFoundType} from "../models"
 import {HotelModel} from "../models/lodging"
 import {HotelLodgingProposal} from "../models/retreat"
 import {AppRoutes} from "../Stack"
-import {convertGuid} from "../utils"
+import {convertGuid, useQuery} from "../utils"
 import {useHotel, useRetreat} from "../utils/lodgingUtils"
 import NotFound404Page from "./misc/NotFound404Page"
 
@@ -34,6 +36,9 @@ let useStyles = makeStyles((theme) => ({
   },
   lightText: {
     fontWeight: 300,
+  },
+  websiteLink: {
+    marginLeft: theme.spacing(0.5),
   },
   overviewContent: {
     margin: "0 auto",
@@ -81,10 +86,7 @@ let useStyles = makeStyles((theme) => ({
     "& > $detailsSection": {
       marginLeft: theme.spacing(2),
       marginTop: theme.spacing(2),
-      width: `calc(50% - ${theme.spacing(2)}px)`,
-      [theme.breakpoints.down("lg")]: {
-        width: "100%",
-      },
+      width: "100%",
     },
   },
   detailsNoGallery: {
@@ -96,19 +98,21 @@ let useStyles = makeStyles((theme) => ({
     },
   },
   detailsSection: {
+    boxShadow: theme.shadows[0],
     display: "flex",
     flexDirection: "column",
+    padding: theme.spacing(1.5),
   },
   detail: {
     marginTop: theme.spacing(1),
-    "&:first-child": {
-      marginTop: theme.spacing(1.5),
-    },
     width: "100%",
     paddingLeft: theme.spacing(0.5),
     "& > .MuiTypography-body1": {
       whiteSpace: "pre-wrap",
       paddingLeft: theme.spacing(1),
+    },
+    "& > .MuiTypography-body2": {
+      marginBottom: theme.spacing(0.5),
     },
   },
 }))
@@ -120,9 +124,11 @@ function ProposalPage(props: ProposalPageProps) {
   let hotelGuid = convertGuid(props.match.params.hotelGuid)
   let hotel = useHotel(hotelGuid)
   let retreat = useRetreat(retreatGuid)
+  let [proposals, setProposals] = useState<HotelLodgingProposal[]>([])
   let [proposal, setProposal] = useState<
     HotelLodgingProposal | ResourceNotFoundType | undefined
   >(undefined)
+  let [proposalIndexQuery, setProposalIndexQuery] = useQuery("proposal")
   useEffect(() => {
     if (
       retreat &&
@@ -133,13 +139,41 @@ function ProposalPage(props: ProposalPageProps) {
       let _selectedHotels = retreat.selected_hotels.filter(
         (selectedHotel) => selectedHotel.hotel_id === (hotel as HotelModel)!.id
       )
-      if (_selectedHotels.length && _selectedHotels[0].hotel_proposal) {
-        setProposal(_selectedHotels[0].hotel_proposal)
+      let _proposalIndex = parseInt(proposalIndexQuery || "0") || 0
+      if (
+        _selectedHotels.length &&
+        _selectedHotels[0].hotel_proposals?.length
+      ) {
+        if (_selectedHotels[0].hotel_proposals.length > _proposalIndex) {
+          setProposal(_selectedHotels[0].hotel_proposals[_proposalIndex])
+        } else {
+          setProposalIndexQuery(null)
+          setProposal(_selectedHotels[0].hotel_proposals[0])
+        }
       } else {
         setProposal(ResourceNotFound)
       }
     }
-  }, [retreat, hotel, setProposal])
+  }, [retreat, hotel, setProposal, proposalIndexQuery, setProposalIndexQuery])
+
+  useEffect(() => {
+    if (
+      retreat &&
+      retreat !== ResourceNotFound &&
+      hotel &&
+      hotel !== ResourceNotFound
+    ) {
+      let _selectedHotels = retreat.selected_hotels.filter(
+        (selectedHotel) => selectedHotel.hotel_id === (hotel as HotelModel)!.id
+      )
+      if (
+        _selectedHotels.length &&
+        _selectedHotels[0].hotel_proposals?.length
+      ) {
+        setProposals(_selectedHotels[0].hotel_proposals)
+      }
+    }
+  }, [retreat, setProposals, hotel])
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
@@ -158,11 +192,19 @@ function ProposalPage(props: ProposalPageProps) {
             }>
             <PageHeader
               header={
-                <AppTypography variant="h1" fontWeight="bold" noWrap>
+                <AppTypography variant="h1" fontWeight="bold">
                   {hotel.name}{" "}
                   <AppTypography variant="inherit" fontWeight="light">
                     Proposal
                   </AppTypography>
+                  {hotel.website_url ? (
+                    <Link
+                      href={hotel.website_url}
+                      target="_blank"
+                      className={classes.websiteLink}>
+                      <InsertLink fontSize="inherit" />
+                    </Link>
+                  ) : undefined}
                 </AppTypography>
               }
               subheader={hotel.description_short}
@@ -181,32 +223,6 @@ function ProposalPage(props: ProposalPageProps) {
               </AppTypography>
             ) : (
               <>
-                <div className={classes.attributesContainer}>
-                  {proposal.dates && (
-                    <div className={classes.attributeTag}>
-                      <AppTypography variant="body2" noWrap uppercase>
-                        Dates
-                      </AppTypography>
-                      <AppTypography variant="body1" fontWeight="bold">
-                        {proposal.dates}
-                      </AppTypography>
-                    </div>
-                  )}
-                  {proposal.hold_status && (
-                    <div
-                      className={clsx(
-                        classes.attributeTag,
-                        proposal.on_hold ? "onHold" : "noHold"
-                      )}>
-                      <AppTypography variant="body2" noWrap uppercase>
-                        Hold Status
-                      </AppTypography>
-                      <AppTypography variant="body1" fontWeight="bold">
-                        {proposal.on_hold ? "ON HOLD" : "NOT ON HOLD"}
-                      </AppTypography>
-                    </div>
-                  )}
-                </div>
                 <div
                   className={clsx(
                     classes.details,
@@ -214,7 +230,51 @@ function ProposalPage(props: ProposalPageProps) {
                       ? undefined
                       : classes.detailsNoGallery
                   )}>
-                  <div className={classes.detailsSection}>
+                  <Paper className={classes.detailsSection}>
+                    <AppTypography variant="h3" fontWeight="bold">
+                      General Info
+                    </AppTypography>
+                    <div className={classes.detail}>
+                      <AppTypography variant="body2" fontWeight="bold">
+                        Dates
+                      </AppTypography>
+                      {proposals.length <= 1 ? (
+                        <AppTypography variant="body1">
+                          {proposal.dates}
+                        </AppTypography>
+                      ) : (
+                        <ToggleButtonGroup
+                          value={proposal.id}
+                          exclusive
+                          size="small">
+                          {proposals.map((_proposal, i) => (
+                            <ToggleButton
+                              value={_proposal.id}
+                              onClick={() => {
+                                if (i === 0) {
+                                  setProposalIndexQuery(null)
+                                } else {
+                                  setProposalIndexQuery(i.toString())
+                                }
+                              }}>
+                              {_proposal.dates}
+                            </ToggleButton>
+                          ))}
+                        </ToggleButtonGroup>
+                      )}
+                    </div>
+                    <div className={classes.detail}>
+                      <AppTypography variant="body2" fontWeight="bold">
+                        Guests
+                      </AppTypography>
+                      <AppTypography variant="body1">
+                        {retreat !== ResourceNotFound
+                          ? retreat!.preferences_num_attendees_lower
+                          : undefined}
+                      </AppTypography>
+                    </div>
+                  </Paper>
+                  <Paper className={classes.detailsSection}>
                     <AppTypography variant="h3" fontWeight="bold">
                       Room Rates
                     </AppTypography>
@@ -268,8 +328,8 @@ function ProposalPage(props: ProposalPageProps) {
                         </AppTypography>
                       </div>
                     )}
-                  </div>
-                  <div className={classes.detailsSection}>
+                  </Paper>
+                  <Paper className={classes.detailsSection}>
                     <AppTypography variant="h3" fontWeight="bold">
                       Food and beverage
                     </AppTypography>
@@ -333,8 +393,8 @@ function ProposalPage(props: ProposalPageProps) {
                         </AppTypography>
                       </div>
                     )}
-                  </div>
-                  <div className={classes.detailsSection}>
+                  </Paper>
+                  <Paper className={classes.detailsSection}>
                     <AppTypography variant="h3" fontWeight="bold">
                       Meeting Space
                     </AppTypography>
@@ -368,9 +428,9 @@ function ProposalPage(props: ProposalPageProps) {
                         </AppTypography>
                       </div>
                     )}
-                  </div>
+                  </Paper>
                   {proposal.cost_saving_notes && (
-                    <div className={classes.detailsSection}>
+                    <Paper className={classes.detailsSection}>
                       <AppTypography variant="h3" fontWeight="bold">
                         Additional Notes
                       </AppTypography>
@@ -379,7 +439,7 @@ function ProposalPage(props: ProposalPageProps) {
                           {proposal.cost_saving_notes}
                         </AppTypography>
                       </div>
-                    </div>
+                    </Paper>
                   )}
                 </div>
                 <Hidden mdUp>
