@@ -404,7 +404,7 @@ function ProposalPage(props: ProposalPageProps) {
                           Suggested Meeting Spaces
                         </AppTypography>
                         <AppTypography variant="body1">
-                          {proposal.meeting_room_rates}
+                          {proposal.suggested_meeting_spaces}
                         </AppTypography>
                       </div>
                     )}
@@ -414,7 +414,7 @@ function ProposalPage(props: ProposalPageProps) {
                           Meeting Room Rates
                         </AppTypography>
                         <AppTypography variant="body1">
-                          {proposal.meeting_room_tax_rates}
+                          {proposal.meeting_room_rates}
                         </AppTypography>
                       </div>
                     )}
