@@ -172,8 +172,8 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
   }
   let thisYear = new Date().getFullYear()
   let thisMonth = new Date().getMonth()
-  let twoWeeksFromNow = new Date()
-  twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14)
+  let minPlanningDate = new Date()
+  minPlanningDate.setDate(minPlanningDate.getDate() + 42)
 
   return (
     <ClickAwayListener onClickAway={closePopper}>
@@ -218,7 +218,7 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                 showMonthAndYearPickers={false}
                 showDateDisplay={false}
                 direction="horizontal"
-                minDate={twoWeeksFromNow}
+                minDate={minPlanningDate}
                 months={isSmallScreen ? 1 : 2}
                 onChange={(item) =>
                   props.onChangeDateRange(
@@ -228,12 +228,12 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                 }
                 ranges={[
                   {
-                    startDate: props.start ? props.start : new Date(),
+                    startDate: props.start ? props.start : minPlanningDate,
                     endDate: props.end
                       ? props.end
                       : props.start
                       ? props.start
-                      : new Date(),
+                      : minPlanningDate,
                     key: "selection",
                   },
                 ]}
@@ -254,8 +254,8 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                   {[thisYear, thisYear + 1].map((year) => {
                     let options =
                       thisYear === year
-                        ? [...Array(12 - thisMonth)].map((v, i) =>
-                            getOption(i + thisMonth, year)
+                        ? [...Array(12 - (thisMonth + 2))].map((v, i) =>
+                            getOption(i + (thisMonth + 2), year)
                           )
                         : [...Array(12)].map((v, i) => getOption(i, year))
                     return (
