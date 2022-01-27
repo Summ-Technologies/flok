@@ -262,7 +262,7 @@ export class DestinationUtils {
     hotel: HotelModel | undefined = undefined
   ) {
     let locationStr = `${
-      (hotel && hotel.sub_location) ?? destination.location
+      (hotel && hotel.sub_location) || destination.location
     }, ${destination.state_abbreviation || destination.country}`
     if (includeEmoji) {
       let emoji = DestinationUtils.getCountryEmoji(destination)
