@@ -175,6 +175,16 @@ function ProposalPage(props: ProposalPageProps) {
     }
   }, [retreat, setProposals, hotel])
 
+  useEffect(() => {
+    if (hotel && hotel !== ResourceNotFound) {
+      document.title = `Proposal - ${hotel.name}`
+    } else if (hotel === ResourceNotFound) {
+      document.title = `Proposal - Not Found`
+    } else {
+      document.title = `Lodging Proposal`
+    }
+  }, [hotel])
+
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
       {hotel === ResourceNotFound ? (
@@ -408,7 +418,7 @@ function ProposalPage(props: ProposalPageProps) {
                         </AppTypography>
                       </div>
                     )}
-                    {proposal.meeting_room_tax_rates && (
+                    {proposal.meeting_room_rates && (
                       <div className={classes.detail}>
                         <AppTypography variant="body2" fontWeight="bold">
                           Meeting Room Rates

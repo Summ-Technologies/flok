@@ -137,6 +137,11 @@ function ProposalsListPage(props: ProposalsListPageProps) {
     }
     return []
   })
+
+  useEffect(() => {
+    document.title = "Flok - Lodging Proposals"
+  }, [])
+
   useEffect(() => {
     let missingHotels = selectedHotels.filter(
       (selectedHotel) => hotelsById[selectedHotel.hotel_id] === undefined
@@ -247,7 +252,8 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                                   destinations.filter(
                                     (dest) => dest.id === hotel.destination_id
                                   )[0],
-                                  false
+                                  false,
+                                  hotel
                                 )
                               : ""}
                           </AppTypography>
