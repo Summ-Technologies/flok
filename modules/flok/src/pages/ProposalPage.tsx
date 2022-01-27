@@ -175,6 +175,16 @@ function ProposalPage(props: ProposalPageProps) {
     }
   }, [retreat, setProposals, hotel])
 
+  useEffect(() => {
+    if (hotel && hotel !== ResourceNotFound) {
+      document.title = `Proposal - ${hotel.name}`
+    } else if (hotel === ResourceNotFound) {
+      document.title = `Proposal - Not Found`
+    } else {
+      document.title = `Lodging Proposal`
+    }
+  }, [hotel])
+
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
       {hotel === ResourceNotFound ? (
