@@ -252,7 +252,8 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                                   destinations.filter(
                                     (dest) => dest.id === hotel.destination_id
                                   )[0],
-                                  false
+                                  false,
+                                  hotel
                                 )
                               : ""}
                           </AppTypography>
