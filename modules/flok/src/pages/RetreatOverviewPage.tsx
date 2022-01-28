@@ -142,34 +142,7 @@ function RetreatOverview(props: RetreatOverviewProps) {
               To Do List
             </AppTypography>
             {retreat && (
-              <AppTodoList
-                retreatToTasks={[
-                  {
-                    task: {
-                      id: 1,
-                      description:
-                        "We typically recommend one with all attendees (#flok-dunder-mifflin-all), so that we can collect and share important information, and one for planning admins (#flok-dunder-mifflin-admin). Please send invites to jared@goflok.com, and harris@goflok.com. We’ll be going over a lot of details over the course of planning and have found it’s easier to follow conversations in Slack versus email.",
-                      title: "Add Flok to two shared Slack Channels",
-                      link: "slack.com",
-                      user_complete: true,
-                    },
-                    order: 1,
-                    state: "TODO",
-                    due_date: new Date(),
-                  },
-                  {
-                    task: {
-                      id: 2,
-                      title: "Fill out RMC Survey",
-                      link: "https://docs.google.com/forms/d/e/1FAIpQLSe_u9Ys3UiGXWT79wmnbNNCLK8xsaQW8Nb6HuWKHyYKTEbPEQ/viewform",
-                      user_complete: false,
-                    },
-                    order: 2,
-                    state: "TODO",
-                    due_date: new Date(),
-                  },
-                ]}
-              />
+              <AppTodoList retreatToTasks={retreat.tasks_todo || []} />
             )}
           </div>
           <div className={classes.section}>
@@ -182,20 +155,7 @@ function RetreatOverview(props: RetreatOverviewProps) {
               Completed
             </AppTypography>
             {retreat && (
-              <AppTodoList
-                retreatToTasks={[
-                  {
-                    task: {
-                      id: 3,
-                      title: "Review Attendee Registration Form",
-                      link: "https://docs.google.com/forms/d/e/1FAIpQLSfoPCrGTfQ0zanS1FBPgkpyCz_qHBJk967QUnH2T1o1kDo93A/viewform",
-                      user_complete: false,
-                    },
-                    order: 0,
-                    state: "COMPLETED",
-                  },
-                ]}
-              />
+              <AppTodoList retreatToTasks={retreat.tasks_completed || []} />
             )}
           </div>
         </PageBody>
