@@ -1,6 +1,5 @@
 import {makeStyles} from "@material-ui/core"
 import {
-  AccessTime,
   Apartment,
   CalendarToday,
   CheckCircle,
@@ -15,7 +14,7 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import AppOverviewCard, {
   AppOverviewCardList,
 } from "../components/overview/AppOverviewCard"
-import {AppTaskList, AppTaskListItem} from "../components/overview/AppTaskList"
+import AppTodoList from "../components/overview/AppTaskList"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
@@ -142,42 +141,9 @@ function RetreatOverview(props: RetreatOverviewProps) {
               />
               To Do List
             </AppTypography>
-            <AppTaskList>
-              {retreat &&
-                retreat.tasks_todo.map((retreatToTask) => (
-                  <AppTaskListItem
-                    description={retreatToTask.task.description}
-                    link={retreatToTask.task.link.replace(
-                      ":retreatGuid",
-                      retreatGuid
-                    )}
-                    state={"TODO"}
-                  />
-                ))}
-            </AppTaskList>
-          </div>
-          <div className={classes.section}>
-            <AppTypography variant="h4" paragraph>
-              <AccessTime
-                color="inherit"
-                className={`${classes.headerIcon} next`}
-                fontSize="small"
-              />
-              Up Next
-            </AppTypography>
-            <AppTaskList>
-              {retreat &&
-                retreat.tasks_next.map((retreatToTask) => (
-                  <AppTaskListItem
-                    description={retreatToTask.task.description}
-                    link={retreatToTask.task.link.replace(
-                      ":retreatGuid",
-                      retreatGuid
-                    )}
-                    state={"NEXT"}
-                  />
-                ))}
-            </AppTaskList>
+            {retreat && (
+              <AppTodoList retreatToTasks={retreat.tasks_todo || []} />
+            )}
           </div>
           <div className={classes.section}>
             <AppTypography variant="h4" paragraph>
@@ -188,19 +154,9 @@ function RetreatOverview(props: RetreatOverviewProps) {
               />
               Completed
             </AppTypography>
-            <AppTaskList>
-              {retreat &&
-                retreat.tasks_completed.map((retreatToTask) => (
-                  <AppTaskListItem
-                    description={retreatToTask.task.description}
-                    link={retreatToTask.task.link.replace(
-                      ":retreatGuid",
-                      retreatGuid
-                    )}
-                    state={"COMPLETED"}
-                  />
-                ))}
-            </AppTaskList>
+            {retreat && (
+              <AppTodoList retreatToTasks={retreat.tasks_completed || []} />
+            )}
           </div>
         </PageBody>
       </PageContainer>
