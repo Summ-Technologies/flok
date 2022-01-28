@@ -34,9 +34,14 @@ export function useQuery(param: string) {
     setParamVal(new URLSearchParams(searchString).get(param))
   }, [searchString, setParamVal, param])
 
-  function setParam(newParamVal: string) {
+  /* If null is given for newParamVal, delete the param */
+  function setParam(newParamVal: string | null) {
     let allParams = new URLSearchParams(searchString)
-    allParams.set(param, newParamVal)
+    if (newParamVal == null) {
+      allParams.delete(param)
+    } else {
+      allParams.set(param, newParamVal)
+    }
     dispatch(
       push({
         search: `${allParams.toString() ? "?" + allParams.toString() : ""}`,
@@ -154,4 +159,16 @@ export function useScript(src: string): [boolean, ScriptLoadingState] {
   }, [status, setReady])
 
   return [ready, status]
+}
+
+/**
+ * Given an integer, returns dollar formatted string.
+ */
+export function formatDollars(dollars: number): string {
+  let formatter = Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  })
+  return formatter.format(dollars)
 }

@@ -13,7 +13,7 @@ import {HotelModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotels} from "../store/actions/lodging"
-import {convertGuid} from "../utils"
+import {convertGuid, formatDollars} from "../utils"
 import {
   DestinationUtils,
   useDestinations,
@@ -151,6 +151,10 @@ function ProposalsListPage(props: ProposalsListPageProps) {
 
   let destinations = Object.values(useDestinations()[0])
 
+  function getLowestCompare(vals: (number | null)[]) {
+    return vals.filter((x) => x).sort()[0]
+  }
+
   // Actions
   function onExplore(hotel: HotelModel) {
     const newTab = window.open(
@@ -198,10 +202,28 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                 })
                 .map((selectedHotel) => {
                   let hotel = hotelsById[selectedHotel.hotel_id]
-                  let proposal = selectedHotel.hotel_proposal
+                  let proposals = selectedHotel.hotel_proposals
                   let proposalReady = false
-                  if (proposal && selectedHotel.state === "REVIEW") {
+                  let avgRoomCost: string | null = null
+                  let avgRoomTotal: string | null = null
+                  if (
+                    proposals &&
+                    proposals.length &&
+                    selectedHotel.state === "REVIEW"
+                  ) {
                     proposalReady = true
+                    let lowestRoomRate = getLowestCompare(
+                      proposals!.map((proposal) => proposal.compare_room_rate)
+                    )
+                    let lowestRoomTotal = getLowestCompare(
+                      proposals!.map((proposal) => proposal.compare_room_total)
+                    )
+                    if (lowestRoomRate) {
+                      avgRoomCost = formatDollars(lowestRoomRate)
+                    }
+                    if (lowestRoomTotal) {
+                      avgRoomTotal = formatDollars(lowestRoomTotal)
+                    }
                   }
                   return (
                     <Paper className={classes.card}>
@@ -235,7 +257,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                         </div>
                         {proposalReady && (
                           <div className={classes.attributesContainer}>
-                            {proposal.compare_room_rate && (
+                            {avgRoomCost && (
                               <div className={classes.attributeTag}>
                                 <AppTypography variant="body2" noWrap uppercase>
                                   Avg Room Cost
@@ -243,19 +265,19 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                                 <AppTypography
                                   variant="body1"
                                   fontWeight="bold">
-                                  {proposal.compare_room_rate}
+                                  {avgRoomCost}
                                 </AppTypography>
                               </div>
                             )}
-                            {proposal.compare_room_total && (
+                            {avgRoomTotal && (
                               <div className={classes.attributeTag}>
                                 <AppTypography variant="body2" noWrap uppercase>
-                                  Avg Room Total
+                                  Est. Room Total
                                 </AppTypography>
                                 <AppTypography
                                   variant="body1"
                                   fontWeight="bold">
-                                  {proposal.compare_room_total}
+                                  {avgRoomTotal}
                                 </AppTypography>
                               </div>
                             )}
@@ -273,6 +295,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                             onExplore(hotel)
                           }}>
                           View Proposal
+                          {proposals!.length > 1 && `s (${proposals!.length})`}
                         </Button>
                       ) : (
                         <Button

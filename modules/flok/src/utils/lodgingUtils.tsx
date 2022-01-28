@@ -2,14 +2,22 @@ import {useCallback, useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../models"
 import {DestinationModel, HotelModel} from "../models/lodging"
-import {FilterAnswerModel, RetreatModel} from "../models/retreat"
+import {
+  FilterAnswerModel,
+  RetreatAttendeeModel,
+  RetreatModel,
+} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getDestinations,
   getHotelById,
   getHotels,
 } from "../store/actions/lodging"
-import {getRetreat, getRetreatFilters} from "../store/actions/retreat"
+import {
+  getRetreat,
+  getRetreatAttendees,
+  getRetreatFilters,
+} from "../store/actions/retreat"
 import {
   getAlgoliaDestinationFilterString,
   getAlgoliaHotelFilterString,
@@ -295,4 +303,17 @@ export function useRetreatFilters(retreatGuid: string) {
     }
   }, [questions, responses, retreatGuid, dispatch])
   return [questions, responses] as const
+}
+
+export function useRetreatFlightInfo(retreatGuid: string) {
+  let dispatch = useDispatch()
+  let attendees = useSelector(
+    (state: RootState) => state.retreat.retreatAttendees[retreatGuid]
+  )
+  useEffect(() => {
+    if (!attendees) {
+      dispatch(getRetreatAttendees(retreatGuid))
+    }
+  }, [attendees, dispatch, retreatGuid])
+  return attendees as RetreatAttendeeModel[] | ResourceNotFoundType | undefined
 }
