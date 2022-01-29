@@ -8,10 +8,8 @@ import {
   makeStyles,
 } from "@material-ui/core"
 import {
-  ApartmentRounded,
   FlightRounded,
   HomeRounded,
-  ListRounded,
   MapRounded,
   SvgIconComponent,
 } from "@material-ui/icons"
@@ -50,11 +48,11 @@ let navItem = (title: string, Icon: SvgIconComponent, pageName: string) => [
 ]
 
 let navItems = {
-  overview: navItem("Overview", HomeRounded, "RetreatHomePage"),
-  details: navItem("Details", ListRounded, "RetreatHomePage"),
-  lodging: navItem("Lodging", ApartmentRounded, "RetreatHomePage"),
-  flights: navItem("Flights", FlightRounded, "RetreatHomePage"),
-  itinerary: navItem("Itinerary", MapRounded, "RetreatHomePage"),
+  overview: navItem("Overview", HomeRounded, "RetreatRoutingPage"),
+  // details: navItem("Details", ListRounded, "RetreatRoutingPage"),
+  // lodging: navItem("Lodging", ApartmentRounded, "RetreatHomePage"),
+  flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
+  itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
 }
 
 type SidenavItemType = keyof typeof navItems

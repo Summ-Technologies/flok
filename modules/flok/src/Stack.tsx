@@ -13,6 +13,7 @@ import ProposalRouter from "./pages/ProposalRouter"
 import RetreatFiltersPage from "./pages/RetreatFiltersPage"
 import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatItineraryPage from "./pages/RetreatItineraryPage"
+import RetreatOverviewPage from "./pages/RetreatOverviewPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 import RetreatRoutingPage from "./pages/RetreatRoutingPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
@@ -58,6 +59,16 @@ export class AppRoutes {
       path: "/r/:retreatGuid/itinerary",
     },
     {
+      name: "RetreatRoutingPage",
+      component:
+        process.env.REACT_APP_DASHBOARD_VERSION === "v1" ? (
+          <RetreatOverviewPage />
+        ) : (
+          <RetreatRoutingPage />
+        ),
+      path: "/r/:retreatGuid",
+    },
+    {
       name: "DestinationsListPage",
       component: <DestinationsListPage />,
       path: "/r/:retreatGuid/destinations",
@@ -91,11 +102,6 @@ export class AppRoutes {
       name: "RFPLiteResponsePage",
       component: <RFPLiteResponsePage />,
       path: "/rfp-lite",
-    },
-    {
-      name: "RetreatRoutingPage",
-      component: <RetreatRoutingPage />,
-      path: "/r/:retreatGuid",
     },
     {
       name: "HomeRoutingPage",

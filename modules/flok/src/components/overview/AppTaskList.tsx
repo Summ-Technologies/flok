@@ -95,8 +95,6 @@ let useListStyles = makeStyles((theme) => ({}))
 export default function AppTodoList(props: {retreatToTasks: RetreatToTask[]}) {
   let classes = useListStyles(props)
 
-  console.log(props)
-
   return (
     <div>
       {props.retreatToTasks.map((t) => (
