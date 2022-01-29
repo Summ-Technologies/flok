@@ -3,7 +3,6 @@ import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
-import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
@@ -179,7 +178,6 @@ function ProposalsListPage(props: ProposalsListPageProps) {
           <PageHeader
             header={`Proposals`}
             subheader="Review proposals from hotels with negotiated prices from our team."
-            preHeader={<AppLodgingFlowTimeline currentStep="PROPOSAL" />}
             retreat={
               retreat && retreat !== ResourceNotFound ? retreat : undefined
             }
@@ -252,7 +250,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                                   destinations.filter(
                                     (dest) => dest.id === hotel.destination_id
                                   )[0],
-                                  false,
+                                  true,
                                   hotel
                                 )
                               : ""}
