@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
+import config, {DASHBOARD_VERSION_KEY} from "./config"
 import DestinationPage from "./pages/DestinationPage"
 import DestinationsListPage from "./pages/DestinationsListPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
@@ -61,7 +62,7 @@ export class AppRoutes {
     {
       name: "RetreatRoutingPage",
       component:
-        process.env.REACT_APP_DASHBOARD_VERSION === "v1" ? (
+        config.get(DASHBOARD_VERSION_KEY) === "v1" ? (
           <RetreatOverviewPage />
         ) : (
           <RetreatRoutingPage />
