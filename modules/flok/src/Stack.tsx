@@ -9,7 +9,7 @@ import HotelsListPage from "./pages/HotelsListPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import ProposalPage from "./pages/ProposalPage"
-import ProposalRouter from "./pages/ProposalRouter"
+import ProposalsListPage from "./pages/ProposalsListPage"
 import RetreatFiltersPage from "./pages/RetreatFiltersPage"
 import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatItineraryPage from "./pages/RetreatItineraryPage"
@@ -90,7 +90,7 @@ export class AppRoutes {
     },
     {
       name: "ProposalsListPage",
-      component: <ProposalRouter />,
+      component: <ProposalsListPage />,
       path: "/r/:retreatGuid/proposals",
     },
     {

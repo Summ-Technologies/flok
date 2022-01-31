@@ -8,6 +8,7 @@ import {
   People,
 } from "@material-ui/icons"
 import {useEffect, useState} from "react"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router"
 import AppTypography from "../components/base/AppTypography"
 import RetreatRequired from "../components/lodging/RetreatRequired"
@@ -18,7 +19,8 @@ import AppTodoList from "../components/overview/AppTaskList"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
-import {RetreatModel} from "../models/retreat"
+import {RetreatModel, RetreatToTask} from "../models/retreat"
+import {putRetreatTask} from "../store/actions/retreat"
 import {convertGuid} from "../utils"
 import {useRetreat} from "../utils/lodgingUtils"
 
@@ -96,6 +98,17 @@ function RetreatOverview(props: RetreatOverviewProps) {
     setLodgingOverview(newVal)
   }, [retreat?.state_lodging])
 
+  let dispatch = useDispatch()
+  const handleTaskClick = (task: RetreatToTask) => {
+    dispatch(
+      putRetreatTask(
+        task.task.id,
+        retreatGuid,
+        task.state === "COMPLETED" ? "TODO" : "COMPLETED"
+      )
+    )
+  }
+
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
       <PageContainer>
@@ -142,7 +155,10 @@ function RetreatOverview(props: RetreatOverviewProps) {
               To Do List
             </AppTypography>
             {retreat && (
-              <AppTodoList retreatToTasks={retreat.tasks_todo || []} />
+              <AppTodoList
+                retreatToTasks={retreat.tasks_todo || []}
+                handleCheckboxClick={handleTaskClick}
+              />
             )}
           </div>
           <div className={classes.section}>
@@ -155,7 +171,10 @@ function RetreatOverview(props: RetreatOverviewProps) {
               Completed
             </AppTypography>
             {retreat && (
-              <AppTodoList retreatToTasks={retreat.tasks_completed || []} />
+              <AppTodoList
+                retreatToTasks={retreat.tasks_completed || []}
+                handleCheckboxClick={handleTaskClick}
+              />
             )}
           </div>
         </PageBody>

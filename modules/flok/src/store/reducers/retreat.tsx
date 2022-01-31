@@ -26,6 +26,7 @@ import {
   POST_SELECTED_RETREAT_HOTEL_REQUEST,
   PUT_RETREAT_FILTERS_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
+  PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
 
 export type RetreatState = {
@@ -57,6 +58,7 @@ export default function retreatReducer(
     case GET_RETREAT_SUCCESS:
     case POST_ADVANCE_RETREAT_STATE_SUCCESS:
     case PUT_RETREAT_PREFERENCES_SUCCESS:
+    case PUT_RETREAT_TASK_SUCCESS:
       if (
         [
           PUT_RETREAT_PREFERENCES_SUCCESS,

@@ -1,6 +1,6 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
-import {RetreatProgressState} from "../../models/retreat"
+import {RetreatProgressState, RetreatToTaskState} from "../../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
 import {ApiAction, createApiAction} from "./api"
@@ -332,6 +332,36 @@ export function getRetreatAttendees(guid: string) {
       {type: GET_RETREAT_ATTENDEES_REQUEST},
       {type: GET_RETREAT_ATTENDEES_SUCCESS, meta: {guid}},
       {type: GET_RETREAT_ATTENDEES_FAILURE, meta: {guid}},
+    ],
+  })
+}
+
+export const PUT_RETREAT_TASK_REQUEST = "POST_RETREAT_TASK_REQUEST"
+export const PUT_RETREAT_TASK_SUCCESS = "POST_RETREAT_TASK_SUCCESS"
+export const PUT_RETREAT_TASK_FAILURE = "POST_RETREAT_TASK_FAILURE"
+export function putRetreatTask(
+  task_id: number,
+  retreat_guid: string,
+  new_state: RetreatToTaskState
+) {
+  let endpoint = `/v1.0/retreats/${retreat_guid}/tasks`
+  return createApiAction({
+    method: "PUT",
+    endpoint,
+    body: JSON.stringify({task_id, new_state}),
+    types: [
+      {
+        type: PUT_RETREAT_TASK_REQUEST,
+        meta: {retreat_guid},
+      },
+      {
+        type: PUT_RETREAT_TASK_SUCCESS,
+        meta: {retreat_guid},
+      },
+      {
+        type: PUT_RETREAT_TASK_FAILURE,
+        meta: {retreat_guid},
+      },
     ],
   })
 }

@@ -3,11 +3,9 @@ import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
-import AppLodgingFlowTimeline from "../components/lodging/AppLodgingFlowTimeline"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
-import PageHeader from "../components/page/PageHeader"
-import PageOverlay from "../components/page/PageOverlay"
+import PageSidenav from "../components/page/PageSidenav"
 import {ResourceNotFound} from "../models"
 import {HotelModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
@@ -29,6 +27,7 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       marginTop: theme.spacing(1),
     },
+    margin: theme.spacing(2),
   },
   card: {
     position: "relative",
@@ -169,20 +168,18 @@ function ProposalsListPage(props: ProposalsListPageProps) {
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
-      <PageContainer>
-        <PageOverlay>
-          <PageHeader
-            header={`Proposals`}
-            subheader="Review proposals from hotels with negotiated prices from our team."
-            preHeader={<AppLodgingFlowTimeline currentStep="PROPOSAL" />}
-            retreat={
-              retreat && retreat !== ResourceNotFound ? retreat : undefined
-            }
+      {retreat && retreat !== ResourceNotFound && (
+        <PageContainer>
+          <PageSidenav
+            activeItem="lodging"
+            retreatGuid={retreatGuid}
+            companyName={retreat?.company_name}
           />
           <div className={classes.root}>
+            <AppTypography variant="h1" paragraph>
+              Proposals
+            </AppTypography>
             {hotelsById &&
-              retreat &&
-              retreat !== ResourceNotFound &&
               selectedHotels
                 .filter((selectedHotel) => hotelsById[selectedHotel.hotel_id])
                 .filter((selectedHotel) =>
@@ -310,8 +307,8 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                   )
                 })}
           </div>
-        </PageOverlay>
-      </PageContainer>
+        </PageContainer>
+      )}
     </RetreatRequired>
   )
 }

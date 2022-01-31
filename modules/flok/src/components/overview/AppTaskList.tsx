@@ -12,7 +12,7 @@ import {RetreatToTask} from "../../models/retreat"
 import AppTypography from "../base/AppTypography"
 
 const dateFormatShort = (date: Date) =>
-  date.toLocaleDateString("en-US", {month: "short", day: "numeric"})
+  new Date(date).toLocaleDateString("en-US", {month: "short", day: "numeric"})
 
 let useItemStyles = makeStyles((theme) => ({
   root: {
@@ -32,20 +32,13 @@ let useItemStyles = makeStyles((theme) => ({
   },
 }))
 
-function TodoListItem(props: {task: RetreatToTask}) {
+function TodoListItem(props: {
+  task: RetreatToTask
+  handleCheckboxClick: (task: RetreatToTask) => void
+}) {
   let classes = useItemStyles(props)
   let {task} = props
-  let [taskComplete, setTaskComplete] = useState(task.state === "COMPLETED")
   let [expanded, setExpanded] = useState(false)
-
-  //TODO: handle backend changes to task state as well
-  const handleCheckboxClick = () => {
-    if (task.task.user_complete && !taskComplete) {
-      setTaskComplete(true)
-    } else if (task.task.user_complete && taskComplete) {
-      setTaskComplete(false)
-    }
-  }
 
   const handleExpandClick = () => {
     setExpanded(!expanded)
@@ -55,9 +48,9 @@ function TodoListItem(props: {task: RetreatToTask}) {
     <div className={classes.root}>
       <div className={classes.summary}>
         <Checkbox
-          disabled={!task.task.user_complete || task.state === "COMPLETED"}
-          checked={taskComplete}
-          onClick={handleCheckboxClick}
+          disabled={!task.task.user_complete}
+          checked={task.state === "COMPLETED"}
+          onClick={() => props.handleCheckboxClick(task)}
         />
         <AppTypography className={classes.title}>
           <Link
@@ -92,13 +85,19 @@ function TodoListItem(props: {task: RetreatToTask}) {
 }
 
 let useListStyles = makeStyles((theme) => ({}))
-export default function AppTodoList(props: {retreatToTasks: RetreatToTask[]}) {
+export default function AppTodoList(props: {
+  retreatToTasks: RetreatToTask[]
+  handleCheckboxClick: (task: RetreatToTask) => void
+}) {
   let classes = useListStyles(props)
 
   return (
     <div>
       {props.retreatToTasks.map((t) => (
-        <TodoListItem task={t} />
+        <TodoListItem
+          task={t}
+          handleCheckboxClick={props.handleCheckboxClick}
+        />
       ))}
     </div>
   )
