@@ -30,6 +30,19 @@ let useItemStyles = makeStyles((theme) => ({
   title: {
     lineHeight: "1em",
   },
+  desc: {
+    paddingLeft: 42,
+    paddingBottom: 12,
+  },
+  dueDate: {
+    display: "flex",
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "space-between",
+    width: "30%",
+    maxWidth: 200,
+    marginBottom: 12,
+  },
 }))
 
 function TodoListItem(props: {
@@ -78,7 +91,28 @@ function TodoListItem(props: {
         )}
       </div>
       <Collapse in={expanded}>
-        <AppTypography>{task.task.description}</AppTypography>
+        <div className={classes.desc}>
+          {task.due_date ? (
+            <>
+              <div className={classes.dueDate}>
+                <AppTypography variant="body2" color="textSecondary">
+                  Task due date:{"  "}
+                </AppTypography>
+                <Chip
+                  label={dateFormatShort(task.due_date)}
+                  icon={<CalendarToday />}
+                  size="small"
+                />
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+          <AppTypography fontWeight="bold" style={{lineHeight: "2em"}}>
+            {task.task.title}
+          </AppTypography>
+          <AppTypography>{task.task.description}</AppTypography>
+        </div>
       </Collapse>
     </div>
   )
