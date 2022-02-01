@@ -279,7 +279,9 @@ function ProposalPage(props: ProposalPageProps) {
                         Guests
                       </AppTypography>
                       <AppTypography variant="body1">
-                        {retreat !== ResourceNotFound
+                        {proposal.num_guests
+                          ? proposal.num_guests
+                          : retreat !== ResourceNotFound
                           ? retreat!.preferences_num_attendees_lower
                           : undefined}
                       </AppTypography>
@@ -452,7 +454,8 @@ function ProposalPage(props: ProposalPageProps) {
                       )}
                     </Paper>
                   )}
-                  {proposal.cost_saving_notes && (
+                  {(proposal.cost_saving_notes ||
+                    proposal.additional_links?.length) && (
                     <Paper className={classes.detailsSection}>
                       <AppTypography variant="h3" fontWeight="bold">
                         Additional Info
@@ -464,6 +467,27 @@ function ProposalPage(props: ProposalPageProps) {
                           </AppTypography>
                           <AppTypography variant="body1">
                             {proposal.cost_saving_notes}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.additional_links?.length && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Other Resources
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.additional_links?.map(
+                              (link, currI, currArr) => (
+                                <>
+                                  <Link target="__blank" href={link.link_url}>
+                                    {link.link_text}
+                                  </Link>
+                                  {currI !== currArr.length - 1 ? (
+                                    <br />
+                                  ) : undefined}
+                                </>
+                              )
+                            )}
                           </AppTypography>
                         </div>
                       )}

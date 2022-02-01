@@ -153,6 +153,8 @@ function ProposalsListPage(props: ProposalsListPageProps) {
     document.title = "Lodging Proposals"
   }, [])
 
+  // Probably not the best way to set loading state, but will do for now
+  let [loadingHotels, setLoadingHotels] = useState(false)
   useEffect(() => {
     let missingHotels = selectedHotels.filter(
       (selectedHotel) => hotelsById[selectedHotel.hotel_id] === undefined
@@ -162,8 +164,11 @@ function ProposalsListPage(props: ProposalsListPageProps) {
         .map((selectedHotel) => `id=${selectedHotel.hotel_id}`)
         .join(" OR ")
       dispatch(getHotels(filter))
+      setLoadingHotels(true)
+    } else {
+      setLoadingHotels(false)
     }
-  }, [selectedHotels, hotelsById, dispatch])
+  }, [selectedHotels, hotelsById, dispatch, setLoadingHotels])
 
   let destinations = useDestinations()[0]
 
@@ -249,10 +254,14 @@ function ProposalsListPage(props: ProposalsListPageProps) {
           <div className={classes.root}>
             {groupedSelectedHotels.length + unavailableSelectedHotels.length ===
             0 ? (
-              <AppTypography variant="body1">
-                Check back soon. We're currently working on collecting hotel
-                proposals on your behalf!
-              </AppTypography>
+              loadingHotels ? (
+                <AppTypography variant="body1">Loading...</AppTypography>
+              ) : (
+                <AppTypography variant="body1">
+                  Check back soon. We're currently working on collecting hotel
+                  proposals on your behalf!
+                </AppTypography>
+              )
             ) : undefined}
             {/* Available hotels render */}
             {groupedSelectedHotels.map((destList) => {
@@ -402,7 +411,10 @@ function ProposalsListPage(props: ProposalsListPageProps) {
             })}
             {/* Unavailable hotels render */}
             {unavailableSelectedHotels.length ? (
-              <AppTypography variant="h2">Unavailable Hotels</AppTypography>
+              <AppTypography variant="h2">
+                Unavailable Hotels{" "}
+                <AppMoreInfoIcon tooltipText="We reached out to the following hotels but they cannot support your group during the requested dates." />
+              </AppTypography>
             ) : undefined}
             <div className={classes.proposalsList}>
               {unavailableSelectedHotels.map((selectedHotel) => {
