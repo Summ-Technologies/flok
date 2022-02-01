@@ -470,7 +470,7 @@ function ProposalPage(props: ProposalPageProps) {
                           </AppTypography>
                         </div>
                       )}
-                      {proposal.additional_links?.length && (
+                      {proposal.additional_links?.length ? (
                         <div className={classes.detail}>
                           <AppTypography variant="body2" fontWeight="bold">
                             Other Resources
@@ -490,7 +490,7 @@ function ProposalPage(props: ProposalPageProps) {
                             )}
                           </AppTypography>
                         </div>
-                      )}
+                      ) : undefined}
                     </Paper>
                   )}
                 </div>
