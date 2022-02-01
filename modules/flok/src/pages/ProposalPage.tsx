@@ -5,6 +5,7 @@ import clsx from "clsx"
 import {useEffect, useState} from "react"
 import {RouteComponentProps, withRouter} from "react-router"
 import AppImageGrid from "../components/base/AppImageGrid"
+import AppMoreInfoIcon from "../components/base/AppMoreInfoIcon"
 import AppTypography from "../components/base/AppTypography"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
@@ -177,9 +178,9 @@ function ProposalPage(props: ProposalPageProps) {
 
   useEffect(() => {
     if (hotel && hotel !== ResourceNotFound) {
-      document.title = `Proposal - ${hotel.name}`
+      document.title = `${hotel.name} Proposal`
     } else if (hotel === ResourceNotFound) {
-      document.title = `Proposal - Not Found`
+      document.title = `Proposal Not Found`
     } else {
       document.title = `Lodging Proposal`
     }
@@ -278,7 +279,9 @@ function ProposalPage(props: ProposalPageProps) {
                         Guests
                       </AppTypography>
                       <AppTypography variant="body1">
-                        {retreat !== ResourceNotFound
+                        {proposal.num_guests
+                          ? proposal.num_guests
+                          : retreat !== ResourceNotFound
                           ? retreat!.preferences_num_attendees_lower
                           : undefined}
                       </AppTypography>
@@ -301,7 +304,8 @@ function ProposalPage(props: ProposalPageProps) {
                     {proposal.approx_room_total && (
                       <div className={classes.detail}>
                         <AppTypography variant="body2" fontWeight="bold">
-                          Approx. Room Total (PRE TAX)
+                          Approx. Room Total{" "}
+                          <AppMoreInfoIcon tooltipText="The approximate room total is pre-tax and can vary greatly based on attrition rates, room upgrades, etc." />
                         </AppTypography>
                         <AppTypography variant="body1">
                           {proposal.approx_room_total}
@@ -339,116 +343,154 @@ function ProposalPage(props: ProposalPageProps) {
                       </div>
                     )}
                   </Paper>
-                  <Paper className={classes.detailsSection}>
-                    <AppTypography variant="h3" fontWeight="bold">
-                      Food and beverage
-                    </AppTypography>
-                    {proposal.food_bev_minimum && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          F&B Minimum
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.food_bev_minimum}
-                        </AppTypography>
-                      </div>
-                    )}
-                    {proposal.food_bev_service_fee && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          F&B Service Fee
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.food_bev_service_fee}
-                        </AppTypography>
-                      </div>
-                    )}
-                    {proposal.avg_breakfast_price && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          Avg. Breakfast Buffet
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.avg_breakfast_price}
-                        </AppTypography>
-                      </div>
-                    )}
-                    {proposal.avg_snack_price && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          Avg. AM/PM Break
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.avg_snack_price}
-                        </AppTypography>
-                      </div>
-                    )}
-                    {proposal.avg_lunch_price && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          Avg. Lunch Buffet
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.avg_lunch_price}
-                        </AppTypography>
-                      </div>
-                    )}
-                    {proposal.avg_dinner_price && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          Avg. Plated Dinner
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.avg_dinner_price}
-                        </AppTypography>
-                      </div>
-                    )}
-                  </Paper>
-                  <Paper className={classes.detailsSection}>
-                    <AppTypography variant="h3" fontWeight="bold">
-                      Meeting Space
-                    </AppTypography>
-                    {proposal.meeting_room_rates && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          Suggested Meeting Spaces
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.suggested_meeting_spaces}
-                        </AppTypography>
-                      </div>
-                    )}
-                    {proposal.meeting_room_rates && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          Meeting Room Rates
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.meeting_room_rates}
-                        </AppTypography>
-                      </div>
-                    )}
-                    {proposal.meeting_room_tax_rates && (
-                      <div className={classes.detail}>
-                        <AppTypography variant="body2" fontWeight="bold">
-                          Meeting Room Tax Rates
-                        </AppTypography>
-                        <AppTypography variant="body1">
-                          {proposal.meeting_room_tax_rates}
-                        </AppTypography>
-                      </div>
-                    )}
-                  </Paper>
-                  {proposal.cost_saving_notes && (
+                  {(proposal.food_bev_minimum ||
+                    proposal.food_bev_service_fee ||
+                    proposal.avg_breakfast_price ||
+                    proposal.avg_snack_price ||
+                    proposal.avg_lunch_price ||
+                    proposal.avg_dinner_price) && (
                     <Paper className={classes.detailsSection}>
                       <AppTypography variant="h3" fontWeight="bold">
-                        Additional Notes
+                        Food and Beverage
                       </AppTypography>
-                      <div className={classes.detail}>
-                        <AppTypography variant="body1">
-                          {proposal.cost_saving_notes}
-                        </AppTypography>
-                      </div>
+                      {proposal.food_bev_minimum && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            F&B Minimum
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.food_bev_minimum}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.food_bev_service_fee && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            F&B Service Fee
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.food_bev_service_fee}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.avg_breakfast_price && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Avg. Breakfast Buffet
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.avg_breakfast_price}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.avg_snack_price && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Avg. AM/PM Break
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.avg_snack_price}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.avg_lunch_price && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Avg. Lunch Buffet
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.avg_lunch_price}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.avg_dinner_price && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Avg. Plated Dinner
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.avg_dinner_price}
+                          </AppTypography>
+                        </div>
+                      )}
+                    </Paper>
+                  )}
+                  {(proposal.meeting_room_rates ||
+                    proposal.suggested_meeting_spaces ||
+                    proposal.meeting_room_tax_rates) && (
+                    <Paper className={classes.detailsSection}>
+                      <AppTypography variant="h3" fontWeight="bold">
+                        Meeting Space
+                      </AppTypography>
+                      {proposal.suggested_meeting_spaces && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Suggested Meeting Spaces
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.suggested_meeting_spaces}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.meeting_room_rates && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Meeting Room Rates
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.meeting_room_rates}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.meeting_room_tax_rates && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Meeting Room Tax Rates
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.meeting_room_tax_rates}
+                          </AppTypography>
+                        </div>
+                      )}
+                    </Paper>
+                  )}
+                  {(proposal.cost_saving_notes ||
+                    proposal.additional_links?.length) && (
+                    <Paper className={classes.detailsSection}>
+                      <AppTypography variant="h3" fontWeight="bold">
+                        Additional Info
+                      </AppTypography>
+                      {proposal.cost_saving_notes && (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Notes
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.cost_saving_notes}
+                          </AppTypography>
+                        </div>
+                      )}
+                      {proposal.additional_links?.length ? (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Other Resources
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.additional_links?.map(
+                              (link, currI, currArr) => (
+                                <>
+                                  <Link target="__blank" href={link.link_url}>
+                                    {link.link_text}
+                                  </Link>
+                                  {currI !== currArr.length - 1 ? (
+                                    <br />
+                                  ) : undefined}
+                                </>
+                              )
+                            )}
+                          </AppTypography>
+                        </div>
+                      ) : undefined}
                     </Paper>
                   )}
                 </div>
