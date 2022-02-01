@@ -150,7 +150,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   })
 
   useEffect(() => {
-    document.title = "Flok - Lodging Proposals"
+    document.title = "Lodging Proposals"
   }, [])
 
   useEffect(() => {
