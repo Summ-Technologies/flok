@@ -39,6 +39,7 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     alignContent: "baseline",
+    justifyContent: "center",
     padding: 24,
     textAlign: "center",
   },
@@ -48,6 +49,7 @@ let useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignContent: "flex-start",
     alignItems: "flex-start",
+    marginBottom: theme.spacing(1),
   },
   icon: {
     top: 0,
@@ -57,7 +59,6 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    flexGrow: 1,
   },
   emailInput: {},
 }))
@@ -73,7 +74,9 @@ export default function UnderConstructionView(
           <Icon fontSize="large">
             <LockRounded fontSize="large" style={{verticalAlign: "top"}} />
           </Icon>
-          <AppTypography variant="h1">&nbsp;COMING SOON&nbsp;</AppTypography>
+          <AppTypography variant="h1" uppercase>
+            &nbsp;Coming Soon&nbsp;
+          </AppTypography>
           <Icon fontSize="large">
             <LockRounded fontSize="large" style={{verticalAlign: "top"}} />
           </Icon>
