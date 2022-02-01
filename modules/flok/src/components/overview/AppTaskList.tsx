@@ -34,6 +34,9 @@ let useItemStyles = makeStyles((theme) => ({
     paddingLeft: 42,
     paddingBottom: 12,
   },
+  iconExpanded: {
+    transform: "rotateZ(180deg)",
+  },
   dueDate: {
     display: "flex",
     alignItems: "center",
@@ -83,7 +86,9 @@ function TodoListItem(props: {
           <></>
         )}
         {task.task.description ? (
-          <IconButton onClick={handleExpandClick}>
+          <IconButton
+            onClick={handleExpandClick}
+            className={expanded ? classes.iconExpanded : ""}>
             <ExpandMore />
           </IconButton>
         ) : (
