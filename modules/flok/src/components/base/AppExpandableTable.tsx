@@ -8,24 +8,26 @@ import {
   TableRow,
 } from "@material-ui/core"
 import Table from "@material-ui/core/Table"
-import {SwapVert} from "@material-ui/icons"
+import {Delete, SwapVert} from "@material-ui/icons"
 import React, {useState} from "react"
 import AppTypography from "./AppTypography"
 
 type ExpandableRowProps = {
   cols: (JSX.Element | String)[]
   body: JSX.Element
+  onDelete?: () => void
 }
 
 const useExpandableRowStyles = makeStyles({
   mainRow: {
+    position: "relative",
     "& > *": {
       borderBottom: "unset",
     },
     "& > :first-child": {
       borderRadius: "10px 0 0 10px",
     },
-    "& > :last-child": {
+    "& > :nth-last-child(1)": {
       borderRadius: "0 10px 10px 0",
     },
   },
@@ -34,6 +36,9 @@ const useExpandableRowStyles = makeStyles({
       borderBottom: "unset",
     },
   },
+  cell: {
+    backgroundColor: "#FFF",
+  },
   expandCell: {
     padding: "10px 0 0 0",
     // borderRadius: "0 0 10px 10px",
@@ -41,6 +46,10 @@ const useExpandableRowStyles = makeStyles({
   expandBody: {
     background: "#E2E5EC",
     // borderRadius: "0 0 10px 10px",
+  },
+  deleteBtn: {
+    // backgroundColor: "transparent",
+    margin: "auto",
   },
 })
 
@@ -51,7 +60,7 @@ function ExpandableRow(props: ExpandableRowProps) {
     <React.Fragment>
       <TableRow className={classes.mainRow}>
         {props.cols.map((c) => (
-          <TableCell>
+          <TableCell className={classes.cell}>
             {c instanceof String ? <AppTypography>{c}</AppTypography> : c}
           </TableCell>
         ))}
@@ -60,6 +69,16 @@ function ExpandableRow(props: ExpandableRowProps) {
             {open ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </TableCell> */}
+        {props.onDelete && (
+          <TableCell className={classes.cell}>
+            <IconButton
+              size="small"
+              onClick={props.onDelete}
+              className={classes.deleteBtn}>
+              <Delete />
+            </IconButton>
+          </TableCell>
+        )}
       </TableRow>
       {/* <TableRow className={classes.expandRow}>
         <TableCell
@@ -82,7 +101,7 @@ const useTableStyles = makeStyles({
     borderSpacing: "0 16px",
   },
   body: {
-    background: "#FFF",
+    // background: "#FFF",
     // "& > :first-child": {
     //   "& > :first-child": {
     //     borderRadius: "10px 0 0 0",
@@ -112,9 +131,13 @@ const useTableStyles = makeStyles({
 type AppExpandableTableProps = {
   headers: Array<{
     name: string
-    comparator?: (r1: string[], r2: string[]) => number
+    comparator?: (
+      r1: (string | JSX.Element)[],
+      r2: (string | JSX.Element)[]
+    ) => number
   }>
-  rows: string[][]
+  rows: (string | JSX.Element)[][]
+  rowDeleteCallback?: (row: (string | JSX.Element)[]) => void
 }
 
 export default function AppExpandableTable(props: AppExpandableTableProps) {
@@ -134,7 +157,8 @@ export default function AppExpandableTable(props: AppExpandableTableProps) {
 
   const getComparator = () => {
     let headerObj = props.headers.filter((h) => h.name === orderBy)[0]
-    let fn = (r1: string[], r2: string[]) => r1[0].localeCompare(r2[0])
+    let fn = (r1: (string | JSX.Element)[], r2: (string | JSX.Element)[]) =>
+      r1[0].toString().localeCompare(r2[0].toString())
 
     if (headerObj === undefined) {
       return fn
@@ -144,7 +168,8 @@ export default function AppExpandableTable(props: AppExpandableTableProps) {
       fn = headerObj.comparator
     }
     if (order === "asc") {
-      return (r1: string[], r2: string[]) => fn(r1, r2) * -1
+      return (r1: (string | JSX.Element)[], r2: (string | JSX.Element)[]) =>
+        fn(r1, r2) * -1
     }
 
     return fn
@@ -169,7 +194,7 @@ export default function AppExpandableTable(props: AppExpandableTableProps) {
                 </div>
               </TableCell>
             ))}
-            <TableCell />
+            {/* <TableCell /> */}
           </TableRow>
         </TableHead>
         <TableBody className={classes.body}>
@@ -177,7 +202,18 @@ export default function AppExpandableTable(props: AppExpandableTableProps) {
             .slice()
             .sort(getComparator())
             .map((data) => (
-              <ExpandableRow cols={data} body={<></>} />
+              <ExpandableRow
+                cols={data}
+                body={<></>}
+                onDelete={
+                  props.rowDeleteCallback
+                    ? () =>
+                        props.rowDeleteCallback
+                          ? props.rowDeleteCallback(data)
+                          : undefined
+                    : undefined
+                }
+              />
             ))}
         </TableBody>
       </Table>

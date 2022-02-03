@@ -145,4 +145,7 @@ export type RetreatAttendeeModel = {
   email_address: string
   name: string
   travel?: RetreatTravelModel
+  city: string
+  dietary_prefs: string
+  notes: string
 }
