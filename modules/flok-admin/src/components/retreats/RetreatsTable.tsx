@@ -9,6 +9,7 @@ import React from "react"
 import {useDispatch} from "react-redux"
 import {RetreatStateOptions} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
+import {getDateTimeString} from "../../utils"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -34,8 +35,7 @@ export type RetreatsTableRow = {
   numAttendees: number
   flokOwner: string
   flokState: string
-  createdAt: string
-  edited?: boolean
+  createdAt: Date
 }
 
 type RetreatsTableProps = {
@@ -116,6 +116,8 @@ export default function RetreatsTable(props: RetreatsTableProps) {
       field: "createdAt",
       headerName: "Created At",
       width: 250,
+      type: "datetime",
+      valueFormatter: (params) => getDateTimeString(params.value as Date),
     },
   ]
   return (

@@ -1,4 +1,5 @@
 import {makeStyles, Tab, Tabs, Typography} from "@material-ui/core"
+import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -7,9 +8,10 @@ import RetreatsTable, {
   RetreatsTableRow,
 } from "../components/retreats/RetreatsTable"
 import {AdminRetreatListModel, AdminRetreatListType} from "../models"
-import {enqueueSnackbar} from "../notistack-lib/actions"
+import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatsList} from "../store/actions/admin"
+import {getDateFromString} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -56,7 +58,7 @@ function RetreatsPage(props: RetreatsPageProps) {
         numAttendees: retreat.preferences_num_attendees_lower,
         flokOwner: retreat.flok_admin_owner,
         flokState: retreat.flok_admin_state,
-        createdAt: retreat.created_at,
+        createdAt: getDateFromString(retreat.created_at),
       }
     })
     return rowsDict
@@ -106,9 +108,10 @@ function RetreatsPage(props: RetreatsPageProps) {
             )}
             onSelect={(id) =>
               dispatch(
-                enqueueSnackbar({
-                  message: `Sup ${id}`,
-                  options: {variant: "error"},
+                push({
+                  pathname: AppRoutes.getPath("RetreatPage", {
+                    id: id.toString(),
+                  }),
                 })
               )
             }

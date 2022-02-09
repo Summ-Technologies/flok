@@ -1,6 +1,7 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
 import HomePage from "./pages/HomePage"
+import RetreatPage from "./pages/RetreatPage"
 import RetreatsPage from "./pages/RetreatsPage"
 
 type FlokRoute = {
@@ -17,7 +18,8 @@ type FlokRoute = {
 export class AppRoutes {
   static routes: FlokRoute[] = [
     {name: "HomePage", component: <HomePage />, path: "/"},
-    {name: "Retreats", component: <RetreatsPage />, path: "/retreats"},
+    {name: "RetreatsPage", component: <RetreatsPage />, path: "/retreats"},
+    {name: "RetreatPage", component: <RetreatPage />, path: "/retreats/:id"},
   ]
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {
     return routes.map((route) => (

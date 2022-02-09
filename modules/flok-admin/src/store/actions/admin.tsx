@@ -18,3 +18,20 @@ export function getRetreatsList(state: AdminRetreatListType) {
     ],
   })
 }
+
+export const GET_RETREAT_DETAILS_REQUEST = "GET_RETREAT_DETAILS_REQUEST"
+export const GET_RETREAT_DETAILS_SUCCESS = "GET_RETREAT_DETAILS_SUCCESS"
+export const GET_RETREAT_DETAILS_FAILURE = "GET_RETREAT_DETAILS_FAILURE"
+
+export function getRetreatDetails(id: number) {
+  let endpoint = `/v1.0/admin/retreats/${id}`
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [
+      {type: GET_RETREAT_DETAILS_REQUEST, meta: {id}},
+      {type: GET_RETREAT_DETAILS_SUCCESS, meta: {id}},
+      {type: GET_RETREAT_DETAILS_FAILURE, meta: {id}},
+    ],
+  })
+}
