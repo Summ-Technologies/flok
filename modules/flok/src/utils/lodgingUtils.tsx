@@ -278,7 +278,9 @@ export class HotelUtils {
   static getAirportTravelTime(mins: number) {
     let airportHours = Math.floor(mins / 60)
     let airportMins = mins % 60
-    return `${airportHours > 0 ? `${airportHours}h ` : ""}${airportMins}m`
+    return `${
+      airportHours > 0 ? `${airportHours}hr${airportHours > 1 ? "s" : ""} ` : ""
+    }${airportMins}mins`
   }
 }
 

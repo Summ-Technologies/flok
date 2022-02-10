@@ -16,7 +16,7 @@ import {HotelModel} from "../models/lodging"
 import {HotelLodgingProposal} from "../models/retreat"
 import {AppRoutes} from "../Stack"
 import {convertGuid, useQuery} from "../utils"
-import {useHotel, useRetreat} from "../utils/lodgingUtils"
+import {HotelUtils, useHotel, useRetreat} from "../utils/lodgingUtils"
 import NotFound404Page from "./misc/NotFound404Page"
 
 type ProposalPageProps = RouteComponentProps<{
@@ -274,6 +274,16 @@ function ProposalPage(props: ProposalPageProps) {
                         </ToggleButtonGroup>
                       )}
                     </div>
+                    {proposal.dates_notes && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Date Notes
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.dates_notes}
+                        </AppTypography>
+                      </div>
+                    )}
                     <div className={classes.detail}>
                       <AppTypography variant="body2" fontWeight="bold">
                         Guests
@@ -286,6 +296,24 @@ function ProposalPage(props: ProposalPageProps) {
                           : undefined}
                       </AppTypography>
                     </div>
+                    {hotel.airport_travel_time && (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Airport Travel Time{" "}
+                          <AppMoreInfoIcon
+                            tooltipText={`This travel time is calculated to the nearest major airport${
+                              hotel.airport ? `(${hotel.airport})` : ""
+                            }. There may be smaller regional airports that are closer.`}
+                          />
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {HotelUtils.getAirportTravelTime(
+                            hotel.airport_travel_time
+                          )}
+                          {hotel.airport && ` to ${hotel.airport}`}
+                        </AppTypography>
+                      </div>
+                    )}
                   </Paper>
                   <Paper className={classes.detailsSection}>
                     <AppTypography variant="h3" fontWeight="bold">
@@ -342,6 +370,29 @@ function ProposalPage(props: ProposalPageProps) {
                         </AppTypography>
                       </div>
                     )}
+                    {proposal.additional_links?.filter(
+                      (link) => link.affinity === "GUESTROOMS"
+                    ).length ? (
+                      <div className={classes.detail}>
+                        <AppTypography variant="body2" fontWeight="bold">
+                          Links
+                        </AppTypography>
+                        <AppTypography variant="body1">
+                          {proposal.additional_links
+                            ?.filter((link) => link.affinity === "GUESTROOMS")
+                            .map((link, currI, currArr) => (
+                              <>
+                                <Link target="__blank" href={link.link_url}>
+                                  {link.link_text}
+                                </Link>
+                                {currI !== currArr.length - 1 ? (
+                                  <br />
+                                ) : undefined}
+                              </>
+                            ))}
+                        </AppTypography>
+                      </div>
+                    ) : undefined}
                   </Paper>
                   {(proposal.food_bev_minimum ||
                     proposal.food_bev_service_fee ||
@@ -413,6 +464,29 @@ function ProposalPage(props: ProposalPageProps) {
                           </AppTypography>
                         </div>
                       )}
+                      {proposal.additional_links?.filter(
+                        (link) => link.affinity === "FOOD_BEV"
+                      ).length ? (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Links
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.additional_links
+                              ?.filter((link) => link.affinity === "FOOD_BEV")
+                              .map((link, currI, currArr) => (
+                                <>
+                                  <Link target="__blank" href={link.link_url}>
+                                    {link.link_text}
+                                  </Link>
+                                  {currI !== currArr.length - 1 ? (
+                                    <br />
+                                  ) : undefined}
+                                </>
+                              ))}
+                          </AppTypography>
+                        </div>
+                      ) : undefined}
                     </Paper>
                   )}
                   {(proposal.meeting_room_rates ||
@@ -452,6 +526,31 @@ function ProposalPage(props: ProposalPageProps) {
                           </AppTypography>
                         </div>
                       )}
+                      {proposal.additional_links?.filter(
+                        (link) => link.affinity === "MEETING_ROOMS"
+                      ).length ? (
+                        <div className={classes.detail}>
+                          <AppTypography variant="body2" fontWeight="bold">
+                            Links
+                          </AppTypography>
+                          <AppTypography variant="body1">
+                            {proposal.additional_links
+                              ?.filter(
+                                (link) => link.affinity === "MEETING_ROOMS"
+                              )
+                              .map((link, currI, currArr) => (
+                                <>
+                                  <Link target="__blank" href={link.link_url}>
+                                    {link.link_text}
+                                  </Link>
+                                  {currI !== currArr.length - 1 ? (
+                                    <br />
+                                  ) : undefined}
+                                </>
+                              ))}
+                          </AppTypography>
+                        </div>
+                      ) : undefined}
                     </Paper>
                   )}
                   {(proposal.cost_saving_notes ||
@@ -470,14 +569,17 @@ function ProposalPage(props: ProposalPageProps) {
                           </AppTypography>
                         </div>
                       )}
-                      {proposal.additional_links?.length ? (
+                      {proposal.additional_links?.filter(
+                        (link) => !link.affinity
+                      ).length ? (
                         <div className={classes.detail}>
                           <AppTypography variant="body2" fontWeight="bold">
                             Other Resources
                           </AppTypography>
                           <AppTypography variant="body1">
-                            {proposal.additional_links?.map(
-                              (link, currI, currArr) => (
+                            {proposal.additional_links
+                              ?.filter((link) => !link.affinity)
+                              .map((link, currI, currArr) => (
                                 <>
                                   <Link target="__blank" href={link.link_url}>
                                     {link.link_text}
@@ -486,8 +588,7 @@ function ProposalPage(props: ProposalPageProps) {
                                     <br />
                                   ) : undefined}
                                 </>
-                              )
-                            )}
+                              ))}
                           </AppTypography>
                         </div>
                       ) : undefined}

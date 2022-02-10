@@ -9,11 +9,13 @@ export type RetreatSelectedHotelProposalState =
 export type HotelLodgingProposalLink = {
   link_url: string
   link_text: string
+  affinity?: "MEETING_ROOMS" | "FOOD_BEV" | "GUESTROOMS"
 }
 
 export type HotelLodgingProposal = {
   id: number
   dates: string
+  dates_notes: string
   num_guests?: string
   compare_room_rate: number
   compare_room_total: number
