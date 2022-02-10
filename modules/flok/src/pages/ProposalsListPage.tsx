@@ -371,7 +371,18 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                                       variant="body2"
                                       noWrap
                                       uppercase>
-                                      Airport distance
+                                      Airport distance{" "}
+                                      <AppMoreInfoIcon
+                                        tooltipText={`This travel time is calculated to the nearest major airport${
+                                          hotel.airport
+                                            ? `(${hotel.airport})`
+                                            : ""
+                                        }. There may be smaller regional airports closer to ${DestinationUtils.getLocationName(
+                                          destination,
+                                          false,
+                                          hotel
+                                        )}.`}
+                                      />
                                     </AppTypography>
                                     <AppTypography
                                       variant="body1"
