@@ -1,27 +1,47 @@
-import {makeStyles} from "@material-ui/core"
-import {DataGrid, GridColDef} from "@material-ui/data-grid"
-import React, {useState} from "react"
-import {AdminRetreatDetailsModel} from "../../models"
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  makeStyles,
+} from "@material-ui/core"
+import React from "react"
+import {
+  AdminRetreatDetailsModel,
+  AdminSelectedHotelProposal,
+} from "../../models"
+import AppTypography from "../base/AppTypography"
+import HotelProposalForm from "./HotelProposalForm"
 
 let useStyles = makeStyles((theme) => ({
   root: {height: "100%"},
-  selectedHotelsTable: {},
-  cell: {
-    "&:hover": {
-      textOverflow: "clip",
-      overflow: "visible",
-      whiteSpace: "nowrap",
-      maxWidth: "unset !important",
-      wordBreak: "break-all",
-    },
-  },
+  hotelsList: {},
 }))
 
-export type SelectedHotelRow = {
-  hotel: string
-  destination: string
-  state: string
-  numProposals: number
+function HotelAccordionItem(props: {
+  selectedHotel: AdminSelectedHotelProposal
+  hotel: {name: string; location: string}
+}) {
+  return (
+    <Accordion>
+      <AccordionSummary>
+        <AppTypography variant="body1" fontWeight="bold">
+          {props.hotel.name}
+        </AppTypography>
+        <AppTypography variant="body1" fontWeight="bold">
+          {props.hotel.location}
+        </AppTypography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <HotelProposalForm
+          proposal={
+            props.selectedHotel.hotel_proposals?.length
+              ? props.selectedHotel.hotel_proposals[0]
+              : {id: -1, additional_links: []}
+          }
+        />
+      </AccordionDetails>
+    </Accordion>
+  )
 }
 
 type RetreatLodgingDetailsProps = {retreat: AdminRetreatDetailsModel}
@@ -29,37 +49,10 @@ export default function RetreatLodgingDetails(
   props: RetreatLodgingDetailsProps
 ) {
   let classes = useStyles(props)
-  let selectedHotelColumns: GridColDef[] = [
-    {field: "hotel", headerName: "Hotel Name", width: 200, sortable: true},
-    {
-      field: "destination",
-      headerName: "Destination",
-      width: 200,
-      sortable: true,
-    },
-    {field: "state", headerName: "Proposals state", width: 200, sortable: true},
-    {
-      field: "numProposals",
-      headerName: "# proposals",
-      width: 150,
-      sortable: false,
-    },
-  ]
-  let [rows, setRows] = useState<SelectedHotelRow[]>([])
   return (
     <div className={classes.root}>
-      <DataGrid
-        className={classes.root}
-        classes={{cell: classes.cell}}
-        rows={rows}
-        columns={selectedHotelColumns}
-        disableSelectionOnClick
-        disableColumnMenu
-        density="compact"
-        pageSize={20}
-        pagination
-        rowsPerPageOptions={[]}
-      />
+      <AppTypography variant="h4">Hotel Options</AppTypography>
+      <div className={classes.hotelsList}></div>
     </div>
   )
 }

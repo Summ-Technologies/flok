@@ -15,7 +15,7 @@ import {
 } from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
-import HotelProposalForm from "../components/retreats/HotelProposalForm"
+import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
 import RetreatOverviewForm from "../components/retreats/RetreatOverviewForm"
 import {enqueueSnackbar} from "../notistack-lib/actions"
 import {AppRoutes} from "../Stack"
@@ -119,7 +119,7 @@ function RetreatPage(props: RetreatPageProps) {
             {tab === "overview" ? (
               <RetreatOverviewForm retreat={retreat} />
             ) : tab === "lodging" ? (
-              <HotelProposalForm proposal={{id: -1, additional_links: []}} />
+              <RetreatLodgingDetails retreat={retreat} />
             ) : undefined}
           </>
         ) : undefined}

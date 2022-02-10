@@ -59,6 +59,13 @@ export const DashboardStateOptions = [
   "PROPOSAL_READY",
 ]
 
+export type AdminSelectedHotelProposal = {
+  retreat_id: number
+  hotel_id: number
+  state: "SELECTED" | "PENDING" | "NOT_AVAILABLE" | "REVIEW"
+  hotel_proposals?: AdminLodgingProposalModel[]
+}
+
 export type AdminLodgingProposalModel = {
   id: number
   dates?: string
