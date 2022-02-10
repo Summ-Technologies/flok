@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from "@material-ui/core"
 import {useState} from "react"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
@@ -21,6 +22,10 @@ import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import UnderConstructionView from "../components/page/UnderConstructionView"
 import {RetreatModel} from "../models/retreat"
+import {
+  deleteRetreatAttendees,
+  postRetreatAttendees,
+} from "../store/actions/retreat"
 import {theme} from "../theme"
 import {convertGuid} from "../utils"
 import {useRetreat, useRetreatAttendees} from "../utils/lodgingUtils"
@@ -36,7 +41,10 @@ const HtmlTooltip = styled(({className, ...props}) => (
   },
 }))
 
-function DietList(prefString: string) {
+function DietList(prefString: string | undefined) {
+  if (!prefString) {
+    return <></>
+  }
   const prefs = prefString.split(",").map((s) => (
     <Chip
       size="small"
@@ -85,7 +93,6 @@ let useStyles = makeStyles((theme) => ({
     width: "100%",
     display: "flex",
     justifyContent: "flex-end",
-    paddingRight: 16,
   },
 }))
 
@@ -115,8 +122,45 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   let retreat = useRetreat(retreatGuid) as RetreatModel | undefined
 
   let attendeeTravelInfo = useRetreatAttendees(retreatGuid)
+  console.log(attendeeTravelInfo)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
+  let [newAttendeeName, setNewAttendeeName] = useState("")
+  let [newAttendeeEmail, setNewAttendeeEmail] = useState("")
+  let [newAttendeeErrorState, setNewAttendeeErrorState] = useState({
+    name: false,
+    email: false,
+  })
+
+  let dispatch = useDispatch()
+
+  const handleNewAttendeeSubmit = () => {
+    const errorState = {name: false, email: false}
+    if (newAttendeeName === "") {
+      errorState.name = true
+      setNewAttendeeName("")
+    }
+    if (
+      newAttendeeEmail === "" ||
+      !newAttendeeEmail.match(
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      )
+    ) {
+      errorState.email = true
+      setNewAttendeeEmail("")
+    }
+
+    if (!errorState.name && !errorState.email) {
+      dispatch(
+        postRetreatAttendees(retreatGuid, newAttendeeName, newAttendeeEmail)
+      )
+      setNewAttendeeEmail("")
+      setNewAttendeeName("")
+      setAddDialogOpen(false)
+    }
+
+    setNewAttendeeErrorState(errorState)
+  }
 
   return (
     <RetreatRequired retreatGuid={retreatGuid}>
@@ -130,7 +174,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
           {UNDER_CONSTRUCTION ? (
             <UnderConstructionView />
           ) : (
-            <>
+            <div className={classes.section}>
               <AppTypography variant="h1" paragraph>
                 Attendees
               </AppTypography>
@@ -151,17 +195,24 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                 rows={
                   attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
                   attendeeTravelInfo !== undefined
-                    ? attendeeTravelInfo.map((info) => [
-                        info.name,
-                        info.email_address,
-                        info.city,
-                        DietList(info.dietary_prefs),
-                        info.notes,
-                      ])
+                    ? attendeeTravelInfo.map((info) => ({
+                        id: info.id,
+                        disabled: !info.info_status.endsWith("INFO_ENTERED"),
+                        tooltip: !info.info_status.endsWith("INFO_ENTERED")
+                          ? "Once the attendee fills out the registration form you will be able to view more of their information here."
+                          : "",
+                        cols: [
+                          info.name,
+                          info.email_address,
+                          info.city,
+                          DietList(info.dietary_prefs),
+                          info.notes,
+                        ],
+                      }))
                     : []
                 }
                 rowDeleteCallback={(row) => {
-                  return
+                  dispatch(deleteRetreatAttendees(retreatGuid, row.id))
                 }}
               />
               <div className={classes.addBtn}>
@@ -173,7 +224,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                   Add Attendee
                 </Button>
               </div>
-            </>
+            </div>
           )}
           <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
             <DialogTitle>Add New Attendee</DialogTitle>
@@ -189,23 +240,31 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                 margin="dense"
                 id="name"
                 label="Full Name"
+                value={newAttendeeName}
+                error={newAttendeeErrorState.name}
+                onChange={(e) => setNewAttendeeName(e.target.value)}
                 fullWidth
                 variant="standard"
+                required
               />
               <TextField
                 margin="dense"
                 id="email"
                 label="Email Address"
+                value={newAttendeeEmail}
+                error={newAttendeeErrorState.email}
+                onChange={(e) => setNewAttendeeEmail(e.target.value)}
                 type="email"
                 fullWidth
                 variant="standard"
+                required
               />
             </DialogContent>
             <DialogActions>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => setAddDialogOpen(false)}>
+                onClick={handleNewAttendeeSubmit}>
                 Submit
               </Button>
               <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>

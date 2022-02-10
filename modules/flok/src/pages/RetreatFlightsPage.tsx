@@ -21,7 +21,6 @@ let useStyles = makeStyles((theme) => ({
     width: "100%",
     display: "flex",
     justifyContent: "flex-end",
-    paddingRight: 16,
   },
   section: {
     margin: theme.spacing(2),
@@ -84,12 +83,11 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
           {UNDER_CONSTRUCTION ? (
             <UnderConstructionView />
           ) : (
-            <>
+            <div className={classes.section}>
               <AppTypography variant="h1" paragraph>
                 Flights
               </AppTypography>
               <AppExpandableTable
-                rowDeleteCallback={() => {}}
                 headers={[
                   {
                     name: "Employee",
@@ -116,13 +114,16 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 rows={
                   attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
                   attendeeTravelInfo !== undefined
-                    ? attendeeTravelInfo.map((info) => [
-                        info.name,
-                        dateFormat(info.travel?.arr_trip?.arr_datetime),
-                        dateFormat(info.travel?.dep_trip?.dep_datetime),
-                        info.travel ? currencyFormat(info.travel.cost) : "",
-                        info.travel ? info.travel.status : "PENDING",
-                      ])
+                    ? attendeeTravelInfo.map((info) => ({
+                        id: info.id,
+                        cols: [
+                          info.name,
+                          dateFormat(info.travel?.arr_trip?.arr_datetime),
+                          dateFormat(info.travel?.dep_trip?.dep_datetime),
+                          info.travel ? currencyFormat(info.travel.cost) : "",
+                          info.travel ? info.travel.status : "PENDING",
+                        ],
+                      }))
                     : []
                 }
               />
@@ -143,7 +144,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                   Add Attendee
                 </Button>
               </div>
-            </>
+            </div>
           )}
         </PageBody>
       </PageContainer>

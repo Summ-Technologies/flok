@@ -13,6 +13,7 @@ import {
 } from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
+  DELETE_RETREAT_ATTENDEES_SUCCESS,
   DELETE_SELECTED_RETREAT_DESTINATION_REQUEST,
   DELETE_SELECTED_RETREAT_HOTEL_REQUEST,
   GET_RETREAT_ATTENDEES_SUCCESS,
@@ -20,6 +21,7 @@ import {
   GET_RETREAT_FILTERS_SUCCESS,
   GET_RETREAT_SUCCESS,
   POST_ADVANCE_RETREAT_STATE_SUCCESS,
+  POST_RETREAT_ATTENDEES_SUCCESS,
   POST_SELECTED_RETREAT_DESTINATION_FAILURE,
   POST_SELECTED_RETREAT_DESTINATION_REQUEST,
   POST_SELECTED_RETREAT_HOTEL_FAILURE,
@@ -208,13 +210,15 @@ export default function retreatReducer(
         }
       }
       return newState
+    case POST_RETREAT_ATTENDEES_SUCCESS:
+    case DELETE_RETREAT_ATTENDEES_SUCCESS:
     case GET_RETREAT_ATTENDEES_SUCCESS:
+      console.log(action.type)
       meta = (action as unknown as {meta: {guid: string}}).meta
       payload = (action as ApiAction).payload as RetreatAttendeesApiResponse
       if (payload.message.toLowerCase() !== "success") {
         return state
       }
-      newState = {...state}
       if (payload) {
         let attendees = payload.attendees.map((a) => {
           if (a.travel && a.travel.arr_trip) {
@@ -235,12 +239,12 @@ export default function retreatReducer(
           }
           return a
         }) as RetreatAttendeeModel[]
-        newState.retreatAttendees = {
-          ...newState.retreatAttendees,
-          [meta.guid]: attendees,
+        return {
+          ...state,
+          retreatAttendees: {...state.retreatAttendees, [meta.guid]: attendees},
         }
       }
-      return newState
+      return state
     default:
       return state
   }

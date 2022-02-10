@@ -1,4 +1,5 @@
 import {
+  Badge,
   Checkbox,
   Chip,
   Collapse,
@@ -8,6 +9,8 @@ import {
 } from "@material-ui/core"
 import {CalendarToday, ExpandMore} from "@material-ui/icons"
 import {useState} from "react"
+import ReactMarkdown from "react-markdown"
+import config from "../../config"
 import {RetreatToTask} from "../../models/retreat"
 import AppTypography from "../base/AppTypography"
 
@@ -29,6 +32,7 @@ let useItemStyles = makeStyles((theme) => ({
   },
   title: {
     lineHeight: "1em",
+    textDecoration: "strikethrough",
   },
   desc: {
     paddingLeft: 42,
@@ -50,6 +54,7 @@ let useItemStyles = makeStyles((theme) => ({
 
 function TodoListItem(props: {
   task: RetreatToTask
+  disabled: boolean
   handleCheckboxClick: (task: RetreatToTask) => void
 }) {
   let classes = useItemStyles(props)
@@ -64,16 +69,27 @@ function TodoListItem(props: {
     <div className={classes.root}>
       <div className={classes.summary}>
         <Checkbox
-          disabled={!task.task.user_complete}
+          disabled={props.disabled}
           checked={task.state === "COMPLETED"}
           onClick={() => props.handleCheckboxClick(task)}
+          color="default"
         />
         <AppTypography className={classes.title}>
-          <Link
-            href={task.task.link}
-            target={task.task.user_complete ? "_blank" : "_self"}>
-            {task.task.title}
-          </Link>
+          {task.link_override ? (
+            <Link
+              href={task.link_override}
+              target={task.link_override.startsWith(".") ? "_self" : "_blank"}>
+              {task.task.title}
+            </Link>
+          ) : task.task.link ? (
+            <Link
+              href={task.task.link}
+              target={task.task.link.startsWith(".") ? "_self" : "_blank"}>
+              {task.task.title}
+            </Link>
+          ) : (
+            <>{task.task.title}</>
+          )}
         </AppTypography>
         <div style={{flexGrow: 1}}></div>
         {task.due_date ? (
@@ -116,28 +132,103 @@ function TodoListItem(props: {
           <AppTypography fontWeight="bold" style={{lineHeight: "2em"}}>
             {task.task.title}
           </AppTypography>
-          <AppTypography>{task.task.description}</AppTypography>
+          <ReactMarkdown>
+            {task.task.description ? task.task.description : ""}
+          </ReactMarkdown>
         </div>
       </Collapse>
     </div>
   )
 }
 
-let useListStyles = makeStyles((theme) => ({}))
+let useListStyles = makeStyles((theme) => ({
+  wrapper: {
+    width: "100%",
+    "& > .MuiBadge-anchorOriginTopLeftRectangle": {
+      top: 12,
+    },
+  },
+}))
 export default function AppTodoList(props: {
   retreatToTasks: RetreatToTask[]
   handleCheckboxClick: (task: RetreatToTask) => void
+  orderBadge: boolean
+  showMore?: boolean
 }) {
   let classes = useListStyles(props)
+  let [expanded, setExpanded] = useState(false)
+
+  if (!props.showMore) {
+    return (
+      <div>
+        {props.retreatToTasks.map((t, i) => (
+          <Badge
+            className={classes.wrapper}
+            anchorOrigin={{vertical: "top", horizontal: "left"}}
+            badgeContent={t.order}
+            overlap="rectangle"
+            invisible={!props.orderBadge}
+            color="primary">
+            <TodoListItem
+              task={t}
+              disabled={i !== 0}
+              handleCheckboxClick={props.handleCheckboxClick}
+            />
+          </Badge>
+        ))}
+      </div>
+    )
+  }
 
   return (
-    <div>
-      {props.retreatToTasks.map((t) => (
-        <TodoListItem
-          task={t}
-          handleCheckboxClick={props.handleCheckboxClick}
-        />
-      ))}
-    </div>
+    <>
+      <div>
+        {props.retreatToTasks
+          .slice(0, config.appConfig.max_tasks)
+          .map((t, i) => (
+            <Badge
+              className={classes.wrapper}
+              anchorOrigin={{vertical: "top", horizontal: "left"}}
+              badgeContent={t.order}
+              overlap="rectangle"
+              invisible={!props.orderBadge}
+              color="primary">
+              <TodoListItem
+                task={t}
+                disabled={i !== 0}
+                handleCheckboxClick={props.handleCheckboxClick}
+              />
+            </Badge>
+          ))}
+      </div>
+      <Collapse in={expanded}>
+        {props.retreatToTasks.slice(config.appConfig.max_tasks).map((t, i) => (
+          <Badge
+            className={classes.wrapper}
+            anchorOrigin={{vertical: "top", horizontal: "left"}}
+            badgeContent={t.order}
+            overlap="rectangle"
+            invisible={!props.orderBadge}
+            color="primary">
+            <TodoListItem
+              task={t}
+              disabled={i !== 0}
+              handleCheckboxClick={props.handleCheckboxClick}
+            />
+          </Badge>
+        ))}
+      </Collapse>
+      <AppTypography
+        style={{
+          textDecoration: "underline",
+          color: "#505050",
+          fontSize: ".8em",
+          display: "inline",
+          cursor: "pointer",
+        }}
+        onClick={() => setExpanded(!expanded)}>
+        {expanded ? "show less" : "show more"}
+      </AppTypography>
+    </>
   )
 }
