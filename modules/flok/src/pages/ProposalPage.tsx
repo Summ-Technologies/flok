@@ -322,7 +322,12 @@ function ProposalPage(props: ProposalPageProps) {
                     {proposal.guestroom_rates && (
                       <div className={classes.detail}>
                         <AppTypography variant="body2" fontWeight="bold">
-                          Guestroom Rates
+                          Guestroom Rates{" "}
+                          <AppMoreInfoIcon
+                            tooltipText={
+                              "This cost does not include tax and resort fee (if applicable)."
+                            }
+                          />
                         </AppTypography>
                         <AppTypography variant="body1">
                           {proposal.guestroom_rates}
@@ -333,7 +338,11 @@ function ProposalPage(props: ProposalPageProps) {
                       <div className={classes.detail}>
                         <AppTypography variant="body2" fontWeight="bold">
                           Approx. Room Total{" "}
-                          <AppMoreInfoIcon tooltipText="The approximate room total is pre-tax and can vary greatly based on attrition rates, room upgrades, etc." />
+                          <AppMoreInfoIcon
+                            tooltipText={
+                              "Based on the room rate and anticipated number of attendees. This total is an estimate of rooms only and does not include resort fees (if applicable) or taxes."
+                            }
+                          />
                         </AppTypography>
                         <AppTypography variant="body1">
                           {proposal.approx_room_total}
@@ -407,7 +416,12 @@ function ProposalPage(props: ProposalPageProps) {
                       {proposal.food_bev_minimum && (
                         <div className={classes.detail}>
                           <AppTypography variant="body2" fontWeight="bold">
-                            F&B Minimum
+                            F&B Minimum{" "}
+                            <AppMoreInfoIcon
+                              tooltipText={
+                                "This cost does not include tax and service charges."
+                              }
+                            />
                           </AppTypography>
                           <AppTypography variant="body1">
                             {proposal.food_bev_minimum}

@@ -336,7 +336,12 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                                       variant="body2"
                                       noWrap
                                       uppercase>
-                                      Avg Room Cost
+                                      Avg Room Cost{" "}
+                                      <AppMoreInfoIcon
+                                        tooltipText={
+                                          "This cost does not include tax and resort fee (if applicable)."
+                                        }
+                                      />
                                     </AppTypography>
                                     <AppTypography
                                       variant="body1"
@@ -354,7 +359,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                                       Est. Room Total{" "}
                                       <AppMoreInfoIcon
                                         tooltipText={
-                                          "This room total is only an estimate based on the room rate and number of attendees. It can vary dramatically depending on the final room list, etc."
+                                          "Based on the room rate and anticipated number of attendees. This total is an estimate of rooms only and does not include resort fees (if applicable) or taxes."
                                         }
                                       />
                                     </AppTypography>
