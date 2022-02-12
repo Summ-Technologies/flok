@@ -162,13 +162,17 @@ export function useScript(src: string): [boolean, ScriptLoadingState] {
 }
 
 /**
- * Given an integer, returns dollar formatted string.
+ * Given an integer, returns dollar or euro formatted string.
  */
-export function formatDollars(dollars: number): string {
+export function formatCurrency(
+  amount: number,
+  currency?: "USD" | "EUR"
+): string {
+  currency = currency ? currency : "USD"
   let formatter = Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: currency,
     maximumFractionDigits: 0,
   })
-  return formatter.format(dollars)
+  return formatter.format(amount)
 }
