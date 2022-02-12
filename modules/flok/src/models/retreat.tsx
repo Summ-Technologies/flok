@@ -17,6 +17,8 @@ export type HotelLodgingProposal = {
   dates: string
   dates_notes: string
   num_guests?: string
+  is_all_inclusive?: boolean
+  currency?: "USD" | "EUR"
   compare_room_rate: number
   compare_room_total: number
   on_hold: boolean
