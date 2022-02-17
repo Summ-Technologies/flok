@@ -11,7 +11,7 @@ import {HotelModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotels} from "../store/actions/lodging"
-import {convertGuid, formatDollars} from "../utils"
+import {formatDollars} from "../utils"
 import {
   DestinationUtils,
   useDestinations,
@@ -117,7 +117,7 @@ let useStyles = makeStyles((theme) => ({
 }))
 
 type ProposalsListPageProps = RouteComponentProps<{
-  retreatGuid: string
+  retreatIdx: string
 }>
 function ProposalsListPage(props: ProposalsListPageProps) {
   // Setup
@@ -125,12 +125,12 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   let classes = useStyles(props)
 
   // Path and query params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx)
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
   let selectedHotels = useSelector((state: RootState) => {
-    let retreat = state.retreat.retreats[retreatGuid]
+    let retreat = state.retreat.retreats[retreatIdx]
     if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_hotels
     }
@@ -158,7 +158,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   function onExplore(hotel: HotelModel) {
     const newTab = window.open(
       AppRoutes.getPath("ProposalPage", {
-        retreatGuid: retreatGuid,
+        retreatIdx: retreatIdx.toString(),
         hotelGuid: hotel.guid,
       }),
       "_blank"
@@ -167,12 +167,12 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       {retreat && retreat !== ResourceNotFound && (
         <PageContainer>
           <PageSidenav
             activeItem="lodging"
-            retreatGuid={retreatGuid}
+            retreatIdx={retreatIdx}
             companyName={retreat?.company_name}
           />
           <div className={classes.root}>

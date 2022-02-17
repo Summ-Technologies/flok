@@ -23,19 +23,19 @@ import {apiNotification} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {updateRetreatPreferences} from "../store/actions/retreat"
-import {convertGuid, useQuery} from "../utils"
+import {useQuery} from "../utils"
 import {useRetreat} from "../utils/lodgingUtils"
 
 type RetreatPreferencesFormPageProps = RouteComponentProps<{
-  retreatGuid: string
+  retreatIdx: string
 }>
 function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
   // Setup
   let dispatch = useDispatch()
 
   // Path params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx)
 
   let retreatPreferencesFormLoading = useSelector(
     (state: RootState) => state.api.retreatPreferencesFormLoading
@@ -126,14 +126,16 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
           dispatch(
             push(
               lastQueryParam ??
-                AppRoutes.getPath("RetreatFiltersPage", {retreatGuid})
+                AppRoutes.getPath("RetreatFiltersPage", {
+                  retreaftIdx: retreatIdx.toString(),
+                })
             )
           )
         }
       }
       dispatch(
         updateRetreatPreferences(
-          retreatGuid,
+          retreatIdx,
           values.isFlexibleDates,
           values.attendeesLower,
           undefined,
@@ -157,7 +159,7 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
         <PageBody>
           <PageOverlay

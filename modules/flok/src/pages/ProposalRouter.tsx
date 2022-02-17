@@ -1,19 +1,18 @@
 import {RouteComponentProps, withRouter} from "react-router"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import {RetreatModel} from "../models/retreat"
-import {convertGuid} from "../utils"
 import {useRetreat} from "../utils/lodgingUtils"
 import HotelProposalWaitingPage from "./HotelProposalWaitingPage"
 import RedirectPage from "./misc/RedirectPage"
 import ProposalsListPage from "./ProposalsListPage"
 
-type ProposalRouterProps = RouteComponentProps<{retreatGuid: string}>
+type ProposalRouterProps = RouteComponentProps<{retreatIdx: string}>
 function ProposalRouter(props: ProposalRouterProps) {
   // Path and query params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid) as RetreatModel | undefined
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       {retreat ? (
         retreat.state === "PROPOSAL" ? (
           <HotelProposalWaitingPage />
@@ -22,7 +21,7 @@ function ProposalRouter(props: ProposalRouterProps) {
         ) : (
           <RedirectPage
             pageName="RetreatRoutingPage"
-            pathParams={{retreatGuid}}
+            pathParams={{retreatIdx: retreatIdx.toString()}}
           />
         )
       ) : (

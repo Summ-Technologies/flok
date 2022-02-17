@@ -67,14 +67,14 @@ let useStyles = makeStyles((theme) => ({
 
 type HotelPageProps = RouteComponentProps<{
   hotelGuid: string
-  retreatGuid: string
+  retreatIdx: string
 }>
 
 function HotelPage(props: HotelPageProps) {
   let classes = useStyles(props)
 
   // Query params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
   let hotelGuid = convertGuid(props.match.params.hotelGuid)
 
   // Get current hotel
@@ -84,7 +84,7 @@ function HotelPage(props: HotelPageProps) {
   let destinations = Object.values(useDestinations()[0])
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       {hotel === ResourceNotFound ? (
         <NotFound404Page />
       ) : hotel === undefined ? (
