@@ -1,15 +1,18 @@
 import {Action} from "redux"
 import {ApiError} from "redux-api-middleware"
 import {
-  AdminRetreatDetailsModel,
   AdminRetreatListModel,
   AdminRetreatListType,
+  AdminRetreatModel,
 } from "../../models"
 import {
   GET_RETREATS_LIST_SUCCESS,
   GET_RETREAT_DETAILS_FAILURE,
   GET_RETREAT_DETAILS_REQUEST,
   GET_RETREAT_DETAILS_SUCCESS,
+  PUT_RETREAT_DETAILS_FAILURE,
+  PUT_RETREAT_DETAILS_REQUEST,
+  PUT_RETREAT_DETAILS_SUCCESS,
 } from "../actions/admin"
 import {ApiAction} from "../actions/api"
 
@@ -24,7 +27,7 @@ export type AdminState = {
     complete: AdminRetreatListModel[]
   }
   retreatsDetails: {
-    [key: number]: AdminRetreatDetailsModel | undefined
+    [key: number]: AdminRetreatModel | undefined
   }
   api: {
     retreatsDetails: {
@@ -64,12 +67,15 @@ export default function AdminReducer(
     case GET_RETREAT_DETAILS_REQUEST:
     case GET_RETREAT_DETAILS_SUCCESS:
     case GET_RETREAT_DETAILS_FAILURE:
+    case PUT_RETREAT_DETAILS_REQUEST:
+    case PUT_RETREAT_DETAILS_SUCCESS:
+    case PUT_RETREAT_DETAILS_FAILURE:
       meta = (action as unknown as {meta: {id: number}}).meta
       action = action as unknown as ApiAction
       payload = (action as unknown as ApiAction).payload as {
-        retreat: AdminRetreatDetailsModel
+        retreat: AdminRetreatModel
       }
-      if (action.type === GET_RETREAT_DETAILS_SUCCESS) {
+      if ((action.type as string).endsWith("SUCCESS")) {
         state = {
           ...state,
           retreatsDetails: {
@@ -85,13 +91,12 @@ export default function AdminReducer(
           retreatsDetails: {
             ...state.api.retreatsDetails,
             [meta.id]: {
-              loading:
-                action.type === GET_RETREAT_DETAILS_REQUEST ? true : false,
-              status:
-                action.type === GET_RETREAT_DETAILS_FAILURE
-                  ? ((action as unknown as ApiAction).payload as ApiError)
-                      .status
-                  : undefined,
+              loading: (action.type as string).endsWith("REQUEST")
+                ? true
+                : false,
+              status: (action.type as string).endsWith("FAILURE")
+                ? ((action as unknown as ApiAction).payload as ApiError).status
+                : undefined,
             },
           },
         },

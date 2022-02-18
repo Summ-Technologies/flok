@@ -1,19 +1,23 @@
 import {
   Box,
   Button,
-  FormControl,
   InputLabel,
   makeStyles,
-  Select,
-  Switch,
+  Paper,
   TextField,
+  TextFieldProps,
 } from "@material-ui/core"
-import React, {useState} from "react"
+import {useFormik} from "formik"
+import _ from "lodash"
+import React from "react"
+import {useDispatch, useSelector} from "react-redux"
 import {
-  AdminRetreatDetailsModel,
+  AdminRetreatModel,
   DashboardStateOptions,
   RetreatStateOptions,
 } from "../../models"
+import {RootState} from "../../store"
+import {putRetreatDetails} from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -23,112 +27,130 @@ let useStyles = makeStyles((theme) => ({
     marginTop: -theme.spacing(2),
     marginLeft: -theme.spacing(2),
     "& > *": {
-      paddingTop: theme.spacing(2),
-      paddingLeft: theme.spacing(2),
+      marginTop: theme.spacing(2),
+      marginLeft: theme.spacing(2),
+      padding: theme.spacing(2),
     },
   },
   formGroup: {
     display: "flex",
     width: "100%",
-    [theme.breakpoints.up("md")]: {width: "50%"},
+    [theme.breakpoints.up("md")]: {width: `calc(50% - ${theme.spacing(2)}px)`},
     flexDirection: "column",
     "& > *:not(:first-child)": {marginTop: theme.spacing(2)},
   },
 }))
 
-type RetreatInfoFormProps = {retreat: AdminRetreatDetailsModel}
+function getRetreatDetailsForm(obj: Partial<AdminRetreatModel>) {
+  return {
+    contact_name: obj.contact_name || undefined,
+    contact_email: obj.contact_email || undefined,
+    preferences_num_attendees_lower:
+      obj.preferences_num_attendees_lower || undefined,
+    preferences_is_dates_flexible: obj.preferences_is_dates_flexible || false,
+    preferences_dates_exact_start:
+      obj.preferences_dates_exact_start || undefined,
+    preferences_dates_exact_end: obj.preferences_dates_exact_end || undefined,
+    flok_admin_owner: obj.flok_admin_owner || undefined,
+    flok_admin_state: obj.flok_admin_state || undefined,
+    state: obj.state || undefined,
+  }
+}
+export type RetreatDetailsFormType = ReturnType<typeof getRetreatDetailsForm>
+
+type RetreatInfoFormProps = {retreat: AdminRetreatModel}
 export default function RetreatInfoForm(props: RetreatInfoFormProps) {
   let classes = useStyles(props)
-  let [editing, setEditing] = useState(false)
+  let dispatch = useDispatch()
   let {retreat} = props
+  let loading = useSelector(
+    (state: RootState) => state.admin.api.retreatsDetails[retreat.id]?.loading
+  )
+  let formik = useFormik({
+    initialValues: getRetreatDetailsForm(retreat),
+    onSubmit: (values) => {
+      dispatch(putRetreatDetails(retreat.id, getRetreatDetailsForm(values)))
+    },
+  })
+  const textFieldProps: TextFieldProps = {
+    fullWidth: true,
+    InputLabelProps: {shrink: true},
+    onChange: formik.handleChange,
+  }
+
   return (
-    <form className={classes.root}>
-      <Box display="flex" alignItems="center" width="100%">
-        <AppTypography variant="body2">Edit</AppTypography>
-        <Switch
-          color="primary"
-          value={editing}
-          onChange={() => setEditing(!editing)}
-        />
-      </Box>
-      <div className={classes.formGroup}>
+    <form className={classes.root} onSubmit={formik.handleSubmit}>
+      <Paper elevation={0} className={classes.formGroup}>
         <AppTypography variant="h4">Basic Info</AppTypography>
         <TextField
-          fullWidth
-          disabled={!editing}
-          defaultValue={retreat.contact_name}
+          {...textFieldProps}
+          id="contact_name"
+          value={formik.values.contact_name}
           label="Contact Name"
         />
         <TextField
-          fullWidth
-          disabled={!editing}
-          defaultValue={retreat.contact_email}
+          {...textFieldProps}
+          id="contact_email"
+          value={formik.values.contact_email}
           label="Contact Email"
         />
         <TextField
+          {...textFieldProps}
+          id="preferences_num_attendees_lower"
+          value={formik.values.preferences_num_attendees_lower}
           type="number"
-          fullWidth
-          disabled={!editing}
-          defaultValue={retreat.preferences_num_attendees_lower}
           label="Number Attendees"
         />
-        <FormControl>
-          <InputLabel id="retreat-dates-label">
-            Flexible retreat dates?
-          </InputLabel>
-          <Select
-            native
-            value={retreat.preferences_is_dates_flexible ? "true" : "false"}
-            disabled={!editing}
-            labelId="retreat-dates-label">
-            <option value={"true"}>Flexible dates</option>
-            <option value={"false"}>Exact dates</option>
-          </Select>
-        </FormControl>
-        {retreat.preferences_is_dates_flexible ? (
+        <TextField
+          {...textFieldProps}
+          id="preferences_is_dates_flexible"
+          label="Flexible retreat dates?"
+          select
+          SelectProps={{native: true}}
+          onChange={(e) => {
+            formik.setFieldValue(
+              "preferences_is_dates_flexible",
+              e.target.value === "true"
+            )
+          }}
+          value={
+            formik.values.preferences_is_dates_flexible ? "true" : "false"
+          }>
+          <option value={"true"}>Flexible dates</option>
+          <option value={"false"}>Exact dates</option>
+        </TextField>
+        {formik.values.preferences_is_dates_flexible ? (
           <>
-            <TextField
-              type="date"
-              fullWidth
-              disabled={!editing}
-              defaultValue={retreat.preferences_dates_exact_start}
-              label="Start date"
-            />
-            <TextField
-              type="date"
-              fullWidth
-              disabled={!editing}
-              defaultValue={retreat.preferences_dates_exact_end}
-              label="End date"
-            />
+            <AppTypography variant="body1">
+              <strong>[Under construction]</strong> Flexible dates module still
+              being implemented
+            </AppTypography>
           </>
         ) : (
           <>
             <TextField
+              {...textFieldProps}
+              id="preferences_dates_exact_start"
               type="date"
-              fullWidth
-              disabled={!editing}
-              defaultValue={retreat.preferences_dates_exact_start}
+              value={formik.values.preferences_dates_exact_start}
               label="Start date"
             />
             <TextField
+              {...textFieldProps}
+              id="preferences_dates_exact_end"
               type="date"
-              fullWidth
-              disabled={!editing}
-              defaultValue={retreat.preferences_dates_exact_end}
+              value={formik.values.preferences_dates_exact_end}
               label="End date"
             />
           </>
         )}
-      </div>
-
-      <div className={classes.formGroup}>
+      </Paper>
+      <Paper elevation={0} className={classes.formGroup}>
         <AppTypography variant="h4">Flok Info</AppTypography>
         <TextField
-          fullWidth
-          InputLabelProps={{shrink: true}}
-          disabled={!editing}
-          defaultValue={retreat.flok_admin_owner}
+          {...textFieldProps}
+          id="flok_admin_owner"
+          value={formik.values.flok_admin_owner}
           label="Flok Owner"
         />
         <Box>
@@ -147,37 +169,50 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
               : "No call scheduled"}
           </Button>
         </Box>
-        <FormControl>
-          <InputLabel id="retreat-state-label">Flok State</InputLabel>
-          <Select
-            native
-            value={retreat.flok_admin_state}
-            disabled={!editing}
-            labelId="retreat-state-label">
-            {RetreatStateOptions.map((opt, i) => (
-              <option key={i} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <InputLabel id="dashboard-state-label">
-            Client Dashboard State
-          </InputLabel>
-          <Select
-            native
-            value={retreat.state}
-            disabled={!editing}
-            labelId="dashboard-state-label">
-            {DashboardStateOptions.map((opt, i) => (
-              <option key={i} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
+
+        <TextField
+          {...textFieldProps}
+          label="Flok State"
+          id="flok_admin_state"
+          value={formik.values.flok_admin_state}
+          select
+          SelectProps={{native: true}}
+          onChange={formik.handleChange}>
+          {RetreatStateOptions.map((opt, i) => (
+            <option key={i} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </TextField>
+        <TextField
+          {...textFieldProps}
+          id="state"
+          label="Client Dashboard State"
+          value={formik.values.state}
+          onChange={formik.handleChange}
+          select
+          SelectProps={{native: true}}>
+          {DashboardStateOptions.map((opt, i) => (
+            <option key={i} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </TextField>
+      </Paper>
+      {_.isEqual(
+        getRetreatDetailsForm(retreat),
+        getRetreatDetailsForm(formik.values)
+      ) ? undefined : (
+        <Box display="flex" justifyContent="flex-end" width="100%">
+          <Button
+            disabled={loading}
+            type="submit"
+            variant="contained"
+            color="primary">
+            {loading ? "Loading..." : "Save changes"}
+          </Button>
+        </Box>
+      )}
     </form>
   )
 }

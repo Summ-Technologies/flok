@@ -9,7 +9,7 @@ export type AdminRetreatListModel = {
   flok_admin_owner: string
   created_at: string
 }
-export type AdminRetreatDetailsModel = {
+export type AdminRetreatModel = {
   id: number
   guid: string
   company_name: string
@@ -26,6 +26,7 @@ export type AdminRetreatDetailsModel = {
   flok_admin_signup_type: string
   flok_admin_owner: string
   flok_admin_state: string // One of retreat state options
+  selected_hotels: AdminSelectedHotelProposalModel[]
 }
 
 export const RetreatStateOptions = [
@@ -59,10 +60,16 @@ export const DashboardStateOptions = [
   "PROPOSAL_READY",
 ]
 
-export type AdminSelectedHotelProposal = {
+export type AdminSelectedHotelStateTypes =
+  | "SELECTED"
+  | "PENDING"
+  | "NOT_AVAILABLE"
+  | "REVIEW"
+
+export type AdminSelectedHotelProposalModel = {
   retreat_id: number
   hotel_id: number
-  state: "SELECTED" | "PENDING" | "NOT_AVAILABLE" | "REVIEW"
+  state: AdminSelectedHotelStateTypes
   hotel_proposals?: AdminLodgingProposalModel[]
 }
 

@@ -91,9 +91,13 @@ export const theme = createMuiTheme({
     MuiSelect: {
       IconComponent: ExpandMore,
       native: true,
+      variant: "outlined",
     },
     MuiSvgIcon: {
       color: "inherit",
+    },
+    MuiTextField: {
+      variant: "outlined",
     },
   },
   overrides: {

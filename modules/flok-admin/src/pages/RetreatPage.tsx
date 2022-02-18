@@ -33,7 +33,9 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
-  retreatHeader: {},
+  retreatHeader: {
+    marginBottom: theme.spacing(2),
+  },
 }))
 
 type RetreatPageProps = RouteComponentProps<{id: string}>
@@ -47,6 +49,7 @@ function RetreatPage(props: RetreatPageProps) {
   let retreat = useSelector((state: RootState) => {
     return state.admin.retreatsDetails[retreatId]
   })
+  console.log(retreat)
   let retreatApiCall = useSelector((state: RootState) => {
     return state.admin.api.retreatsDetails[retreatId]
   })

@@ -1,4 +1,5 @@
 import querystring from "querystring"
+import {RetreatDetailsFormType} from "../../components/retreats/RetreatOverviewForm"
 import {AdminRetreatListType} from "../../models"
 import {createApiAction} from "./api"
 
@@ -32,6 +33,29 @@ export function getRetreatDetails(id: number) {
       {type: GET_RETREAT_DETAILS_REQUEST, meta: {id}},
       {type: GET_RETREAT_DETAILS_SUCCESS, meta: {id}},
       {type: GET_RETREAT_DETAILS_FAILURE, meta: {id}},
+    ],
+  })
+}
+
+export const PUT_RETREAT_DETAILS_REQUEST = "PUT_RETREAT_DETAILS_REQUEST"
+export const PUT_RETREAT_DETAILS_SUCCESS = "PUTT_RETREAT_DETAILS_SUCCESS"
+export const PUT_RETREAT_DETAILS_FAILURE = "PUT_RETREAT_DETAILS_FAILURE"
+
+export function putRetreatDetails(
+  id: number,
+  retreatDetails: RetreatDetailsFormType
+) {
+  let endpoint = `/v1.0/admin/retreats/${id}`
+  return createApiAction({
+    endpoint,
+    method: "PUT",
+    body: JSON.stringify(retreatDetails, (key, value) =>
+      typeof value === "undefined" ? null : value
+    ),
+    types: [
+      {type: PUT_RETREAT_DETAILS_REQUEST, meta: {id}},
+      {type: PUT_RETREAT_DETAILS_SUCCESS, meta: {id}},
+      {type: PUT_RETREAT_DETAILS_FAILURE, meta: {id}},
     ],
   })
 }
