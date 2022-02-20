@@ -12,6 +12,8 @@ import {Add, Remove} from "@material-ui/icons"
 import clsx from "clsx"
 import {FormikErrors, useFormik} from "formik"
 import _ from "lodash"
+import React from "react"
+import NumberFormat from "react-number-format"
 import * as yup from "yup"
 import {
   AdminLodgingProposalModel,
@@ -91,22 +93,28 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           {...textFieldProps}
           id="num_guests"
           label="# Guests"
-          type="number"
+          multiline
           value={formik.values.num_guests ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="compare_room_rate"
           label="Guestroom rates"
-          type="number"
-          value={formik.values.compare_room_rate ?? ""}
+          value={formik.values.compare_room_rate?.toString() ?? ""}
+          onChange={(e) =>
+            formik.setFieldValue("compare_room_rate", e.target.value)
+          }
+          InputProps={{inputComponent: CurrencyNumberFormat as any}}
         />
         <TextField
           {...textFieldProps}
           id="compare_room_total"
           label="Approximate room total"
-          type="number"
-          value={formik.values.compare_room_total ?? ""}
+          value={formik.values.compare_room_total?.toString() ?? ""}
+          onChange={(e) =>
+            formik.setFieldValue("compare_room_total", e.target.value)
+          }
+          InputProps={{inputComponent: CurrencyNumberFormat as any}}
         />
       </Paper>
       <Paper elevation={0} className={classes.formGroup}>
@@ -313,5 +321,26 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
         </Button>
       </Box>
     </form>
+  )
+}
+
+type CurrencyNumberFormatProps = {
+  onChange: (e: {target: {name: string; value: string}}) => void
+}
+
+function CurrencyNumberFormat(props: CurrencyNumberFormatProps) {
+  const {onChange, ...other} = props
+  return (
+    <NumberFormat
+      {...other}
+      onValueChange={(values) => {
+        props.onChange({
+          target: {name: (other as any).id, value: values.value},
+        })
+      }}
+      thousandSeparator
+      isNumericString
+      prefix="$"
+    />
   )
 }

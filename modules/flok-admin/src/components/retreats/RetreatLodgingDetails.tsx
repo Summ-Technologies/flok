@@ -280,7 +280,7 @@ function HotelAccordionItem(props: {
                         props.selectedHotel.hotel_proposals![
                           activeProposalIndex
                         ].id,
-                        values
+                        createProposalForm(values)
                       )
                     )
                   }}
