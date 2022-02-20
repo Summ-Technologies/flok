@@ -10,8 +10,9 @@ import {
 } from "@material-ui/core"
 import {Add, Remove} from "@material-ui/icons"
 import clsx from "clsx"
-import {useFormik} from "formik"
+import {FormikErrors, useFormik} from "formik"
 import _ from "lodash"
+import * as yup from "yup"
 import {
   AdminLodgingProposalModel,
   AdminLodgingProposalUpdateModel,
@@ -52,6 +53,21 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: createProposalForm(props.proposal),
+    validate: (values) => {
+      let linkErrors = values.additional_links.map((link, i) => {
+        try {
+          yup.string().url().validateSync(link.link_url)
+        } catch (err) {
+          return {link_url: "Please enter a valid URL."}
+        }
+        return {}
+      })
+      if (linkErrors.filter((err) => !!err.link_url).length) {
+        return {additional_links: linkErrors}
+      } else {
+        return undefined
+      }
+    },
     onSubmit: (values) => props.onSave(values),
   })
   const textFieldProps: TextFieldProps = {
@@ -142,7 +158,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
         />
         <TextField
           {...textFieldProps}
-          id="meeting_room_tax_rates"
+          id="meeting_room_rates"
           label="Meeting room rates"
           multiline
           value={formik.values.meeting_room_rates ?? ""}
@@ -216,7 +232,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
         <FormControl>
           <AppTypography variant="body2">Additional links</AppTypography>
           {formik.values.additional_links.map((link, i) => (
-            <Box display="flex" alignItems="center" marginY={1}>
+            <Box display="flex" alignItems="flex-start" marginY={1}>
               <TextField
                 {...textFieldProps}
                 id={`additional_links[${i}].link_text`}
@@ -228,6 +244,26 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
               <TextField
                 {...textFieldProps}
                 id={`additional_links[${i}].link_url`}
+                error={
+                  formik.errors.additional_links
+                    ? !!(
+                        formik.errors.additional_links[i] as FormikErrors<{
+                          link_url: string
+                          link_text: string
+                        }>
+                      ).link_url
+                    : false
+                }
+                helperText={
+                  formik.errors.additional_links
+                    ? (
+                        formik.errors.additional_links[i] as FormikErrors<{
+                          link_url: string
+                          link_text: string
+                        }>
+                      ).link_url
+                    : undefined
+                }
                 InputLabelProps={{shrink: true}}
                 style={{marginLeft: 4, marginRight: 4}}
                 value={link.link_url ?? ""}
@@ -235,6 +271,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
                 label="Link URL"
               />
               <IconButton
+                style={{marginTop: 15}}
                 size="small"
                 onClick={() => {
                   formik.setFieldValue(

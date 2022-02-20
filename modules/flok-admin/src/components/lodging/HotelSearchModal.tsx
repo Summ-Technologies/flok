@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {AdminDestinationModel, AdminHotelModel} from "../../models"
+import {AdminHotelModel} from "../../models"
 import {RootState} from "../../store"
 import {getDestinations, getHotelsByDest} from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
@@ -98,10 +98,14 @@ export default function HotelSearchModal(props: HotelSearchModalProps) {
                   <option value={undefined}>Select a destination</option>
                 )}
                 {destinationsList &&
-                  destinationsList.map((id) => {
-                    let dest: AdminDestinationModel = destinations[id]!
-                    return <option value={dest.id}>{dest.location}</option>
-                  })}
+                  destinationsList
+                    .map((id) => {
+                      return destinations[id]!
+                    })
+                    .sort((a, b) => (a.location > b.location ? 1 : -1))
+                    .map((dest) => (
+                      <option value={dest.id}>{dest.location}</option>
+                    ))}
               </TextField>
               <TextField
                 select

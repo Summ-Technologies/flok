@@ -11,7 +11,7 @@ import {AdminRetreatListModel, AdminRetreatListType} from "../models"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatsList} from "../store/actions/admin"
-import {getDateFromString} from "../utils"
+import {getDateFromString, useQuery} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -41,7 +41,28 @@ function RetreatsPage(props: RetreatsPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
 
-  let [retreatsType, setRetreatsType] = useState<AdminRetreatListType>("active")
+  let [retreatsType, setRetreatsType] = useState<
+    AdminRetreatListType | undefined
+  >(undefined)
+  let [retreatsTypeQuery, setRetreatsTypeQuery] = useQuery("type")
+
+  useEffect(() => {
+    if (
+      retreatsTypeQuery == null ||
+      retreatsTypeQuery.toLowerCase() === "active" ||
+      !["inactive", "complete"].includes(retreatsTypeQuery.toLowerCase())
+    ) {
+      setRetreatsType("active")
+    } else {
+      setRetreatsType(retreatsTypeQuery.toLowerCase() as AdminRetreatListType)
+    }
+  }, [retreatsTypeQuery, setRetreatsTypeQuery, setRetreatsType])
+
+  useEffect(() => {
+    if (retreatsType) {
+      dispatch(getRetreatsList(retreatsType))
+    }
+  }, [retreatsType, dispatch])
 
   function transformToRows(retreats: AdminRetreatListModel[]): {
     [id: number]: RetreatsTableRow
@@ -76,10 +97,6 @@ function RetreatsPage(props: RetreatsPageProps) {
     return transformToRows(state.admin.retreatsList.complete)
   })
 
-  useEffect(() => {
-    dispatch(getRetreatsList(retreatsType))
-  }, [retreatsType, dispatch])
-
   return (
     <PageBase>
       <div className={classes.body}>
@@ -87,7 +104,13 @@ function RetreatsPage(props: RetreatsPageProps) {
         <div className={classes.tabs}>
           <Tabs
             value={retreatsType}
-            onChange={(e, val: AdminRetreatListType) => setRetreatsType(val)}
+            onChange={(e, val: AdminRetreatListType) => {
+              if (val === "active") {
+                setRetreatsTypeQuery(null)
+              } else {
+                setRetreatsTypeQuery(val)
+              }
+            }}
             variant="fullWidth"
             indicatorColor="primary">
             <Tab label="Active" id="active" value="active" />

@@ -384,6 +384,11 @@ export default function RetreatLodgingDetails(
         )}
       </Box>
       <div className={classes.hotelsList}>
+        {!props.retreat.selected_hotels.length ? (
+          <AppTypography variant="body1">
+            No hotel proposals created yet. Add a hotel to start.
+          </AppTypography>
+        ) : undefined}
         {props.retreat.selected_hotels
           .sort((a, b) => {
             let hotelA = hotels[a.hotel_id]

@@ -6,7 +6,7 @@ import {
   Tabs,
   Typography,
 } from "@material-ui/core"
-import {useEffect, useState} from "react"
+import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
   Link as ReactRouterLink,
@@ -20,6 +20,7 @@ import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails} from "../store/actions/admin"
+import {useQuery} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -59,7 +60,8 @@ function RetreatPage(props: RetreatPageProps) {
   }, [retreat, dispatch, retreatId])
 
   // Editing
-  let [tab, setTab] = useState<"overview" | "lodging">("overview")
+  let [tabQuery, setTabQuery] = useQuery("tab")
+  const validTabs = ["overview", "lodging"]
 
   return (
     <PageBase>
@@ -92,19 +94,27 @@ function RetreatPage(props: RetreatPageProps) {
                 GUID: {retreat.guid}
               </AppTypography>
               <Tabs
-                value={tab}
-                onChange={(e, val) => setTab(val as "overview" | "lodging")}
+                value={
+                  tabQuery && validTabs.includes(tabQuery)
+                    ? tabQuery
+                    : "overview"
+                }
+                onChange={(e, val) =>
+                  setTabQuery(
+                    val !== "overview" && validTabs.includes(val) ? val : null
+                  )
+                }
                 variant="fullWidth"
                 indicatorColor="primary">
                 <Tab label="Overview" id="overview" value="overview" />
                 <Tab label="Lodging" id="lodging" value="lodging" />
               </Tabs>
             </div>
-            {tab === "overview" ? (
-              <RetreatOverviewForm retreat={retreat} />
-            ) : tab === "lodging" ? (
+            {tabQuery === "lodging" ? (
               <RetreatLodgingDetails retreat={retreat} />
-            ) : undefined}
+            ) : (
+              <RetreatOverviewForm retreat={retreat} />
+            )}
           </>
         ) : undefined}
       </div>
