@@ -11,7 +11,12 @@ import {
 import {Add, Remove} from "@material-ui/icons"
 import clsx from "clsx"
 import {useFormik} from "formik"
-import {AdminLodgingProposalModel} from "../../models"
+import _ from "lodash"
+import {
+  AdminLodgingProposalModel,
+  AdminLodgingProposalUpdateModel,
+} from "../../models"
+import {createProposalForm} from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -39,14 +44,14 @@ let useStyles = makeStyles((theme) => ({
 
 type HotelProposalFormProps = {
   proposal: AdminLodgingProposalModel
-  onSave: (values: AdminLodgingProposalModel) => void
+  onSave: (values: AdminLodgingProposalUpdateModel) => void
   onDelete: () => void
 }
 export default function HotelProposalForm(props: HotelProposalFormProps) {
   let classes = useStyles(props)
   const formik = useFormik({
     enableReinitialize: true,
-    initialValues: props.proposal,
+    initialValues: createProposalForm(props.proposal),
     onSubmit: (values) => props.onSave(values),
   })
   const textFieldProps: TextFieldProps = {
@@ -55,6 +60,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
     InputLabelProps: {shrink: true},
     onChange: formik.handleChange,
   }
+
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
       <Paper elevation={0} className={classes.formGroup}>
@@ -207,50 +213,68 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           multiline
           value={formik.values.cost_saving_notes ?? ""}
         />
-        <AdditionalLinksInput links={props.proposal.additional_links ?? []} />
+        <FormControl>
+          <AppTypography variant="body2">Additional links</AppTypography>
+          {formik.values.additional_links.map((link, i) => (
+            <Box display="flex" alignItems="center" marginY={1}>
+              <TextField
+                {...textFieldProps}
+                id={`additional_links[${i}].link_text`}
+                InputLabelProps={{shrink: true}}
+                value={link.link_text ?? ""}
+                required
+                label="Link text"
+              />
+              <TextField
+                {...textFieldProps}
+                id={`additional_links[${i}].link_url`}
+                InputLabelProps={{shrink: true}}
+                style={{marginLeft: 4, marginRight: 4}}
+                value={link.link_url ?? ""}
+                required
+                label="Link URL"
+              />
+              <IconButton
+                size="small"
+                onClick={() => {
+                  formik.setFieldValue(
+                    "additional_links",
+                    formik.values.additional_links.filter((val, j) => j !== i)
+                  )
+                }}>
+                <Remove fontSize="small" />
+              </IconButton>
+            </Box>
+          ))}
+          <Box marginLeft="auto" marginTop={1}>
+            <IconButton>
+              <Add
+                onClick={() => {
+                  formik.setFieldValue("additional_links", [
+                    ...formik.values.additional_links,
+                    {link_url: "", link_text: ""},
+                  ])
+                }}
+              />
+            </IconButton>
+          </Box>
+        </FormControl>
       </Paper>
       <Box width="100%" display="flex" justifyContent="space-between">
         <Button color="secondary" variant="outlined" onClick={props.onDelete}>
           Delete Proposal
         </Button>
-        <Button type="submit" color="primary" variant="contained">
+        <Button
+          disabled={_.isEqual(
+            createProposalForm(formik.values),
+            formik.initialValues
+          )}
+          type="submit"
+          color="primary"
+          variant="contained">
           Save Changes
         </Button>
       </Box>
     </form>
-  )
-}
-
-function AdditionalLinksInput(props: {
-  links: {link_url: string; link_text: string}[]
-}) {
-  return (
-    <FormControl>
-      <AppTypography variant="body2">Additional links</AppTypography>
-      {props.links.map((link) => (
-        <Box display="flex" alignItems="center" marginY={1}>
-          <TextField
-            InputLabelProps={{shrink: true}}
-            style={{flex: 1}}
-            value={link.link_text ?? ""}
-            label="Link text"
-          />
-          <TextField
-            InputLabelProps={{shrink: true}}
-            style={{flex: 1, marginLeft: 4, marginRight: 4}}
-            value={link.link_url ?? ""}
-            label="Link URL"
-          />
-          <IconButton size="small">
-            <Remove fontSize="small" />
-          </IconButton>
-        </Box>
-      ))}
-      <Box marginLeft="auto" marginTop={1}>
-        <IconButton>
-          <Add />
-        </IconButton>
-      </Box>
-    </FormControl>
   )
 }

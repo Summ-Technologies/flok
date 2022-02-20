@@ -17,7 +17,6 @@ import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import RetreatOverviewForm from "../components/retreats/RetreatInfoForm"
 import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
-import {enqueueSnackbar} from "../notistack-lib/actions"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails} from "../store/actions/admin"
@@ -52,23 +51,6 @@ function RetreatPage(props: RetreatPageProps) {
   let retreatApiCall = useSelector((state: RootState) => {
     return state.admin.api.retreatsDetails[retreatId]
   })
-
-  useEffect(() => {
-    if (
-      retreatApiCall &&
-      retreatApiCall.status &&
-      retreatApiCall.status >= 400
-    ) {
-      dispatch(
-        enqueueSnackbar({
-          message: "Something went wrong",
-          options: {
-            variant: "error",
-          },
-        })
-      )
-    }
-  }, [retreatApiCall, dispatch])
 
   useEffect(() => {
     if (!retreat) {

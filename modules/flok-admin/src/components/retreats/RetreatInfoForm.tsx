@@ -17,7 +17,10 @@ import {
   RetreatStateOptions,
 } from "../../models"
 import {RootState} from "../../store"
-import {putRetreatDetails} from "../../store/actions/admin"
+import {
+  createRetreatDetailsForm,
+  putRetreatDetails,
+} from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -41,23 +44,6 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-function getRetreatDetailsForm(obj: Partial<AdminRetreatModel>) {
-  return {
-    contact_name: obj.contact_name || undefined,
-    contact_email: obj.contact_email || undefined,
-    preferences_num_attendees_lower:
-      obj.preferences_num_attendees_lower || undefined,
-    preferences_is_dates_flexible: obj.preferences_is_dates_flexible || false,
-    preferences_dates_exact_start:
-      obj.preferences_dates_exact_start || undefined,
-    preferences_dates_exact_end: obj.preferences_dates_exact_end || undefined,
-    flok_admin_owner: obj.flok_admin_owner || undefined,
-    flok_admin_state: obj.flok_admin_state || undefined,
-    state: obj.state || undefined,
-  }
-}
-export type RetreatDetailsFormType = ReturnType<typeof getRetreatDetailsForm>
-
 type RetreatInfoFormProps = {retreat: AdminRetreatModel}
 export default function RetreatInfoForm(props: RetreatInfoFormProps) {
   let classes = useStyles(props)
@@ -67,9 +53,10 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
     (state: RootState) => state.admin.api.retreatsDetails[retreat.id]?.loading
   )
   let formik = useFormik({
-    initialValues: getRetreatDetailsForm(retreat),
+    enableReinitialize: true,
+    initialValues: createRetreatDetailsForm(retreat),
     onSubmit: (values) => {
-      dispatch(putRetreatDetails(retreat.id, getRetreatDetailsForm(values)))
+      dispatch(putRetreatDetails(retreat.id, createRetreatDetailsForm(values)))
     },
   })
   const textFieldProps: TextFieldProps = {
@@ -85,19 +72,19 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
         <TextField
           {...textFieldProps}
           id="contact_name"
-          value={formik.values.contact_name}
+          value={formik.values.contact_name ?? ""}
           label="Contact Name"
         />
         <TextField
           {...textFieldProps}
           id="contact_email"
-          value={formik.values.contact_email}
+          value={formik.values.contact_email ?? ""}
           label="Contact Email"
         />
         <TextField
           {...textFieldProps}
           id="preferences_num_attendees_lower"
-          value={formik.values.preferences_num_attendees_lower}
+          value={formik.values.preferences_num_attendees_lower ?? ""}
           type="number"
           label="Number Attendees"
         />
@@ -132,14 +119,14 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
               {...textFieldProps}
               id="preferences_dates_exact_start"
               type="date"
-              value={formik.values.preferences_dates_exact_start}
+              value={formik.values.preferences_dates_exact_start ?? ""}
               label="Start date"
             />
             <TextField
               {...textFieldProps}
               id="preferences_dates_exact_end"
               type="date"
-              value={formik.values.preferences_dates_exact_end}
+              value={formik.values.preferences_dates_exact_end ?? ""}
               label="End date"
             />
           </>
@@ -150,7 +137,7 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
         <TextField
           {...textFieldProps}
           id="flok_admin_owner"
-          value={formik.values.flok_admin_owner}
+          value={formik.values.flok_admin_owner ?? ""}
           label="Flok Owner"
         />
         <Box>
@@ -162,7 +149,7 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
             aria-labelledby="calendly-call-labl"
             disabled={!!!retreat.flok_admin_calendly_call}
             variant="contained"
-            href={retreat.flok_admin_calendly_call}
+            href={retreat.flok_admin_calendly_call ?? ""}
             target="__blank">
             {retreat.flok_admin_calendly_call
               ? "See calendar details"
@@ -174,7 +161,7 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
           {...textFieldProps}
           label="Flok State"
           id="flok_admin_state"
-          value={formik.values.flok_admin_state}
+          value={formik.values.flok_admin_state ?? ""}
           select
           SelectProps={{native: true}}
           onChange={formik.handleChange}>
@@ -188,7 +175,7 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
           {...textFieldProps}
           id="state"
           label="Client Dashboard State"
-          value={formik.values.state}
+          value={formik.values.state ?? ""}
           onChange={formik.handleChange}
           select
           SelectProps={{native: true}}>
@@ -199,20 +186,21 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
           ))}
         </TextField>
       </Paper>
-      {_.isEqual(
-        getRetreatDetailsForm(retreat),
-        getRetreatDetailsForm(formik.values)
-      ) ? undefined : (
-        <Box display="flex" justifyContent="flex-end" width="100%">
-          <Button
-            disabled={loading}
-            type="submit"
-            variant="contained"
-            color="primary">
-            {loading ? "Loading..." : "Save changes"}
-          </Button>
-        </Box>
-      )}
+      <Box display="flex" justifyContent="flex-end" width="100%">
+        <Button
+          disabled={
+            loading ||
+            _.isEqual(
+              formik.initialValues,
+              createRetreatDetailsForm(formik.values)
+            )
+          }
+          type="submit"
+          variant="contained"
+          color="primary">
+          {loading ? "Loading..." : "Save changes"}
+        </Button>
+      </Box>
     </form>
   )
 }

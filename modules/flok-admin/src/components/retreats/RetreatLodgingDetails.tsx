@@ -15,13 +15,10 @@ import {
 import {useFormik} from "formik"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {
-  AdminLodgingProposalModel,
-  AdminRetreatModel,
-  AdminSelectedHotelProposalModel,
-} from "../../models"
+import {AdminRetreatModel, AdminSelectedHotelProposalModel} from "../../models"
 import {RootState} from "../../store"
 import {
+  createProposalForm,
   deleteHotelProposal,
   deleteSelectedHotel,
   getDestinations,
@@ -72,33 +69,6 @@ function HotelAccordionItem(props: {
       )
     },
   })
-
-  function createProposalForm(
-    obj: Partial<AdminLodgingProposalModel>
-  ): Omit<AdminLodgingProposalModel, "id" | "created_at"> {
-    return {
-      dates: obj.dates ?? null,
-      compare_room_rate: obj.compare_room_rate ?? null,
-      compare_room_total: obj.compare_room_rate ?? null,
-      num_guests: obj.num_guests ?? null,
-      guestroom_rates: obj.guestroom_rates ?? null,
-      approx_room_total: obj.approx_room_total ?? null,
-      resort_fee: obj.resort_fee ?? null,
-      tax_rates: obj.tax_rates ?? null,
-      additional_fees: obj.additional_fees ?? null,
-      suggested_meeting_spaces: obj.suggested_meeting_spaces ?? null,
-      meeting_room_rates: obj.meeting_room_rates ?? null,
-      meeting_room_tax_rates: obj.meeting_room_tax_rates ?? null,
-      food_bev_minimum: obj.food_bev_minimum ?? null,
-      food_bev_service_fee: obj.food_bev_service_fee ?? null,
-      avg_breakfast_price: obj.avg_breakfast_price ?? null,
-      avg_snack_price: obj.avg_snack_price ?? null,
-      avg_lunch_price: obj.avg_lunch_price ?? null,
-      avg_dinner_price: obj.avg_dinner_price ?? null,
-      cost_saving_notes: obj.cost_saving_notes ?? null,
-      additional_links: obj.additional_links ?? [],
-    }
-  }
   return (
     <Accordion>
       <AccordionSummary>
@@ -310,7 +280,7 @@ function HotelAccordionItem(props: {
                         props.selectedHotel.hotel_proposals![
                           activeProposalIndex
                         ].id,
-                        createProposalForm(values)
+                        values
                       )
                     )
                   }}

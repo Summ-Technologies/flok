@@ -13,21 +13,36 @@ export type AdminRetreatModel = {
   id: number
   guid: string
   company_name: string
-  contact_name: string
-  contact_email: string
-  preferences_num_attendees_lower: number
-  preferences_is_dates_flexible: boolean
-  preferences_dates_flexible_num_nights?: number
-  preferences_dates_flexible_months?: string[]
-  preferences_dates_exact_start?: string
-  preferences_dates_exact_end?: string
-  state: string
-  flok_admin_calendly_call: string
-  flok_admin_signup_type: string
-  flok_admin_owner: string
-  flok_admin_state: string // One of retreat state options
+  contact_name: string | null
+  contact_email: string | null
+  preferences_num_attendees_lower: number | null
+  preferences_is_dates_flexible: boolean | null
+  preferences_dates_flexible_num_nights: number | null
+  preferences_dates_flexible_months: string[] | null
+  preferences_dates_exact_start: string | null
+  preferences_dates_exact_end?: string | null
+  state: string | null
+  flok_admin_calendly_call: string | null
+  flok_admin_signup_type: string | null
+  flok_admin_owner: string | null
+  flok_admin_state: string | null // One of retreat state options
   selected_hotels: AdminSelectedHotelProposalModel[]
 }
+
+export type AdminRetreatUpdateModel = Pick<
+  AdminRetreatModel,
+  | "contact_name"
+  | "contact_email"
+  | "preferences_num_attendees_lower"
+  | "preferences_is_dates_flexible"
+  | "preferences_dates_flexible_num_nights"
+  | "preferences_dates_flexible_months"
+  | "preferences_dates_exact_start"
+  | "preferences_dates_exact_end"
+  | "flok_admin_owner"
+  | "flok_admin_state"
+  | "state"
+>
 
 export const RetreatStateOptions = [
   "Signed up",
@@ -97,6 +112,11 @@ export type AdminLodgingProposalModel = {
   cost_saving_notes: string | null
   additional_links: {link_url: string; link_text: string}[]
 }
+
+export type AdminLodgingProposalUpdateModel = Omit<
+  AdminLodgingProposalModel,
+  "id" | "created_at"
+>
 
 export type AdminHotelModel = {
   id: number

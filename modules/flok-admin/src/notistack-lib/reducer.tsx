@@ -32,6 +32,23 @@ export default function NotistackReducer(state = defaultState, action: any) {
         },
       ],
     }
+  } else if (
+    (action.type as string).endsWith("_SUCCESS") &&
+    ((action.type as string).startsWith("POST_") ||
+      (action.type as string).startsWith("PUT_") ||
+      (action.type as string).startsWith("DELETE_"))
+  ) {
+    return {
+      ...state,
+      notifications: [
+        ...state.notifications,
+        {
+          key: new Date().getTime() + Math.random(),
+          message: "Success!",
+          options: {variant: "success"},
+        },
+      ],
+    }
   }
   switch (action.type) {
     case ENQUEUE_SNACKBAR:

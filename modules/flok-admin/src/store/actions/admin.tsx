@@ -1,8 +1,10 @@
 import querystring from "querystring"
-import {RetreatDetailsFormType} from "../../components/retreats/RetreatInfoForm"
 import {
   AdminLodgingProposalModel,
+  AdminLodgingProposalUpdateModel,
   AdminRetreatListType,
+  AdminRetreatModel,
+  AdminRetreatUpdateModel,
   AdminSelectedHotelStateTypes,
 } from "../../models"
 import {createApiAction} from "./api"
@@ -41,13 +43,37 @@ export function getRetreatDetails(id: number) {
   })
 }
 
+export function createRetreatDetailsForm(
+  obj: Partial<AdminRetreatModel>
+): AdminRetreatUpdateModel {
+  return {
+    contact_name: obj.contact_name || null,
+    contact_email: obj.contact_email || null,
+    preferences_num_attendees_lower:
+      obj.preferences_num_attendees_lower != null
+        ? obj.preferences_num_attendees_lower
+        : null,
+    preferences_is_dates_flexible:
+      obj.preferences_is_dates_flexible != null
+        ? obj.preferences_is_dates_flexible
+        : null,
+    preferences_dates_exact_start: obj.preferences_dates_exact_start || null,
+    preferences_dates_exact_end: obj.preferences_dates_exact_end || null,
+    preferences_dates_flexible_months: [],
+    preferences_dates_flexible_num_nights: null,
+    flok_admin_owner: obj.flok_admin_owner || null,
+    flok_admin_state: obj.flok_admin_state || null,
+    state: obj.state || null,
+  }
+}
+
 export const PUT_RETREAT_DETAILS_REQUEST = "PUT_RETREAT_DETAILS_REQUEST"
 export const PUT_RETREAT_DETAILS_SUCCESS = "PUT_RETREAT_DETAILS_SUCCESS"
 export const PUT_RETREAT_DETAILS_FAILURE = "PUT_RETREAT_DETAILS_FAILURE"
 
 export function putRetreatDetails(
   id: number,
-  retreatDetails: RetreatDetailsFormType
+  retreatDetails: AdminRetreatUpdateModel
 ) {
   let endpoint = `/v1.0/admin/retreats/${id}`
   return createApiAction({
@@ -177,6 +203,33 @@ export function deleteSelectedHotel(retreatId: number, hotelId: number) {
   })
 }
 
+export function createProposalForm(
+  obj: Partial<AdminLodgingProposalModel>
+): AdminLodgingProposalUpdateModel {
+  return {
+    dates: obj.dates ?? null,
+    compare_room_rate: obj.compare_room_rate ?? null,
+    compare_room_total: obj.compare_room_rate ?? null,
+    num_guests: obj.num_guests ?? null,
+    guestroom_rates: obj.guestroom_rates ?? null,
+    approx_room_total: obj.approx_room_total ?? null,
+    resort_fee: obj.resort_fee ?? null,
+    tax_rates: obj.tax_rates ?? null,
+    additional_fees: obj.additional_fees ?? null,
+    suggested_meeting_spaces: obj.suggested_meeting_spaces ?? null,
+    meeting_room_rates: obj.meeting_room_rates ?? null,
+    meeting_room_tax_rates: obj.meeting_room_tax_rates ?? null,
+    food_bev_minimum: obj.food_bev_minimum ?? null,
+    food_bev_service_fee: obj.food_bev_service_fee ?? null,
+    avg_breakfast_price: obj.avg_breakfast_price ?? null,
+    avg_snack_price: obj.avg_snack_price ?? null,
+    avg_lunch_price: obj.avg_lunch_price ?? null,
+    avg_dinner_price: obj.avg_dinner_price ?? null,
+    cost_saving_notes: obj.cost_saving_notes ?? null,
+    additional_links: obj.additional_links ?? [],
+  }
+}
+
 export const POST_HOTEL_PROPOSAL_REQUEST = "POST_HOTEL_PROPOSAL_REQUEST"
 export const POST_HOTEL_PROPOSAL_SUCCESS = "POST_HOTEL_PROPOSAL_SUCCESS"
 export const POST_HOTEL_PROPOSAL_FAILURE = "POST_HOTEL_PROPOSAL_FAILURE"
@@ -185,7 +238,7 @@ export const POST_HOTEL_PROPOSAL_FAILURE = "POST_HOTEL_PROPOSAL_FAILURE"
 export function postHotelProposal(
   retreatId: number,
   hotelId: number,
-  proposal: Omit<AdminLodgingProposalModel, "id" | "created_at">
+  proposal: AdminLodgingProposalUpdateModel
 ) {
   let endpoint = `/v1.0/admin/retreats/${retreatId}/hotels/${hotelId}/proposals`
   return createApiAction({
@@ -211,12 +264,12 @@ export function putHotelProposal(
   retreatId: number,
   hotelId: number,
   proposalId: number,
-  proposal: Omit<AdminLodgingProposalModel, "id" | "created_at">
+  proposal: AdminLodgingProposalUpdateModel
 ) {
   let endpoint = `/v1.0/admin/retreats/${retreatId}/hotels/${hotelId}/proposals/${proposalId}`
   return createApiAction({
     endpoint,
-    method: "POST",
+    method: "PUT",
     body: JSON.stringify(proposal, (key, value) =>
       typeof value === "undefined" ? null : value
     ),
