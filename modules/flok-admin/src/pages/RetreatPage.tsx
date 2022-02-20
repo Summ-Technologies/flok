@@ -15,8 +15,8 @@ import {
 } from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
+import RetreatOverviewForm from "../components/retreats/RetreatInfoForm"
 import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
-import RetreatOverviewForm from "../components/retreats/RetreatOverviewForm"
 import {enqueueSnackbar} from "../notistack-lib/actions"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
@@ -49,7 +49,6 @@ function RetreatPage(props: RetreatPageProps) {
   let retreat = useSelector((state: RootState) => {
     return state.admin.retreatsDetails[retreatId]
   })
-  console.log(retreat)
   let retreatApiCall = useSelector((state: RootState) => {
     return state.admin.api.retreatsDetails[retreatId]
   })

@@ -37,12 +37,17 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type HotelProposalFormProps = {proposal: Partial<AdminLodgingProposalModel>}
+type HotelProposalFormProps = {
+  proposal: AdminLodgingProposalModel
+  onSave: (values: AdminLodgingProposalModel) => void
+  onDelete: () => void
+}
 export default function HotelProposalForm(props: HotelProposalFormProps) {
   let classes = useStyles(props)
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: props.proposal,
-    onSubmit: (values) => console.log(values),
+    onSubmit: (values) => props.onSave(values),
   })
   const textFieldProps: TextFieldProps = {
     fullWidth: true,
@@ -58,28 +63,28 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           {...textFieldProps}
           id="dates"
           label="Dates"
-          value={formik.values.dates}
+          value={formik.values.dates ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="num_guests"
           label="# Guests"
           type="number"
-          value={formik.values.num_guests}
+          value={formik.values.num_guests ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="compare_room_rate"
           label="Guestroom rates"
           type="number"
-          value={formik.values.compare_room_rate}
+          value={formik.values.compare_room_rate ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="compare_room_total"
           label="Approximate room total"
           type="number"
-          value={formik.values.compare_room_total}
+          value={formik.values.compare_room_total ?? ""}
         />
       </Paper>
       <Paper elevation={0} className={classes.formGroup}>
@@ -89,35 +94,35 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           id="guestroom_rates"
           label="Rates"
           multiline
-          value={formik.values.guestroom_rates}
+          value={formik.values.guestroom_rates ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="approx_room_total"
           label="Room total"
           multiline
-          value={formik.values.approx_room_total}
+          value={formik.values.approx_room_total ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="resort_fee"
           label="Resort fee"
           multiline
-          value={formik.values.resort_fee}
+          value={formik.values.resort_fee ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="tax_rates"
           label="Tax rates"
           multiline
-          value={formik.values.tax_rates}
+          value={formik.values.tax_rates ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="additional_fees"
           label="Additional fees"
           multiline
-          value={formik.values.additional_fees}
+          value={formik.values.additional_fees ?? ""}
         />
       </Paper>
       <Paper elevation={0} className={classes.formGroup}>
@@ -127,21 +132,21 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           id="suggested_meeting_spaces"
           label="Suggested meeting rooms"
           multiline
-          value={formik.values.suggested_meeting_spaces}
+          value={formik.values.suggested_meeting_spaces ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="meeting_room_tax_rates"
           label="Meeting room rates"
           multiline
-          value={formik.values.meeting_room_rates}
+          value={formik.values.meeting_room_rates ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="meeting_room_tax_rates"
           label="Meeting room tax rates"
           multiline
-          value={formik.values.meeting_room_tax_rates}
+          value={formik.values.meeting_room_tax_rates ?? ""}
         />
       </Paper>
       <Paper elevation={0} className={classes.formGroup}>
@@ -151,42 +156,42 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           id="food_bev_minimum"
           label="Food and beverage minimum"
           multiline
-          value={formik.values.food_bev_minimum}
+          value={formik.values.food_bev_minimum ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="food_bev_service_fee"
           label="Food and beverage service fee"
           multiline
-          value={formik.values.food_bev_service_fee}
+          value={formik.values.food_bev_service_fee ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="avg_breakfast_price"
           label="Average breakfast price"
           multiline
-          value={formik.values.avg_breakfast_price}
+          value={formik.values.avg_breakfast_price ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="avg_snack_price"
           label="Average snack price"
           multiline
-          value={formik.values.avg_snack_price}
+          value={formik.values.avg_snack_price ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="avg_lunch_price"
           label="Average lunch price"
           multiline
-          value={formik.values.avg_lunch_price}
+          value={formik.values.avg_lunch_price ?? ""}
         />
         <TextField
           {...textFieldProps}
           id="avg_dinner_price"
           label="Average dinner price"
           multiline
-          value={formik.values.avg_dinner_price}
+          value={formik.values.avg_dinner_price ?? ""}
         />
       </Paper>
       <Paper
@@ -200,11 +205,14 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           minRows={5}
           label="Additional notes"
           multiline
-          value={formik.values.cost_saving_notes}
+          value={formik.values.cost_saving_notes ?? ""}
         />
-        <AdditionalLinksInput links={props.proposal.additional_links || []} />
+        <AdditionalLinksInput links={props.proposal.additional_links ?? []} />
       </Paper>
-      <Box width="100%" display="flex" justifyContent="flex-end">
+      <Box width="100%" display="flex" justifyContent="space-between">
+        <Button color="secondary" variant="outlined" onClick={props.onDelete}>
+          Delete Proposal
+        </Button>
         <Button type="submit" color="primary" variant="contained">
           Save Changes
         </Button>
@@ -224,13 +232,13 @@ function AdditionalLinksInput(props: {
           <TextField
             InputLabelProps={{shrink: true}}
             style={{flex: 1}}
-            value={link.link_text}
+            value={link.link_text ?? ""}
             label="Link text"
           />
           <TextField
             InputLabelProps={{shrink: true}}
             style={{flex: 1, marginLeft: 4, marginRight: 4}}
-            value={link.link_url}
+            value={link.link_url ?? ""}
             label="Link URL"
           />
           <IconButton size="small">

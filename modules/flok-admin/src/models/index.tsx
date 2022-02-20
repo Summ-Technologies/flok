@@ -75,27 +75,42 @@ export type AdminSelectedHotelProposalModel = {
 
 export type AdminLodgingProposalModel = {
   id: number
-  dates?: string
-  num_guests?: string
-  compare_room_rate?: number
-  compare_room_total?: number
-  on_hold?: boolean
-  summary?: string
-  hold_status?: string
-  guestroom_rates?: string
-  approx_room_total?: string
-  resort_fee?: string
-  tax_rates?: string
-  additional_fees?: string
-  suggested_meeting_spaces?: string
-  meeting_room_rates?: string
-  meeting_room_tax_rates?: string
-  food_bev_minimum?: string
-  food_bev_service_fee?: string
-  avg_breakfast_price?: string
-  avg_snack_price?: string
-  avg_lunch_price?: string
-  avg_dinner_price?: string
-  cost_saving_notes?: string
+  created_at: string | null
+  dates: string | null
+  compare_room_rate: number | null
+  compare_room_total: number | null
+  num_guests: string | null
+  guestroom_rates: string | null
+  approx_room_total: string | null
+  resort_fee: string | null
+  tax_rates: string | null
+  additional_fees: string | null
+  suggested_meeting_spaces: string | null
+  meeting_room_rates: string | null
+  meeting_room_tax_rates: string | null
+  food_bev_minimum: string | null
+  food_bev_service_fee: string | null
+  avg_breakfast_price: string | null
+  avg_snack_price: string | null
+  avg_lunch_price: string | null
+  avg_dinner_price: string | null
+  cost_saving_notes: string | null
   additional_links: {link_url: string; link_text: string}[]
+}
+
+export type AdminHotelModel = {
+  id: number
+  guid: string
+  destination_id: number
+  name: string
+}
+
+export type AdminDestinationModel = {
+  id: number
+  guid: string
+  location: string
+  state?: string
+  state_abbreviation?: string
+  country?: string
+  country_abbreviation?: string
 }

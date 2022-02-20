@@ -20,6 +20,19 @@ export type DefaultNotistackState = {
 }
 
 export default function NotistackReducer(state = defaultState, action: any) {
+  if ((action.type as string).endsWith("_FAILURE")) {
+    return {
+      ...state,
+      notifications: [
+        ...state.notifications,
+        {
+          key: new Date().getTime() + Math.random(),
+          message: "Oops! Something went wrong.",
+          options: {variant: "error"},
+        },
+      ],
+    }
+  }
   switch (action.type) {
     case ENQUEUE_SNACKBAR:
       return {

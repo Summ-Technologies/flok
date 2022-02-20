@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Box,
   Button,
+  Chip,
   makeStyles,
   Modal,
   Paper,
@@ -12,9 +13,27 @@ import {
   TextField,
 } from "@material-ui/core"
 import {useFormik} from "formik"
-import React, {useState} from "react"
-import {AdminRetreatModel, AdminSelectedHotelProposalModel} from "../../models"
+import React, {useEffect, useState} from "react"
+import {useDispatch, useSelector} from "react-redux"
+import {
+  AdminLodgingProposalModel,
+  AdminRetreatModel,
+  AdminSelectedHotelProposalModel,
+} from "../../models"
+import {RootState} from "../../store"
+import {
+  deleteHotelProposal,
+  deleteSelectedHotel,
+  getDestinations,
+  getHotelsByHotelId,
+  postHotelProposal,
+  postSelectedHotel,
+  putHotelProposal,
+  putSelectedHotel,
+} from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
+import ConfirmationModal from "../base/ConfirmationModal"
+import HotelSearchModal from "../lodging/HotelSearchModal"
 import HotelProposalForm from "./HotelProposalForm"
 
 let useAccordionItemStyles = makeStyles((theme) => ({
@@ -30,31 +49,106 @@ function HotelAccordionItem(props: {
   hotel: {name: string; location: string}
 }) {
   let classes = useAccordionItemStyles()
+  let dispatch = useDispatch()
   let [activeProposalIndex, setActiveProposalIndex] = useState(0)
+
   let [newProposalModalOpen, setNewProposalModalOpen] = useState(false)
+  let [newProposalDates, setNewProposalDates] = useState<string | undefined>(
+    undefined
+  )
+  let [removeSelectedHotelModalOpen, setRemoveSelectedHotelModalOpen] =
+    useState(false)
+  let [deleteProposalModalOpen, setDeleteProposalModalOpen] = useState(false)
   let proposalStateFormik = useFormik({
+    enableReinitialize: true,
     initialValues: {state: props.selectedHotel.state},
-    onSubmit: (values) => console.log(values),
+    onSubmit: (values) => {
+      dispatch(
+        putSelectedHotel(
+          props.selectedHotel.retreat_id,
+          props.selectedHotel.hotel_id,
+          values.state
+        )
+      )
+    },
   })
+
+  function createProposalForm(
+    obj: Partial<AdminLodgingProposalModel>
+  ): Omit<AdminLodgingProposalModel, "id" | "created_at"> {
+    return {
+      dates: obj.dates ?? null,
+      compare_room_rate: obj.compare_room_rate ?? null,
+      compare_room_total: obj.compare_room_rate ?? null,
+      num_guests: obj.num_guests ?? null,
+      guestroom_rates: obj.guestroom_rates ?? null,
+      approx_room_total: obj.approx_room_total ?? null,
+      resort_fee: obj.resort_fee ?? null,
+      tax_rates: obj.tax_rates ?? null,
+      additional_fees: obj.additional_fees ?? null,
+      suggested_meeting_spaces: obj.suggested_meeting_spaces ?? null,
+      meeting_room_rates: obj.meeting_room_rates ?? null,
+      meeting_room_tax_rates: obj.meeting_room_tax_rates ?? null,
+      food_bev_minimum: obj.food_bev_minimum ?? null,
+      food_bev_service_fee: obj.food_bev_service_fee ?? null,
+      avg_breakfast_price: obj.avg_breakfast_price ?? null,
+      avg_snack_price: obj.avg_snack_price ?? null,
+      avg_lunch_price: obj.avg_lunch_price ?? null,
+      avg_dinner_price: obj.avg_dinner_price ?? null,
+      cost_saving_notes: obj.cost_saving_notes ?? null,
+      additional_links: obj.additional_links ?? [],
+    }
+  }
   return (
     <Accordion>
       <AccordionSummary>
-        <AppTypography variant="body1" fontWeight="bold">
-          {props.hotel.name}
-        </AppTypography>
+        <Box display="flex" justifyContent="space-between" width="100%">
+          <AppTypography variant="body1">
+            <strong>{props.hotel.name}</strong>
+            {props.hotel.location ? `, ${props.hotel.location}` : ""}
+          </AppTypography>
+          {props.selectedHotel.state === "REVIEW" ? (
+            <Chip
+              label="Ready for review"
+              style={{color: "white", backgroundColor: "green"}}
+            />
+          ) : props.selectedHotel.state === "NOT_AVAILABLE" ? (
+            <Chip
+              label="Not available"
+              style={{color: "white", backgroundColor: "red"}}
+            />
+          ) : (
+            <Chip label="Pending" style={{backgroundColor: "yellow"}} />
+          )}
+        </Box>
       </AccordionSummary>
       <AccordionDetails className={classes.accordionDetails}>
         <Box display="flex" alignItems="center">
           <AppTypography variant="h3" fontWeight="bold">
-            {props.hotel.name}, {props.hotel.location}
+            {props.hotel.name}
           </AppTypography>
           <Button
+            onClick={() => setRemoveSelectedHotelModalOpen(true)}
             style={{marginLeft: 8}}
             color="secondary"
             variant="outlined"
             size="small">
             Remove Hotel
           </Button>
+          {removeSelectedHotelModalOpen ? (
+            <ConfirmationModal
+              onSubmit={() => {
+                dispatch(
+                  deleteSelectedHotel(
+                    props.selectedHotel.retreat_id,
+                    props.selectedHotel.hotel_id
+                  )
+                )
+              }}
+              onClose={() => setRemoveSelectedHotelModalOpen(false)}
+              confirmationText={`Are you sure you want to remove ${props.hotel.name}?`}
+            />
+          ) : undefined}
         </Box>
         <form onSubmit={proposalStateFormik.handleSubmit}>
           <Box display="flex" alignItems="center" marginY={2}>
@@ -104,7 +198,10 @@ function HotelAccordionItem(props: {
           </Button>
           <Modal
             open={newProposalModalOpen}
-            onClose={() => setNewProposalModalOpen(false)}>
+            onClose={() => {
+              setNewProposalModalOpen(false)
+              setNewProposalDates(undefined)
+            }}>
             <Box
               maxWidth={400}
               minWidth={300}
@@ -123,23 +220,61 @@ function HotelAccordionItem(props: {
                   <AppTypography variant="body1" fontWeight="bold" paragraph>
                     New Proposal
                   </AppTypography>
-                  <form>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      setNewProposalModalOpen(false)
+                      setNewProposalDates(undefined)
+                    }}>
                     <TextField
                       fullWidth
                       type="text"
                       label="Dates"
                       required
                       InputLabelProps={{shrink: true}}
+                      value={newProposalDates ?? ""}
+                      onChange={(e) =>
+                        setNewProposalDates(e.currentTarget.value)
+                      }
                     />
                     <br />
                     <br />
                     <Box display="flex" justifyContent={"space-between"}>
-                      <Button type="submit" variant="contained">
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        onClick={() => {
+                          dispatch(
+                            postHotelProposal(
+                              props.selectedHotel.retreat_id,
+                              props.selectedHotel.hotel_id,
+                              createProposalForm({
+                                dates: newProposalDates,
+                              })
+                            )
+                          )
+                        }}>
                         Add
                       </Button>
                       {props.selectedHotel.hotel_proposals?.length ? (
-                        <Button type="submit" variant="outlined">
-                          Copy previous
+                        <Button
+                          type="submit"
+                          variant="outlined"
+                          onClick={() => {
+                            dispatch(
+                              postHotelProposal(
+                                props.selectedHotel.retreat_id,
+                                props.selectedHotel.hotel_id,
+                                createProposalForm({
+                                  ...props.selectedHotel.hotel_proposals![
+                                    activeProposalIndex
+                                  ]!,
+                                  dates: newProposalDates,
+                                })
+                              )
+                            )
+                          }}>
+                          Copy current
                         </Button>
                       ) : undefined}
                     </Box>
@@ -153,7 +288,9 @@ function HotelAccordionItem(props: {
           <>
             <Tabs
               value={activeProposalIndex}
-              onChange={(e, val) => setActiveProposalIndex(val)}>
+              onChange={(e, val) => {
+                setActiveProposalIndex(val)
+              }}>
               {props.selectedHotel.hotel_proposals!.map((proposal, i) => (
                 <Tab
                   key={i}
@@ -162,13 +299,46 @@ function HotelAccordionItem(props: {
                 />
               ))}
             </Tabs>
-            <HotelProposalForm
-              proposal={
-                props.selectedHotel.hotel_proposals
-                  ? props.selectedHotel.hotel_proposals[activeProposalIndex]
-                  : {}
-              }
-            />
+            {props.selectedHotel.hotel_proposals![activeProposalIndex] ? (
+              <>
+                <HotelProposalForm
+                  onSave={(values) => {
+                    dispatch(
+                      putHotelProposal(
+                        props.selectedHotel.retreat_id,
+                        props.selectedHotel.hotel_id,
+                        props.selectedHotel.hotel_proposals![
+                          activeProposalIndex
+                        ].id,
+                        createProposalForm(values)
+                      )
+                    )
+                  }}
+                  onDelete={() => setDeleteProposalModalOpen(true)}
+                  proposal={
+                    props.selectedHotel.hotel_proposals![activeProposalIndex]
+                  }
+                />
+                {deleteProposalModalOpen ? (
+                  <ConfirmationModal
+                    confirmationText="Are you sure you want to delete this proposal?"
+                    onClose={() => setDeleteProposalModalOpen(false)}
+                    onSubmit={() => {
+                      dispatch(
+                        deleteHotelProposal(
+                          props.selectedHotel.retreat_id,
+                          props.selectedHotel.hotel_id,
+                          props.selectedHotel.hotel_proposals![
+                            activeProposalIndex
+                          ].id
+                        )
+                      )
+                      setActiveProposalIndex(-1)
+                    }}
+                  />
+                ) : undefined}
+              </>
+            ) : undefined}
           </>
         ) : undefined}
       </AccordionDetails>
@@ -186,25 +356,95 @@ export default function RetreatLodgingDetails(
   props: RetreatLodgingDetailsProps
 ) {
   let classes = useStyles(props)
+  let dispatch = useDispatch()
+  let [newHotelOpen, setNewHotelOpen] = useState(false)
+  let hotels = useSelector((state: RootState) => state.admin.hotels)
+  let destinations = useSelector((state: RootState) => state.admin.destinations)
+  let destinationsList = useSelector(
+    (state: RootState) => state.admin.allDestinations
+  )
+
+  useEffect(() => {
+    let missingHotels: number[] = []
+    props.retreat.selected_hotels.forEach((selectedHotel) => {
+      if (hotels[selectedHotel.hotel_id] == null) {
+        missingHotels.push(selectedHotel.hotel_id)
+      }
+    })
+    if (missingHotels.length) {
+      dispatch(getHotelsByHotelId(missingHotels))
+    }
+  }, [hotels, props.retreat.selected_hotels, dispatch])
+
+  useEffect(() => {
+    let missingHotels: number[] = []
+    props.retreat.selected_hotels.forEach((selectedHotel) => {
+      if (hotels[selectedHotel.hotel_id] == null) {
+        missingHotels.push(selectedHotel.hotel_id)
+      }
+    })
+    if (missingHotels.length) {
+      dispatch(getHotelsByHotelId(missingHotels))
+    }
+  }, [hotels, props.retreat.selected_hotels, dispatch])
+
+  useEffect(() => {
+    if (destinationsList == null) {
+      dispatch(getDestinations())
+    }
+  }, [destinationsList, dispatch])
+
   return (
     <div className={classes.root}>
       <Box display="flex" justifyContent="space-between" marginY={2}>
         <AppTypography variant="h4">Hotel Options</AppTypography>
-        <Button color="primary" variant="outlined">
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={() => setNewHotelOpen(true)}>
           Add Hotel
         </Button>
+        {newHotelOpen && (
+          <HotelSearchModal
+            onSubmit={(hotelId) =>
+              dispatch(postSelectedHotel(props.retreat.id, hotelId))
+            }
+            onClose={() => setNewHotelOpen(false)}
+          />
+        )}
       </Box>
       <div className={classes.hotelsList}>
-        {props.retreat.selected_hotels.map((selectedHotel) => (
-          <HotelAccordionItem
-            hotel={{
-              name: selectedHotel.hotel_id.toString(),
-              location: selectedHotel.hotel_id.toString(),
-            }}
-            selectedHotel={selectedHotel}
-            key={selectedHotel.hotel_id}
-          />
-        ))}
+        {props.retreat.selected_hotels
+          .sort((a, b) => {
+            let hotelA = hotels[a.hotel_id]
+            let hotelB = hotels[b.hotel_id]
+            if (hotelA && hotelB) {
+              return hotelA.destination_id - hotelB.destination_id
+            }
+            return 0
+          })
+          .map((selectedHotel) => (
+            <HotelAccordionItem
+              hotel={{
+                name: hotels[selectedHotel.hotel_id]?.name
+                  ? hotels[selectedHotel.hotel_id]!.name
+                  : "",
+                location:
+                  hotels[selectedHotel.hotel_id]?.destination_id &&
+                  destinations[
+                    hotels[selectedHotel.hotel_id]!.destination_id
+                  ] &&
+                  destinations[hotels[selectedHotel.hotel_id]!.destination_id]
+                    ?.location
+                    ? destinations[
+                        hotels[selectedHotel.hotel_id]!.destination_id
+                      ]?.location!
+                    : "",
+              }}
+              selectedHotel={selectedHotel}
+              key={selectedHotel.hotel_id}
+            />
+          ))}
       </div>
     </div>
   )
