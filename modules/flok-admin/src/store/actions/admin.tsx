@@ -203,6 +203,7 @@ export function createProposalForm(
 ): AdminLodgingProposalUpdateModel {
   return {
     dates: obj.dates || null,
+    dates_note: obj.dates_note || null,
     compare_room_rate: obj.compare_room_rate || null,
     compare_room_total: obj.compare_room_total || null,
     num_guests: obj.num_guests || null,

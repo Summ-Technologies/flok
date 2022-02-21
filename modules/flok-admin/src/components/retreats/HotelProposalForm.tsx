@@ -87,7 +87,15 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           {...textFieldProps}
           id="dates"
           label="Dates"
+          multiline
           value={formik.values.dates ?? ""}
+        />
+        <TextField
+          {...textFieldProps}
+          id="dates_note"
+          label="Dates note"
+          multiline
+          value={formik.values.dates_note ?? ""}
         />
         <TextField
           {...textFieldProps}
@@ -278,6 +286,25 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
                 required
                 label="Link URL"
               />
+              <TextField
+                {...textFieldProps}
+                id="affinity"
+                label="Link section"
+                select
+                SelectProps={{native: true}}
+                onChange={(e) => {
+                  let newVal = e.target.value || null
+                  formik.setFieldValue(
+                    `additional_links[${i}].affinity`,
+                    newVal
+                  )
+                }}
+                value={link.affinity ?? ""}>
+                <option value={""}>General info</option>
+                <option value={"MEETING_ROOMS"}>Meeting space</option>
+                <option value={"GUESTROOMS"}>Guest rooms</option>
+                <option value={"FOOD_BEV"}>Food & Bev</option>
+              </TextField>
               <IconButton
                 style={{marginTop: 15}}
                 size="small"

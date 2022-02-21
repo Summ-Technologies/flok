@@ -156,7 +156,6 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
               : "No call scheduled"}
           </Button>
         </Box>
-
         <TextField
           {...textFieldProps}
           label="Flok State"

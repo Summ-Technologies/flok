@@ -92,6 +92,7 @@ export type AdminLodgingProposalModel = {
   id: number
   created_at: string | null
   dates: string | null
+  dates_note: string | null
   compare_room_rate: number | null
   compare_room_total: number | null
   num_guests: string | null
@@ -110,7 +111,11 @@ export type AdminLodgingProposalModel = {
   avg_lunch_price: string | null
   avg_dinner_price: string | null
   cost_saving_notes: string | null
-  additional_links: {link_url: string; link_text: string}[]
+  additional_links: {
+    link_url: string
+    link_text: string
+    affinity: "GUESTROOMS" | "MEETING_ROOMS" | "FOOD_BEV" | null
+  }[]
 }
 
 export type AdminLodgingProposalUpdateModel = Omit<
