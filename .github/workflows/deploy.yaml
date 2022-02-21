@@ -1,0 +1,48 @@
+name: Heroku deploy
+on:
+  push:
+    branches:
+      - master
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      flok: ${{ steps.filter.outputs.flok }}
+      flok-admin: ${{ steps.filter.outputs.flok-admin }}
+    steps:
+      # For pull requests it's not necessary to checkout the code
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            flok:
+              - 'modules/flok/**'
+            flok-admin:
+              - 'modules/flok-admin/**'
+  deploy-flok:
+    needs: changes
+    if: ${{ needs.changes.outputs.flok == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: flok-frontend
+          heroku_email: "jared@goflok.com"
+          appdir: "modules/flok"
+          dontautocreate: true
+  deploy-flok-admin:
+    needs: changes
+    if: ${{ needs.changes.outputs.flok-admin == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: flok-admin
+          heroku_email: "jared@goflok.com"
+          appdir: "modules/flok-admin"
+          dontautocreate: true
