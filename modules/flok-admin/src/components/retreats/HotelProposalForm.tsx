@@ -110,7 +110,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           label="Guestroom rates"
           value={formik.values.compare_room_rate?.toString() ?? ""}
           onChange={(e) =>
-            formik.setFieldValue("compare_room_rate", e.target.value)
+            formik.setFieldValue("compare_room_rate", parseInt(e.target.value))
           }
           InputProps={{inputComponent: CurrencyNumberFormat as any}}
         />
@@ -120,7 +120,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           label="Approximate room total"
           value={formik.values.compare_room_total?.toString() ?? ""}
           onChange={(e) =>
-            formik.setFieldValue("compare_room_total", e.target.value)
+            formik.setFieldValue("compare_room_total", parseInt(e.target.value))
           }
           InputProps={{inputComponent: CurrencyNumberFormat as any}}
         />
@@ -339,7 +339,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
         <Button
           disabled={_.isEqual(
             createProposalForm(formik.values),
-            formik.initialValues
+            createProposalForm(formik.initialValues)
           )}
           type="submit"
           color="primary"

@@ -1,4 +1,5 @@
 import querystring from "querystring"
+import {sortFlexibleMonths} from "../../components/retreats/RetreatInfoForm"
 import {
   AdminLodgingProposalModel,
   AdminLodgingProposalUpdateModel,
@@ -48,14 +49,17 @@ export function createRetreatDetailsForm(
 ): AdminRetreatUpdateModel {
   return {
     contact_name: obj.contact_name || null,
-    contact_email: obj.contact_email || null,
+    contact_email: obj.contact_email!,
     preferences_num_attendees_lower:
       obj.preferences_num_attendees_lower || null, // || means 0 isn't allowed (fixes issue of '' being submitted though)
     preferences_is_dates_flexible: obj.preferences_is_dates_flexible ?? null,
     preferences_dates_exact_start: obj.preferences_dates_exact_start || null,
     preferences_dates_exact_end: obj.preferences_dates_exact_end || null,
-    preferences_dates_flexible_months: [],
-    preferences_dates_flexible_num_nights: null,
+    preferences_dates_flexible_months: sortFlexibleMonths(
+      obj.preferences_dates_flexible_months ?? []
+    ),
+    preferences_dates_flexible_num_nights:
+      obj.preferences_dates_flexible_num_nights || null,
     flok_admin_owner: obj.flok_admin_owner || null,
     flok_admin_state: obj.flok_admin_state || null,
     state: obj.state || null,

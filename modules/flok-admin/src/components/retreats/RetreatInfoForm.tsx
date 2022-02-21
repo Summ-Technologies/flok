@@ -7,10 +7,12 @@ import {
   TextField,
   TextFieldProps,
 } from "@material-ui/core"
+import {Autocomplete} from "@material-ui/lab"
 import {useFormik} from "formik"
 import _ from "lodash"
 import React from "react"
 import {useDispatch, useSelector} from "react-redux"
+import * as yup from "yup"
 import {
   AdminRetreatModel,
   DashboardStateOptions,
@@ -22,6 +24,51 @@ import {
   putRetreatDetails,
 } from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
+
+const monthAbbrevs = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+]
+
+const next3Years = [
+  new Date().getFullYear().toString(),
+  (new Date().getFullYear() + 1).toString(),
+  (new Date().getFullYear() + 2).toString(),
+]
+
+export function sortFlexibleMonths(flexibleMonths: string[]) {
+  return flexibleMonths.sort((a, b) => {
+    let [aMonth, aYear] = a.split("-")
+    let [bMonth, bYear] = b.split("-")
+    let [aYearSort, bYearSort] = [
+      next3Years.indexOf(aYear),
+      next3Years.indexOf(bYear),
+    ]
+    aYearSort = aYearSort !== -1 ? aYearSort : 1000
+    bYearSort = bYearSort !== -1 ? bYearSort : 1000
+    if (aYearSort === bYearSort) {
+      let [aMonthSort, bMonthSort] = [
+        monthAbbrevs.indexOf(aMonth),
+        monthAbbrevs.indexOf(bMonth),
+      ]
+      aMonthSort = aMonthSort !== -1 ? aMonthSort : 1000
+      bMonthSort = bMonthSort !== -1 ? bMonthSort : 1000
+      return aMonthSort - bMonthSort
+    } else {
+      return aYearSort - bYearSort
+    }
+  })
+}
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -55,6 +102,14 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
   let formik = useFormik({
     enableReinitialize: true,
     initialValues: createRetreatDetailsForm(retreat),
+    validate: (values) => {
+      try {
+        yup.string().required().email().validateSync(values.contact_email)
+      } catch (err) {
+        return {contact_email: "Please enter a valid email."}
+      }
+      return {}
+    },
     onSubmit: (values) => {
       dispatch(putRetreatDetails(retreat.id, createRetreatDetailsForm(values)))
     },
@@ -78,7 +133,10 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
         <TextField
           {...textFieldProps}
           id="contact_email"
-          value={formik.values.contact_email ?? ""}
+          value={formik.values.contact_email}
+          error={!!formik.errors.contact_email}
+          helperText={formik.errors.contact_email}
+          required
           label="Contact Email"
         />
         <TextField
@@ -108,10 +166,42 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
         </TextField>
         {formik.values.preferences_is_dates_flexible ? (
           <>
-            <AppTypography variant="body1">
-              <strong>[Under construction]</strong> Flexible dates module still
-              being implemented
-            </AppTypography>
+            <TextField
+              {...textFieldProps}
+              id="preferences_dates_flexible_num_nights"
+              type="number"
+              value={formik.values.preferences_dates_flexible_num_nights ?? ""}
+              label="# nights"
+            />
+            <Autocomplete
+              multiple
+              id="preferences_dates_flexible_months"
+              options={next3Years
+                .map((year) => {
+                  return monthAbbrevs.map((month) => {
+                    return `${month}-${year}`
+                  })
+                })
+                .reduce((last: string[], curr: string[]) => {
+                  return [...last, ...curr]
+                }, [])}
+              getOptionLabel={(option) => option.split("-").join(" ")}
+              value={formik.values.preferences_dates_flexible_months}
+              onChange={(e, newVals) => {
+                formik.setFieldValue(
+                  "preferences_dates_flexible_months",
+                  sortFlexibleMonths(newVals)
+                )
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  {...textFieldProps}
+                  label="Flexible months"
+                  placeholder="Select months"
+                />
+              )}
+            />
           </>
         ) : (
           <>

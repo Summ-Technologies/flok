@@ -14,11 +14,11 @@ export type AdminRetreatModel = {
   guid: string
   company_name: string
   contact_name: string | null
-  contact_email: string | null
+  contact_email: string
   preferences_num_attendees_lower: number | null
   preferences_is_dates_flexible: boolean | null
   preferences_dates_flexible_num_nights: number | null
-  preferences_dates_flexible_months: string[] | null
+  preferences_dates_flexible_months: string[]
   preferences_dates_exact_start: string | null
   preferences_dates_exact_end?: string | null
   state: string | null
