@@ -15,10 +15,9 @@ import {HotelModel} from "../models/lodging"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotels} from "../store/actions/lodging"
-import {convertGuid} from "../utils"
 import {useRetreat} from "../utils/lodgingUtils"
 
-type HotelProposalWaitingPageProps = RouteComponentProps<{retreatGuid: string}>
+type HotelProposalWaitingPageProps = RouteComponentProps<{retreatIdx: string}>
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -47,8 +46,8 @@ let useStyles = makeStyles((theme) => ({
 
 function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
   let classes = useStyles(props)
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx)
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
   let dispatch = useDispatch()
@@ -67,7 +66,7 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
   function onViewHotel(hotel: HotelModel) {
     const newTab = window.open(
       AppRoutes.getPath("HotelPage", {
-        retreatGuid: retreatGuid,
+        retreatidx: retreatIdx.toString(),
         hotelGuid: hotel.guid,
       }),
       "_blank"
@@ -76,7 +75,7 @@ function HotelProposalWaitingPage(props: HotelProposalWaitingPageProps) {
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
         <PageOverlay
           size="small"

@@ -35,7 +35,6 @@ import {
   postSelectedRetreatDestination,
   putRetreatFilters,
 } from "../store/actions/retreat"
-import {convertGuid} from "../utils"
 import {
   DestinationUtils,
   useDestinations,
@@ -77,16 +76,16 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type DestinationsListPageProps = RouteComponentProps<{retreatGuid: string}>
+type DestinationsListPageProps = RouteComponentProps<{retreatIdx: string}>
 function DestinationsListPage(props: DestinationsListPageProps) {
   let dispatch = useDispatch()
   let classes = useStyles(props)
 
   // Query/path params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
 
   // Filters
-  let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
+  let [filterQuestions, filterResponses] = useRetreatFilters(retreatIdx)
   let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
   useEffect(() => {
     setSelectedResponsesIds(
@@ -96,13 +95,13 @@ function DestinationsListPage(props: DestinationsListPageProps) {
     )
   }, [filterResponses, setSelectedResponsesIds])
 
-  let retreat = useRetreat(retreatGuid)
+  let retreat = useRetreat(retreatIdx)
 
   let [destinations] = useDestinations()
 
   // Selected destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
-    let retreat = state.retreat.retreats[retreatGuid]
+    let retreat = state.retreat.retreats[retreatIdx]
     if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_destinations_ids
     }
@@ -129,9 +128,9 @@ function DestinationsListPage(props: DestinationsListPageProps) {
   // action handlers
   function toggleSelect(destination: DestinationModel) {
     if (isDestinationSelected(destination)) {
-      dispatch(deleteSelectedRetreatDestination(retreatGuid, destination.id))
+      dispatch(deleteSelectedRetreatDestination(retreatIdx, destination.id))
     } else {
-      dispatch(postSelectedRetreatDestination(retreatGuid, destination.id))
+      dispatch(postSelectedRetreatDestination(retreatIdx, destination.id))
     }
   }
   function onClickNextSteps() {
@@ -140,12 +139,12 @@ function DestinationsListPage(props: DestinationsListPageProps) {
       retreat !== ResourceNotFound &&
       retreat.state === "DESTINATION_SELECT"
     ) {
-      dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+      dispatch(postAdvanceRetreatState(retreatIdx, retreat.state))
     }
     dispatch(
       push(
         AppRoutes.getPath("HotelsListPage", {
-          retreatGuid: props.match.params.retreatGuid,
+          retreatGuid: props.match.params.retreatIdx,
         })
       )
     )
@@ -154,14 +153,14 @@ function DestinationsListPage(props: DestinationsListPageProps) {
   function onUpdateFilters(values: string[]) {
     dispatch(
       putRetreatFilters(
-        retreatGuid,
+        retreatIdx,
         values.map((val) => parseInt(val))
       )
     )
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       {!destinationsList ? (
         <>Loading...</>
       ) : (

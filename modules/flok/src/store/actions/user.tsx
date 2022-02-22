@@ -20,7 +20,7 @@ export function postUserSignin(email: string, password: string) {
       createApiAction({
         endpoint,
         method: "POST",
-        body: JSON.stringify({email, password, loginProvider: "FLOK"}),
+        body: JSON.stringify({email, password, login_provider: "FLOK"}),
         types: [
           POST_USER_SIGNIN_REQUEST,
           POST_USER_SIGNIN_SUCCESS,

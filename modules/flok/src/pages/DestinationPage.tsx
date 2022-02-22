@@ -21,14 +21,14 @@ import NotFound404Page from "./misc/NotFound404Page"
 
 type DestinationPageProps = RouteComponentProps<{
   destinationGuid: string
-  retreatGuid: string
+  retreatIdx: string
 }>
 function DestinationPage(props: DestinationPageProps) {
   // Setup
   let dispatch = useDispatch()
 
   // Path params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
   let destinationGuid = convertGuid(props.match.params.destinationGuid)
 
   // API data
@@ -36,7 +36,7 @@ function DestinationPage(props: DestinationPageProps) {
 
   // Selected destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
-    let retreat = state.retreat.retreats[retreatGuid]
+    let retreat = state.retreat.retreats[retreatIdx]
     if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_destinations_ids
     }
@@ -51,15 +51,15 @@ function DestinationPage(props: DestinationPageProps) {
   function onClickSelectCta() {
     if (destination && destination !== ResourceNotFound) {
       if (isSelected(destination.id)) {
-        dispatch(deleteSelectedRetreatDestination(retreatGuid, destination.id))
+        dispatch(deleteSelectedRetreatDestination(retreatIdx, destination.id))
       } else {
-        dispatch(postSelectedRetreatDestination(retreatGuid, destination.id))
+        dispatch(postSelectedRetreatDestination(retreatIdx, destination.id))
       }
     }
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       {destination === ResourceNotFound ? (
         <NotFound404Page />
       ) : isLoading ? (

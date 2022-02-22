@@ -61,7 +61,7 @@ let navItems = {
 
 type SidenavItemType = keyof typeof navItems
 type PageSidenavProps = {
-  retreatGuid: string
+  retreatIdx: number
   activeItem?: SidenavItemType
   companyName?: string
 }
@@ -129,7 +129,7 @@ export default function PageSidenav(
                   dispatch(
                     push(
                       AppRoutes.getPath(itemTup[2], {
-                        retreatGuid: props.retreatGuid!,
+                        retreatIdx: props.retreatIdx.toString(),
                       })
                     )
                   )
