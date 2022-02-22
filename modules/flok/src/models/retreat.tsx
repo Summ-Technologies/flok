@@ -6,9 +6,15 @@ export type RetreatSelectedHotelProposalState =
   | "NOT_AVAILABLE"
   | "REVIEW"
 
+export type HotelLodgingProposalLink = {
+  link_url: string
+  link_text: string
+}
+
 export type HotelLodgingProposal = {
   id: number
   dates: string
+  num_guests?: string
   compare_room_rate: number
   compare_room_total: number
   on_hold: boolean
@@ -29,6 +35,7 @@ export type HotelLodgingProposal = {
   avg_lunch_price: string
   avg_dinner_price: string
   cost_saving_notes: string
+  additional_links: HotelLodgingProposalLink[]
 }
 
 export type RetreatSelectedHotelProposal = {
@@ -71,6 +78,7 @@ export type RetreatToTask = {
   order: number
   state: RetreatToTaskState
   due_date?: Date
+  link_override?: string
 }
 export type RetreatModel = {
   id: number
@@ -145,4 +153,8 @@ export type RetreatAttendeeModel = {
   email_address: string
   name: string
   travel?: RetreatTravelModel
+  city: string
+  dietary_prefs: string
+  notes: string
+  info_status: string
 }

@@ -336,6 +336,63 @@ export function getRetreatAttendees(retreatIdx: number) {
   })
 }
 
+export const POST_RETREAT_ATTENDEES_REQUEST = "POST_RETREAT_ATTENDEES_REQUEST"
+export const POST_RETREAT_ATTENDEES_SUCCESS = "POST_RETREAT_ATTENDEES_SUCCESS"
+export const POST_RETREAT_ATTENDEES_FAILURE = "POST_RETREAT_ATTENDEES_FAILURE"
+export function postRetreatAttendees(
+  guid: string,
+  name: string,
+  email_address: string
+) {
+  let endpoint = `/v1.0/retreats/${guid}/attendees`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify({name, email_address}),
+    types: [
+      {
+        type: POST_RETREAT_ATTENDEES_REQUEST,
+      },
+      {
+        type: POST_RETREAT_ATTENDEES_SUCCESS,
+        meta: {guid},
+      },
+      {
+        type: POST_RETREAT_ATTENDEES_FAILURE,
+        meta: {guid},
+      },
+    ],
+  })
+}
+
+export const DELETE_RETREAT_ATTENDEES_REQUEST =
+  "DELETE_RETREAT_ATTENDEES_REQUEST"
+export const DELETE_RETREAT_ATTENDEES_SUCCESS =
+  "DELETE_RETREAT_ATTENDEES_SUCCESS"
+export const DELETE_RETREAT_ATTENDEES_FAILURE =
+  "DELETE_RETREAT_ATTENDEES_FAILURE"
+export function deleteRetreatAttendees(guid: string, id: number) {
+  let endpoint = `/v1.0/retreats/${guid}/attendees`
+  return createApiAction({
+    method: "DELETE",
+    endpoint,
+    body: JSON.stringify({id}),
+    types: [
+      {
+        type: DELETE_RETREAT_ATTENDEES_REQUEST,
+      },
+      {
+        type: DELETE_RETREAT_ATTENDEES_SUCCESS,
+        meta: {guid},
+      },
+      {
+        type: DELETE_RETREAT_ATTENDEES_FAILURE,
+        meta: {guid},
+      },
+    ],
+  })
+}
+
 export const PUT_RETREAT_TASK_REQUEST = "POST_RETREAT_TASK_REQUEST"
 export const PUT_RETREAT_TASK_SUCCESS = "POST_RETREAT_TASK_SUCCESS"
 export const PUT_RETREAT_TASK_FAILURE = "POST_RETREAT_TASK_FAILURE"

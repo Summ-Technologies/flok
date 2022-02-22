@@ -192,7 +192,7 @@ export function RetreatPreferencesForm(props: RetreatPreferencesFormProps) {
       attendeesLower: yup
         .number()
         .required("Number of attendees is required.")
-        .min(5, "At least 5 attendees required."),
+        .min(12, "At least 12 attendees required."),
       isFlexibleDates: yup.boolean().required(),
       exactStartDate: yup.date().when("isFlexibleDates", {
         is: false,

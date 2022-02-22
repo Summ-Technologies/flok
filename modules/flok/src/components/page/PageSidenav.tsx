@@ -15,6 +15,7 @@ import {
   HomeRounded,
   MapRounded,
   Menu,
+  PeopleAlt,
   SvgIconComponent,
 } from "@material-ui/icons"
 import {push} from "connected-react-router"
@@ -55,6 +56,7 @@ let navItems = {
   overview: navItem("Overview", HomeRounded, "RetreatRoutingPage"),
   // details: navItem("Details", ListRounded, "RetreatRoutingPage"),
   lodging: navItem("Lodging", ApartmentRounded, "ProposalsListPage"),
+  attendees: navItem("Attendees", PeopleAlt, "RetreatAttendeesPage"),
   flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
   itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
 }

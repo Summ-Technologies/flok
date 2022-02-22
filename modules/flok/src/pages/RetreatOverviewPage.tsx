@@ -1,4 +1,4 @@
-import {makeStyles} from "@material-ui/core"
+import {Collapse, makeStyles} from "@material-ui/core"
 import {
   Apartment,
   CalendarToday,
@@ -44,6 +44,9 @@ let useStyles = makeStyles((theme) => ({
     },
   },
   todoIcon: {},
+  iconExpanded: {
+    transform: "rotateZ(180deg)",
+  },
 }))
 
 type RetreatOverviewProps = RouteComponentProps<{retreatIdx: string}>
@@ -108,6 +111,8 @@ function RetreatOverview(props: RetreatOverviewProps) {
     )
   }
 
+  let [tasksExpanded, setTasksExpanded] = useState(false)
+
   return (
     <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
@@ -146,34 +151,61 @@ function RetreatOverview(props: RetreatOverviewProps) {
           </div>
           <div className={classes.section}>
             <AppTypography variant="h4" paragraph>
+              To Do List{" "}
               <Error
                 color="inherit"
                 className={`${classes.headerIcon} todo`}
                 fontSize="small"
               />
-              To Do List
             </AppTypography>
             {retreat && (
               <AppTodoList
-                retreatToTasks={retreat.tasks_todo || []}
+                retreatToTasks={
+                  retreat.tasks_todo.sort((a, b) => a.order - b.order) || []
+                }
                 handleCheckboxClick={handleTaskClick}
+                orderBadge={true}
+                showMore
               />
             )}
           </div>
           <div className={classes.section}>
             <AppTypography variant="h4" paragraph>
+              Completed{" "}
               <CheckCircle
                 color="inherit"
                 className={`${classes.headerIcon} completed`}
                 fontSize="small"
               />
-              Completed
+              <AppTypography
+                style={{
+                  textDecoration: "underline",
+                  color: "#505050",
+                  fontSize: ".75em",
+                  display: "inline",
+                  cursor: "pointer",
+                }}
+                onClick={() => setTasksExpanded(!tasksExpanded)}>
+                {tasksExpanded ? "hide" : "show completed"}
+              </AppTypography>
+              {/* <IconButton
+                style={{padding: 0}}
+                onClick={() => setTasksExpanded(!tasksExpanded)}
+                className={tasksExpanded ? classes.iconExpanded : ""}>
+                <ExpandMore />
+              </IconButton> */}
             </AppTypography>
             {retreat && (
-              <AppTodoList
-                retreatToTasks={retreat.tasks_completed || []}
-                handleCheckboxClick={handleTaskClick}
-              />
+              <Collapse in={tasksExpanded}>
+                <AppTodoList
+                  retreatToTasks={
+                    retreat.tasks_completed.sort((a, b) => b.order - a.order) ||
+                    []
+                  }
+                  handleCheckboxClick={handleTaskClick}
+                  orderBadge={false}
+                />
+              </Collapse>
             )}
           </div>
         </PageBody>

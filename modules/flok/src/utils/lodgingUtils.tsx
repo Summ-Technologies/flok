@@ -266,11 +266,12 @@ export class DestinationUtils {
   }
   static getLocationName(
     destination: DestinationModel,
-    includeEmoji: boolean = false
+    includeEmoji: boolean = false,
+    hotel: HotelModel | undefined = undefined
   ) {
-    let locationStr = `${destination.location}, ${
-      destination.state_abbreviation || destination.country
-    }`
+    let locationStr = `${
+      (hotel && hotel.sub_location) || destination.location
+    }, ${destination.state_abbreviation || destination.country}`
     if (includeEmoji) {
       let emoji = DestinationUtils.getCountryEmoji(destination)
       if (emoji) {
@@ -304,6 +305,7 @@ export function useRetreatFilters(retreatIdx: number) {
   }, [questions, responses, retreatIdx, dispatch])
   return [questions, responses] as const
 }
+
 
 export function useRetreatFlightInfo(retreatIdx: number) {
   let dispatch = useDispatch()

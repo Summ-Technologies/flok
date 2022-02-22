@@ -111,7 +111,9 @@ function HotelPage(props: HotelPageProps) {
                           (hotel !== undefined && hotel !== ResourceNotFound
                             ? hotel.destination_id
                             : -1000)
-                      )[0]
+                      )[0],
+                      false,
+                      hotel
                     )
                   : ""
               }

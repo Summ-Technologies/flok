@@ -395,7 +395,8 @@ function HotelsListPage(props: HotelsListPageProps) {
                             destinations.filter(
                               (dest) => dest.id === hotel.destination_id
                             )[0],
-                            true
+                            true,
+                            hotel
                           )
                         : ""
                     }

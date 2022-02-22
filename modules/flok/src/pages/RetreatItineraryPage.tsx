@@ -6,7 +6,9 @@ import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import UnderConstructionView from "../components/page/UnderConstructionView"
 import {RetreatModel} from "../models/retreat"
-import {useRetreat, useRetreatFlightInfo} from "../utils/lodgingUtils"
+import {convertGuid} from "../utils"
+import {useRetreat, useRetreatAttendees} from "../utils/lodgingUtils"
+
 
 const UNDER_CONSTRUCTION = true
 
@@ -39,7 +41,8 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
 
-  let attendeeTravelInfo = useRetreatFlightInfo(retreatIdx)
+  let attendeeTravelInfo = useRetreatAttendees(retreatGuid)
+
 
   return (
     <RetreatRequired retreatIdx={retreatIdx}>

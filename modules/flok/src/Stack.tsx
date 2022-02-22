@@ -13,6 +13,7 @@ import NotFound404Page from "./pages/misc/NotFound404Page"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import ProposalPage from "./pages/ProposalPage"
 import ProposalsListPage from "./pages/ProposalsListPage"
+import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatFiltersPage from "./pages/RetreatFiltersPage"
 import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatItineraryPage from "./pages/RetreatItineraryPage"
@@ -55,6 +56,11 @@ export class AppRoutes {
       name: "RetreatFlightsPage",
       component: <RetreatFlightsPage />,
       path: "/r/:retreatIdx/flights",
+    },
+    {
+      name: "RetreatAttendeesPage",
+      component: <RetreatAttendeesPage />,
+      path: "/r/:retreatGuid/attendees",
     },
     {
       name: "RetreatItineraryPage",
