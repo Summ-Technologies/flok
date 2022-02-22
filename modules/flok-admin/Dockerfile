@@ -1,8 +1,8 @@
-FROM tiangolo/node-frontend:10 as node-builder
+FROM node:14-slim as node-builder
 WORKDIR /app/
 COPY ./ ./
-RUN npm install
-RUN npm run build
+RUN yarn
+RUN yarn run build
 
 FROM nginx
 WORKDIR /usr/share/nginx/html
