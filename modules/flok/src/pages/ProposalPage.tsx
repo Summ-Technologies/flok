@@ -274,13 +274,13 @@ function ProposalPage(props: ProposalPageProps) {
                         </ToggleButtonGroup>
                       )}
                     </div>
-                    {proposal.dates_notes && (
+                    {proposal.dates_note && (
                       <div className={classes.detail}>
                         <AppTypography variant="body2" fontWeight="bold">
-                          Date Notes
+                          Dates Note
                         </AppTypography>
                         <AppTypography variant="body1">
-                          {proposal.dates_notes}
+                          {proposal.dates_note}
                         </AppTypography>
                       </div>
                     )}
