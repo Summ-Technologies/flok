@@ -1,13 +1,13 @@
-import { Box, makeStyles } from "@material-ui/core"
-import querysting from "querystring"
-import React, { useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { RouteComponentProps, withRouter } from "react-router-dom"
+import {Box, makeStyles} from "@material-ui/core"
+import querystring from "querystring"
+import React, {useEffect} from "react"
+import {useDispatch, useSelector} from "react-redux"
+import {RouteComponentProps, withRouter} from "react-router-dom"
 import AuthForm from "../../components/forms/AuthForm"
 import PageContainer from "../../components/page/PageContainer"
-import { getUserResetToken, postUserReset } from "../../store/actions/user"
+import {getUserResetToken, postUserReset} from "../../store/actions/user"
 import UserGetters from "../../store/getters/user"
-import { apiToModel } from "../../utils/apiUtils"
+import {apiToModel} from "../../utils/apiUtils"
 
 let useStyles = makeStyles((theme) => ({
   modal: {
@@ -45,7 +45,7 @@ export type AuthResetPageProps = RouteComponentProps<{}>
 function AuthResetPage(props: AuthResetPageProps) {
   let dispatch = useDispatch()
   let {loginToken}: {loginToken: string} = apiToModel(
-    querysting.parse(props.location.search)
+    querystring.parse(props.location.search)
   )
   let loginTokenUserEmail = useSelector(
     UserGetters.getUserForLoginToken(loginToken)
@@ -57,20 +57,22 @@ function AuthResetPage(props: AuthResetPageProps) {
     }
   }, [dispatch, loginToken, loginTokenUserEmail])
 
-  function submitForm() {
-    dispatch(postUserReset(loginToken, ""))
+  function submitForm(vals: {password: string}) {
+    dispatch(postUserReset(loginToken, vals.password))
   }
   let classes = useStyles(props)
   return (
     <PageContainer>
       <Box className={classes.body}>
         <Box className={classes.modal}>
-          <AuthForm
-            submitForm={submitForm}
-            submitText="Submit"
-            prefilledEmail={loginTokenUserEmail ? loginTokenUserEmail : " "}
-            title="Set Your Password"
-          />
+          {loginTokenUserEmail !== undefined && (
+            <AuthForm
+              submitForm={submitForm}
+              submitText="Submit"
+              prefilledEmail={loginTokenUserEmail}
+              title="Set Your Password"
+            />
+          )}
         </Box>
       </Box>
     </PageContainer>
