@@ -61,22 +61,22 @@ function dateFormat(date: Date | undefined) {
   })
 }
 
-type RetreatFlightsProps = RouteComponentProps<{retreatGuid: string}>
+type RetreatFlightsProps = RouteComponentProps<{retreatIdx: string}>
 function RetreatFlightsPage(props: RetreatFlightsProps) {
   let dispatch = useDispatch()
   let classes = useStyles()
 
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid) as RetreatModel | undefined
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
 
   let attendeeTravelInfo = useRetreatAttendees(retreatGuid)
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
         <PageSidenav
           activeItem="flights"
-          retreatGuid={retreatGuid}
+          retreatIdx={retreatIdx}
           companyName={retreat?.company_name}
         />
         <PageBody>

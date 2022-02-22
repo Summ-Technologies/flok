@@ -9,6 +9,7 @@ import {RetreatModel} from "../models/retreat"
 import {convertGuid} from "../utils"
 import {useRetreat, useRetreatAttendees} from "../utils/lodgingUtils"
 
+
 const UNDER_CONSTRUCTION = true
 
 let useStyles = makeStyles((theme) => ({
@@ -33,21 +34,22 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type RetreatItineraryPageProps = RouteComponentProps<{retreatGuid: string}>
+type RetreatItineraryPageProps = RouteComponentProps<{retreatIdx: string}>
 function RetreatItineraryPage(props: RetreatItineraryPageProps) {
   let classes = useStyles()
 
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid) as RetreatModel | undefined
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
 
   let attendeeTravelInfo = useRetreatAttendees(retreatGuid)
 
+
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
         <PageSidenav
           activeItem="itinerary"
-          retreatGuid={retreatGuid}
+          retreatIdx={retreatIdx}
           companyName={retreat?.company_name}
         />
         <PageBody>

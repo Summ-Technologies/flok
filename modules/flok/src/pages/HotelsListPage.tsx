@@ -44,7 +44,6 @@ import {
   postSelectedRetreatHotel,
   putRetreatFilters,
 } from "../store/actions/retreat"
-import {convertGuid} from "../utils"
 import {
   DestinationUtils,
   useDestinations,
@@ -87,29 +86,29 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type HotelsListPageProps = RouteComponentProps<{retreatGuid: string}>
+type HotelsListPageProps = RouteComponentProps<{retreatIdx: string}>
 function HotelsListPage(props: HotelsListPageProps) {
   // Setup
   let dispatch = useDispatch()
   let classes = useStyles(props)
 
   // Path and query params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
 
-  let retreat = useRetreat(retreatGuid)
+  let retreat = useRetreat(retreatIdx)
   let destinations = Object.values(useDestinations()[0])
   let allLoadedHotels = useSelector((state: RootState) => state.lodging.hotels)
 
   // selected hotels/destinations
   let selectedDestinationIds = useSelector((state: RootState) => {
-    let retreat = state.retreat.retreats[retreatGuid]
+    let retreat = state.retreat.retreats[retreatIdx]
     if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_destinations_ids
     }
     return []
   })
   let selectedHotelIds = useSelector((state: RootState) => {
-    let retreat = state.retreat.retreats[retreatGuid]
+    let retreat = state.retreat.retreats[retreatIdx]
     if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_hotels_ids
     }
@@ -122,7 +121,7 @@ function HotelsListPage(props: HotelsListPageProps) {
   // Filters
   let [locationFilterOpen, setLocationFilterOpen] = useState(false)
 
-  let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
+  let [filterQuestions, filterResponses] = useRetreatFilters(retreatIdx)
   let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
   useEffect(() => {
     setSelectedResponsesIds(
@@ -160,7 +159,7 @@ function HotelsListPage(props: HotelsListPageProps) {
   function explore(hotel: HotelModel) {
     const newTab = window.open(
       AppRoutes.getPath("HotelPage", {
-        retreatGuid: props.match.params.retreatGuid,
+        retreatIdx: props.match.params.retreatIdx,
         hotelGuid: hotel.guid,
       }),
       "_blank"
@@ -169,10 +168,10 @@ function HotelsListPage(props: HotelsListPageProps) {
   }
   function toggleSelect(hotel: HotelModel) {
     if (isHotelSelected(hotel)) {
-      dispatch(deleteSelectedRetreatHotel(retreatGuid, hotel.id))
+      dispatch(deleteSelectedRetreatHotel(retreatIdx, hotel.id))
     } else {
       if (selectedHotelIds.length < Constants.maxHotelsSelected) {
-        dispatch(postSelectedRetreatHotel(retreatGuid, hotel.id))
+        dispatch(postSelectedRetreatHotel(retreatIdx, hotel.id))
       } else {
         dispatch(
           enqueueSnackbar({
@@ -190,9 +189,9 @@ function HotelsListPage(props: HotelsListPageProps) {
 
   function toggleDestinationSelect(destinationId: number) {
     if (selectedDestinationIds.includes(destinationId)) {
-      dispatch(deleteSelectedRetreatDestination(retreatGuid, destinationId))
+      dispatch(deleteSelectedRetreatDestination(retreatIdx, destinationId))
     } else {
-      dispatch(postSelectedRetreatDestination(retreatGuid, destinationId))
+      dispatch(postSelectedRetreatDestination(retreatIdx, destinationId))
     }
   }
 
@@ -206,12 +205,12 @@ function HotelsListPage(props: HotelsListPageProps) {
     if (retreat && retreat !== ResourceNotFound) {
       if (selectedHotelIds.length >= Constants.minHotelsSelected) {
         if (retreat.state === "HOTEL_SELECT") {
-          dispatch(postAdvanceRetreatState(retreatGuid, retreat.state))
+          dispatch(postAdvanceRetreatState(retreatIdx, retreat.state))
         }
         dispatch(
           push(
             AppRoutes.getPath("ProposalsListPage", {
-              retreatGuid: props.match.params.retreatGuid,
+              retreatIdx: props.match.params.retreatIdx,
             })
           )
         )
@@ -232,14 +231,14 @@ function HotelsListPage(props: HotelsListPageProps) {
   function onUpdateFilters(values: string[]) {
     dispatch(
       putRetreatFilters(
-        retreatGuid,
+        retreatIdx,
         values.map((val) => parseInt(val))
       )
     )
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
         <PageOverlay
           footerBody={
@@ -263,7 +262,9 @@ function HotelsListPage(props: HotelsListPageProps) {
                   onClick={() => {
                     dispatch(
                       push(
-                        AppRoutes.getPath("DestinationsListPage", {retreatGuid})
+                        AppRoutes.getPath("DestinationsListPage", {
+                          retreatIdx: retreatIdx.toString(),
+                        })
                       )
                     )
                   }}>

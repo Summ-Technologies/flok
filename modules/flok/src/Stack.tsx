@@ -2,6 +2,8 @@ import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
 import config, {DASHBOARD_VERSION_KEY} from "./config"
+import AuthResetPage from "./pages/auth/AuthResetPage"
+import SigninPage from "./pages/auth/SigninPage"
 import DestinationPage from "./pages/DestinationPage"
 import DestinationsListPage from "./pages/DestinationsListPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
@@ -43,17 +45,17 @@ export class AppRoutes {
     {
       name: "RetreatPreferencesFormPage",
       component: <RetreatPreferencesFormPage />,
-      path: "/r/:retreatGuid/preferences",
+      path: "/r/:retreatIdx/preferences",
     },
     {
       name: "RetreatFiltersPage",
       component: <RetreatFiltersPage />,
-      path: "/r/:retreatGuid/filters",
+      path: "/r/:retreatIdx/filters",
     },
     {
       name: "RetreatFlightsPage",
       component: <RetreatFlightsPage />,
-      path: "/r/:retreatGuid/flights",
+      path: "/r/:retreatIdx/flights",
     },
     {
       name: "RetreatAttendeesPage",
@@ -63,7 +65,7 @@ export class AppRoutes {
     {
       name: "RetreatItineraryPage",
       component: <RetreatItineraryPage />,
-      path: "/r/:retreatGuid/itinerary",
+      path: "/r/:retreatIdx/itinerary",
     },
     {
       name: "RetreatRoutingPage",
@@ -73,37 +75,37 @@ export class AppRoutes {
         ) : (
           <RetreatRoutingPage />
         ),
-      path: "/r/:retreatGuid",
+      path: ["/r/:retreatIdx"],
     },
     {
       name: "DestinationsListPage",
       component: <DestinationsListPage />,
-      path: "/r/:retreatGuid/destinations",
+      path: "/r/:retreatIdx/destinations",
     },
     {
       name: "DestinationPage",
       component: <DestinationPage />,
-      path: "/r/:retreatGuid/destinations/:destinationGuid",
+      path: "/r/:retreatIdx/destinations/:destinationGuid",
     },
     {
       name: "HotelsListPage",
       component: <HotelsListPage />,
-      path: "/r/:retreatGuid/hotels",
+      path: "/r/:retreatIdx/hotels",
     },
     {
       name: "HotelPage",
       component: <HotelPage />,
-      path: "/r/:retreatGuid/hotels/:hotelGuid",
+      path: "/r/:retreatIdx/hotels/:hotelGuid",
     },
     {
       name: "ProposalsListPage",
       component: <ProposalsListPage />,
-      path: "/r/:retreatGuid/proposals",
+      path: "/r/:retreatIdx/proposals",
     },
     {
       name: "ProposalPage",
       component: <ProposalPage />,
-      path: "/r/:retreatGuid/proposals/:hotelGuid",
+      path: "/r/:retreatIdx/proposals/:hotelGuid",
     },
     {
       name: "RFPLiteResponsePage",
@@ -114,6 +116,16 @@ export class AppRoutes {
       name: "HomeRoutingPage",
       component: <HomeRoutingPage />,
       path: "/",
+    },
+    {
+      name: "SigninPage",
+      component: <SigninPage />,
+      path: "/sign-in",
+    },
+    {
+      name: "ResetPage",
+      component: <AuthResetPage />,
+      path: "/auth-reset",
     },
     {
       name: "NotFoundPage",

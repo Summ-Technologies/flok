@@ -21,7 +21,6 @@ import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import {RetreatModel, RetreatToTask} from "../models/retreat"
 import {putRetreatTask} from "../store/actions/retreat"
-import {convertGuid} from "../utils"
 import {useRetreat} from "../utils/lodgingUtils"
 
 let useStyles = makeStyles((theme) => ({
@@ -50,12 +49,12 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type RetreatOverviewProps = RouteComponentProps<{retreatGuid: string}>
+type RetreatOverviewProps = RouteComponentProps<{retreatIdx: string}>
 function RetreatOverview(props: RetreatOverviewProps) {
   let classes = useStyles()
   // Path and query params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid) as RetreatModel | undefined
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
 
   let [datesOverview, setDatesOverview] = useState<string | undefined>(
     undefined
@@ -106,7 +105,7 @@ function RetreatOverview(props: RetreatOverviewProps) {
     dispatch(
       putRetreatTask(
         task.task.id,
-        retreatGuid,
+        retreatIdx,
         task.state === "COMPLETED" ? "TODO" : "COMPLETED"
       )
     )
@@ -115,11 +114,11 @@ function RetreatOverview(props: RetreatOverviewProps) {
   let [tasksExpanded, setTasksExpanded] = useState(false)
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
         <PageSidenav
           activeItem="overview"
-          retreatGuid={retreatGuid}
+          retreatIdx={retreatIdx}
           companyName={retreat?.company_name}
         />
         <PageBody>

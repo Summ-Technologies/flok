@@ -10,15 +10,20 @@ type HomeRoutingPageProps = {}
  * or your most recent active retreat if present
  */
 export default function HomeRoutingPage(props: HomeRoutingPageProps) {
-  let retreatGuid = localStorage.getItem(Constants.localStorageRetreatGuidKey)
-  let retreat = useRetreat(retreatGuid ?? "")
+  let retreatIdx = parseInt(
+    localStorage.getItem(Constants.localStorageRetreatIdxKey) ?? "-1"
+  )
+  let retreat = useRetreat(retreatIdx)
 
-  return retreatGuid === null ? (
+  return retreatIdx === -1 ? (
     <RedirectPage pageName="NewRetreatFormPage" />
   ) : retreat === ResourceNotFound ? (
     <RedirectPage pageName="NewRetreatFormPage" />
   ) : retreat !== undefined ? (
-    <RedirectPage pageName="RetreatRoutingPage" pathParams={{retreatGuid}} />
+    <RedirectPage
+      pageName="RetreatRoutingPage"
+      pathParams={{retreatIdx: retreatIdx.toString()}}
+    />
   ) : (
     <></>
   )

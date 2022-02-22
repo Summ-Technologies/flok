@@ -125,5 +125,5 @@ export const Constants = {
   /**
    * The key used to save a retreat GUID in local storage
    */
-  localStorageRetreatGuidKey: "activeRetreatGuid",
+  localStorageRetreatIdxKey: "activeRetreatIdx",
 }
