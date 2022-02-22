@@ -2,6 +2,7 @@
 *.egg*
 venv
 .env*
+!.env.prod
 .vscode
 __pycache__
 .project

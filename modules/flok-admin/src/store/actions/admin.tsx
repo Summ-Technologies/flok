@@ -226,7 +226,11 @@ export function createProposalForm(
     avg_lunch_price: obj.avg_lunch_price || null,
     avg_dinner_price: obj.avg_dinner_price || null,
     cost_saving_notes: obj.cost_saving_notes || null,
-    additional_links: obj.additional_links || [],
+    additional_links: (obj.additional_links || []).map((link) => ({
+      link_text: link.link_text,
+      link_url: link.link_url,
+      affinity: link.affinity || null,
+    })),
   }
 }
 

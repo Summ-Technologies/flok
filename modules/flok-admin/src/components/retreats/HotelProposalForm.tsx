@@ -324,7 +324,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
                 onClick={() => {
                   formik.setFieldValue("additional_links", [
                     ...formik.values.additional_links,
-                    {link_url: "", link_text: ""},
+                    {link_url: "", link_text: "", affinity: ""},
                   ])
                 }}
               />
