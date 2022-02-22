@@ -11,7 +11,6 @@ import PageSidenav from "../components/page/PageSidenav"
 import UnderConstructionView from "../components/page/UnderConstructionView"
 import {RetreatModel} from "../models/retreat"
 import {AppRoutes} from "../Stack"
-import {convertGuid} from "../utils"
 import {useRetreat, useRetreatAttendees} from "../utils/lodgingUtils"
 
 const UNDER_CONSTRUCTION = false
@@ -69,7 +68,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
 
-  let attendeeTravelInfo = useRetreatAttendees(retreatGuid)
+  let attendeeTravelInfo = useRetreatAttendees(retreatIdx)
 
   return (
     <RetreatRequired retreatIdx={retreatIdx}>
@@ -136,7 +135,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                     dispatch(
                       push(
                         AppRoutes.getPath("RetreatAttendeesPage", {
-                          retreatGuid,
+                          retreatIdx: retreatIdx.toString(),
                         })
                       )
                     )

@@ -245,8 +245,9 @@ export default function retreatReducer(
           }
           return a
         }) as RetreatAttendeeModel[]
-        newState.retreatAttendees = {
-          ...newState.retreatAttendees,
+        state.retreatAttendees = {
+          ...state.retreatAttendees,
+          [meta.retreatIdx]: attendees,
         }
       }
       return state

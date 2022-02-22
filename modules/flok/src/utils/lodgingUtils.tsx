@@ -306,8 +306,7 @@ export function useRetreatFilters(retreatIdx: number) {
   return [questions, responses] as const
 }
 
-
-export function useRetreatFlightInfo(retreatIdx: number) {
+export function useRetreatAttendees(retreatIdx: number) {
   let dispatch = useDispatch()
   let attendees = useSelector(
     (state: RootState) => state.retreat.retreatAttendees[retreatIdx]

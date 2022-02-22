@@ -27,7 +27,6 @@ import {
   postRetreatAttendees,
 } from "../store/actions/retreat"
 import {theme} from "../theme"
-import {convertGuid} from "../utils"
 import {useRetreat, useRetreatAttendees} from "../utils/lodgingUtils"
 
 const UNDER_CONSTRUCTION = false
@@ -114,15 +113,15 @@ function dateFormat(date: Date | undefined) {
   })
 }
 
-type RetreatAttendeesProps = RouteComponentProps<{retreatGuid: string}>
+type RetreatAttendeesProps = RouteComponentProps<{retreatIdx: string}>
 function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   let classes = useStyles()
 
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid) as RetreatModel | undefined
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  console.log(retreatIdx)
+  let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
 
-  let attendeeTravelInfo = useRetreatAttendees(retreatGuid)
-  console.log(attendeeTravelInfo)
+  let attendeeTravelInfo = useRetreatAttendees(retreatIdx)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
   let [newAttendeeName, setNewAttendeeName] = useState("")
@@ -152,7 +151,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
 
     if (!errorState.name && !errorState.email) {
       dispatch(
-        postRetreatAttendees(retreatGuid, newAttendeeName, newAttendeeEmail)
+        postRetreatAttendees(retreatIdx, newAttendeeName, newAttendeeEmail)
       )
       setNewAttendeeEmail("")
       setNewAttendeeName("")
@@ -163,11 +162,11 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
         <PageSidenav
           activeItem="attendees"
-          retreatGuid={retreatGuid}
+          retreatIdx={retreatIdx}
           companyName={retreat?.company_name}
         />
         <PageBody>
@@ -212,7 +211,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                     : []
                 }
                 rowDeleteCallback={(row) => {
-                  dispatch(deleteRetreatAttendees(retreatGuid, row.id))
+                  dispatch(deleteRetreatAttendees(retreatIdx, row.id))
                 }}
               />
               <div className={classes.addBtn}>

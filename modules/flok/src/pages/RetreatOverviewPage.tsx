@@ -177,17 +177,19 @@ function RetreatOverview(props: RetreatOverviewProps) {
                 className={`${classes.headerIcon} completed`}
                 fontSize="small"
               />
-              <AppTypography
-                style={{
-                  textDecoration: "underline",
-                  color: "#505050",
-                  fontSize: ".75em",
-                  display: "inline",
-                  cursor: "pointer",
-                }}
-                onClick={() => setTasksExpanded(!tasksExpanded)}>
-                {tasksExpanded ? "hide" : "show completed"}
-              </AppTypography>
+              {retreat && retreat.tasks_completed.length > 0 && (
+                <AppTypography
+                  style={{
+                    textDecoration: "underline",
+                    color: "#505050",
+                    fontSize: ".75em",
+                    display: "inline",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setTasksExpanded(!tasksExpanded)}>
+                  {tasksExpanded ? "hide" : "show completed"}
+                </AppTypography>
+              )}
               {/* <IconButton
                 style={{padding: 0}}
                 onClick={() => setTasksExpanded(!tasksExpanded)}

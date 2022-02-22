@@ -60,7 +60,7 @@ export class AppRoutes {
     {
       name: "RetreatAttendeesPage",
       component: <RetreatAttendeesPage />,
-      path: "/r/:retreatGuid/attendees",
+      path: "/r/:retreatIdx/attendees",
     },
     {
       name: "RetreatItineraryPage",

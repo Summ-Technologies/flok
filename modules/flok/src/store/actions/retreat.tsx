@@ -340,11 +340,11 @@ export const POST_RETREAT_ATTENDEES_REQUEST = "POST_RETREAT_ATTENDEES_REQUEST"
 export const POST_RETREAT_ATTENDEES_SUCCESS = "POST_RETREAT_ATTENDEES_SUCCESS"
 export const POST_RETREAT_ATTENDEES_FAILURE = "POST_RETREAT_ATTENDEES_FAILURE"
 export function postRetreatAttendees(
-  guid: string,
+  retreatIdx: number,
   name: string,
   email_address: string
 ) {
-  let endpoint = `/v1.0/retreats/${guid}/attendees`
+  let endpoint = `/v1.0/retreats/${retreatIdx}/attendees`
   return createApiAction({
     method: "POST",
     endpoint,
@@ -355,11 +355,11 @@ export function postRetreatAttendees(
       },
       {
         type: POST_RETREAT_ATTENDEES_SUCCESS,
-        meta: {guid},
+        meta: {retreatIdx},
       },
       {
         type: POST_RETREAT_ATTENDEES_FAILURE,
-        meta: {guid},
+        meta: {retreatIdx},
       },
     ],
   })
@@ -371,8 +371,8 @@ export const DELETE_RETREAT_ATTENDEES_SUCCESS =
   "DELETE_RETREAT_ATTENDEES_SUCCESS"
 export const DELETE_RETREAT_ATTENDEES_FAILURE =
   "DELETE_RETREAT_ATTENDEES_FAILURE"
-export function deleteRetreatAttendees(guid: string, id: number) {
-  let endpoint = `/v1.0/retreats/${guid}/attendees`
+export function deleteRetreatAttendees(retreatIdx: number, id: number) {
+  let endpoint = `/v1.0/retreats/${retreatIdx}/attendees`
   return createApiAction({
     method: "DELETE",
     endpoint,
@@ -383,11 +383,11 @@ export function deleteRetreatAttendees(guid: string, id: number) {
       },
       {
         type: DELETE_RETREAT_ATTENDEES_SUCCESS,
-        meta: {guid},
+        meta: {retreatIdx},
       },
       {
         type: DELETE_RETREAT_ATTENDEES_FAILURE,
-        meta: {guid},
+        meta: {retreatIdx},
       },
     ],
   })

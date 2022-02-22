@@ -180,6 +180,7 @@ export default function AppTodoList(props: {
     )
   }
 
+  console.log(config.appConfig)
   return (
     <>
       <div>
