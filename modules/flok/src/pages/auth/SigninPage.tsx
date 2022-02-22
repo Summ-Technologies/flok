@@ -46,11 +46,10 @@ type SigninPageProps = RouteComponentProps<{}>
 function SigninPage(props: SigninPageProps) {
   let classes = useStyles(props)
   let loginStatus = useSelector((state: RootState) => state.user.loginStatus)
-  console.log(loginStatus)
   let dispatch = useDispatch()
   useEffect(() => {
     if (loginStatus === "LOGGED_IN") {
-      dispatch(push(AppRoutes.getPath("RetreatRoutingPage")))
+      dispatch(push(AppRoutes.getPath("RetreatRoutingPage", {retreatIdx: "0"})))
     }
   }, [dispatch, loginStatus])
   const handleLogin = (vals: {email: string; password: string}) => {
