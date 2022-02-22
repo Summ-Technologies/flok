@@ -95,7 +95,9 @@ export type AdminLodgingProposalModel = {
   dates_note: string | null
   compare_room_rate: number | null
   compare_room_total: number | null
+  currency: string | null
   num_guests: string | null
+  is_all_inclusive: boolean | null
   guestroom_rates: string | null
   approx_room_total: string | null
   resort_fee: string | null
