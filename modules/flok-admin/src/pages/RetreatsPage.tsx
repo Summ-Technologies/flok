@@ -103,7 +103,7 @@ function RetreatsPage(props: RetreatsPageProps) {
         <Typography variant="h1">Retreats Page</Typography>
         <div className={classes.tabs}>
           <Tabs
-            value={retreatsType}
+            value={retreatsType ?? "active"}
             onChange={(e, val: AdminRetreatListType) => {
               if (val === "active") {
                 setRetreatsTypeQuery(null)

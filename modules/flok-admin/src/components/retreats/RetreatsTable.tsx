@@ -3,9 +3,10 @@ import {
   DataGrid,
   GridCellParams,
   GridColDef,
+  GridSortModel,
   GridToolbar,
 } from "@material-ui/data-grid"
-import React from "react"
+import React, {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RetreatStateOptions} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
@@ -54,6 +55,12 @@ export default function RetreatsTable(props: RetreatsTableProps) {
       dispatch(enqueueSnackbar({message: "Something went wrong"}))
     }
   }
+  const [sortModel, setSortModel] = useState<GridSortModel | undefined>([
+    {
+      field: "createdAt",
+      sort: "desc",
+    },
+  ])
   const commonColDefs = {}
   const retreatsTableColumns: GridColDef[] = [
     {
@@ -116,7 +123,7 @@ export default function RetreatsTable(props: RetreatsTableProps) {
       field: "createdAt",
       headerName: "Created At",
       width: 250,
-      type: "datetime",
+      type: "dateTime",
       valueFormatter: (params) => getDateTimeString(params.value as Date),
     },
   ]
@@ -124,6 +131,8 @@ export default function RetreatsTable(props: RetreatsTableProps) {
     <DataGrid
       className={classes.root}
       classes={{cell: classes.cell}}
+      sortModel={sortModel}
+      onSortModelChange={() => setSortModel(undefined)}
       rows={props.rows}
       columns={retreatsTableColumns}
       components={{
