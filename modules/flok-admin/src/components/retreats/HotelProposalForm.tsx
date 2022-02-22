@@ -106,6 +106,19 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
         />
         <TextField
           {...textFieldProps}
+          id="is_all_inclusive"
+          label="All inclusive proposal?"
+          select
+          SelectProps={{native: true}}
+          value={formik.values.is_all_inclusive ? "true" : "false"}
+          onChange={(e) => {
+            formik.setFieldValue("is_all_inclusive", e.target.value === "true")
+          }}>
+          <option value={"false"}>Not all inclusive</option>
+          <option value={"true"}>Is all inclusive</option>
+        </TextField>
+        <TextField
+          {...textFieldProps}
           id="compare_room_rate"
           label="Guestroom rates"
           value={formik.values.compare_room_rate?.toString() ?? ""}
@@ -124,6 +137,16 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           }
           InputProps={{inputComponent: CurrencyNumberFormat as any}}
         />
+        <TextField
+          {...textFieldProps}
+          id="currency"
+          label="Currency"
+          select
+          SelectProps={{native: true}}
+          value={formik.values.currency ?? "USD"}>
+          <option value={"USD"}>USD</option>
+          <option value={"EUR"}>EUR</option>
+        </TextField>
       </Paper>
       <Paper elevation={0} className={classes.formGroup}>
         <AppTypography variant="h4">Guest rooms</AppTypography>

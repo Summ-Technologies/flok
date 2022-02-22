@@ -15,7 +15,7 @@ export type HotelLodgingProposalLink = {
 export type HotelLodgingProposal = {
   id: number
   dates: string
-  dates_notes: string
+  dates_note: string
   num_guests?: string
   is_all_inclusive?: boolean
   currency?: "USD" | "EUR"
