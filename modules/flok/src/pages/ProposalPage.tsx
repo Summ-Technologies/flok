@@ -20,7 +20,7 @@ import {HotelUtils, useHotel, useRetreat} from "../utils/lodgingUtils"
 import NotFound404Page from "./misc/NotFound404Page"
 
 type ProposalPageProps = RouteComponentProps<{
-  retreatGuid: string
+  retreatIdx: string
   hotelGuid: string
 }>
 
@@ -121,10 +121,10 @@ let useStyles = makeStyles((theme) => ({
 function ProposalPage(props: ProposalPageProps) {
   let classes = useStyles(props)
 
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
   let hotelGuid = convertGuid(props.match.params.hotelGuid)
   let hotel = useHotel(hotelGuid)
-  let retreat = useRetreat(retreatGuid)
+  let retreat = useRetreat(retreatIdx)
   let [proposals, setProposals] = useState<HotelLodgingProposal[]>([])
   let [proposal, setProposal] = useState<
     HotelLodgingProposal | ResourceNotFoundType | undefined
@@ -187,7 +187,7 @@ function ProposalPage(props: ProposalPageProps) {
   }, [hotel])
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       {hotel === ResourceNotFound ? (
         <NotFound404Page />
       ) : hotel === undefined ? (
@@ -227,7 +227,7 @@ function ProposalPage(props: ProposalPageProps) {
                 Proposal missing or unavailable. View your{" "}
                 <a
                   href={AppRoutes.getPath("ProposalsListPage", {
-                    retreatGuid,
+                    retreatIdx: retreatIdx.toString(),
                   })}>
                   proposals list
                 </a>

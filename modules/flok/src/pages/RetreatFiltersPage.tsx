@@ -16,7 +16,6 @@ import {PageOverlayFooterDefaultBody} from "../components/page/PageOverlayFooter
 import {ResourceNotFound} from "../models"
 import {AppRoutes} from "../Stack"
 import {putRetreatFilters} from "../store/actions/retreat"
-import {convertGuid} from "../utils"
 import {useRetreat, useRetreatFilters} from "../utils/lodgingUtils"
 
 let useStyles = makeStyles((theme) => ({
@@ -37,7 +36,7 @@ let useStyles = makeStyles((theme) => ({
 }))
 
 type RetreatFiltersPageProps = RouteComponentProps<{
-  retreatGuid: string
+  retreatIdx: string
 }>
 function RetreatFiltersPage(props: RetreatFiltersPageProps) {
   // Setup
@@ -45,9 +44,9 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
   let classes = useStyles(props)
 
   // Path params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid)
-  let [filterQuestions, filterResponses] = useRetreatFilters(retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx)
+  let [filterQuestions, filterResponses] = useRetreatFilters(retreatIdx)
   let [selectedResponsesIds, setSelectedResponsesIds] = useState<string[]>([])
   useEffect(() => {
     setSelectedResponsesIds(
@@ -60,14 +59,14 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
   function onSelect(values: string[]) {
     dispatch(
       putRetreatFilters(
-        retreatGuid,
+        retreatIdx,
         values.map((val) => parseInt(val))
       )
     )
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       <PageContainer>
         <PageBody>
           <PageOverlay
@@ -82,7 +81,7 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
                       dispatch(
                         push(
                           AppRoutes.getPath("DestinationsListPage", {
-                            retreatGuid,
+                            retreatIdx: retreatIdx.toString(),
                           })
                         )
                       )
@@ -97,7 +96,7 @@ function RetreatFiltersPage(props: RetreatFiltersPageProps) {
                       dispatch(
                         push(
                           AppRoutes.getPath("DestinationsListPage", {
-                            retreatGuid,
+                            retreatIdx: retreatIdx.toString(),
                           })
                         )
                       )

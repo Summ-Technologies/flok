@@ -7,15 +7,13 @@ import AppTypography from "../components/base/AppTypography"
 import ProposalListRow from "../components/lodging/ProposalListRow"
 import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageContainer from "../components/page/PageContainer"
-import PageHeader from "../components/page/PageHeader"
-import PageOverlay from "../components/page/PageOverlay"
+import PageSidenav from "../components/page/PageSidenav"
 import {ResourceNotFound} from "../models"
 import {HotelModel} from "../models/lodging"
 import {RetreatSelectedHotelProposal} from "../models/retreat"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getHotels} from "../store/actions/lodging"
-import {convertGuid} from "../utils"
 import {
   DestinationUtils,
   useDestinations,
@@ -44,7 +42,7 @@ let useStyles = makeStyles((theme) => ({
 }))
 
 type ProposalsListPageProps = RouteComponentProps<{
-  retreatGuid: string
+  retreatIdx: string
 }>
 function ProposalsListPage(props: ProposalsListPageProps) {
   // Setup
@@ -52,12 +50,12 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   let classes = useStyles(props)
 
   // Path and query params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreat = useRetreat(retreatIdx)
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
   let selectedHotels = useSelector((state: RootState) => {
-    let retreat = state.retreat.retreats[retreatGuid]
+    let retreat = state.retreat.retreats[retreatIdx]
     if (retreat && retreat !== ResourceNotFound) {
       return retreat.selected_hotels
     }
@@ -138,11 +136,15 @@ function ProposalsListPage(props: ProposalsListPageProps) {
     setUnavailableSelectedHotels(unavailableHotels)
   }, [selectedHotels, setUnavailableSelectedHotels, retreat, hotelsById])
 
+  function getLowestCompare(vals: (number | null)[]) {
+    return vals.filter((x) => x).sort()[0]
+  }
+
   // Actions
   function onExplore(hotel: HotelModel) {
     const newTab = window.open(
       AppRoutes.getPath("ProposalPage", {
-        retreatGuid: retreatGuid,
+        retreatIdx: retreatIdx.toString(),
         hotelGuid: hotel.guid,
       }),
       "_blank"
@@ -151,15 +153,13 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
-      <PageContainer>
-        <PageOverlay>
-          <PageHeader
-            header={`Proposals`}
-            subheader="Review proposals from hotels with negotiated prices from our team."
-            retreat={
-              retreat && retreat !== ResourceNotFound ? retreat : undefined
-            }
+    <RetreatRequired retreatIdx={retreatIdx}>
+      {retreat && retreat !== ResourceNotFound && (
+        <PageContainer>
+          <PageSidenav
+            activeItem="lodging"
+            retreatIdx={retreatIdx}
+            companyName={retreat?.company_name}
           />
           <div className={classes.root}>
             {groupedSelectedHotels.length + unavailableSelectedHotels.length ===
@@ -222,8 +222,8 @@ function ProposalsListPage(props: ProposalsListPageProps) {
               })}
             </div>
           </div>
-        </PageOverlay>
-      </PageContainer>
+        </PageContainer>
+      )}
     </RetreatRequired>
   )
 }

@@ -6,15 +6,14 @@ import RetreatRequired from "../components/lodging/RetreatRequired"
 import {ResourceNotFound} from "../models"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
-import {convertGuid} from "../utils"
 
-type RetreatRoutingPageProps = RouteComponentProps<{retreatGuid: string}>
+type RetreatRoutingPageProps = RouteComponentProps<{retreatIdx: string}>
 
 function RetreatRoutingPage(props: RetreatRoutingPageProps) {
   let dispatch = useDispatch()
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useSelector(
-    (state: RootState) => state.retreat.retreats[retreatGuid]
+    (state: RootState) => state.retreat.retreats[retreatIdx]
   )
   let [showError, setShowError] = useState(false)
   useEffect(() => {
@@ -27,7 +26,7 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
           dispatch(
             push(
               AppRoutes.getPath("RetreatPreferencesFormPage", {
-                retreatGuid: retreat.guid,
+                retreatIdx: retreatIdx.toString(),
               })
             )
           )
@@ -36,7 +35,7 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
           dispatch(
             push(
               AppRoutes.getPath("RetreatFiltersPage", {
-                retreatGuid: retreat.guid,
+                retreatIdx: retreatIdx.toString(),
               })
             )
           )
@@ -45,7 +44,7 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
           dispatch(
             push(
               AppRoutes.getPath("DestinationsListPage", {
-                retreatGuid: retreat.guid,
+                retreatIdx: retreatIdx.toString(),
               })
             )
           )
@@ -53,7 +52,9 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
         case "HOTEL_SELECT":
           dispatch(
             push(
-              AppRoutes.getPath("HotelsListPage", {retreatGuid: retreat.guid})
+              AppRoutes.getPath("HotelsListPage", {
+                retreatIdx: retreatIdx.toString(),
+              })
             )
           )
           break
@@ -62,7 +63,7 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
           dispatch(
             push(
               AppRoutes.getPath("ProposalsListPage", {
-                retreatGuid: retreat.guid,
+                retreatIdx: retreatIdx.toString(),
               })
             )
           )
@@ -73,7 +74,7 @@ function RetreatRoutingPage(props: RetreatRoutingPageProps) {
     }
   }, [retreat, setShowError, dispatch])
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
+    <RetreatRequired retreatIdx={retreatIdx}>
       {showError && <div>Oops, something went wrong</div>}
     </RetreatRequired>
   )

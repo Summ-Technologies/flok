@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Route, Switch} from "react-router-dom"
+import config, {DASHBOARD_VERSION_KEY} from "./config"
+import AuthResetPage from "./pages/auth/AuthResetPage"
+import SigninPage from "./pages/auth/SigninPage"
 import DestinationPage from "./pages/DestinationPage"
 import DestinationsListPage from "./pages/DestinationsListPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
@@ -9,8 +12,12 @@ import HotelsListPage from "./pages/HotelsListPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import ProposalPage from "./pages/ProposalPage"
-import ProposalRouter from "./pages/ProposalRouter"
+import ProposalsListPage from "./pages/ProposalsListPage"
+import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatFiltersPage from "./pages/RetreatFiltersPage"
+import RetreatFlightsPage from "./pages/RetreatFlightsPage"
+import RetreatItineraryPage from "./pages/RetreatItineraryPage"
+import RetreatOverviewPage from "./pages/RetreatOverviewPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 import RetreatRoutingPage from "./pages/RetreatRoutingPage"
 import RFPLiteResponsePage from "./pages/RFPLiteResponsePage"
@@ -38,42 +45,67 @@ export class AppRoutes {
     {
       name: "RetreatPreferencesFormPage",
       component: <RetreatPreferencesFormPage />,
-      path: "/r/:retreatGuid/preferences",
+      path: "/r/:retreatIdx/preferences",
     },
     {
       name: "RetreatFiltersPage",
       component: <RetreatFiltersPage />,
-      path: "/r/:retreatGuid/filters",
+      path: "/r/:retreatIdx/filters",
+    },
+    {
+      name: "RetreatFlightsPage",
+      component: <RetreatFlightsPage />,
+      path: "/r/:retreatIdx/flights",
+    },
+    {
+      name: "RetreatAttendeesPage",
+      component: <RetreatAttendeesPage />,
+      path: "/r/:retreatIdx/attendees",
+    },
+    {
+      name: "RetreatItineraryPage",
+      component: <RetreatItineraryPage />,
+      path: "/r/:retreatIdx/itinerary",
+    },
+    {
+      name: "RetreatRoutingPage",
+      component:
+        config.get(DASHBOARD_VERSION_KEY) === "v1" ? (
+          <RetreatOverviewPage />
+        ) : (
+          <RetreatRoutingPage />
+        ),
+      path: ["/r/:retreatIdx"],
     },
     {
       name: "DestinationsListPage",
       component: <DestinationsListPage />,
-      path: "/r/:retreatGuid/destinations",
+      path: "/r/:retreatIdx/destinations",
     },
     {
       name: "DestinationPage",
       component: <DestinationPage />,
-      path: "/r/:retreatGuid/destinations/:destinationGuid",
+      path: "/r/:retreatIdx/destinations/:destinationGuid",
     },
     {
       name: "HotelsListPage",
       component: <HotelsListPage />,
-      path: "/r/:retreatGuid/hotels",
+      path: "/r/:retreatIdx/hotels",
     },
     {
       name: "HotelPage",
       component: <HotelPage />,
-      path: "/r/:retreatGuid/hotels/:hotelGuid",
+      path: "/r/:retreatIdx/hotels/:hotelGuid",
     },
     {
       name: "ProposalsListPage",
-      component: <ProposalRouter />,
-      path: "/r/:retreatGuid/proposals",
+      component: <ProposalsListPage />,
+      path: "/r/:retreatIdx/proposals",
     },
     {
       name: "ProposalPage",
       component: <ProposalPage />,
-      path: "/r/:retreatGuid/proposals/:hotelGuid",
+      path: "/r/:retreatIdx/proposals/:hotelGuid",
     },
     {
       name: "RFPLiteResponsePage",
@@ -81,14 +113,19 @@ export class AppRoutes {
       path: "/rfp-lite",
     },
     {
-      name: "RetreatRoutingPage",
-      component: <RetreatRoutingPage />,
-      path: "/r/:retreatGuid",
-    },
-    {
       name: "HomeRoutingPage",
       component: <HomeRoutingPage />,
       path: "/",
+    },
+    {
+      name: "SigninPage",
+      component: <SigninPage />,
+      path: "/sign-in",
+    },
+    {
+      name: "ResetPage",
+      component: <AuthResetPage />,
+      path: "/auth-reset",
     },
     {
       name: "NotFoundPage",

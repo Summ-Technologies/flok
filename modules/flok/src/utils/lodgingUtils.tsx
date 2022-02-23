@@ -2,14 +2,22 @@ import {useCallback, useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../models"
 import {DestinationModel, HotelModel} from "../models/lodging"
-import {FilterAnswerModel, RetreatModel} from "../models/retreat"
+import {
+  FilterAnswerModel,
+  RetreatAttendeeModel,
+  RetreatModel,
+} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getDestinations,
   getHotelById,
   getHotels,
 } from "../store/actions/lodging"
-import {getRetreat, getRetreatFilters} from "../store/actions/retreat"
+import {
+  getRetreat,
+  getRetreatAttendees,
+  getRetreatFilters,
+} from "../store/actions/retreat"
 import {
   getAlgoliaDestinationFilterString,
   getAlgoliaHotelFilterString,
@@ -205,16 +213,16 @@ export function useHotel(hotelGuid: string) {
   return hotel
 }
 
-export function useRetreat(retreatGuid: string) {
+export function useRetreat(retreatIdx: number) {
   let dispatch = useDispatch()
   let retreat = useSelector(
-    (state: RootState) => state.retreat.retreats[retreatGuid]
+    (state: RootState) => state.retreat.retreats[retreatIdx]
   )
   useEffect(() => {
     if (!retreat) {
-      dispatch(getRetreat(retreatGuid))
+      dispatch(getRetreat(retreatIdx))
     }
-  }, [retreat, dispatch, retreatGuid])
+  }, [retreat, dispatch, retreatIdx])
   return retreat as RetreatModel | ResourceNotFoundType | undefined
 }
 
@@ -284,18 +292,31 @@ export class HotelUtils {
   }
 }
 
-export function useRetreatFilters(retreatGuid: string) {
+export function useRetreatFilters(retreatIdx: number) {
   let dispatch = useDispatch()
   let questions = useSelector(
-    (state: RootState) => state.retreat.retreatFilterQuestions[retreatGuid]
+    (state: RootState) => state.retreat.retreatFilterQuestions[retreatIdx]
   )
   let responses = useSelector(
-    (state: RootState) => state.retreat.retreatFilterResponses[retreatGuid]
+    (state: RootState) => state.retreat.retreatFilterResponses[retreatIdx]
   )
   useEffect(() => {
     if (!questions || !responses) {
-      dispatch(getRetreatFilters(retreatGuid))
+      dispatch(getRetreatFilters(retreatIdx))
     }
-  }, [questions, responses, retreatGuid, dispatch])
+  }, [questions, responses, retreatIdx, dispatch])
   return [questions, responses] as const
+}
+
+export function useRetreatAttendees(retreatIdx: number) {
+  let dispatch = useDispatch()
+  let attendees = useSelector(
+    (state: RootState) => state.retreat.retreatAttendees[retreatIdx]
+  )
+  useEffect(() => {
+    if (!attendees) {
+      dispatch(getRetreatAttendees(retreatIdx))
+    }
+  }, [attendees, dispatch, retreatIdx])
+  return attendees as RetreatAttendeeModel[] | ResourceNotFoundType | undefined
 }
