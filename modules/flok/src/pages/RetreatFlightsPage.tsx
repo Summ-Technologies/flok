@@ -4,16 +4,12 @@ import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
-import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
-import UnderConstructionView from "../components/page/UnderConstructionView"
-import {RetreatModel} from "../models/retreat"
 import {AppRoutes} from "../Stack"
-import {useRetreat, useRetreatAttendees} from "../utils/lodgingUtils"
-
-const UNDER_CONSTRUCTION = false
+import {useRetreatAttendees} from "../utils/retreatUtils"
+import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
   addBtn: {
@@ -66,88 +62,94 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   let classes = useStyles()
 
   let retreatIdx = parseInt(props.match.params.retreatIdx)
-  let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
+  let retreat = useRetreat()
 
-  let attendeeTravelInfo = useRetreatAttendees(retreatIdx)
+  let attendeeTravelInfo = useRetreatAttendees(retreat.id)
 
   return (
-    <RetreatRequired retreatIdx={retreatIdx}>
-      <PageContainer>
-        <PageSidenav
-          activeItem="flights"
-          retreatIdx={retreatIdx}
-          companyName={retreat?.company_name}
-        />
-        <PageBody>
-          {UNDER_CONSTRUCTION ? (
-            <UnderConstructionView />
-          ) : (
-            <div className={classes.section}>
-              <AppTypography variant="h1" paragraph>
-                Flights
-              </AppTypography>
-              <AppExpandableTable
-                headers={[
-                  {
-                    name: "Employee",
-                    comparator: (r1, r2) =>
-                      r1[0].toString().localeCompare(r2[0].toString()),
-                  },
-                  {name: "Retreat Arrival"},
-                  {name: "Retreat Departure"},
-                  {name: "Cost"},
-                  {
-                    name: "Status",
-                    comparator: (r1, r2) => {
-                      let comp = 0
-                      if (r1[4].toString().toLowerCase() === "pending") {
-                        comp += 1
-                      }
-                      if (r2[4].toString().toLowerCase() === "pending") {
-                        comp -= 1
-                      }
-                      return comp
-                    },
-                  },
-                ]}
-                rows={
-                  attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
-                  attendeeTravelInfo !== undefined
-                    ? attendeeTravelInfo.map((info) => ({
-                        id: info.id,
-                        cols: [
-                          info.name,
-                          dateFormat(info.travel?.arr_trip?.arr_datetime),
-                          dateFormat(info.travel?.dep_trip?.dep_datetime),
-                          info.travel ? currencyFormat(info.travel.cost) : "",
-                          info.travel ? info.travel.status : "PENDING",
-                        ],
-                      }))
-                    : []
-                }
-              />
-              <div className={classes.addBtn}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  onClick={() => {
-                    dispatch(
-                      push(
-                        AppRoutes.getPath("RetreatAttendeesPage", {
-                          retreatIdx: retreatIdx.toString(),
-                        })
-                      )
-                    )
-                  }}>
-                  Add Attendee
-                </Button>
-              </div>
-            </div>
-          )}
-        </PageBody>
-      </PageContainer>
-    </RetreatRequired>
+    <PageContainer>
+      <PageSidenav
+        activeItem="flights"
+        retreatIdx={retreatIdx}
+        companyName={retreat?.company_name}
+      />
+      <PageBody>
+        <div className={classes.section}>
+          <AppTypography variant="h1" paragraph>
+            Flights
+          </AppTypography>
+          <AppExpandableTable
+            headers={[
+              {
+                name: "Employee",
+                comparator: (r1, r2) =>
+                  r1[0].toString().localeCompare(r2[0].toString()),
+              },
+              {name: "Retreat Arrival"},
+              {name: "Retreat Departure"},
+              {name: "Cost"},
+              {
+                name: "Status",
+                comparator: (r1, r2) => {
+                  let comp = 0
+                  if (r1[4].toString().toLowerCase() === "pending") {
+                    comp += 1
+                  }
+                  if (r2[4].toString().toLowerCase() === "pending") {
+                    comp -= 1
+                  }
+                  return comp
+                },
+              },
+            ]}
+            rows={
+              attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
+              attendeeTravelInfo !== undefined
+                ? attendeeTravelInfo.map((info) => ({
+                    id: info.id,
+                    cols: [
+                      info.name,
+                      info.travel?.arr_trip?.arr_datetime ? (
+                        dateFormat(
+                          new Date(info.travel?.arr_trip?.arr_datetime!)
+                        )
+                      ) : (
+                        <></>
+                      ),
+                      info.travel?.dep_trip?.dep_datetime ? (
+                        dateFormat(
+                          new Date(info.travel?.dep_trip?.dep_datetime!)
+                        )
+                      ) : (
+                        <></>
+                      ),
+                      info.travel ? currencyFormat(info.travel.cost) : "",
+                      info.travel ? info.travel.status : "PENDING",
+                    ],
+                  }))
+                : []
+            }
+          />
+          <div className={classes.addBtn}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={() => {
+                dispatch(
+                  push(
+                    AppRoutes.getPath("RetreatAttendeesPage", {
+                      retreatId: retreatIdx.toString(),
+                    })
+                  )
+                )
+              }}>
+              Add Attendee
+            </Button>
+          </div>
+        </div>
+      </PageBody>
+    </PageContainer>
   )
 }
 

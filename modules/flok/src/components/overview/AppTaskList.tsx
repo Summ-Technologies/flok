@@ -94,7 +94,7 @@ function TodoListItem(props: {
         <div style={{flexGrow: 1}}></div>
         {task.due_date ? (
           <Chip
-            label={dateFormatShort(task.due_date)}
+            label={dateFormatShort(new Date(task.due_date))}
             icon={<CalendarToday />}
             size="small"
           />
@@ -120,7 +120,7 @@ function TodoListItem(props: {
                   Task due date:{"  "}
                 </AppTypography>
                 <Chip
-                  label={dateFormatShort(task.due_date)}
+                  label={dateFormatShort(new Date(task.due_date))}
                   icon={<CalendarToday />}
                   size="small"
                 />
@@ -180,7 +180,6 @@ export default function AppTodoList(props: {
     )
   }
 
-  console.log(config.appConfig)
   return (
     <>
       <div>

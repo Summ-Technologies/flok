@@ -2,11 +2,12 @@ import {
   Box,
   Drawer,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles,
+  makeStyles
 } from "@material-ui/core"
 import {
   ApartmentRounded,
@@ -16,14 +17,16 @@ import {
   MapRounded,
   Menu,
   PeopleAlt,
-  SvgIconComponent,
+  SvgIconComponent
 } from "@material-ui/icons"
-import {push} from "connected-react-router"
-import React, {PropsWithChildren, useState} from "react"
-import {useDispatch} from "react-redux"
+import { push } from "connected-react-router"
+import React, { PropsWithChildren, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import AppImage from "../../components/base/AppImage"
-import {AppRoutes} from "../../Stack"
-import {FlokTheme} from "../../theme"
+import { AppRoutes, FlokPageName } from "../../Stack"
+import { RootState } from "../../store"
+import { deleteUserSignin } from "../../store/actions/user"
+import { FlokTheme } from "../../theme"
 
 let DRAWER_WIDTH = 240
 
@@ -40,21 +43,17 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
-  company: {
+  footer: {
     marginTop: "auto",
     marginBottom: theme.spacing(2),
   },
 }))
 
-let navItem = (title: string, Icon: SvgIconComponent, pageName: string) => [
-  title,
-  <Icon fontSize="large" />,
-  pageName,
-]
+let navItem = (title: string, Icon: SvgIconComponent, pageName: FlokPageName) =>
+  [title, <Icon fontSize="large" />, pageName] as const
 
 let navItems = {
-  overview: navItem("Overview", HomeRounded, "RetreatRoutingPage"),
-  // details: navItem("Details", ListRounded, "RetreatRoutingPage"),
+  overview: navItem("Overview", HomeRounded, "RetreatHomePage"),
   lodging: navItem("Lodging", ApartmentRounded, "ProposalsListPage"),
   attendees: navItem("Attendees", PeopleAlt, "RetreatAttendeesPage"),
   flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
@@ -84,6 +83,10 @@ export default function PageSidenav(
       setIsMobile(false)
     }
   })
+
+  let isLoggedIn = useSelector(
+    (state: RootState) => state.user.loginStatus === "LOGGED_IN"
+  )
 
   return (
     <>
@@ -118,11 +121,7 @@ export default function PageSidenav(
         <List>
           {Object.keys(navItems).map((item, index) => {
             let sidenavItem = item as SidenavItemType
-            const itemTup = navItems[sidenavItem] as [
-              string,
-              JSX.Element,
-              string
-            ]
+            const itemTup = navItems[sidenavItem]
             return (
               <ListItem
                 button
@@ -142,11 +141,25 @@ export default function PageSidenav(
             )
           })}
         </List>
-        {props.companyName && (
-          <ListItem className={classes.company}>
-            <ListItemText>{props.companyName}</ListItemText>
-          </ListItem>
-        )}
+        <List className={classes.footer}>
+          {props.companyName && (
+            <ListItem>
+              <ListItemText>{props.companyName}</ListItemText>
+            </ListItem>
+          )}
+          {isLoggedIn && (
+            <Link
+              component={ListItem}
+              color="inherit"
+              button
+              dense
+              onClick={() => {
+                dispatch(deleteUserSignin())
+              }}>
+              <ListItemText>Log out</ListItemText>
+            </Link>
+          )}
+        </List>
       </Drawer>
     </>
   )

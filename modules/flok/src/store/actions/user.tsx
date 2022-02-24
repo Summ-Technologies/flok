@@ -1,7 +1,9 @@
+import {push} from "connected-react-router"
 import querystring from "querystring"
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
 import {enqueueSnackbar} from "../../notistack-lib/actions"
+import {AppRoutes} from "../../Stack"
 import {modelToApi} from "../../utils/apiUtils"
 import {ApiAction, ApiUtils, createApiAction} from "./api"
 
@@ -12,32 +14,32 @@ export const POST_USER_SIGNIN_FAILURE = "POST_USER_SIGNIN_FAILURE"
 
 export function postUserSignin(email: string, password: string) {
   let endpoint = "/v1.0/auth/signin"
-  return async (
-    dispatch: ThunkDispatch<any, any, any>,
-    getState: () => RootState
-  ) => {
-    let signupResponse = (await dispatch(
-      createApiAction({
-        endpoint,
-        method: "POST",
-        body: JSON.stringify({email, password, login_provider: "FLOK"}),
-        types: [
-          POST_USER_SIGNIN_REQUEST,
-          POST_USER_SIGNIN_SUCCESS,
-          POST_USER_SIGNIN_FAILURE,
-        ],
-      })
-    )) as unknown as ApiAction
-    if (!signupResponse.error) {
-      dispatch(setUserLoggedIn())
+  return createApiAction(
+    {
+      endpoint,
+      method: "POST",
+      body: JSON.stringify({email, password, login_provider: "FLOK"}),
+      types: [
+        POST_USER_SIGNIN_REQUEST,
+        POST_USER_SIGNIN_SUCCESS,
+        POST_USER_SIGNIN_FAILURE,
+      ],
+    },
+    {
+      errorMessage: "Failed to login",
+      onSuccess: (dispatch) => {
+        dispatch(setUserLoggedIn())
+        dispatch(push(AppRoutes.getPath("HomeRoutingPage")))
+      },
     }
-  }
+  )
 }
 
 export const DELETE_USER_SIGNIN_REQUEST = "DELETE_USER_SIGNIN_REQUEST"
 export const DELETE_USER_SIGNIN_SUCCESS = "DELETE_USER_SIGNIN_SUCCESS"
 export const DELETE_USER_SIGNIN_FAILURE = "DELETE_USER_SIGNIN_FAILURE"
 
+/** Aka sign out */
 export function deleteUserSignin() {
   let endpoint = "/v1.0/auth/signin"
   return async (
@@ -135,26 +137,16 @@ export const GET_USER_HOME_FAILURE = "GET_USER_HOME_FAILURE"
 
 export function getUserHome() {
   let endpoint = "/v1.0/user/home"
-  return async (
-    dispatch: ThunkDispatch<any, any, any>,
-    getState: () => RootState
-  ) => {
-    let userResponse = (await dispatch(
-      createApiAction({
-        endpoint,
-        method: "GET",
-        types: [
-          GET_USER_HOME_REQUEST,
-          GET_USER_HOME_SUCCESS,
-          GET_USER_HOME_FAILURE,
-        ],
-      })
-    )) as unknown as ApiAction
-    if (!userResponse.error) {
-      if (getState().user.loginStatus !== "LOGGED_IN") {
-        dispatch(setUserLoggedIn())
-      }
-      return userResponse
-    }
-  }
+  return createApiAction(
+    {
+      endpoint,
+      method: "GET",
+      types: [
+        GET_USER_HOME_REQUEST,
+        GET_USER_HOME_SUCCESS,
+        GET_USER_HOME_FAILURE,
+      ],
+    },
+    {onSuccess: (dispatch) => dispatch(setUserLoggedIn())}
+  )
 }

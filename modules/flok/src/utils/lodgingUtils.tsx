@@ -2,26 +2,13 @@ import {useCallback, useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../models"
 import {DestinationModel, HotelModel} from "../models/lodging"
-import {
-  FilterAnswerModel,
-  RetreatAttendeeModel,
-  RetreatModel,
-} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getDestinations,
   getHotelById,
   getHotels,
 } from "../store/actions/lodging"
-import {
-  getRetreat,
-  getRetreatAttendees,
-  getRetreatFilters,
-} from "../store/actions/retreat"
-import {
-  getAlgoliaDestinationFilterString,
-  getAlgoliaHotelFilterString,
-} from "./algoliaUtils"
+import {getAlgoliaHotelFilterString} from "./algoliaUtils"
 
 // HOOKS
 export function useDestinations() {
@@ -41,49 +28,6 @@ export function useDestinations() {
     }
   }, [dispatch, allDestinations])
   return [destinations, destinationsLoading] as const
-}
-
-export function useFilteredDestinations(
-  selectedFilterResponses: number[],
-  filterAnswers: FilterAnswerModel[]
-) {
-  let dispatch = useDispatch()
-
-  let [filter, setFilter] = useState(
-    getAlgoliaDestinationFilterString(selectedFilterResponses, filterAnswers)
-  )
-  useEffect(() => {
-    setFilter(
-      getAlgoliaDestinationFilterString(selectedFilterResponses, filterAnswers)
-    )
-  }, [selectedFilterResponses, filterAnswers])
-
-  let destinationsById = useSelector(
-    (state: RootState) => state.lodging.destinations
-  )
-
-  let [destinations, setDestinations] = useState<DestinationModel[]>([])
-
-  let destinationsFilterState = useSelector(
-    (state: RootState) =>
-      state.lodging.destinationsByFilter[filter] || {
-        destinations: [],
-      }
-  )
-
-  useEffect(() => {
-    if (!destinationsFilterState.destinations.length) {
-      dispatch(getDestinations(filter))
-    }
-  }, [dispatch, filter, destinationsFilterState.destinations.length])
-
-  useEffect(() => {
-    setDestinations(
-      destinationsFilterState.destinations.map((id) => destinationsById[id])
-    )
-  }, [destinationsById, destinationsFilterState.destinations])
-
-  return destinations
 }
 
 /**
@@ -122,29 +66,15 @@ export function useDestination(destinationGuid: string) {
  *    4. hasMore: boolean
  *    5. getMore: () => void
  */
-export function useHotels(
-  selectedFilterResponses: number[],
-  filterAnswers: FilterAnswerModel[],
-  selectedDestinationIds: number[]
-) {
+export function useHotels(selectedDestinationIds: number[]) {
   let dispatch = useDispatch()
 
   let [filter, setFilter] = useState(
-    getAlgoliaHotelFilterString(
-      selectedFilterResponses,
-      filterAnswers,
-      selectedDestinationIds
-    )
+    getAlgoliaHotelFilterString(selectedDestinationIds)
   )
   useEffect(() => {
-    setFilter(
-      getAlgoliaHotelFilterString(
-        selectedFilterResponses,
-        filterAnswers,
-        selectedDestinationIds
-      )
-    )
-  }, [selectedFilterResponses, filterAnswers, selectedDestinationIds])
+    setFilter(getAlgoliaHotelFilterString(selectedDestinationIds))
+  }, [selectedDestinationIds])
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
 
@@ -213,19 +143,6 @@ export function useHotel(hotelGuid: string) {
   return hotel
 }
 
-export function useRetreat(retreatIdx: number) {
-  let dispatch = useDispatch()
-  let retreat = useSelector(
-    (state: RootState) => state.retreat.retreats[retreatIdx]
-  )
-  useEffect(() => {
-    if (!retreat) {
-      dispatch(getRetreat(retreatIdx))
-    }
-  }, [retreat, dispatch, retreatIdx])
-  return retreat as RetreatModel | ResourceNotFoundType | undefined
-}
-
 export class DestinationUtils {
   static EMOJIS_BY_COUNTRY: {[key: string]: string} = {
     USA: "🇺🇸",
@@ -290,33 +207,4 @@ export class HotelUtils {
       airportHours > 0 ? `${airportHours}hr${airportHours > 1 ? "s" : ""} ` : ""
     }${airportMins}mins`
   }
-}
-
-export function useRetreatFilters(retreatIdx: number) {
-  let dispatch = useDispatch()
-  let questions = useSelector(
-    (state: RootState) => state.retreat.retreatFilterQuestions[retreatIdx]
-  )
-  let responses = useSelector(
-    (state: RootState) => state.retreat.retreatFilterResponses[retreatIdx]
-  )
-  useEffect(() => {
-    if (!questions || !responses) {
-      dispatch(getRetreatFilters(retreatIdx))
-    }
-  }, [questions, responses, retreatIdx, dispatch])
-  return [questions, responses] as const
-}
-
-export function useRetreatAttendees(retreatIdx: number) {
-  let dispatch = useDispatch()
-  let attendees = useSelector(
-    (state: RootState) => state.retreat.retreatAttendees[retreatIdx]
-  )
-  useEffect(() => {
-    if (!attendees) {
-      dispatch(getRetreatAttendees(retreatIdx))
-    }
-  }, [attendees, dispatch, retreatIdx])
-  return attendees as RetreatAttendeeModel[] | ResourceNotFoundType | undefined
 }

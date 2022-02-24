@@ -1,6 +1,6 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
-import {RetreatProgressState, RetreatToTaskState} from "../../models/retreat"
+import {RetreatToTaskState} from "../../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
 import {ApiAction, createApiAction} from "./api"
@@ -55,43 +55,19 @@ export function postNewRetreat(
   }
 }
 
-export const POST_ADVANCE_RETREAT_STATE_REQUEST =
-  "POST_ADVANCE_RETREAT_STATE_REQUEST"
-export const POST_ADVANCE_RETREAT_STATE_SUCCESS =
-  "POST_ADVANCE_RETREAT_STATE_SUCCESS"
-export const POST_ADVANCE_RETREAT_STATE_FAILURE =
-  "POST_ADVANCE_RETREAT_STATE_FAILURE"
-
-export function postAdvanceRetreatState(
-  retreatIdx: number,
-  currentState: RetreatProgressState
-) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/complete-state`
-  return createApiAction({
-    method: "POST",
-    body: JSON.stringify({current_state: currentState}),
-    endpoint,
-    types: [
-      POST_ADVANCE_RETREAT_STATE_REQUEST,
-      {type: POST_ADVANCE_RETREAT_STATE_SUCCESS, meta: {retreatIdx}},
-      POST_ADVANCE_RETREAT_STATE_FAILURE,
-    ],
-  })
-}
-
 export const GET_RETREAT_REQUEST = "GET_RETREAT_REQUEST"
 export const GET_RETREAT_SUCCESS = "GET_RETREAT_SUCCESS"
 export const GET_RETREAT_FAILURE = "GET_RETREAT_FAILURE"
 
-export function getRetreat(retreatIdx: number) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}`
+export function getRetreat(retreatId: number) {
+  let endpoint = `/v1.0/retreats/${retreatId}`
   return createApiAction({
     method: "GET",
     endpoint,
     types: [
       GET_RETREAT_REQUEST,
-      {type: GET_RETREAT_SUCCESS, meta: {retreatIdx}},
-      {type: GET_RETREAT_FAILURE, meta: {retreatIdx}},
+      {type: GET_RETREAT_SUCCESS, meta: {retreatId}},
+      {type: GET_RETREAT_FAILURE, meta: {retreatId}},
     ],
   })
 }
@@ -100,8 +76,9 @@ export const PUT_RETREAT_PREFERENCES_REQUEST = "PUT_RETREAT_PREFERENCES_REQUEST"
 export const PUT_RETREAT_PREFERENCES_SUCCESS = "PUT_RETREAT_PREFERENCES_SUCCESS"
 export const PUT_RETREAT_PREFERENCES_FAILURE = "PUT_RETREAT_PREFERENCES_FAILURE"
 
+/** This is a special controller that updates retreat preferences by GUID */
 export function updateRetreatPreferences(
-  retreatIdx: number,
+  retreatId: number,
   isFlexDates: boolean,
   numAttendeesLower: number,
   numAttendeesUpper?: number,
@@ -112,50 +89,34 @@ export function updateRetreatPreferences(
   exactEndDate?: Date,
   onSuccess: () => void = () => undefined
 ) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/preferences`
-  return async (
-    dispatch: ThunkDispatch<any, any, any>,
-    getState: () => RootState
-  ) => {
-    let toDate = (dt?: Date) =>
-      dt
-        ? dt.toISOString().substring(0, dt.toISOString().indexOf("T"))
-        : undefined
-    let apiResponse = (await dispatch(
-      createApiAction({
-        endpoint,
-        method: "PUT",
-        types: [
-          PUT_RETREAT_PREFERENCES_REQUEST,
-          {type: PUT_RETREAT_PREFERENCES_SUCCESS, meta: {retreatIdx}},
-          PUT_RETREAT_PREFERENCES_FAILURE,
-        ],
-        body: JSON.stringify({
-          num_attendees_lower: numAttendeesLower,
-          num_attendees_upper: numAttendeesUpper,
-          is_flexible_dates: isFlexDates,
-          flexible_num_nights: flexNumNights,
-          flexible_months: flexMonths,
-          flexible_start_dow: flexStartDow,
-          exact_start_date: toDate(exactStartDate),
-          exact_end_date: toDate(exactEndDate),
-        }),
-      })
-    )) as unknown as ApiAction
-    if (!apiResponse.error) {
-      onSuccess()
-    } else {
-      dispatch(
-        enqueueSnackbar(
-          apiNotification(
-            "An error occurred, try again.",
-            (key) => dispatch(closeSnackbar(key)),
-            true
-          )
-        )
-      )
-    }
-  }
+  let endpoint = `/v1.0/retreats/${retreatId}/preferences`
+  let toDate = (dt?: Date) =>
+    dt
+      ? dt.toISOString().substring(0, dt.toISOString().indexOf("T"))
+      : undefined
+
+  return createApiAction(
+    {
+      endpoint,
+      method: "PUT",
+      types: [
+        PUT_RETREAT_PREFERENCES_REQUEST,
+        {type: PUT_RETREAT_PREFERENCES_SUCCESS, meta: {retreatId}},
+        PUT_RETREAT_PREFERENCES_FAILURE,
+      ],
+      body: JSON.stringify({
+        num_attendees_lower: numAttendeesLower,
+        num_attendees_upper: numAttendeesUpper,
+        is_flexible_dates: isFlexDates,
+        flexible_num_nights: flexNumNights,
+        flexible_months: flexMonths,
+        flexible_start_dow: flexStartDow,
+        exact_start_date: toDate(exactStartDate),
+        exact_end_date: toDate(exactEndDate),
+      }),
+    },
+    {onSuccess, errorMessage: "Something went wrong."}
+  )
 }
 
 export const POST_SELECTED_RETREAT_DESTINATION_REQUEST =
@@ -166,22 +127,22 @@ export const POST_SELECTED_RETREAT_DESTINATION_FAILURE =
   "POST_SELECTED_RETREAT_DESTINATION_FAILURE"
 
 export function postSelectedRetreatDestination(
-  retreatIdx: number,
+  retreatId: number,
   destinationId: number
 ) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/destinations/${destinationId}`
+  let endpoint = `/v1.0/retreats/${retreatId}/destinations/${destinationId}`
   return createApiAction({
     method: "POST",
     endpoint,
     types: [
       {
         type: POST_SELECTED_RETREAT_DESTINATION_REQUEST,
-        meta: {retreatIdx, destinationId},
+        meta: {retreatId, destinationId},
       },
       POST_SELECTED_RETREAT_DESTINATION_SUCCESS,
       {
         type: POST_SELECTED_RETREAT_DESTINATION_FAILURE,
-        meta: {retreatIdx, destinationId},
+        meta: {retreatId, destinationId},
       },
     ],
   })
@@ -195,22 +156,22 @@ export const DELETE_SELECTED_RETREAT_DESTINATION_FAILURE =
   "DELETE_SELECTED_RETREAT_DESTINATION_FAILURE"
 
 export function deleteSelectedRetreatDestination(
-  retreatIdx: number,
+  retreatId: number,
   destinationId: number
 ) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/destinations/${destinationId}`
+  let endpoint = `/v1.0/retreats/${retreatId}/destinations/${destinationId}`
   return createApiAction({
     method: "DELETE",
     endpoint,
     types: [
       {
         type: DELETE_SELECTED_RETREAT_DESTINATION_REQUEST,
-        meta: {retreatIdx, destinationId},
+        meta: {retreatId, destinationId},
       },
       DELETE_SELECTED_RETREAT_DESTINATION_SUCCESS,
       {
         type: DELETE_SELECTED_RETREAT_DESTINATION_FAILURE,
-        meta: {retreatIdx, destinationId},
+        meta: {retreatId, destinationId},
       },
     ],
   })
@@ -223,15 +184,15 @@ export const POST_SELECTED_RETREAT_HOTEL_SUCCESS =
 export const POST_SELECTED_RETREAT_HOTEL_FAILURE =
   "POST_SELECTED_RETREAT_HOTEL_FAILURE"
 
-export function postSelectedRetreatHotel(retreatIdx: number, hotelId: number) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/hotels/${hotelId}`
+export function postSelectedRetreatHotel(retreatId: number, hotelId: number) {
+  let endpoint = `/v1.0/retreats/${retreatId}/hotels/${hotelId}`
   return createApiAction({
     method: "POST",
     endpoint,
     types: [
-      {type: POST_SELECTED_RETREAT_HOTEL_REQUEST, meta: {retreatIdx, hotelId}},
+      {type: POST_SELECTED_RETREAT_HOTEL_REQUEST, meta: {retreatId, hotelId}},
       POST_SELECTED_RETREAT_HOTEL_SUCCESS,
-      {type: POST_SELECTED_RETREAT_HOTEL_FAILURE, meta: {retreatIdx, hotelId}},
+      {type: POST_SELECTED_RETREAT_HOTEL_FAILURE, meta: {retreatId, hotelId}},
     ],
   })
 }
@@ -243,23 +204,20 @@ export const DELETE_SELECTED_RETREAT_HOTEL_SUCCESS =
 export const DELETE_SELECTED_RETREAT_HOTEL_FAILURE =
   "DELETE_SELECTED_RETREAT_HOTEL_FAILURE"
 
-export function deleteSelectedRetreatHotel(
-  retreatIdx: number,
-  hotelId: number
-) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/hotels/${hotelId}`
+export function deleteSelectedRetreatHotel(retreatId: number, hotelId: number) {
+  let endpoint = `/v1.0/retreats/${retreatId}/hotels/${hotelId}`
   return createApiAction({
     method: "DELETE",
     endpoint,
     types: [
       {
         type: DELETE_SELECTED_RETREAT_HOTEL_REQUEST,
-        meta: {retreatIdx, hotelId},
+        meta: {retreatId, hotelId},
       },
       DELETE_SELECTED_RETREAT_HOTEL_SUCCESS,
       {
         type: DELETE_SELECTED_RETREAT_HOTEL_FAILURE,
-        meta: {retreatIdx, hotelId},
+        meta: {retreatId, hotelId},
       },
     ],
   })
@@ -268,23 +226,23 @@ export function deleteSelectedRetreatHotel(
 export const GET_RETREAT_FILTERS_REQUEST = "GET_RETREAT_FILTERS_REQUEST"
 export const GET_RETREAT_FILTERS_SUCCESS = "GET_RETREAT_FILTERS_SUCCESS"
 export const GET_RETREAT_FILTERS_FAILURE = "GET_RETREAT_FILTERS_FAILURE"
-export function getRetreatFilters(retreatIdx: number) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/filters`
+export function getRetreatFilters(retreatId: number) {
+  let endpoint = `/v1.0/retreats/${retreatId}/filters`
   return createApiAction({
     method: "GET",
     endpoint,
     types: [
       {
         type: GET_RETREAT_FILTERS_REQUEST,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
       {
         type: GET_RETREAT_FILTERS_SUCCESS,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
       {
         type: GET_RETREAT_FILTERS_FAILURE,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
     ],
   })
@@ -294,10 +252,10 @@ export const PUT_RETREAT_FILTERS_REQUEST = "PUT_RETREAT_FILTERS_REQUEST"
 export const PUT_RETREAT_FILTERS_SUCCESS = "PUT_RETREAT_FILTERS_SUCCESS"
 export const PUT_RETREAT_FILTERS_FAILURE = "PUT_RETREAT_FILTERS_FAILURE"
 export function putRetreatFilters(
-  retreatIdx: number,
+  retreatId: number,
   selectedAnswerIds: number[]
 ) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/filters`
+  let endpoint = `/v1.0/retreats/${retreatId}/filters`
   return createApiAction({
     method: "PUT",
     body: JSON.stringify({filter_responses_ids: selectedAnswerIds}),
@@ -305,15 +263,15 @@ export function putRetreatFilters(
     types: [
       {
         type: PUT_RETREAT_FILTERS_REQUEST,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
       {
         type: PUT_RETREAT_FILTERS_SUCCESS,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
       {
         type: PUT_RETREAT_FILTERS_FAILURE,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
     ],
   })
@@ -323,15 +281,15 @@ export const GET_RETREAT_ATTENDEES_REQUEST = "GET_RETREAT_ATTENDEES_REQUEST"
 export const GET_RETREAT_ATTENDEES_SUCCESS = "GET_RETREAT_ATTENDEES_SUCCESS"
 export const GET_RETREAT_ATTENDEES_FAILURE = "GET_RETREAT_ATTENDEES_FAILURE"
 
-export function getRetreatAttendees(retreatIdx: number) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/attendees`
+export function getRetreatAttendees(retreatId: number) {
+  let endpoint = `/v1.0/retreats/${retreatId}/attendees`
   return createApiAction({
     method: "GET",
     endpoint,
     types: [
       {type: GET_RETREAT_ATTENDEES_REQUEST},
-      {type: GET_RETREAT_ATTENDEES_SUCCESS, meta: {retreatIdx}},
-      {type: GET_RETREAT_ATTENDEES_FAILURE, meta: {retreatIdx}},
+      {type: GET_RETREAT_ATTENDEES_SUCCESS, meta: {retreatId}},
+      {type: GET_RETREAT_ATTENDEES_FAILURE, meta: {retreatId}},
     ],
   })
 }
@@ -340,11 +298,11 @@ export const POST_RETREAT_ATTENDEES_REQUEST = "POST_RETREAT_ATTENDEES_REQUEST"
 export const POST_RETREAT_ATTENDEES_SUCCESS = "POST_RETREAT_ATTENDEES_SUCCESS"
 export const POST_RETREAT_ATTENDEES_FAILURE = "POST_RETREAT_ATTENDEES_FAILURE"
 export function postRetreatAttendees(
-  retreatIdx: number,
+  retreatId: number,
   name: string,
   email_address: string
 ) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/attendees`
+  let endpoint = `/v1.0/retreats/${retreatId}/attendees`
   return createApiAction({
     method: "POST",
     endpoint,
@@ -355,11 +313,11 @@ export function postRetreatAttendees(
       },
       {
         type: POST_RETREAT_ATTENDEES_SUCCESS,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
       {
         type: POST_RETREAT_ATTENDEES_FAILURE,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
     ],
   })
@@ -371,8 +329,8 @@ export const DELETE_RETREAT_ATTENDEES_SUCCESS =
   "DELETE_RETREAT_ATTENDEES_SUCCESS"
 export const DELETE_RETREAT_ATTENDEES_FAILURE =
   "DELETE_RETREAT_ATTENDEES_FAILURE"
-export function deleteRetreatAttendees(retreatIdx: number, id: number) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/attendees`
+export function deleteRetreatAttendees(retreatId: number, id: number) {
+  let endpoint = `/v1.0/retreats/${retreatId}/attendees`
   return createApiAction({
     method: "DELETE",
     endpoint,
@@ -383,11 +341,11 @@ export function deleteRetreatAttendees(retreatIdx: number, id: number) {
       },
       {
         type: DELETE_RETREAT_ATTENDEES_SUCCESS,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
       {
         type: DELETE_RETREAT_ATTENDEES_FAILURE,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
     ],
   })
@@ -398,10 +356,10 @@ export const PUT_RETREAT_TASK_SUCCESS = "POST_RETREAT_TASK_SUCCESS"
 export const PUT_RETREAT_TASK_FAILURE = "POST_RETREAT_TASK_FAILURE"
 export function putRetreatTask(
   task_id: number,
-  retreatIdx: number,
+  retreatId: number,
   new_state: RetreatToTaskState
 ) {
-  let endpoint = `/v1.0/retreats/${retreatIdx}/tasks`
+  let endpoint = `/v1.0/retreats/${retreatId}/tasks`
   return createApiAction({
     method: "PUT",
     endpoint,
@@ -409,15 +367,15 @@ export function putRetreatTask(
     types: [
       {
         type: PUT_RETREAT_TASK_REQUEST,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
       {
         type: PUT_RETREAT_TASK_SUCCESS,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
       {
         type: PUT_RETREAT_TASK_FAILURE,
-        meta: {retreatIdx},
+        meta: {retreatId},
       },
     ],
   })
