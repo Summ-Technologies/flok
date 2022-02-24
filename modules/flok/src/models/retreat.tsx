@@ -81,7 +81,7 @@ export type RetreatToTask = {
   task: RetreatTask
   order: number
   state: RetreatToTaskState
-  due_date?: Date
+  due_date?: string
   link_override?: string
 }
 export type RetreatModel = {
@@ -107,29 +107,6 @@ export type RetreatModel = {
   tasks_completed: RetreatToTask[]
 }
 
-export type FilterAnswerModel = {
-  id: number
-  question_id: number
-  title: string
-  algolia_filter: string
-  is_default_answer: boolean
-}
-
-export type FilterQuestionModel = {
-  id: number
-  title: string
-  more_info: string
-  is_multi_select: boolean
-  question_affinity: string
-  answers: FilterAnswerModel[]
-}
-
-export type FilterResponseModel = {
-  id: number
-  retreat_id: number
-  answer_id: number
-}
-
 export type RetreatTripModel = {
   id: number
   cost: number
@@ -137,8 +114,8 @@ export type RetreatTripModel = {
   confirmation_number: string
   arr_airport: string
   dep_airport: string
-  arr_datetime: Date
-  dep_datetime: Date
+  arr_datetime: string
+  dep_datetime: string
   airline: string
 }
 

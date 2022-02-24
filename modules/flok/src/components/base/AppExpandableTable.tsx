@@ -74,7 +74,7 @@ const useExpandableRowStyles = makeStyles({
 
 function ExpandableRow(props: ExpandableRowProps) {
   let classes = useExpandableRowStyles()
-  let [open, setOpen] = useState(false)
+  // let [open, setOpen] = useState(false)
   return (
     <React.Fragment>
       <Tooltip title={props.tooltip ? props.tooltip : ""}>
@@ -174,7 +174,6 @@ type AppExpandableTableProps = {
 }
 
 export default function AppExpandableTable(props: AppExpandableTableProps) {
-  console.log(props)
   let classes = useTableStyles()
 
   let [order, setOrder] = useState<"asc" | "desc">("desc")

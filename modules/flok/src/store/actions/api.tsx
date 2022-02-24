@@ -8,6 +8,7 @@ import {
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
 import config, {APP_VERSION_KEY, SERVER_BASE_URL_KEY} from "../../config"
+import {enqueueSnackbar} from "../../notistack-lib/actions"
 import {setUserLoggedOut} from "./user"
 
 const DEFAULT_HEADERS = {
@@ -55,7 +56,15 @@ export type ApiAction = RSAAResultAction<any, any> | RSAARequestAction<any, any>
  *  summn's logic, and creates an action for use
  *  by redux-api-middleware
  */
-export function createApiAction(args: RSAACall<RootState, unknown, unknown>) {
+export function createApiAction(
+  args: RSAACall<RootState, unknown, unknown>,
+  apiOptions: {
+    successMessage?: string
+    onSuccess?: (dispatch: ThunkDispatch<any, any, Action<any>>) => void
+    errorMessage?: string
+    onError?: (dispatch: ThunkDispatch<any, any, Action<any>>) => void
+  } = {}
+) {
   return async (
     dispatch: ThunkDispatch<any, any, Action<any>>,
     getState: () => RootState
@@ -63,10 +72,40 @@ export function createApiAction(args: RSAACall<RootState, unknown, unknown>) {
     args.fetch = _fetch
     args.headers = headers(args.headers)
     const response = await dispatch(createAction(args) as any)
-    if (response.error && response.payload.status === 401) {
-      dispatch(setUserLoggedOut())
+    if (response.error) {
+      if (apiOptions.onError) {
+        apiOptions.onError(dispatch)
+      }
+      if (apiOptions.errorMessage) {
+        dispatch(
+          enqueueSnackbar({
+            message: apiOptions.errorMessage,
+            options: {variant: "error"},
+          })
+        )
+      }
+      // Special authentication case
+      if (
+        response.payload &&
+        response.payload.status === 401 &&
+        response.payload.response &&
+        response.payload.response.code === 1004
+      ) {
+        dispatch(setUserLoggedOut())
+      }
       return response
     } else {
+      if (apiOptions.onSuccess) {
+        apiOptions.onSuccess(dispatch)
+      }
+      if (apiOptions.successMessage) {
+        dispatch(
+          enqueueSnackbar({
+            message: apiOptions.successMessage,
+            options: {variant: "success"},
+          })
+        )
+      }
       return response
     }
   }

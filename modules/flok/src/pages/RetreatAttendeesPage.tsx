@@ -16,25 +16,21 @@ import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
-import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
-import UnderConstructionView from "../components/page/UnderConstructionView"
-import {RetreatModel} from "../models/retreat"
 import {
   deleteRetreatAttendees,
   postRetreatAttendees,
 } from "../store/actions/retreat"
 import {theme} from "../theme"
-import {useRetreat, useRetreatAttendees} from "../utils/lodgingUtils"
-
-const UNDER_CONSTRUCTION = false
+import {useRetreatAttendees} from "../utils/retreatUtils"
+import {useRetreat} from "./misc/RetreatProvider"
 
 const HtmlTooltip = styled(({className, ...props}) => (
   <Tooltip {...props} classes={{popper: className}} />
 ))(({theme}) => ({
-  ["& .MuiTooltip-tooltip"]: {
+  "& .MuiTooltip-tooltip": {
     backgroundColor: theme.palette.background.default,
     border: "1px solid #dadde9",
   },
@@ -95,33 +91,15 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-function currencyFormat(num: Number) {
-  return "$" + num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
-}
-
-function dateFormat(date: Date | undefined) {
-  if (date === undefined) {
-    return ""
-  }
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZoneName: "short",
-  })
-}
-
 type RetreatAttendeesProps = RouteComponentProps<{retreatIdx: string}>
 function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   let classes = useStyles()
+  let dispatch = useDispatch()
 
   let retreatIdx = parseInt(props.match.params.retreatIdx)
-  console.log(retreatIdx)
-  let retreat = useRetreat(retreatIdx) as RetreatModel | undefined
+  let retreat = useRetreat()
 
-  let attendeeTravelInfo = useRetreatAttendees(retreatIdx)
+  let attendeeTravelInfo = useRetreatAttendees(retreat.id)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
   let [newAttendeeName, setNewAttendeeName] = useState("")
@@ -130,8 +108,6 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     name: false,
     email: false,
   })
-
-  let dispatch = useDispatch()
 
   const handleNewAttendeeSubmit = () => {
     const errorState = {name: false, email: false}
@@ -142,7 +118,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     if (
       newAttendeeEmail === "" ||
       !newAttendeeEmail.match(
-        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       )
     ) {
       errorState.email = true
@@ -151,7 +127,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
 
     if (!errorState.name && !errorState.email) {
       dispatch(
-        postRetreatAttendees(retreatIdx, newAttendeeName, newAttendeeEmail)
+        postRetreatAttendees(retreat.id, newAttendeeName, newAttendeeEmail)
       )
       setNewAttendeeEmail("")
       setNewAttendeeName("")
@@ -162,116 +138,110 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   }
 
   return (
-    <RetreatRequired retreatIdx={retreatIdx}>
-      <PageContainer>
-        <PageSidenav
-          activeItem="attendees"
-          retreatIdx={retreatIdx}
-          companyName={retreat?.company_name}
-        />
-        <PageBody>
-          {UNDER_CONSTRUCTION ? (
-            <UnderConstructionView />
-          ) : (
-            <div className={classes.section}>
-              <AppTypography variant="h1" paragraph>
-                Attendees
-              </AppTypography>
-              <AppExpandableTable
-                headers={[
-                  {
-                    name: "Employee",
-                    comparator: (r1, r2) =>
-                      r1[0].toString().localeCompare(r2[0].toString()),
-                  },
-                  {name: "Email"},
-                  {name: "Employee City"},
-                  {name: "Dietary Preferences"},
-                  {
-                    name: "Other notes",
-                  },
-                ]}
-                rows={
-                  attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
-                  attendeeTravelInfo !== undefined
-                    ? attendeeTravelInfo.map((info) => ({
-                        id: info.id,
-                        disabled: !info.info_status.endsWith("INFO_ENTERED"),
-                        tooltip: !info.info_status.endsWith("INFO_ENTERED")
-                          ? "Once the attendee fills out the registration form you will be able to view more of their information here."
-                          : "",
-                        cols: [
-                          info.name,
-                          info.email_address,
-                          info.city,
-                          DietList(info.dietary_prefs),
-                          info.notes,
-                        ],
-                      }))
-                    : []
-                }
-                rowDeleteCallback={(row) => {
-                  dispatch(deleteRetreatAttendees(retreatIdx, row.id))
-                }}
-              />
-              <div className={classes.addBtn}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  onClick={() => setAddDialogOpen(true)}>
-                  Add Attendee
-                </Button>
-              </div>
-            </div>
-          )}
-          <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
-            <DialogTitle>Add New Attendee</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                To add a new attendee to your retreat please enter their full
-                name and email address below. We'll reach out to them to confirm
-                and fill in some of their information and when they have
-                confirmed their name will be added here.
-              </DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="Full Name"
-                value={newAttendeeName}
-                error={newAttendeeErrorState.name}
-                onChange={(e) => setNewAttendeeName(e.target.value)}
-                fullWidth
-                variant="standard"
-                required
-              />
-              <TextField
-                margin="dense"
-                id="email"
-                label="Email Address"
-                value={newAttendeeEmail}
-                error={newAttendeeErrorState.email}
-                onChange={(e) => setNewAttendeeEmail(e.target.value)}
-                type="email"
-                fullWidth
-                variant="standard"
-                required
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNewAttendeeSubmit}>
-                Submit
-              </Button>
-              <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
-            </DialogActions>
-          </Dialog>
-        </PageBody>
-      </PageContainer>
-    </RetreatRequired>
+    <PageContainer>
+      <PageSidenav
+        activeItem="attendees"
+        retreatIdx={retreatIdx}
+        companyName={retreat?.company_name}
+      />
+      <PageBody>
+        <div className={classes.section}>
+          <AppTypography variant="h1" paragraph>
+            Attendees
+          </AppTypography>
+          <AppExpandableTable
+            headers={[
+              {
+                name: "Employee",
+                comparator: (r1, r2) =>
+                  r1[0].toString().localeCompare(r2[0].toString()),
+              },
+              {name: "Email"},
+              {name: "Employee City"},
+              {name: "Dietary Preferences"},
+              {
+                name: "Other notes",
+              },
+            ]}
+            rows={
+              attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
+              attendeeTravelInfo !== undefined
+                ? attendeeTravelInfo.map((info) => ({
+                    id: info.id,
+                    disabled: !info.info_status.endsWith("INFO_ENTERED"),
+                    tooltip: !info.info_status.endsWith("INFO_ENTERED")
+                      ? "Once the attendee fills out the registration form you will be able to view more of their information here."
+                      : "",
+                    cols: [
+                      info.name,
+                      info.email_address,
+                      info.city,
+                      DietList(info.dietary_prefs),
+                      info.notes,
+                    ],
+                  }))
+                : []
+            }
+            rowDeleteCallback={(row) => {
+              dispatch(deleteRetreatAttendees(retreat.id, row.id))
+            }}
+          />
+          <div className={classes.addBtn}>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={() => setAddDialogOpen(true)}>
+              Add Attendee
+            </Button>
+          </div>
+        </div>
+        <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
+          <DialogTitle>Add New Attendee</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              To add a new attendee to your retreat please enter their full name
+              and email address below. We'll reach out to them to confirm and
+              fill in some of their information and when they have confirmed
+              their name will be added here.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Full Name"
+              value={newAttendeeName}
+              error={newAttendeeErrorState.name}
+              onChange={(e) => setNewAttendeeName(e.target.value)}
+              fullWidth
+              variant="standard"
+              required
+            />
+            <TextField
+              margin="dense"
+              id="email"
+              label="Email Address"
+              value={newAttendeeEmail}
+              error={newAttendeeErrorState.email}
+              onChange={(e) => setNewAttendeeEmail(e.target.value)}
+              type="email"
+              fullWidth
+              variant="standard"
+              required
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleNewAttendeeSubmit}>
+              Submit
+            </Button>
+            <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+      </PageBody>
+    </PageContainer>
   )
 }
 

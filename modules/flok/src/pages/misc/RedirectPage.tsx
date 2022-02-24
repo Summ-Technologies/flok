@@ -1,9 +1,9 @@
 import querystring from "querystring"
 import {Redirect} from "react-router-dom"
-import {AppRoutes} from "../../Stack"
+import {AppRoutes, FlokPageName} from "../../Stack"
 
 type RedirectPageProps = {
-  pageName: string
+  pageName: FlokPageName
   pathParams?: {[key: string]: string}
   queryParams?: {[key: string]: string}
 }

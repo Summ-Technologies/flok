@@ -3,8 +3,9 @@ import {ImageModel} from "."
 export type UserModel = {
   id: number
   email: string
-  firstName?: string
-  lastName?: string
+  first_name?: string
+  last_name?: string
+  retreat_ids: number[]
 }
 
 export type FlokInternalAdminModel = {

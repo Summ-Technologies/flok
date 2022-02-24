@@ -1,12 +1,8 @@
-import {Box, makeStyles} from "@material-ui/core"
-import {push} from "connected-react-router"
-import {useEffect} from "react"
-import {useDispatch, useSelector} from "react-redux"
+import {makeStyles} from "@material-ui/core"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AuthForm from "../../components/forms/AuthForm"
 import PageContainer from "../../components/page/PageContainer"
-import {AppRoutes} from "../../Stack"
-import {RootState} from "../../store"
 import {postUserSignin} from "../../store/actions/user"
 
 let useStyles = makeStyles((theme) => ({
@@ -45,27 +41,21 @@ let useStyles = makeStyles((theme) => ({
 type SigninPageProps = RouteComponentProps<{}>
 function SigninPage(props: SigninPageProps) {
   let classes = useStyles(props)
-  let loginStatus = useSelector((state: RootState) => state.user.loginStatus)
   let dispatch = useDispatch()
-  useEffect(() => {
-    if (loginStatus === "LOGGED_IN") {
-      dispatch(push(AppRoutes.getPath("RetreatRoutingPage", {retreatIdx: "0"})))
-    }
-  }, [dispatch, loginStatus])
   const handleLogin = (vals: {email: string; password: string}) => {
     dispatch(postUserSignin(vals.email, vals.password))
   }
   return (
     <PageContainer>
-      <Box className={classes.body}>
-        <Box className={classes.modal}>
+      <div className={classes.body}>
+        <div className={classes.modal}>
           <AuthForm
             submitForm={handleLogin}
             submitText="Login"
             title="Good To See You"
           />
-        </Box>
-      </Box>
+        </div>
+      </div>
     </PageContainer>
   )
 }

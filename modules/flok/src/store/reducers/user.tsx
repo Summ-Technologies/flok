@@ -1,7 +1,6 @@
 import {Action} from "redux"
 import {UserAuthResponse, UserHomeResponse} from "../../models/api"
 import {UserModel} from "../../models/user"
-import {apiToModel} from "../../utils/apiUtils"
 import {ApiAction} from "../actions/api"
 import {
   GET_USER_HOME_SUCCESS,
@@ -37,12 +36,12 @@ export default function userReducer(
     case SET_USER_LOGGED_OUT:
       return {...state, loginStatus: "LOGGED_OUT"}
     case GET_USER_HOME_SUCCESS:
-      payload = apiToModel((action as ApiAction).payload) as UserHomeResponse
+      payload = (action as ApiAction).payload as UserHomeResponse
       return {...state, user: payload.user}
     case GET_USER_RESET_SUCCESS:
       let loginToken = (action as unknown as {meta: {loginToken: string}}).meta
         .loginToken
-      let user = apiToModel((action as ApiAction).payload) as UserAuthResponse
+      let user = (action as ApiAction).payload as UserAuthResponse
       return {
         ...state,
         auth: {
