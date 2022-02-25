@@ -1,7 +1,9 @@
-import {Button, makeStyles, Typography} from "@material-ui/core"
-import {push} from "connected-react-router"
-import {useDispatch} from "react-redux"
-import {RouteComponentProps, withRouter} from "react-router-dom"
+import {Box, Link, makeStyles, Typography} from "@material-ui/core"
+import {
+  Link as RouterLink,
+  RouteComponentProps,
+  withRouter,
+} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
@@ -57,7 +59,6 @@ function dateFormat(date: Date | undefined) {
 
 type RetreatFlightsProps = RouteComponentProps<{retreatIdx: string}>
 function RetreatFlightsPage(props: RetreatFlightsProps) {
-  let dispatch = useDispatch()
   let classes = useStyles()
 
   let retreatIdx = parseInt(props.match.params.retreatIdx)
@@ -74,7 +75,21 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
       />
       <PageBody appBar>
         <div className={classes.section}>
-          <Typography variant="h1">Flights</Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="flex-end">
+            <Typography variant="h1">Flights</Typography>
+            <Link
+              variant="body1"
+              underline="always"
+              component={RouterLink}
+              to={AppRoutes.getPath("RetreatAttendeesPage", {
+                retreatIdx: retreatIdx.toString(),
+              })}>
+              Need to add an attendee?
+            </Link>
+          </Box>
           <AppExpandableTable
             headers={[
               {
@@ -127,23 +142,6 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 : []
             }
           />
-          <div className={classes.addBtn}>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={() => {
-                dispatch(
-                  push(
-                    AppRoutes.getPath("RetreatAttendeesPage", {
-                      retreatId: retreatIdx.toString(),
-                    })
-                  )
-                )
-              }}>
-              Add Attendee
-            </Button>
-          </div>
         </div>
       </PageBody>
     </PageContainer>

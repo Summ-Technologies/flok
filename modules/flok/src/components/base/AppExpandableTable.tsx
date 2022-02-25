@@ -217,7 +217,9 @@ export default function AppExpandableTable(props: AppExpandableTableProps) {
                 <div className={classes.headerCell}>
                   <AppTypography variant="h3">{h.name}</AppTypography>
                   {h.comparator ? (
-                    <IconButton onClick={() => handleSortClick(h.name)}>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleSortClick(h.name)}>
                       <SwapVert />
                     </IconButton>
                   ) : (

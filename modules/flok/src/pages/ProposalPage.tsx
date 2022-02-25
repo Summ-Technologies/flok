@@ -215,7 +215,7 @@ function ProposalPage(props: ProposalPageProps) {
             Proposal missing or unavailable. View your{" "}
             <a
               href={AppRoutes.getPath("ProposalsListPage", {
-                retreatId: retreatIdx.toString(),
+                retreatIdx: retreatIdx.toString(),
               })}>
               proposals list
             </a>
