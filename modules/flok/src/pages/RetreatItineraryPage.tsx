@@ -17,7 +17,7 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
         retreatIdx={retreatIdx}
         companyName={retreat.company_name}
       />
-      <PageBody>
+      <PageBody appBar>
         <UnderConstructionView />
       </PageBody>
     </PageContainer>

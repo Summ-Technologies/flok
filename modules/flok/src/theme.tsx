@@ -106,8 +106,6 @@ export const theme = createMuiTheme({
     MuiListItemIcon: {
       root: {color: "inherit"},
     },
-    MuiPaper: {
-      root: {borderRadius: VALUES.borderRadius},
-    },
+    MuiPaper: {},
   },
 } as MuiThemeOptions)

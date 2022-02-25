@@ -1,34 +1,38 @@
 import {
   Box,
   Drawer,
-  IconButton,
   Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  makeStyles
+  makeStyles,
+  useMediaQuery,
 } from "@material-ui/core"
 import {
   ApartmentRounded,
-  Close,
   FlightRounded,
   HomeRounded,
   MapRounded,
-  Menu,
   PeopleAlt,
-  SvgIconComponent
+  SvgIconComponent,
 } from "@material-ui/icons"
-import { push } from "connected-react-router"
-import React, { PropsWithChildren, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import {push} from "connected-react-router"
+import React, {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useState,
+} from "react"
+import {useDispatch, useSelector} from "react-redux"
 import AppImage from "../../components/base/AppImage"
-import { AppRoutes, FlokPageName } from "../../Stack"
-import { RootState } from "../../store"
-import { deleteUserSignin } from "../../store/actions/user"
-import { FlokTheme } from "../../theme"
+import {AppRoutes, FlokPageName} from "../../Stack"
+import {RootState} from "../../store"
+import {deleteUserSignin} from "../../store/actions/user"
+import {FlokTheme} from "../../theme"
 
 let DRAWER_WIDTH = 240
+const TRANSITION_DURATION = 250
 
 const useStyles = makeStyles((theme: FlokTheme) => ({
   root: {
@@ -60,73 +64,81 @@ let navItems = {
   itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
 }
 
+const SidebarContext = createContext<{
+  sidebarOpen: boolean
+  openSidebar: (() => void) | undefined
+  closeSidebar: (() => void) | undefined
+}>({sidebarOpen: false, openSidebar: undefined, closeSidebar: undefined})
+
+export function useSidebar() {
+  const {sidebarOpen, openSidebar, closeSidebar} = useContext(SidebarContext)
+  if (openSidebar === undefined || closeSidebar === undefined) {
+    throw Error("useSidebar must be used within a SidebarProvider")
+  }
+  return {sidebarOpen, openSidebar, closeSidebar}
+}
+
+export function SidebarProvider(props: PropsWithChildren<{}>) {
+  let [sidebarOpen, setSidebarOpen] = useState(false)
+  return (
+    <SidebarContext.Provider
+      value={{
+        sidebarOpen,
+        openSidebar: () => setSidebarOpen(true),
+        closeSidebar: () => setSidebarOpen(false),
+      }}>
+      {props.children}
+    </SidebarContext.Provider>
+  )
+}
+
 type SidenavItemType = keyof typeof navItems
 type PageSidenavProps = {
   retreatIdx: number
   activeItem?: SidenavItemType
   companyName?: string
 }
-export default function PageSidenav(
-  props: PropsWithChildren<PageSidenavProps>
-) {
+export default function PageSidenav(props: PageSidenavProps) {
   let dispatch = useDispatch()
   const classes = useStyles()
-
-  let [isMobile, setIsMobile] = useState(
-    window.innerWidth <= 720 ? true : false
+  let {sidebarOpen, closeSidebar} = useSidebar()
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
   )
-  let [open, setOpen] = useState(false)
-  window.addEventListener("resize", () => {
-    if (window.innerWidth <= 720) {
-      setIsMobile(true)
-    } else {
-      setIsMobile(false)
-    }
-  })
 
   let isLoggedIn = useSelector(
     (state: RootState) => state.user.loginStatus === "LOGGED_IN"
   )
 
   return (
-    <>
-      {isMobile && (
-        <IconButton onClick={() => setOpen(true)} style={{height: 64}}>
-          <Menu fontSize="large" />
-        </IconButton>
-      )}
-      <Drawer
-        open={open}
-        onClose={() => setOpen(false)}
-        classes={{root: classes.root, paper: classes.paper}}
-        variant={isMobile ? "temporary" : "permanent"}>
-        <Box
-          marginLeft="auto"
-          marginRight="auto"
-          marginBottom={4}
-          style={{display: "flex", alignItems: "flex-end"}}>
-          <AppImage
-            height="40px"
-            alt="White Flok logo"
-            img="branding/logos/icon_text-empty_bg-white%40.5x.png"
-          />
-          {isMobile ? (
-            <IconButton style={{color: "white"}} onClick={() => setOpen(false)}>
-              <Close fontSize="large" />
-            </IconButton>
-          ) : (
-            <></>
-          )}
-        </Box>
-        <List>
-          {Object.keys(navItems).map((item, index) => {
-            let sidenavItem = item as SidenavItemType
-            const itemTup = navItems[sidenavItem]
-            return (
-              <ListItem
-                button
-                selected={props.activeItem === sidenavItem}
-                onClick={() => {
+    <Drawer
+      open={sidebarOpen}
+      transitionDuration={TRANSITION_DURATION}
+      onClose={closeSidebar}
+      color="primary"
+      classes={{root: classes.root, paper: classes.paper}}
+      variant={isSmallScreen ? "temporary" : "permanent"}>
+      <Box
+        marginLeft="auto"
+        marginRight="auto"
+        marginBottom={4}
+        style={{display: "flex", alignItems: "flex-end"}}>
+        <AppImage
+          height="40px"
+          alt="White Flok logo"
+          img="branding/logos/icon_text-empty_bg-white%40.5x.png"
+        />
+      </Box>
+      <List>
+        {Object.keys(navItems).map((item, index) => {
+          let sidenavItem = item as SidenavItemType
+          const itemTup = navItems[sidenavItem]
+          return (
+            <ListItem
+              button
+              selected={props.activeItem === sidenavItem}
+              onClick={() => {
+                let redirect = () =>
                   dispatch(
                     push(
                       AppRoutes.getPath(itemTup[2], {
@@ -134,33 +146,38 @@ export default function PageSidenav(
                       })
                     )
                   )
-                }}>
-                <ListItemIcon>{itemTup[1]}</ListItemIcon>
-                <ListItemText>{itemTup[0]}</ListItemText>
-              </ListItem>
-            )
-          })}
-        </List>
-        <List className={classes.footer}>
-          {props.companyName && (
-            <ListItem>
-              <ListItemText>{props.companyName}</ListItemText>
-            </ListItem>
-          )}
-          {isLoggedIn && (
-            <Link
-              component={ListItem}
-              color="inherit"
-              button
-              dense
-              onClick={() => {
-                dispatch(deleteUserSignin())
+                if (sidebarOpen) {
+                  closeSidebar()
+                  setTimeout(redirect, TRANSITION_DURATION)
+                } else {
+                  redirect()
+                }
               }}>
-              <ListItemText>Log out</ListItemText>
-            </Link>
-          )}
-        </List>
-      </Drawer>
-    </>
+              <ListItemIcon>{itemTup[1]}</ListItemIcon>
+              <ListItemText>{itemTup[0]}</ListItemText>
+            </ListItem>
+          )
+        })}
+      </List>
+      <List className={classes.footer}>
+        {props.companyName && (
+          <ListItem>
+            <ListItemText>{props.companyName}</ListItemText>
+          </ListItem>
+        )}
+        {isLoggedIn && (
+          <Link
+            component={ListItem}
+            color="inherit"
+            button
+            dense
+            onClick={() => {
+              dispatch(deleteUserSignin())
+            }}>
+            <ListItemText>Log out</ListItemText>
+          </Link>
+        )}
+      </List>
+    </Drawer>
   )
 }

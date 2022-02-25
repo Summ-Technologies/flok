@@ -10,12 +10,12 @@ import {
   styled,
   TextField,
   Tooltip,
+  Typography,
 } from "@material-ui/core"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
-import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
@@ -144,11 +144,9 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
         retreatIdx={retreatIdx}
         companyName={retreat?.company_name}
       />
-      <PageBody>
+      <PageBody appBar>
         <div className={classes.section}>
-          <AppTypography variant="h1" paragraph>
-            Attendees
-          </AppTypography>
+          <Typography variant="h1">Attendees</Typography>
           <AppExpandableTable
             headers={[
               {

@@ -1,10 +1,11 @@
-import {makeStyles} from "@material-ui/core"
+import {makeStyles, Typography} from "@material-ui/core"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppMoreInfoIcon from "../components/base/AppMoreInfoIcon"
 import AppTypography from "../components/base/AppTypography"
 import ProposalListRow from "../components/lodging/ProposalListRow"
+import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import {HotelModel} from "../models/lodging"
@@ -17,6 +18,7 @@ import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
   root: {
+    padding: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
@@ -142,67 +144,70 @@ function ProposalsListPage(props: ProposalsListPageProps) {
         retreatIdx={retreatIdx}
         companyName={retreat.company_name}
       />
-      <div className={classes.root}>
-        {groupedSelectedHotels.length + unavailableSelectedHotels.length ===
-        0 ? (
-          loadingHotels ? (
-            <AppTypography variant="body1">Loading...</AppTypography>
-          ) : (
-            <AppTypography variant="body1">
-              Check back soon. We're currently working on collecting hotel
-              proposals on your behalf!
-            </AppTypography>
-          )
-        ) : undefined}
-        {/* Available hotels render */}
-        {groupedSelectedHotels.map((destList) => {
-          let destination = destinations[destList.destinationId]
-          if (destination && destList.selectedHotels.length) {
-            return (
-              <div className={classes.proposalsList}>
-                <AppTypography variant="h2">
-                  {DestinationUtils.getLocationName(destination)}
-                </AppTypography>
-                {destList.selectedHotels.map((selectedHotel) => {
-                  let hotel = hotelsById[selectedHotel.hotel_id]
-                  let proposals = selectedHotel.hotel_proposals || []
-                  return (
-                    <ProposalListRow
-                      hotel={hotel}
-                      destination={destination}
-                      proposals={proposals}
-                      onViewProposal={() => onExplore(hotel)}
-                    />
-                  )
-                })}
-              </div>
+      <PageBody appBar>
+        <div className={classes.root}>
+          <Typography variant="h1">Proposals</Typography>
+          {groupedSelectedHotels.length + unavailableSelectedHotels.length ===
+          0 ? (
+            loadingHotels ? (
+              <AppTypography variant="body1">Loading...</AppTypography>
+            ) : (
+              <AppTypography variant="body1">
+                Check back soon. We're currently working on collecting hotel
+                proposals on your behalf!
+              </AppTypography>
             )
-          } else {
-            return undefined
-          }
-        })}
-        {/* Unavailable hotels render */}
-        {unavailableSelectedHotels.length ? (
-          <AppTypography variant="h2">
-            Unavailable Hotels{" "}
-            <AppMoreInfoIcon tooltipText="We reached out to the following hotels but they cannot support your group during the requested dates." />
-          </AppTypography>
-        ) : undefined}
-        <div className={classes.proposalsList}>
-          {unavailableSelectedHotels.map((selectedHotel) => {
-            let hotel = hotelsById[selectedHotel.hotel_id]
-            let destination = destinations[hotel.destination_id]
-            return destination ? (
-              <ProposalListRow
-                unavailable
-                hotel={hotel}
-                proposals={[]}
-                destination={destination}
-              />
-            ) : undefined
+          ) : undefined}
+          {/* Available hotels render */}
+          {groupedSelectedHotels.map((destList) => {
+            let destination = destinations[destList.destinationId]
+            if (destination && destList.selectedHotels.length) {
+              return (
+                <div className={classes.proposalsList}>
+                  <AppTypography variant="h2">
+                    {DestinationUtils.getLocationName(destination)}
+                  </AppTypography>
+                  {destList.selectedHotels.map((selectedHotel) => {
+                    let hotel = hotelsById[selectedHotel.hotel_id]
+                    let proposals = selectedHotel.hotel_proposals || []
+                    return (
+                      <ProposalListRow
+                        hotel={hotel}
+                        destination={destination}
+                        proposals={proposals}
+                        onViewProposal={() => onExplore(hotel)}
+                      />
+                    )
+                  })}
+                </div>
+              )
+            } else {
+              return undefined
+            }
           })}
+          {/* Unavailable hotels render */}
+          {unavailableSelectedHotels.length ? (
+            <AppTypography variant="h2">
+              Unavailable Hotels{" "}
+              <AppMoreInfoIcon tooltipText="We reached out to the following hotels but they cannot support your group during the requested dates." />
+            </AppTypography>
+          ) : undefined}
+          <div className={classes.proposalsList}>
+            {unavailableSelectedHotels.map((selectedHotel) => {
+              let hotel = hotelsById[selectedHotel.hotel_id]
+              let destination = destinations[hotel.destination_id]
+              return destination ? (
+                <ProposalListRow
+                  unavailable
+                  hotel={hotel}
+                  proposals={[]}
+                  destination={destination}
+                />
+              ) : undefined
+            })}
+          </div>
         </div>
-      </div>
+      </PageBody>
     </PageContainer>
   )
 }

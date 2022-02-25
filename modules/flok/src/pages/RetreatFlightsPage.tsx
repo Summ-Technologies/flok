@@ -1,9 +1,8 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Button, makeStyles, Typography} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
-import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
@@ -73,11 +72,9 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
         retreatIdx={retreatIdx}
         companyName={retreat?.company_name}
       />
-      <PageBody>
+      <PageBody appBar>
         <div className={classes.section}>
-          <AppTypography variant="h1" paragraph>
-            Flights
-          </AppTypography>
+          <Typography variant="h1">Flights</Typography>
           <AppExpandableTable
             headers={[
               {

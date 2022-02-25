@@ -1,4 +1,4 @@
-import {Collapse, makeStyles} from "@material-ui/core"
+import {Box, makeStyles, Typography} from "@material-ui/core"
 import {
   Apartment,
   CalendarToday,
@@ -18,6 +18,7 @@ import AppTodoList from "../components/overview/AppTaskList"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+import config, {MAX_TASKS} from "../config"
 import {RetreatToTask} from "../models/retreat"
 import {putRetreatTask} from "../store/actions/retreat"
 import {useRetreat} from "./misc/RetreatProvider"
@@ -46,10 +47,14 @@ let useStyles = makeStyles((theme) => ({
   iconExpanded: {
     transform: "rotateZ(180deg)",
   },
+  expandButtons: {
+    textDecoration: "underline",
+    cursor: "pointer",
+  },
 }))
 
 type RetreatOverviewProps = RouteComponentProps<{retreatIdx: string}>
-function RetreatOverview(props: RetreatOverviewProps) {
+function RetreatOverviewPage(props: RetreatOverviewProps) {
   let classes = useStyles()
   // Path and query params
   let retreatIdx = parseInt(props.match.params.retreatIdx)
@@ -110,7 +115,32 @@ function RetreatOverview(props: RetreatOverviewProps) {
     )
   }
 
-  let [tasksExpanded, setTasksExpanded] = useState(false)
+  let [todoTasksCollapsed, setTodoTasksCollapsed] = useState(true)
+  let [completedTasksCollapsed, setCompletedTasksCollapsed] = useState(true)
+  const MAX_TASKS_SHOWN =
+    parseInt(config.get(MAX_TASKS)) > 0
+      ? parseInt(config.get(MAX_TASKS))
+      : undefined
+  let [todoTasks, setTodoTasks] = useState<RetreatToTask[]>([])
+  let [todoTasksExtra, setTodoTasksExtra] = useState<RetreatToTask[]>([])
+
+  useEffect(() => {
+    if (MAX_TASKS_SHOWN === undefined) {
+      setTodoTasksExtra([])
+      setTodoTasks(retreat.tasks_todo)
+    } else {
+      setTodoTasksExtra(
+        retreat.tasks_todo
+          .slice(MAX_TASKS_SHOWN)
+          .sort((a, b) => a.order - b.order)
+      )
+      setTodoTasks(
+        retreat.tasks_todo
+          .slice(0, MAX_TASKS_SHOWN)
+          .sort((a, b) => a.order - b.order)
+      )
+    }
+  }, [MAX_TASKS_SHOWN, setTodoTasksExtra, setTodoTasks, retreat])
 
   return (
     <PageContainer>
@@ -119,11 +149,9 @@ function RetreatOverview(props: RetreatOverviewProps) {
         retreatIdx={retreatIdx}
         companyName={retreat?.company_name}
       />
-      <PageBody>
+      <PageBody appBar>
         <div className={classes.section}>
-          <AppTypography variant="h1" paragraph>
-            Overview
-          </AppTypography>
+          <Typography variant="h1">Overview</Typography>
           <AppOverviewCardList>
             <AppOverviewCard
               label="Dates"
@@ -156,16 +184,31 @@ function RetreatOverview(props: RetreatOverviewProps) {
               fontSize="small"
             />
           </AppTypography>
-          {retreat && (
-            <AppTodoList
-              retreatToTasks={
-                retreat.tasks_todo.sort((a, b) => a.order - b.order) || []
-              }
-              handleCheckboxClick={handleTaskClick}
-              orderBadge={true}
-              showMore
-            />
-          )}
+          <AppTodoList
+            retreatToTasks={todoTasks}
+            handleCheckboxClick={handleTaskClick}
+            orderBadge={true}
+          />
+          {todoTasksExtra.length > 0 ? (
+            <>
+              <AppTodoList
+                retreatToTasks={todoTasksExtra}
+                handleCheckboxClick={handleTaskClick}
+                orderBadge={true}
+                collapsed={todoTasksCollapsed}
+              />
+              <Box marginTop={2}>
+                <Typography
+                  className={classes.expandButtons}
+                  component="span"
+                  color="textSecondary"
+                  variant="body2"
+                  onClick={() => setTodoTasksCollapsed(!todoTasksCollapsed)}>
+                  {todoTasksCollapsed ? "show more" : "show less"}
+                </Typography>
+              </Box>
+            </>
+          ) : undefined}
         </div>
         <div className={classes.section}>
           <AppTypography variant="h4" paragraph>
@@ -175,42 +218,30 @@ function RetreatOverview(props: RetreatOverviewProps) {
               className={`${classes.headerIcon} completed`}
               fontSize="small"
             />
-            {retreat && retreat.tasks_completed.length > 0 && (
-              <AppTypography
-                style={{
-                  textDecoration: "underline",
-                  color: "#505050",
-                  fontSize: ".75em",
-                  display: "inline",
-                  cursor: "pointer",
-                }}
-                onClick={() => setTasksExpanded(!tasksExpanded)}>
-                {tasksExpanded ? "hide" : "show completed"}
-              </AppTypography>
+            {retreat.tasks_completed.length > 0 && (
+              <Typography
+                component="span"
+                className={classes.expandButtons}
+                variant="body2"
+                onClick={() =>
+                  setCompletedTasksCollapsed(!completedTasksCollapsed)
+                }>
+                {completedTasksCollapsed ? "show completed" : "hide"}
+              </Typography>
             )}
-            {/* <IconButton
-                style={{padding: 0}}
-                onClick={() => setTasksExpanded(!tasksExpanded)}
-                className={tasksExpanded ? classes.iconExpanded : ""}>
-                <ExpandMore />
-              </IconButton> */}
           </AppTypography>
-          {retreat && (
-            <Collapse in={tasksExpanded}>
-              <AppTodoList
-                retreatToTasks={
-                  retreat.tasks_completed.sort((a, b) => b.order - a.order) ||
-                  []
-                }
-                handleCheckboxClick={handleTaskClick}
-                orderBadge={false}
-              />
-            </Collapse>
-          )}
+          <AppTodoList
+            retreatToTasks={retreat.tasks_completed.sort(
+              (a, b) => b.order - a.order
+            )}
+            handleCheckboxClick={handleTaskClick}
+            orderBadge={false}
+            collapsed={completedTasksCollapsed}
+          />
         </div>
       </PageBody>
     </PageContainer>
   )
 }
 
-export default withRouter(RetreatOverview)
+export default withRouter(RetreatOverviewPage)

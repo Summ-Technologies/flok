@@ -68,11 +68,6 @@ class Config {
         )
       }
 
-      let maxTasks = process.env.MAX_TASKS
-      if (maxTasks !== undefined) {
-        this.appConfig[MAX_TASKS] = maxTasks
-      }
-
       Object.keys(process.env).forEach((envVar) => {
         if (envVar.toLowerCase().startsWith("react_app_")) {
           let key = envVar.toLowerCase().replace("react_app_", "")
