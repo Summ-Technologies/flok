@@ -141,3 +141,67 @@ export type AdminDestinationModel = {
   country?: string
   country_abbreviation?: string
 }
+
+// ATTENDEES
+export type AdminRetreatTripModel = {
+  id: number
+  cost: number
+  duration: number
+  confirmation_number: string
+  arr_airport: string
+  dep_airport: string
+  arr_datetime: string
+  dep_datetime: string
+  airline: string
+}
+
+export type AdminRetreatTravelModel = {
+  id: number
+  cost: number
+  dep_trip?: AdminRetreatTripModel
+  arr_trip?: AdminRetreatTripModel
+  email_address: string
+  name: string
+  status: RetreatAttendeeFlightStatusType
+}
+
+export type AdminRetreatAttendeeModel = {
+  id: number
+  email_address: string
+  name: string
+  travel?: AdminRetreatTravelModel
+  city: string
+  dietary_prefs: string
+  notes: string
+  info_status: RetreatAttendeeInfoStatusType
+  flight_status: RetreatAttendeeFlightStatusType
+}
+
+export type AdminRetreatAttendeeUpdateModel = Pick<
+  AdminRetreatAttendeeModel,
+  | "id"
+  | "email_address"
+  | "name"
+  | "city"
+  | "dietary_prefs"
+  | "notes"
+  | "info_status"
+  | "flight_status"
+>
+
+export type RetreatAttendeeInfoStatusType =
+  | "CREATED"
+  | "FORM_SENT"
+  | "INFO_ENTERED"
+export const RetreatAttendeeInfoStatusOptions = [
+  "CREATED",
+  "FORM_SENT",
+  "INFO_ENTERED",
+]
+
+export type RetreatAttendeeFlightStatusType = "PENDING" | "BOOKED" | "OPT_OUT"
+export const RetreatAttendeeFlightStatusOptions = [
+  "PENDING",
+  "BOOKED",
+  "OPT_OUT",
+]

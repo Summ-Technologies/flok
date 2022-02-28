@@ -263,7 +263,6 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           {...textFieldProps}
           id="cost_saving_notes"
           variant="outlined"
-          minRows={5}
           label="Additional notes"
           multiline
           value={formik.values.cost_saving_notes ?? ""}

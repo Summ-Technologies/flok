@@ -3,23 +3,28 @@ import {ApiError} from "redux-api-middleware"
 import {
   AdminDestinationModel,
   AdminHotelModel,
+  AdminRetreatAttendeeModel,
   AdminRetreatListModel,
   AdminRetreatListType,
   AdminRetreatModel,
 } from "../../models"
 import {
   DELETE_HOTEL_PROPOSAL_SUCCESS,
+  DELETE_RETREAT_ATTENDEES_SUCCESS,
   DELETE_SELECTED_HOTEL_SUCCESS,
   GET_DESTINATIONS_SUCCESS,
   GET_HOTELS_BY_DEST_SUCCESS,
   GET_HOTELS_BY_ID_SUCCESS,
   GET_RETREATS_LIST_SUCCESS,
+  GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_DETAILS_FAILURE,
   GET_RETREAT_DETAILS_REQUEST,
   GET_RETREAT_DETAILS_SUCCESS,
   POST_HOTEL_PROPOSAL_SUCCESS,
+  POST_RETREAT_ATTENDEES_SUCCESS,
   POST_SELECTED_HOTEL_SUCCESS,
   PUT_HOTEL_PROPOSAL_SUCCESS,
+  PUT_RETREAT_ATTENDEES_SUCCESS,
   PUT_RETREAT_DETAILS_FAILURE,
   PUT_RETREAT_DETAILS_REQUEST,
   PUT_RETREAT_DETAILS_SUCCESS,
@@ -53,6 +58,9 @@ export type AdminState = {
       [key: number]: ApiStatus | undefined
     }
   }
+  attendeesByRetreat: {
+    [id: number]: AdminRetreatAttendeeModel[]
+  }
 }
 
 const initialState: AdminState = {
@@ -69,6 +77,7 @@ const initialState: AdminState = {
   api: {
     retreatsDetails: {},
   },
+  attendeesByRetreat: {},
 }
 
 export default function AdminReducer(
@@ -202,6 +211,22 @@ export default function AdminReducer(
         retreatsDetails: {
           ...state.retreatsDetails,
           [payload.retreat.id]: payload.retreat,
+        },
+      }
+    case POST_RETREAT_ATTENDEES_SUCCESS:
+    case PUT_RETREAT_ATTENDEES_SUCCESS:
+    case DELETE_RETREAT_ATTENDEES_SUCCESS:
+    case GET_RETREAT_ATTENDEES_SUCCESS:
+      meta = (action as unknown as {meta: {retreatId: number}}).meta
+      action = action as unknown as ApiAction
+      payload = (action as unknown as ApiAction).payload as {
+        attendees: AdminRetreatAttendeeModel[]
+      }
+      return {
+        ...state,
+        attendeesByRetreat: {
+          ...state.attendeesByRetreat,
+          [meta.retreatId]: payload.attendees,
         },
       }
     default:

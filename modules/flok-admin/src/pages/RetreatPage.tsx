@@ -15,13 +15,13 @@ import {
 } from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
+import {RetreatAttendeeInfoForm} from "../components/retreats/RetreatAttendeeInfoForm"
 import RetreatOverviewForm from "../components/retreats/RetreatInfoForm"
 import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
-import {getRetreatDetails} from "../store/actions/admin"
+import {getRetreatAttendees, getRetreatDetails} from "../store/actions/admin"
 import {useQuery} from "../utils"
-
 let useStyles = makeStyles((theme) => ({
   body: {
     flex: "1 1 auto",
@@ -52,16 +52,22 @@ function RetreatPage(props: RetreatPageProps) {
   let retreatApiCall = useSelector((state: RootState) => {
     return state.admin.api.retreatsDetails[retreatId]
   })
+  let retreatAttendees = useSelector((state: RootState) => {
+    return state.admin.attendeesByRetreat[retreatId]
+  })
 
   useEffect(() => {
     if (!retreat) {
       dispatch(getRetreatDetails(retreatId))
     }
-  }, [retreat, dispatch, retreatId])
+    if (retreatAttendees === undefined) {
+      dispatch(getRetreatAttendees(retreatId))
+    }
+  }, [retreat, dispatch, retreatId, retreatAttendees])
 
   // Editing
   let [tabQuery, setTabQuery] = useQuery("tab")
-  const validTabs = ["overview", "lodging"]
+  const validTabs = ["overview", "lodging", "attendees"]
 
   return (
     <PageBase>
@@ -108,10 +114,39 @@ function RetreatPage(props: RetreatPageProps) {
                 indicatorColor="primary">
                 <Tab label="Overview" id="overview" value="overview" />
                 <Tab label="Lodging" id="lodging" value="lodging" />
+                <Tab label="Attendees" id="attendees" value="attendees" />
               </Tabs>
             </div>
             {tabQuery === "lodging" ? (
               <RetreatLodgingDetails retreat={retreat} />
+            ) : tabQuery === "attendees" ? (
+              retreatAttendees === undefined ? (
+                <AppTypography variant="body1">Loading...</AppTypography>
+              ) : (
+                // <RetreatAttendeesTable
+                //   rows={
+                //     retreatAttendees
+                //       ? retreatAttendees.map((a) => ({
+                //           id: a.id,
+                //           city: a.city,
+                //           email: a.email_address,
+                //           name: a.name,
+                //           dietaryPrefs: a.dietary_prefs,
+                //           notes: a.notes,
+                //           infoStatus: a.info_status,
+                //           flightStatus: a.flight_status,
+                //         }))
+                //       : []
+                //   }
+                //   onSelect={function (id: number): void {
+                //     throw new Error("Function not implemented.")
+                //   }}
+                //   onTravelSelect={function (id: number): void {
+                //     throw new Error("Function not implemented.")
+                //   }}
+                // />
+                <RetreatAttendeeInfoForm attendee={retreatAttendees[0]} />
+              )
             ) : (
               <RetreatOverviewForm retreat={retreat} />
             )}
