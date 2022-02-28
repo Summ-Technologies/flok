@@ -15,8 +15,7 @@ jobs:
   deploy-module:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-        echo Deploying module: '/modules/${{ inputs.module }}' to Heroku app: '${{ inputs.heroku-app }}'
+      - run: "echo Deploying module: '/modules/${{ inputs.module }}' to Heroku app: '${{ inputs.heroku-app }}'"
       - uses: actions/checkout@v2
       - uses: Summ-Technologies/heroku-config@v1.0.0
         with:
