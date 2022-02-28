@@ -2,8 +2,8 @@ name: Manual deploy (production)
 on:
   workflow_dispatch:
     inputs:
-      module:
-        description: "The module to deploy"
+      app:
+        description: "The app to deploy"
         required: true
         type: choice
         options:
