@@ -1,4 +1,4 @@
-name: Auto deploy
+name: Auto deploy (production)
 on:
   push:
     branches:
@@ -25,7 +25,8 @@ jobs:
     if: ${{ needs.changes.outputs.flok == 'true' }}
     uses: ./.github/workflows/deploy.yaml
     with:
-      app: flok
+      module: flok
+      heroku-app: flok-frontend
     secrets:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   auto-deploy-flok-admin:
@@ -33,6 +34,7 @@ jobs:
     if: ${{ needs.changes.outputs.flok-admin == 'true' }}
     uses: ./.github/workflows/deploy.yaml
     with:
-      app: flok-admin
+      module: flok-admin
+      heroku-app: flok-admin
     secrets:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}

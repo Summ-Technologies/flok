@@ -1,9 +1,9 @@
-name: Manual deploy
+name: Manual deploy (production)
 on:
   workflow_dispatch:
     inputs:
-      app:
-        description: "The app to deploy"
+      module:
+        description: "The module to deploy"
         required: true
         type: choice
         options:
@@ -11,16 +11,18 @@ on:
           - flok-admin
 jobs:
   deploy-flok:
-    if: ${{ github.event.inputs.app == 'flok'}}
+    if: ${{ github.event.inputs.app == 'flok' && github.ref == 'refs/heads/master' }}
     uses: ./.github/workflows/deploy.yaml
     with:
-      app: flok
+      module: flok
+      heroku-app: flok-frontend
     secrets:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   deploy-flok-admin:
-    if: ${{ github.event.inputs.app == 'flok-admin'}}
+    if: ${{ github.event.inputs.app == 'flok-admin' && github.ref == 'refs/heads/master' }}
     uses: ./.github/workflows/deploy.yaml
     with:
-      app: flok-admin
+      module: flok-admin
+      heroku-app: flok-admin
     secrets:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
