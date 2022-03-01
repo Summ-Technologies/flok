@@ -353,7 +353,7 @@ export function putRetreatAttendees(
 ) {
   let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees`
   return createApiAction({
-    method: "POST",
+    method: "PUT",
     endpoint,
     body: JSON.stringify(attendee, (key, value) =>
       typeof value === "undefined" ? null : value

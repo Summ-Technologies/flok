@@ -1,4 +1,12 @@
-import {Breadcrumbs, Link, makeStyles, Tab, Tabs} from "@material-ui/core"
+import {
+  Box,
+  Breadcrumbs,
+  Button,
+  Link,
+  makeStyles,
+  Tab,
+  Tabs,
+} from "@material-ui/core"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
@@ -12,9 +20,11 @@ import {RetreatAttendeeInfoForm} from "../components/retreats/RetreatAttendeeInf
 import RetreatAttendeesTable from "../components/retreats/RetreatAttendeesTable"
 import RetreatOverviewForm from "../components/retreats/RetreatInfoForm"
 import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
+import {AdminRetreatAttendeeModel} from "../models"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatAttendees, getRetreatDetails} from "../store/actions/admin"
+import {theme} from "../theme"
 import {useQuery} from "../utils"
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -65,6 +75,9 @@ function RetreatPage(props: RetreatPageProps) {
 
   let [attendeeQuery, setAttendeeQuery] = useQuery("attendee")
   let attendee = useSelector((state: RootState) => {
+    if (attendeeQuery === "new") {
+      return {} as AdminRetreatAttendeeModel
+    }
     return state.admin.attendeesByRetreat[retreatId]?.find(
       (o) => o.id === parseInt(attendeeQuery || "-1")
     )
@@ -126,30 +139,45 @@ function RetreatPage(props: RetreatPageProps) {
               retreatAttendees === undefined ? (
                 <AppTypography variant="body1">Loading...</AppTypography>
               ) : attendee === undefined ? (
-                <RetreatAttendeesTable
-                  rows={
-                    retreatAttendees
-                      ? retreatAttendees.map((a) => ({
-                          id: a.id,
-                          city: a.city,
-                          email: a.email_address,
-                          name: a.name,
-                          dietaryPrefs: a.dietary_prefs,
-                          notes: a.notes,
-                          infoStatus: a.info_status,
-                          flightStatus: a.flight_status,
-                        }))
-                      : []
-                  }
-                  onSelect={function (id: number): void {
-                    setAttendeeQuery(id.toString())
-                    // setAttendee(retreatAttendees.find((obj) => obj.id === id))
-                  }}
-                />
+                <>
+                  <Box
+                    display="flex"
+                    justifyContent="flex-end"
+                    width="100%"
+                    marginBottom={theme.spacing(0.25)}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => setAttendeeQuery("new")}>
+                      Create New Attendee
+                    </Button>
+                  </Box>
+                  <RetreatAttendeesTable
+                    rows={
+                      retreatAttendees
+                        ? retreatAttendees.map((a) => ({
+                            id: a.id,
+                            city: a.city,
+                            email: a.email_address,
+                            name: a.name,
+                            dietaryPrefs: a.dietary_prefs,
+                            notes: a.notes,
+                            infoStatus: a.info_status,
+                            flightStatus: a.flight_status,
+                          }))
+                        : []
+                    }
+                    onSelect={function (id: number): void {
+                      setAttendeeQuery(id.toString())
+                      // setAttendee(retreatAttendees.find((obj) => obj.id === id))
+                    }}
+                  />
+                </>
               ) : attendee ? (
                 <RetreatAttendeeInfoForm
                   attendee={attendee}
                   onBack={() => setAttendeeQuery("")}
+                  retreatId={retreatId}
                 />
               ) : undefined
             ) : (

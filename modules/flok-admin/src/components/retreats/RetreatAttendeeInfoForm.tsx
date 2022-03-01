@@ -50,6 +50,7 @@ let useStyles = makeStyles((theme) => ({
 type RetreatAttendeeInfoFormProps = {
   attendee: AdminRetreatAttendeeModel
   onBack: () => void
+  retreatId: number
 }
 export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
   let {attendee} = props
@@ -70,7 +71,7 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
     },
     onSubmit: (values) => {
       dispatch(
-        putRetreatAttendees(attendee.id, createRetreatAttendeeForm(values))
+        putRetreatAttendees(props.retreatId, createRetreatAttendeeForm(values))
       )
     },
   })
