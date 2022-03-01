@@ -1,11 +1,4 @@
-import {
-  Breadcrumbs,
-  Link,
-  makeStyles,
-  Tab,
-  Tabs,
-  Typography,
-} from "@material-ui/core"
+import {Breadcrumbs, Link, makeStyles, Tab, Tabs} from "@material-ui/core"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
@@ -16,6 +9,7 @@ import {
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import {RetreatAttendeeInfoForm} from "../components/retreats/RetreatAttendeeInfoForm"
+import RetreatAttendeesTable from "../components/retreats/RetreatAttendeesTable"
 import RetreatOverviewForm from "../components/retreats/RetreatInfoForm"
 import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
 import {AppRoutes} from "../Stack"
@@ -69,6 +63,13 @@ function RetreatPage(props: RetreatPageProps) {
   let [tabQuery, setTabQuery] = useQuery("tab")
   const validTabs = ["overview", "lodging", "attendees"]
 
+  let [attendeeQuery, setAttendeeQuery] = useQuery("attendee")
+  let attendee = useSelector((state: RootState) => {
+    return state.admin.attendeesByRetreat[retreatId]?.find(
+      (o) => o.id === parseInt(attendeeQuery || "-1")
+    )
+  })
+
   return (
     <PageBase>
       <div className={classes.body}>
@@ -80,7 +81,9 @@ function RetreatPage(props: RetreatPageProps) {
             All Retreats
           </Link>
           {retreat != null ? (
-            <Typography color="textPrimary">{retreat.company_name}</Typography>
+            <AppTypography color="textPrimary">
+              {retreat.company_name}
+            </AppTypography>
           ) : undefined}
         </Breadcrumbs>
         {retreat == null &&
@@ -122,31 +125,33 @@ function RetreatPage(props: RetreatPageProps) {
             ) : tabQuery === "attendees" ? (
               retreatAttendees === undefined ? (
                 <AppTypography variant="body1">Loading...</AppTypography>
-              ) : (
-                // <RetreatAttendeesTable
-                //   rows={
-                //     retreatAttendees
-                //       ? retreatAttendees.map((a) => ({
-                //           id: a.id,
-                //           city: a.city,
-                //           email: a.email_address,
-                //           name: a.name,
-                //           dietaryPrefs: a.dietary_prefs,
-                //           notes: a.notes,
-                //           infoStatus: a.info_status,
-                //           flightStatus: a.flight_status,
-                //         }))
-                //       : []
-                //   }
-                //   onSelect={function (id: number): void {
-                //     throw new Error("Function not implemented.")
-                //   }}
-                //   onTravelSelect={function (id: number): void {
-                //     throw new Error("Function not implemented.")
-                //   }}
-                // />
-                <RetreatAttendeeInfoForm attendee={retreatAttendees[0]} />
-              )
+              ) : attendee === undefined ? (
+                <RetreatAttendeesTable
+                  rows={
+                    retreatAttendees
+                      ? retreatAttendees.map((a) => ({
+                          id: a.id,
+                          city: a.city,
+                          email: a.email_address,
+                          name: a.name,
+                          dietaryPrefs: a.dietary_prefs,
+                          notes: a.notes,
+                          infoStatus: a.info_status,
+                          flightStatus: a.flight_status,
+                        }))
+                      : []
+                  }
+                  onSelect={function (id: number): void {
+                    setAttendeeQuery(id.toString())
+                    // setAttendee(retreatAttendees.find((obj) => obj.id === id))
+                  }}
+                />
+              ) : attendee ? (
+                <RetreatAttendeeInfoForm
+                  attendee={attendee}
+                  onBack={() => setAttendeeQuery("")}
+                />
+              ) : undefined
             ) : (
               <RetreatOverviewForm retreat={retreat} />
             )}

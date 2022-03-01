@@ -63,7 +63,6 @@ export type RetreatAttendeesTableRow = {
 type RetreatAttendeesTableProps = {
   rows: RetreatAttendeesTableRow[]
   onSelect: (id: number) => void
-  onTravelSelect: (id: number) => void
 }
 
 export default function RetreatAttendeesTable(
@@ -76,7 +75,7 @@ export default function RetreatAttendeesTable(
     let rowIdAsString = params.getValue(params.id, "id")?.toString()
     let rowId = rowIdAsString ? parseInt(rowIdAsString) : null
     if (rowId != null && !isNaN(rowId)) {
-      flight ? props.onTravelSelect(rowId) : props.onSelect(rowId)
+      props.onSelect(rowId)
     } else {
       dispatch(enqueueSnackbar({message: "Something went wrong"}))
     }
@@ -103,22 +102,6 @@ export default function RetreatAttendeesTable(
     },
     {
       ...commonColDefs,
-      field: "travelButton",
-      headerName: " ",
-      width: 150,
-      sortable: false,
-      align: "center",
-      renderCell: (params) => (
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => onView(params, true)}>
-          View Flights
-        </Button>
-      ),
-    },
-    {
-      ...commonColDefs,
       field: "id",
       headerName: "ID",
       width: 75,
@@ -135,41 +118,41 @@ export default function RetreatAttendeesTable(
       headerName: "Email Address",
       width: 200,
     },
-    {
-      ...commonColDefs,
-      field: "city",
-      headerName: "City",
-      width: 200,
-    },
-    {
-      ...commonColDefs,
-      field: "dietaryPrefs",
-      headerName: "Dietary Preferences",
-      width: 200,
-      renderCell: (params) => {
-        if (!params.value) {
-          return <></>
-        }
-        return (params.value as string).split(",").map((s) => (
-          <Chip
-            size="small"
-            label={s}
-            style={{
-              margin: 1,
-              backgroundColor: theme.palette.primary.main,
-              color: "white",
-              cursor: "pointer",
-            }}
-          />
-        ))
-      },
-    },
-    {
-      ...commonColDefs,
-      field: "notes",
-      headerName: "Notes",
-      width: 200,
-    },
+    // {
+    //   ...commonColDefs,
+    //   field: "city",
+    //   headerName: "City",
+    //   width: 200,
+    // },
+    // {
+    //   ...commonColDefs,
+    //   field: "dietaryPrefs",
+    //   headerName: "Dietary Preferences",
+    //   width: 200,
+    //   renderCell: (params) => {
+    //     if (!params.value) {
+    //       return <></>
+    //     }
+    //     return (params.value as string).split(",").map((s) => (
+    //       <Chip
+    //         size="small"
+    //         label={s}
+    //         style={{
+    //           margin: 1,
+    //           backgroundColor: theme.palette.primary.main,
+    //           color: "white",
+    //           cursor: "pointer",
+    //         }}
+    //       />
+    //     ))
+    //   },
+    // },
+    // {
+    //   ...commonColDefs,
+    //   field: "notes",
+    //   headerName: "Notes",
+    //   width: 200,
+    // },
     {
       ...commonColDefs,
       field: "infoStatus",

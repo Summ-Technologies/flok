@@ -143,16 +143,23 @@ export type AdminDestinationModel = {
 }
 
 // ATTENDEES
+export type AdminTripLegModel = {
+  id: number
+  airline: string
+  dep_airport: string
+  arr_airport: string
+  flight_num: string
+  dep_datetime: Date
+  arr_datetime: Date
+  duration: number // length in s
+}
+
 export type AdminRetreatTripModel = {
   id: number
   cost: number
   duration: number
   confirmation_number: string
-  arr_airport: string
-  dep_airport: string
-  arr_datetime: string
-  dep_datetime: string
-  airline: string
+  trip_legs: AdminTripLegModel[]
 }
 
 export type AdminRetreatTravelModel = {
@@ -162,7 +169,7 @@ export type AdminRetreatTravelModel = {
   arr_trip?: AdminRetreatTripModel
   email_address: string
   name: string
-  status: RetreatAttendeeFlightStatusType
+  status: string
 }
 
 export type AdminRetreatAttendeeModel = {
@@ -173,8 +180,8 @@ export type AdminRetreatAttendeeModel = {
   city: string
   dietary_prefs: string
   notes: string
-  info_status: RetreatAttendeeInfoStatusType
-  flight_status: RetreatAttendeeFlightStatusType
+  info_status: string
+  flight_status: string
 }
 
 export type AdminRetreatAttendeeUpdateModel = Pick<

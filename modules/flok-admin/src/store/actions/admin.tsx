@@ -10,9 +10,7 @@ import {
   AdminRetreatUpdateModel,
   AdminSelectedHotelStateTypes,
   RetreatAttendeeFlightStatusOptions,
-  RetreatAttendeeFlightStatusType,
   RetreatAttendeeInfoStatusOptions,
-  RetreatAttendeeInfoStatusType,
 } from "../../models"
 import {createApiAction} from "./api"
 
@@ -341,12 +339,8 @@ export function createRetreatAttendeeForm(
     city: obj.city || "",
     notes: obj.notes || "",
     dietary_prefs: obj.dietary_prefs || "",
-    info_status:
-      obj.info_status ||
-      (RetreatAttendeeInfoStatusOptions[0] as RetreatAttendeeInfoStatusType),
-    flight_status:
-      obj.flight_status ||
-      (RetreatAttendeeFlightStatusOptions[0] as RetreatAttendeeFlightStatusType),
+    info_status: obj.info_status || RetreatAttendeeInfoStatusOptions[0],
+    flight_status: obj.flight_status || RetreatAttendeeFlightStatusOptions[0],
   }
 }
 
