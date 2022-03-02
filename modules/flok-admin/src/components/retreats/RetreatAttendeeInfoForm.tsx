@@ -1,12 +1,12 @@
 import {
   Box,
   Button,
-  Collapse,
   makeStyles,
   Paper,
   TextField,
   TextFieldProps,
 } from "@material-ui/core"
+import {ArrowForward} from "@material-ui/icons"
 import {useFormik} from "formik"
 import _ from "lodash"
 import {useState} from "react"
@@ -23,7 +23,6 @@ import {
 } from "../../store/actions/admin"
 import {theme} from "../../theme"
 import AppTypography from "../base/AppTypography"
-import RetreatTravelView from "./RetreatTravelView"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -45,6 +44,22 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     "& > *:not(:first-child)": {marginTop: theme.spacing(2)},
   },
+  tripLegRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    "& > *": {
+      marginTop: theme.spacing(2),
+      marginLeft: theme.spacing(2),
+    },
+  },
+  tripLeg: {
+    borderBottomWidth: "2px",
+    borderBottomStyle: "solid",
+    borderBottomColor: theme.palette.primary.light,
+    paddingBottom: theme.spacing(2),
+  },
 }))
 
 type RetreatAttendeeInfoFormProps = {
@@ -53,10 +68,57 @@ type RetreatAttendeeInfoFormProps = {
   retreatId: number
 }
 export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
-  let {attendee} = props
+  let [attendee, setAttendee] = useState(props.attendee)
   let classes = useStyles(props)
   let dispatch = useDispatch()
-  let [showFlight, setShowFlight] = useState(false)
+
+  const addTrip = (arr: boolean) => {
+    let newAttendee = {...attendee}
+    if (!newAttendee.travel) {
+      newAttendee.travel = {
+        id: -1,
+        status: RetreatAttendeeFlightStatusOptions[0],
+        cost: 0,
+      }
+    }
+    if (arr) {
+      newAttendee.travel.arr_trip = {
+        id: -1,
+        cost: 0,
+        confirmation_number: "",
+        trip_legs: [],
+      }
+    } else {
+      newAttendee.travel.dep_trip = {
+        id: -1,
+        cost: 0,
+        confirmation_number: "",
+        trip_legs: [],
+      }
+    }
+    setAttendee(newAttendee)
+  }
+
+  const addTripLeg = (arr: boolean) => {
+    let newAttendee = {...attendee}
+    let trip = newAttendee.travel?.dep_trip
+    if (arr) {
+      trip = newAttendee.travel?.arr_trip
+    }
+    if (!trip) return
+
+    trip.trip_legs.push({
+      id: -1,
+      airline: "",
+      dep_airport: "",
+      arr_airport: "",
+      flight_num: "",
+      arr_datetime: new Date(),
+      dep_datetime: new Date(),
+    })
+    setAttendee(newAttendee)
+    console.log(attendee)
+  }
 
   let formik = useFormik({
     enableReinitialize: true,
@@ -115,13 +177,14 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
           />
         </Paper>
         <Paper elevation={0} className={classes.formGroup}>
+          <AppTypography variant="h4">Attendee Info</AppTypography>
           <TextField
             {...textFieldProps}
             id="notes"
             value={formik.values.notes}
             label="Other Notes"
             multiline
-            maxRows={4}
+            maxRows={1}
           />
           <TextField
             {...textFieldProps}
@@ -149,17 +212,138 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
               </option>
             ))}
           </TextField>
-          <Box display="flex" justifyContent="flex-end" width="100%">
+          {attendee.travel ? (
+            <TextField
+              id="travel.cost"
+              value={formik.values.travel?.cost}
+              type="number"
+              required
+              label="Travel Cost ($)"
+              InputLabelProps={{shrink: true}}
+            />
+          ) : undefined}
+        </Paper>
+        <Paper elevation={0} className={classes.formGroup}>
+          <AppTypography variant="h4">Arriving Trip Info</AppTypography>
+          {attendee.travel?.arr_trip ? (
+            <>
+              <TextField
+                id="travel.arr_trip.confirmation_number"
+                value={
+                  formik.values.travel?.arr_trip?.confirmation_number || ""
+                }
+                required
+                label="Confirmation #"
+                InputLabelProps={{shrink: true}}
+              />
+              <AppTypography variant="h4" fontWeight="medium">
+                Trip Legs
+              </AppTypography>
+              {attendee.travel.arr_trip.trip_legs.map((leg, i) => (
+                <div className={classes.tripLeg}>
+                  <div className={classes.tripLegRow}>
+                    <TextField
+                      id={`travel.arr_trip.trip_legs.${i}.dep_airport`}
+                      value={
+                        formik.values.travel?.arr_trip?.trip_legs[i].dep_airport
+                      }
+                      required
+                      label="Departing Airport"
+                      InputLabelProps={{shrink: true}}
+                    />
+                    <ArrowForward />
+                    <TextField
+                      id={`travel.arr_trip.trip_legs.${i}.arr_airport`}
+                      value={
+                        formik.values.travel?.arr_trip?.trip_legs[i].arr_airport
+                      }
+                      required
+                      label="Arriving Airport"
+                      InputLabelProps={{shrink: true}}
+                    />
+                  </div>
+                  <div className={classes.tripLegRow}>
+                    <TextField
+                      type="datetime-local"
+                      id={`travel.arr_trip.trip_legs.${i}.dep_datetime`}
+                      value={
+                        formik.values.travel?.arr_trip?.trip_legs[i]
+                          .dep_datetime
+                      }
+                      helperText="Departing airport timezone"
+                      InputLabelProps={{shrink: true}}
+                      required
+                      label="Departing Date & Time"
+                    />
+                    <TextField
+                      type="datetime-local"
+                      id={`travel.arr_trip.trip_legs.${i}.arr_datetime`}
+                      InputLabelProps={{shrink: true}}
+                      value={
+                        formik.values.travel?.arr_trip?.trip_legs[i]
+                          .arr_datetime
+                      }
+                      required
+                      helperText="Arriving airport timezone"
+                      label="Arriving Date & Time"
+                    />
+                  </div>
+                  <div className={classes.tripLegRow}>
+                    <TextField
+                      id={`travel.arr_trip.trip_legs.${i}.flight_num`}
+                      InputLabelProps={{shrink: true}}
+                      value={
+                        formik.values.travel?.arr_trip?.trip_legs[i].flight_num
+                      }
+                      required
+                      label="Flight #"
+                    />
+                    <TextField
+                      id={`travel.arr_trip.trip_legs.${i}.airline`}
+                      InputLabelProps={{shrink: true}}
+                      value={
+                        formik.values.travel?.arr_trip?.trip_legs[i].airline
+                      }
+                      required
+                      label="Airline"
+                    />
+                  </div>
+                </div>
+              ))}
+              <AppTypography
+                variant="body2"
+                underline
+                onClick={() => addTripLeg(true)}>
+                + add trip leg
+              </AppTypography>
+            </>
+          ) : (
             <Button
-              disabled={!!!attendee.travel}
-              variant="contained"
+              variant="outlined"
               color="primary"
-              onClick={() => setShowFlight(!showFlight)}>
-              {showFlight
-                ? "Hide flight information"
-                : "Show flight information"}
+              onClick={() => addTrip(true)}>
+              Create Arrival Trip
             </Button>
-          </Box>
+          )}
+        </Paper>
+        <Paper elevation={0} className={classes.formGroup}>
+          <AppTypography variant="h4">Returning Trip Info</AppTypography>
+          {attendee.travel?.dep_trip ? (
+            <AppTypography
+              variant="body2"
+              underline
+              onClick={() => addTripLeg(true)}>
+              + add trip leg
+            </AppTypography>
+          ) : (
+            <Button
+              fullWidth={false}
+              variant="outlined"
+              color="primary"
+              onClick={() => addTrip(false)}>
+              Create Returning Trip
+            </Button>
+          )}
         </Paper>
         <Box display="flex" justifyContent="flex-end" width="100%">
           <Button
@@ -178,13 +362,6 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
           </Button>
         </Box>
       </form>
-      {attendee.travel ? (
-        <Collapse in={showFlight}>
-          <RetreatTravelView travel={attendee.travel} />
-        </Collapse>
-      ) : (
-        <></>
-      )}
     </>
   )
 }

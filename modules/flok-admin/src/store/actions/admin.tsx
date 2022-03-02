@@ -341,6 +341,7 @@ export function createRetreatAttendeeForm(
     dietary_prefs: obj.dietary_prefs || "",
     info_status: obj.info_status || RetreatAttendeeInfoStatusOptions[0],
     flight_status: obj.flight_status || RetreatAttendeeFlightStatusOptions[0],
+    travel: obj.travel || undefined,
   }
 }
 
