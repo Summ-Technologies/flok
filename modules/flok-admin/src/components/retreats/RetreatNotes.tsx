@@ -146,6 +146,7 @@ export default function RetreatNotes(props: RetreatNotesProps) {
           label="Add a note"
           multiline
           minRows={3}
+          maxRows={6}
         />
         <Button type="submit" disabled={!formik.isValid}>
           <Send color="inherit" />
