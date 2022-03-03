@@ -133,7 +133,7 @@ function RetreatsPage(props: RetreatsPageProps) {
               dispatch(
                 push({
                   pathname: AppRoutes.getPath("RetreatPage", {
-                    id: id.toString(),
+                    retreatId: id.toString(),
                   }),
                 })
               )
