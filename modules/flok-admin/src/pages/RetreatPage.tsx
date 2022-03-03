@@ -76,7 +76,7 @@ function RetreatPage(props: RetreatPageProps) {
   let [attendeeQuery, setAttendeeQuery] = useQuery("attendee")
   let attendee = useSelector((state: RootState) => {
     if (attendeeQuery === "new") {
-      return {} as AdminRetreatAttendeeModel
+      return {id: -1} as AdminRetreatAttendeeModel
     }
     return state.admin.attendeesByRetreat[retreatId]?.find(
       (o) => o.id === parseInt(attendeeQuery || "-1")

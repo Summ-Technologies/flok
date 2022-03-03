@@ -151,6 +151,7 @@ export type AdminTripLegModel = {
   flight_num: string
   dep_datetime: Date
   arr_datetime: Date
+  duration: number // length in s
 }
 
 export type AdminRetreatTripModel = {
@@ -158,6 +159,7 @@ export type AdminRetreatTripModel = {
   cost: number
   confirmation_number: string
   trip_legs: AdminTripLegModel[]
+  duration: number // length in s
 }
 
 export type AdminRetreatTravelModel = {
@@ -180,18 +182,24 @@ export type AdminRetreatAttendeeModel = {
   flight_status: string
 }
 
-export type AdminRetreatAttendeeUpdateModel = Pick<
-  AdminRetreatAttendeeModel,
-  | "id"
-  | "email_address"
-  | "name"
-  | "city"
-  | "dietary_prefs"
-  | "notes"
-  | "info_status"
-  | "flight_status"
-  | "travel"
->
+export type AdminRetreatTravelUpdateModel = {
+  id: number
+  cost: number
+  dep_trip: AdminRetreatTripModel
+  arr_trip: AdminRetreatTripModel
+  status: string
+}
+
+export type AdminRetreatAttendeeUpdateModel = {
+  email_address: string
+  name: string
+  travel: AdminRetreatTravelUpdateModel
+  city: string
+  dietary_prefs: string
+  notes: string
+  info_status: string
+  flight_status: string
+}
 
 export type RetreatAttendeeInfoStatusType =
   | "CREATED"
