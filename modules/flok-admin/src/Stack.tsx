@@ -1,7 +1,10 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
 import HomePage from "./pages/HomePage"
+import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
+import RetreatLodgingPage from "./pages/RetreatLodgingPage"
 import RetreatPage from "./pages/RetreatPage"
+import RetreatSalesIntakePage from "./pages/RetreatSalesIntakePage"
 import RetreatsPage from "./pages/RetreatsPage"
 
 type FlokRoute = {
@@ -19,7 +22,46 @@ export class AppRoutes {
   static routes: FlokRoute[] = [
     {name: "HomePage", component: <HomePage />, path: "/"},
     {name: "RetreatsPage", component: <RetreatsPage />, path: "/retreats"},
-    {name: "RetreatPage", component: <RetreatPage />, path: "/retreats/:id"},
+    {
+      name: "RetreatPage",
+      component: <RetreatPage />,
+      path: "/retreats/:retreatId",
+    },
+    {
+      name: "RetreatSalesIntakePage",
+      component: <RetreatSalesIntakePage />,
+      path: "/retreats/:retreatId/sales-intake",
+    },
+    {
+      name: "RetreatLodgingPage",
+      component: <RetreatLodgingPage />,
+      path: "/retreats/:retreatId/lodging",
+    },
+    {
+      name: "RetreatAttendeesPage",
+      component: <RetreatAttendeesPage />,
+      path: "/retreats/:retreatId/attendees",
+    },
+    {
+      name: "RetreatAttendeePage",
+      component: <RetreatAttendeesPage />,
+      path: "/retreats/:retreatId/attendees/:attendeeId",
+    },
+    {
+      name: "RetreatFlightsPage",
+      component: <RetreatAttendeesPage />,
+      path: "/retreats/:retreatId/flights",
+    },
+    {
+      name: "RetreatFlightPage",
+      component: <RetreatAttendeesPage />,
+      path: "/retreats/:retreatId/flight/:attendeeId",
+    },
+    {
+      name: "RetreatItineraryPage",
+      component: <RetreatAttendeesPage />,
+      path: "/retreats/:retreatId/itinerary",
+    },
   ]
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {
     return routes.map((route) => (

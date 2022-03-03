@@ -39,9 +39,6 @@ export type AdminRetreatUpdateModel = Pick<
   | "preferences_dates_flexible_months"
   | "preferences_dates_exact_start"
   | "preferences_dates_exact_end"
-  | "flok_admin_owner"
-  | "flok_admin_state"
-  | "state"
 >
 
 export const RetreatStateOptions = [
@@ -176,8 +173,8 @@ export type AdminRetreatAttendeeModel = {
   city: string
   dietary_prefs: string
   notes: string
-  info_status: string
-  flight_status: string
+  info_status: "CREATED" | "FORM_SENT" | "INFO_ENTERED"
+  flight_status: "PENDING" | "BOOKED" | "OPT_OUT"
 }
 
 export type AdminRetreatAttendeeUpdateModel = Pick<
@@ -193,15 +190,8 @@ export type AdminRetreatAttendeeUpdateModel = Pick<
   | "travel"
 >
 
-export type RetreatAttendeeInfoStatusType =
-  | "CREATED"
-  | "FORM_SENT"
-  | "INFO_ENTERED"
-export const RetreatAttendeeInfoStatusOptions = [
-  "CREATED",
-  "FORM_SENT",
-  "INFO_ENTERED",
-]
+export type RetreatAttendeeInfoStatusType = "CREATED" | "INFO_ENTERED"
+export const RetreatAttendeeInfoStatusOptions = ["CREATED", "INFO_ENTERED"]
 
 export type RetreatAttendeeFlightStatusType = "PENDING" | "BOOKED" | "OPT_OUT"
 export const RetreatAttendeeFlightStatusOptions = [
@@ -209,3 +199,8 @@ export const RetreatAttendeeFlightStatusOptions = [
   "BOOKED",
   "OPT_OUT",
 ]
+
+export type RetreatNoteModel = {
+  note: string
+  created_at: string // date string
+}

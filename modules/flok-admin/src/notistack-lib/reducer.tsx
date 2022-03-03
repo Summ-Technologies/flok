@@ -36,6 +36,7 @@ export default function NotistackReducer(state = defaultState, action: any) {
     (action.type as string).endsWith("_SUCCESS") &&
     ((action.type as string).startsWith("POST_") ||
       (action.type as string).startsWith("PUT_") ||
+      (action.type as string).startsWith("PATCH_") ||
       (action.type as string).startsWith("DELETE_"))
   ) {
     return {

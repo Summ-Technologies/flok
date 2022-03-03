@@ -1,5 +1,4 @@
 import querystring from "querystring"
-import {sortFlexibleMonths} from "../../components/retreats/RetreatInfoForm"
 import {
   AdminLodgingProposalModel,
   AdminLodgingProposalUpdateModel,
@@ -7,10 +6,11 @@ import {
   AdminRetreatAttendeeUpdateModel,
   AdminRetreatListType,
   AdminRetreatModel,
-  AdminRetreatUpdateModel,
   AdminSelectedHotelStateTypes,
   RetreatAttendeeFlightStatusOptions,
+  RetreatAttendeeFlightStatusType,
   RetreatAttendeeInfoStatusOptions,
+  RetreatAttendeeInfoStatusType,
 } from "../../models"
 import {createApiAction} from "./api"
 
@@ -50,45 +50,35 @@ export function getRetreatDetails(id: number) {
 
 export function createRetreatDetailsForm(
   obj: Partial<AdminRetreatModel>
-): AdminRetreatUpdateModel {
-  return {
-    contact_name: obj.contact_name || null,
-    contact_email: obj.contact_email!,
-    preferences_num_attendees_lower:
-      obj.preferences_num_attendees_lower || null, // || means 0 isn't allowed (fixes issue of '' being submitted though)
-    preferences_is_dates_flexible: obj.preferences_is_dates_flexible ?? null,
-    preferences_dates_exact_start: obj.preferences_dates_exact_start || null,
-    preferences_dates_exact_end: obj.preferences_dates_exact_end || null,
-    preferences_dates_flexible_months: sortFlexibleMonths(
-      obj.preferences_dates_flexible_months ?? []
-    ),
-    preferences_dates_flexible_num_nights:
-      obj.preferences_dates_flexible_num_nights || null,
-    flok_admin_owner: obj.flok_admin_owner || null,
-    flok_admin_state: obj.flok_admin_state || null,
-    state: obj.state || null,
-  }
+): Partial<AdminRetreatModel> {
+  let keys = Object.keys(obj) as (keyof AdminRetreatModel)[]
+  keys.forEach((key) => {
+    if (obj[key] == null || obj[key] === "") {
+      obj[key] = undefined
+    }
+  })
+  return obj
 }
 
-export const PUT_RETREAT_DETAILS_REQUEST = "PUT_RETREAT_DETAILS_REQUEST"
-export const PUT_RETREAT_DETAILS_SUCCESS = "PUT_RETREAT_DETAILS_SUCCESS"
-export const PUT_RETREAT_DETAILS_FAILURE = "PUT_RETREAT_DETAILS_FAILURE"
+export const PATCH_RETREAT_DETAILS_REQUEST = "PATCH_RETREAT_DETAILS_REQUEST"
+export const PATCH_RETREAT_DETAILS_SUCCESS = "PATCH_RETREAT_DETAILS_SUCCESS"
+export const PATCH_RETREAT_DETAILS_FAILURE = "PATCH_RETREAT_DETAILS_FAILURE"
 
-export function putRetreatDetails(
+export function patchRetreatDetails(
   id: number,
-  retreatDetails: AdminRetreatUpdateModel
+  retreatDetails: Partial<AdminRetreatModel>
 ) {
   let endpoint = `/v1.0/admin/retreats/${id}`
   return createApiAction({
     endpoint,
-    method: "PUT",
+    method: "PATCH",
     body: JSON.stringify(retreatDetails, (key, value) =>
       typeof value === "undefined" ? null : value
     ),
     types: [
-      {type: PUT_RETREAT_DETAILS_REQUEST, meta: {id}},
-      {type: PUT_RETREAT_DETAILS_SUCCESS, meta: {id}},
-      {type: PUT_RETREAT_DETAILS_FAILURE, meta: {id}},
+      {type: PATCH_RETREAT_DETAILS_REQUEST, meta: {id}},
+      {type: PATCH_RETREAT_DETAILS_SUCCESS, meta: {id}},
+      {type: PATCH_RETREAT_DETAILS_FAILURE, meta: {id}},
     ],
   })
 }
@@ -339,8 +329,10 @@ export function createRetreatAttendeeForm(
     city: obj.city || "",
     notes: obj.notes || "",
     dietary_prefs: obj.dietary_prefs || "",
-    info_status: obj.info_status || RetreatAttendeeInfoStatusOptions[0],
-    flight_status: obj.flight_status || RetreatAttendeeFlightStatusOptions[0],
+    info_status: (obj.info_status ||
+      RetreatAttendeeInfoStatusOptions[0]) as RetreatAttendeeInfoStatusType,
+    flight_status: (obj.flight_status ||
+      RetreatAttendeeFlightStatusOptions[0]) as RetreatAttendeeFlightStatusType,
     travel: obj.travel || undefined,
   }
 }
@@ -429,6 +421,39 @@ export function deleteRetreatAttendees(retreatId: number, attendeeId: number) {
         type: DELETE_RETREAT_ATTENDEES_FAILURE,
         meta: {retreatId},
       },
+    ],
+  })
+}
+
+export const GET_RETREAT_NOTES_REQUEST = "GET_RETREAT_NOTES_REQUEST"
+export const GET_RETREAT_NOTES_SUCCESS = "GET_RETREAT_NOTES_SUCCESS"
+export const GET_RETREAT_NOTES_FAILURE = "GET_RETREAT_NOTES_FAILURE"
+export function getRetreatNotes(retreatId: number) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/notes`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      GET_RETREAT_NOTES_REQUEST,
+      {type: GET_RETREAT_NOTES_SUCCESS, meta: {retreatId}},
+      {type: GET_RETREAT_NOTES_FAILURE, meta: {retreatId}},
+    ],
+  })
+}
+
+export const POST_RETREAT_NOTES_REQUEST = "POST_RETREAT_NOTES_REQUEST"
+export const POST_RETREAT_NOTES_SUCCESS = "POST_RETREAT_NOTES_SUCCESS"
+export const POST_RETREAT_NOTES_FAILURE = "POST_RETREAT_NOTES_FAILURE"
+export function postRetreatNotes(retreatId: number, note: string) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/notes`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify({note}),
+    types: [
+      POST_RETREAT_NOTES_REQUEST,
+      {type: POST_RETREAT_NOTES_SUCCESS, meta: {retreatId}},
+      {type: POST_RETREAT_NOTES_FAILURE, meta: {retreatId}},
     ],
   })
 }

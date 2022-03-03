@@ -7,6 +7,7 @@ import {
   AdminRetreatListModel,
   AdminRetreatListType,
   AdminRetreatModel,
+  RetreatNoteModel,
 } from "../../models"
 import {
   DELETE_HOTEL_PROPOSAL_SUCCESS,
@@ -20,14 +21,16 @@ import {
   GET_RETREAT_DETAILS_FAILURE,
   GET_RETREAT_DETAILS_REQUEST,
   GET_RETREAT_DETAILS_SUCCESS,
+  GET_RETREAT_NOTES_SUCCESS,
+  PATCH_RETREAT_DETAILS_FAILURE,
+  PATCH_RETREAT_DETAILS_REQUEST,
+  PATCH_RETREAT_DETAILS_SUCCESS,
   POST_HOTEL_PROPOSAL_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
+  POST_RETREAT_NOTES_SUCCESS,
   POST_SELECTED_HOTEL_SUCCESS,
   PUT_HOTEL_PROPOSAL_SUCCESS,
   PUT_RETREAT_ATTENDEES_SUCCESS,
-  PUT_RETREAT_DETAILS_FAILURE,
-  PUT_RETREAT_DETAILS_REQUEST,
-  PUT_RETREAT_DETAILS_SUCCESS,
   PUT_SELECTED_HOTEL_SUCCESS,
 } from "../actions/admin"
 import {ApiAction} from "../actions/api"
@@ -61,6 +64,9 @@ export type AdminState = {
   attendeesByRetreat: {
     [id: number]: AdminRetreatAttendeeModel[]
   }
+  notesByRetreat: {
+    [key: number]: RetreatNoteModel[] | undefined
+  }
 }
 
 const initialState: AdminState = {
@@ -78,6 +84,7 @@ const initialState: AdminState = {
     retreatsDetails: {},
   },
   attendeesByRetreat: {},
+  notesByRetreat: {},
 }
 
 export default function AdminReducer(
@@ -99,9 +106,9 @@ export default function AdminReducer(
     case GET_RETREAT_DETAILS_REQUEST:
     case GET_RETREAT_DETAILS_SUCCESS:
     case GET_RETREAT_DETAILS_FAILURE:
-    case PUT_RETREAT_DETAILS_REQUEST:
-    case PUT_RETREAT_DETAILS_SUCCESS:
-    case PUT_RETREAT_DETAILS_FAILURE:
+    case PATCH_RETREAT_DETAILS_REQUEST:
+    case PATCH_RETREAT_DETAILS_SUCCESS:
+    case PATCH_RETREAT_DETAILS_FAILURE:
       meta = (action as unknown as {meta: {id: number}}).meta
       action = action as unknown as ApiAction
       payload = (action as unknown as ApiAction).payload as {
@@ -218,7 +225,6 @@ export default function AdminReducer(
     case DELETE_RETREAT_ATTENDEES_SUCCESS:
     case GET_RETREAT_ATTENDEES_SUCCESS:
       meta = (action as unknown as {meta: {retreatId: number}}).meta
-      action = action as unknown as ApiAction
       payload = (action as unknown as ApiAction).payload as {
         attendees: AdminRetreatAttendeeModel[]
       }
@@ -227,6 +233,19 @@ export default function AdminReducer(
         attendeesByRetreat: {
           ...state.attendeesByRetreat,
           [meta.retreatId]: payload.attendees,
+        },
+      }
+    case GET_RETREAT_NOTES_SUCCESS:
+    case POST_RETREAT_NOTES_SUCCESS:
+      meta = (action as unknown as {meta: {retreatId: number}}).meta
+      payload = (action as unknown as ApiAction).payload as {
+        notes: RetreatNoteModel[]
+      }
+      return {
+        ...state,
+        notesByRetreat: {
+          ...state.notesByRetreat,
+          [meta.retreatId]: payload.notes,
         },
       }
     default:

@@ -6,22 +6,19 @@ import {
   Paper,
   TextField,
   TextFieldProps,
+  Typography,
 } from "@material-ui/core"
 import {Autocomplete} from "@material-ui/lab"
 import {useFormik} from "formik"
 import _ from "lodash"
-import React from "react"
+import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import * as yup from "yup"
-import {
-  AdminRetreatModel,
-  DashboardStateOptions,
-  RetreatStateOptions,
-} from "../../models"
+import {AdminRetreatModel} from "../../models"
 import {RootState} from "../../store"
 import {
   createRetreatDetailsForm,
-  putRetreatDetails,
+  patchRetreatDetails,
 } from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
 
@@ -85,23 +82,49 @@ let useStyles = makeStyles((theme) => ({
   formGroup: {
     display: "flex",
     width: "100%",
-    [theme.breakpoints.up("md")]: {width: `calc(50% - ${theme.spacing(2)}px)`},
     flexDirection: "column",
     "& > *:not(:first-child)": {marginTop: theme.spacing(2)},
   },
+  formHeader: {
+    "& > *": {marginBottom: theme.spacing(1)},
+  },
 }))
 
-type RetreatInfoFormProps = {retreat: AdminRetreatModel}
-export default function RetreatInfoForm(props: RetreatInfoFormProps) {
+type RetreatSalesIntakeFormProps = {retreat: AdminRetreatModel}
+export default function RetreatSalesIntakeForm(
+  props: RetreatSalesIntakeFormProps
+) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let {retreat} = props
   let loading = useSelector(
     (state: RootState) => state.admin.api.retreatsDetails[retreat.id]?.loading
   )
+
+  let [initialValues, setInitialValues] = useState<Partial<AdminRetreatModel>>(
+    {}
+  )
+  useEffect(() => {
+    const retreatFormFields = [
+      "contact_name",
+      "contact_email",
+      "preferences_num_attendees_lower",
+      "preferences_is_dates_flexible",
+      "preferences_dates_exact_start",
+      "preferences_dates_exact_end",
+      "preferences_dates_flexible_num_nights",
+      "preferences_dates_flexible_months",
+    ]
+    setInitialValues(
+      _.mapValues(_.pick(retreat, retreatFormFields), (val) =>
+        val === "" ? undefined : val
+      ) as Partial<AdminRetreatModel>
+    )
+  }, [setInitialValues, retreat])
+
   let formik = useFormik({
     enableReinitialize: true,
-    initialValues: createRetreatDetailsForm(retreat),
+    initialValues: initialValues,
     validate: (values) => {
       try {
         yup.string().required().email().validateSync(values.contact_email)
@@ -111,9 +134,17 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
       return {}
     },
     onSubmit: (values) => {
-      dispatch(putRetreatDetails(retreat.id, createRetreatDetailsForm(values)))
+      dispatch(
+        patchRetreatDetails(
+          retreat.id,
+          _.mapValues(values, (val) =>
+            val === "" ? undefined : val
+          ) as Partial<AdminRetreatModel>
+        )
+      )
     },
   })
+
   const textFieldProps: TextFieldProps = {
     fullWidth: true,
     InputLabelProps: {shrink: true},
@@ -123,7 +154,12 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
       <Paper elevation={0} className={classes.formGroup}>
-        <AppTypography variant="h4">Basic Info</AppTypography>
+        <div className={classes.formHeader}>
+          <AppTypography variant="h4">Intake Form</AppTypography>
+          <Typography variant="body1">
+            This information was submitted in the client's intake form.
+          </Typography>
+        </div>
         <TextField
           {...textFieldProps}
           id="contact_name"
@@ -197,6 +233,7 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
                 <TextField
                   {...params}
                   {...textFieldProps}
+                  onChange={undefined}
                   label="Flexible months"
                   placeholder="Select months"
                 />
@@ -221,15 +258,6 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
             />
           </>
         )}
-      </Paper>
-      <Paper elevation={0} className={classes.formGroup}>
-        <AppTypography variant="h4">Flok Info</AppTypography>
-        <TextField
-          {...textFieldProps}
-          id="flok_admin_owner"
-          value={formik.values.flok_admin_owner ?? ""}
-          label="Flok Owner"
-        />
         <Box>
           <InputLabel shrink id="calendly-call-label">
             Intro call scheduled?
@@ -246,34 +274,6 @@ export default function RetreatInfoForm(props: RetreatInfoFormProps) {
               : "No call scheduled"}
           </Button>
         </Box>
-        <TextField
-          {...textFieldProps}
-          label="Flok State"
-          id="flok_admin_state"
-          value={formik.values.flok_admin_state ?? ""}
-          select
-          SelectProps={{native: true}}
-          onChange={formik.handleChange}>
-          {RetreatStateOptions.map((opt, i) => (
-            <option key={i} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </TextField>
-        <TextField
-          {...textFieldProps}
-          id="state"
-          label="Client Dashboard State"
-          value={formik.values.state ?? ""}
-          onChange={formik.handleChange}
-          select
-          SelectProps={{native: true}}>
-          {DashboardStateOptions.map((opt, i) => (
-            <option key={i} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </TextField>
       </Paper>
       <Box display="flex" justifyContent="flex-end" width="100%">
         <Button
