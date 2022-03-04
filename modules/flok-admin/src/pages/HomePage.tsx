@@ -1,6 +1,11 @@
 import {Link, makeStyles, Typography} from "@material-ui/core"
-import {RouteComponentProps, withRouter} from "react-router-dom"
+import {
+  Link as ReactRouterLink,
+  RouteComponentProps,
+  withRouter,
+} from "react-router-dom"
 import PageBase from "../components/page/PageBase"
+import {AppRoutes} from "../Stack"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -25,13 +30,18 @@ function HomePage(props: HomePageProps) {
         <Typography variant="h3">Quick links:</Typography>
         <ul>
           <Typography variant="body1" component="li">
-            <Link href="/retreats">All retreats</Link>
+            <Link
+              component={ReactRouterLink}
+              to={AppRoutes.getPath("RetreatsPage")}>
+              All retreats
+            </Link>
           </Typography>
           <Typography variant="body1" component="li">
-            <Link href="/">Flight receipt groups</Link>
-          </Typography>
-          <Typography variant="body1" component="li">
-            <Link href="/">Hotel/destination content</Link>
+            <Link
+              component={ReactRouterLink}
+              to={AppRoutes.getPath("HotelsPage")}>
+              Hotel content & lodging proposals database
+            </Link>
           </Typography>
         </ul>
       </div>

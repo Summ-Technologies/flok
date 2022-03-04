@@ -1,7 +1,10 @@
 import {push} from "connected-react-router"
+import _ from "lodash"
 import {useEffect, useState} from "react"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import {useLocation} from "react-router-dom"
+import {RootState} from "../store"
+import {getDestinations} from "../store/actions/admin"
 
 /**
  * returns datestring like:
@@ -50,4 +53,39 @@ export function useQuery(param: string) {
     )
   }
   return [paramVal, setParam] as const
+}
+
+/**Takes object and maps all empty string values ("") to null. Used in forms because TextField can't take null or undefined as a value */
+export function nullifyEmptyString<T extends {[key: string]: any}>(
+  obj: T
+): Partial<T> {
+  return _.mapValues(obj, (val) =>
+    val === "" || val == null ? null : val
+  ) as Partial<T>
+}
+
+/**
+ * Get destinations database
+ *
+ * @returns destinations, isLoading
+ */
+export function useDestinations() {
+  let dispatch = useDispatch()
+  let allDestinations = useSelector(
+    (state: RootState) => state.admin.allDestinations
+  )
+  let destinations = useSelector((state: RootState) => state.admin.destinations)
+  let [loading, setLoading] = useState(false)
+  useEffect(() => {
+    async function loadDestinations() {
+      setLoading(true)
+      await dispatch(getDestinations())
+      setLoading(false)
+    }
+    if (!allDestinations) {
+      loadDestinations()
+    }
+  }, [allDestinations, dispatch])
+
+  return [destinations, loading] as const
 }

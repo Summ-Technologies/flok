@@ -18,16 +18,16 @@ import {useDispatch, useSelector} from "react-redux"
 import {AdminRetreatModel, AdminSelectedHotelProposalModel} from "../../models"
 import {RootState} from "../../store"
 import {
-  createProposalForm,
-  deleteHotelProposal,
+  deleteRetreatHotelProposal,
   deleteSelectedHotel,
   getDestinations,
   getHotelsByHotelId,
   postHotelProposal,
   postSelectedHotel,
-  putHotelProposal,
+  putRetreatHotelProposal,
   putSelectedHotel,
 } from "../../store/actions/admin"
+import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 import ConfirmationModal from "../base/ConfirmationModal"
 import HotelSearchModal from "../lodging/HotelSearchModal"
@@ -218,7 +218,7 @@ function HotelAccordionItem(props: {
                             postHotelProposal(
                               props.selectedHotel.retreat_id,
                               props.selectedHotel.hotel_id,
-                              createProposalForm({
+                              nullifyEmptyString({
                                 dates: newProposalDates,
                               })
                             )
@@ -235,7 +235,7 @@ function HotelAccordionItem(props: {
                               postHotelProposal(
                                 props.selectedHotel.retreat_id,
                                 props.selectedHotel.hotel_id,
-                                createProposalForm({
+                                nullifyEmptyString({
                                   ...props.selectedHotel.hotel_proposals![
                                     activeProposalIndex
                                   ]!,
@@ -274,13 +274,13 @@ function HotelAccordionItem(props: {
                 <HotelProposalForm
                   onSave={(values) => {
                     dispatch(
-                      putHotelProposal(
+                      putRetreatHotelProposal(
                         props.selectedHotel.retreat_id,
                         props.selectedHotel.hotel_id,
                         props.selectedHotel.hotel_proposals![
                           activeProposalIndex
                         ].id,
-                        createProposalForm(values)
+                        nullifyEmptyString(values)
                       )
                     )
                   }}
@@ -295,7 +295,7 @@ function HotelAccordionItem(props: {
                     onClose={() => setDeleteProposalModalOpen(false)}
                     onSubmit={() => {
                       dispatch(
-                        deleteHotelProposal(
+                        deleteRetreatHotelProposal(
                           props.selectedHotel.retreat_id,
                           props.selectedHotel.hotel_id,
                           props.selectedHotel.hotel_proposals![

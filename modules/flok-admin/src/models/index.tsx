@@ -117,17 +117,25 @@ export type AdminLodgingProposalModel = {
   }[]
 }
 
-export type AdminLodgingProposalUpdateModel = Omit<
-  AdminLodgingProposalModel,
-  "id" | "created_at"
+export type AdminLodgingProposalUpdateModel = Partial<
+  Omit<AdminLodgingProposalModel, "id" | "created_at">
 >
 
-export type AdminHotelModel = {
+export type AdminHotelDetailsModel = {
   id: number
   guid: string
   destination_id: number
   name: string
+  template_proposal: AdminLodgingProposalModel | null
+  description_short: string | null
+  airport: string | null
+  airport_travel_time: number | null
 }
+
+export type AdminHotelModel = Pick<
+  AdminHotelDetailsModel,
+  "id" | "guid" | "name" | "destination_id"
+>
 
 export type AdminDestinationModel = {
   id: number

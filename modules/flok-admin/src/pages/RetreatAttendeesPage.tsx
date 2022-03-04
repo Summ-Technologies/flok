@@ -17,12 +17,10 @@ import {
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import RetreatAttendeesTable from "../components/retreats/RetreatAttendeesTable"
-import {AdminRetreatAttendeeModel} from "../models"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatAttendees, getRetreatDetails} from "../store/actions/admin"
 import {theme} from "../theme"
-import {useQuery} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -63,16 +61,6 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
     }
   }, [retreat, dispatch, retreatId, retreatAttendees])
 
-  let [attendeeQuery, setAttendeeQuery] = useQuery("attendee")
-  let attendee = useSelector((state: RootState) => {
-    if (attendeeQuery === "new") {
-      return {} as AdminRetreatAttendeeModel
-    }
-    return state.admin.attendeesByRetreat[retreatId]?.find(
-      (o) => o.id === parseInt(attendeeQuery || "-1")
-    )
-  })
-
   return (
     <PageBase>
       <div className={classes.body}>
@@ -101,10 +89,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
           justifyContent="flex-end"
           width="100%"
           marginBottom={theme.spacing(0.25)}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => setAttendeeQuery("new")}>
+          <Button variant="outlined" color="primary">
             Create New Attendee
           </Button>
         </Box>

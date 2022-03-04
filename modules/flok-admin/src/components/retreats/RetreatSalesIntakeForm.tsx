@@ -116,9 +116,7 @@ export default function RetreatSalesIntakeForm(
       "preferences_dates_flexible_months",
     ]
     setInitialValues(
-      _.mapValues(_.pick(retreat, retreatFormFields), (val) =>
-        val === "" ? undefined : val
-      ) as Partial<AdminRetreatModel>
+      _.pick(retreat, retreatFormFields) as Partial<AdminRetreatModel>
     )
   }, [setInitialValues, retreat])
 

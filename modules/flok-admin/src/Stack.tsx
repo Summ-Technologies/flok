@@ -1,6 +1,8 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
 import HomePage from "./pages/HomePage"
+import HotelPage from "./pages/HotelPage"
+import HotelsPage from "./pages/HotelsPage"
 import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatLodgingPage from "./pages/RetreatLodgingPage"
 import RetreatPage from "./pages/RetreatPage"
@@ -61,6 +63,16 @@ export class AppRoutes {
       name: "RetreatItineraryPage",
       component: <RetreatAttendeesPage />,
       path: "/retreats/:retreatId/itinerary",
+    },
+    {
+      name: "HotelsPage",
+      component: <HotelsPage />,
+      path: "/hotels",
+    },
+    {
+      name: "HotelPage",
+      component: <HotelPage />,
+      path: "/hotels/:hotelId",
     },
   ]
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {

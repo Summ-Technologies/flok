@@ -8,11 +8,9 @@ import {
 } from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
-import {AdminRetreatAttendeeModel} from "../models"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatAttendees, getRetreatDetails} from "../store/actions/admin"
-import {useQuery} from "../utils"
 let useStyles = makeStyles((theme) => ({
   body: {
     flex: "1 1 auto",
@@ -40,9 +38,6 @@ function RetreatPage(props: RetreatPageProps) {
   let retreat = useSelector((state: RootState) => {
     return state.admin.retreatsDetails[retreatId]
   })
-  let retreatApiCall = useSelector((state: RootState) => {
-    return state.admin.api.retreatsDetails[retreatId]
-  })
   let retreatAttendees = useSelector((state: RootState) => {
     return state.admin.attendeesByRetreat[retreatId]
   })
@@ -55,20 +50,6 @@ function RetreatPage(props: RetreatPageProps) {
       dispatch(getRetreatAttendees(retreatId))
     }
   }, [retreat, dispatch, retreatId, retreatAttendees])
-
-  // Editing
-  let [tabQuery, setTabQuery] = useQuery("tab")
-  const validTabs = ["overview", "lodging", "attendees"]
-
-  let [attendeeQuery, setAttendeeQuery] = useQuery("attendee")
-  let attendee = useSelector((state: RootState) => {
-    if (attendeeQuery === "new") {
-      return {} as AdminRetreatAttendeeModel
-    }
-    return state.admin.attendeesByRetreat[retreatId]?.find(
-      (o) => o.id === parseInt(attendeeQuery || "-1")
-    )
-  })
 
   return (
     <PageBase>

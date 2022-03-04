@@ -8,7 +8,11 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type AppTabPanelProps = PropsWithChildren<{show?: boolean; className?: string}>
+type AppTabPanelProps = PropsWithChildren<{
+  show?: boolean
+  className?: string
+  renderDom?: "always" | "on-shown"
+}>
 /**
  * Display none
  * @param props
@@ -16,7 +20,9 @@ type AppTabPanelProps = PropsWithChildren<{show?: boolean; className?: string}>
  */
 export default function AppTabPanel(props: AppTabPanelProps) {
   let classes = useStyles(props)
-  return (
+  return props.renderDom === "on-shown" && !props.show ? (
+    <></>
+  ) : (
     <div
       className={clsx(props.show ? undefined : classes.hide, props.className)}>
       {props.children}
