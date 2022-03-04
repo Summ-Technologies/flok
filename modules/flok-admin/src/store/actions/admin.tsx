@@ -6,11 +6,9 @@ import {
   AdminRetreatAttendeeUpdateModel,
   AdminRetreatListType,
   AdminRetreatModel,
+  AdminRetreatTravelModel,
+  AdminRetreatTravelUpdateModel,
   AdminSelectedHotelStateTypes,
-  RetreatAttendeeFlightStatusOptions,
-  RetreatAttendeeFlightStatusType,
-  RetreatAttendeeInfoStatusOptions,
-  RetreatAttendeeInfoStatusType,
 } from "../../models"
 import {nullifyEmptyString} from "../../utils"
 import {createApiAction} from "./api"
@@ -390,22 +388,99 @@ export function getRetreatAttendees(retreatId: number) {
   })
 }
 
-export function createRetreatAttendeeForm(
-  obj: Partial<AdminRetreatAttendeeModel>
+function travelToForm(
+  travel: AdminRetreatTravelModel
+): AdminRetreatTravelUpdateModel {
+  console.log(travel.arr_trip)
+  return {
+    id: travel.id,
+    cost: travel.cost,
+    status: travel.status,
+    dep_trip: travel.dep_trip ?? {
+      id: -1,
+      cost: 0,
+      confirmation_number: "",
+      trip_legs: [],
+      duration: 0,
+    },
+    arr_trip: travel.arr_trip ?? {
+      id: -1,
+      cost: 0,
+      confirmation_number: "",
+      trip_legs: [],
+      duration: 0,
+    },
+  }
+}
+
+export function attendeeToForm(
+  attendee: AdminRetreatAttendeeModel
 ): AdminRetreatAttendeeUpdateModel {
   return {
-    id: obj.id || -1,
-    name: obj.name || "",
-    email_address: obj.email_address || "",
-    city: obj.city || "",
-    notes: obj.notes || "",
-    dietary_prefs: obj.dietary_prefs || "",
-    info_status: (obj.info_status ||
-      RetreatAttendeeInfoStatusOptions[0]) as RetreatAttendeeInfoStatusType,
-    flight_status: (obj.flight_status ||
-      RetreatAttendeeFlightStatusOptions[0]) as RetreatAttendeeFlightStatusType,
-    travel: obj.travel || undefined,
+    ...attendee,
+    travel: travelToForm(
+      attendee.travel ?? {
+        id: -1,
+        cost: 0,
+        status: "PENDING",
+        dep_trip: {
+          id: -1,
+          cost: 0,
+          confirmation_number: "",
+          trip_legs: [],
+          duration: 0,
+        },
+        arr_trip: {
+          id: -1,
+          cost: 0,
+          confirmation_number: "",
+          trip_legs: [],
+          duration: 0,
+        },
+      }
+    ),
   }
+}
+
+function formToTravel(
+  formVals: AdminRetreatTravelUpdateModel,
+  travelPresent: boolean,
+  arrTrip: boolean,
+  depTrip: boolean
+): AdminRetreatTravelModel | undefined {
+  if (!travelPresent) return undefined
+
+  let travel = formVals as AdminRetreatTravelModel
+  if (!arrTrip) delete travel.arr_trip
+  if (!depTrip) delete travel.dep_trip
+
+  return travel
+}
+
+export function formToAttendee(
+  id: number,
+  formVals: AdminRetreatAttendeeUpdateModel,
+  travelPresent: boolean,
+  arrTripPresent: boolean,
+  depTripPresent: boolean
+): AdminRetreatAttendeeModel {
+  let ret = {
+    id: id,
+    ...formVals,
+    notes: formVals.notes ?? "",
+    dietary_prefs: formVals.dietary_prefs ?? "",
+    city: formVals.city ?? "",
+    name: formVals.name ?? "",
+    travel: formToTravel(
+      formVals.travel,
+      travelPresent,
+      arrTripPresent,
+      depTripPresent
+    ),
+  }
+
+  if (ret.travel === undefined) delete ret.travel
+  return ret
 }
 
 export const PUT_RETREAT_ATTENDEES_REQUEST = "PUT_RETREAT_ATTENDEES_REQUEST"
@@ -413,7 +488,7 @@ export const PUT_RETREAT_ATTENDEES_SUCCESS = "PUT_RETREAT_ATTENDEES_SUCCESS"
 export const PUT_RETREAT_ATTENDEES_FAILURE = "PUT_RETREAT_ATTENDEES_FAILURE"
 export function putRetreatAttendees(
   retreatId: number,
-  attendee: AdminRetreatAttendeeUpdateModel
+  attendee: AdminRetreatAttendeeModel
 ) {
   let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees`
   return createApiAction({
@@ -443,7 +518,7 @@ export const POST_RETREAT_ATTENDEES_SUCCESS = "POST_RETREAT_ATTENDEES_SUCCESS"
 export const POST_RETREAT_ATTENDEES_FAILURE = "POST_RETREAT_ATTENDEES_FAILURE"
 export function postRetreatAttendees(
   retreatId: number,
-  attendee: AdminRetreatAttendeeUpdateModel
+  attendee: Partial<AdminRetreatAttendeeModel>
 ) {
   let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees`
   return createApiAction({
