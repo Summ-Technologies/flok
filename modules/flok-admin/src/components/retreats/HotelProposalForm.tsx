@@ -130,9 +130,16 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           {...textFieldProps}
           id="compare_room_rate"
           label="Guestroom rates"
-          value={formik.values.compare_room_rate?.toString() ?? ""}
+          value={
+            formik.values.compare_room_rate != null
+              ? formik.values.compare_room_rate.toString()
+              : ""
+          }
           onChange={(e) =>
-            formik.setFieldValue("compare_room_rate", parseInt(e.target.value))
+            formik.setFieldValue(
+              "compare_room_rate",
+              isNaN(parseInt(e.target.value)) ? "" : parseInt(e.target.value)
+            )
           }
           InputProps={{inputComponent: CurrencyNumberFormat as any}}
           disabled={props.isProposalTemplate}
@@ -141,9 +148,16 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           {...textFieldProps}
           id="compare_room_total"
           label="Approximate room total"
-          value={formik.values.compare_room_total?.toString() ?? ""}
+          value={
+            formik.values.compare_room_total != null
+              ? formik.values.compare_room_total
+              : ""
+          }
           onChange={(e) =>
-            formik.setFieldValue("compare_room_total", parseInt(e.target.value))
+            formik.setFieldValue(
+              "compare_room_total",
+              isNaN(parseInt(e.target.value)) ? "" : parseInt(e.target.value)
+            )
           }
           InputProps={{inputComponent: CurrencyNumberFormat as any}}
           disabled={props.isProposalTemplate}

@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Chip,
+  Link,
   makeStyles,
   Modal,
   Paper,
@@ -13,9 +14,12 @@ import {
   TextField,
 } from "@material-ui/core"
 import {useFormik} from "formik"
+import querystring from "querystring"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
+import {Link as ReactRouterLink} from "react-router-dom"
 import {AdminRetreatModel, AdminSelectedHotelProposalModel} from "../../models"
+import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
 import {
   deleteRetreatHotelProposal,
@@ -187,8 +191,26 @@ function HotelAccordionItem(props: {
                   paddingX={2}
                   display="flex"
                   flexDirection="column">
-                  <AppTypography variant="body1" fontWeight="bold" paragraph>
+                  <AppTypography variant="body1" fontWeight="bold">
                     New Proposal
+                  </AppTypography>
+                  <AppTypography variant="body2" paragraph>
+                    If {props.hotel.name} has a proposal template in the
+                    proposals database, we'll copy those values. If not, the
+                    proposal will require you to fill in all the values. To
+                    check the proposals database, click{" "}
+                    <Link
+                      component={ReactRouterLink}
+                      underline="always"
+                      to={
+                        AppRoutes.getPath("HotelPage", {
+                          hotelId: props.selectedHotel.hotel_id.toString(),
+                        }) + `?${querystring.stringify({tab: "proposal"})}`
+                      }
+                      target="_blank">
+                      here
+                    </Link>
+                    .
                   </AppTypography>
                   <form
                     onSubmit={(e) => {
@@ -224,29 +246,8 @@ function HotelAccordionItem(props: {
                             )
                           )
                         }}>
-                        Add
+                        Submit
                       </Button>
-                      {props.selectedHotel.hotel_proposals?.length ? (
-                        <Button
-                          type="submit"
-                          variant="outlined"
-                          onClick={() => {
-                            dispatch(
-                              postHotelProposal(
-                                props.selectedHotel.retreat_id,
-                                props.selectedHotel.hotel_id,
-                                nullifyEmptyString({
-                                  ...props.selectedHotel.hotel_proposals![
-                                    activeProposalIndex
-                                  ]!,
-                                  dates: newProposalDates,
-                                })
-                              )
-                            )
-                          }}>
-                          Copy current
-                        </Button>
-                      ) : undefined}
                     </Box>
                   </form>
                 </Box>
