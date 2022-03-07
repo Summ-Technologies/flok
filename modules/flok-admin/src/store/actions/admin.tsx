@@ -1,13 +1,14 @@
 import querystring from "querystring"
-import {sortFlexibleMonths} from "../../components/retreats/RetreatInfoForm"
 import {
-  AdminLodgingProposalModel,
+  AdminHotelDetailsModel,
   AdminLodgingProposalUpdateModel,
+  AdminRetreatAttendeeModel,
+  AdminRetreatAttendeeUpdateModel,
   AdminRetreatListType,
   AdminRetreatModel,
-  AdminRetreatUpdateModel,
   AdminSelectedHotelStateTypes,
 } from "../../models"
+import {nullifyEmptyString} from "../../utils"
 import {createApiAction} from "./api"
 
 export const GET_RETREATS_LIST_REQUEST = "GET_RETREATS_LIST_REQUEST"
@@ -46,45 +47,35 @@ export function getRetreatDetails(id: number) {
 
 export function createRetreatDetailsForm(
   obj: Partial<AdminRetreatModel>
-): AdminRetreatUpdateModel {
-  return {
-    contact_name: obj.contact_name || null,
-    contact_email: obj.contact_email!,
-    preferences_num_attendees_lower:
-      obj.preferences_num_attendees_lower || null, // || means 0 isn't allowed (fixes issue of '' being submitted though)
-    preferences_is_dates_flexible: obj.preferences_is_dates_flexible ?? null,
-    preferences_dates_exact_start: obj.preferences_dates_exact_start || null,
-    preferences_dates_exact_end: obj.preferences_dates_exact_end || null,
-    preferences_dates_flexible_months: sortFlexibleMonths(
-      obj.preferences_dates_flexible_months ?? []
-    ),
-    preferences_dates_flexible_num_nights:
-      obj.preferences_dates_flexible_num_nights || null,
-    flok_admin_owner: obj.flok_admin_owner || null,
-    flok_admin_state: obj.flok_admin_state || null,
-    state: obj.state || null,
-  }
+): Partial<AdminRetreatModel> {
+  let keys = Object.keys(obj) as (keyof AdminRetreatModel)[]
+  keys.forEach((key) => {
+    if (obj[key] == null || obj[key] === "") {
+      obj[key] = undefined
+    }
+  })
+  return obj
 }
 
-export const PUT_RETREAT_DETAILS_REQUEST = "PUT_RETREAT_DETAILS_REQUEST"
-export const PUT_RETREAT_DETAILS_SUCCESS = "PUT_RETREAT_DETAILS_SUCCESS"
-export const PUT_RETREAT_DETAILS_FAILURE = "PUT_RETREAT_DETAILS_FAILURE"
+export const PATCH_RETREAT_DETAILS_REQUEST = "PATCH_RETREAT_DETAILS_REQUEST"
+export const PATCH_RETREAT_DETAILS_SUCCESS = "PATCH_RETREAT_DETAILS_SUCCESS"
+export const PATCH_RETREAT_DETAILS_FAILURE = "PATCH_RETREAT_DETAILS_FAILURE"
 
-export function putRetreatDetails(
+export function patchRetreatDetails(
   id: number,
-  retreatDetails: AdminRetreatUpdateModel
+  retreatDetails: Partial<AdminRetreatModel>
 ) {
   let endpoint = `/v1.0/admin/retreats/${id}`
   return createApiAction({
     endpoint,
-    method: "PUT",
+    method: "PATCH",
     body: JSON.stringify(retreatDetails, (key, value) =>
       typeof value === "undefined" ? null : value
     ),
     types: [
-      {type: PUT_RETREAT_DETAILS_REQUEST, meta: {id}},
-      {type: PUT_RETREAT_DETAILS_SUCCESS, meta: {id}},
-      {type: PUT_RETREAT_DETAILS_FAILURE, meta: {id}},
+      {type: PATCH_RETREAT_DETAILS_REQUEST, meta: {id}},
+      {type: PATCH_RETREAT_DETAILS_SUCCESS, meta: {id}},
+      {type: PATCH_RETREAT_DETAILS_FAILURE, meta: {id}},
     ],
   })
 }
@@ -139,6 +130,101 @@ export function getHotelsByHotelId(hotelIds: number[]) {
       GET_HOTELS_BY_ID_REQUEST,
       GET_HOTELS_BY_ID_SUCCESS,
       GET_HOTELS_BY_ID_FAILURE,
+    ],
+  })
+}
+
+export const GET_HOTEL_DETAILS_REQUEST = "GET_HOTEL_DETAILS_REQUEST"
+export const GET_HOTEL_DETAILS_SUCCESS = "GET_HOTEL_DETAILS_SUCCESS"
+export const GET_HOTEL_DETAILS_FAILURE = "GET_HOTEL_DETAILS_FAILURE"
+
+export function getHotelDetails(hotelId: number) {
+  let endpoint = `/v1.0/admin/hotels/${hotelId}`
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [
+      GET_HOTEL_DETAILS_REQUEST,
+      GET_HOTEL_DETAILS_SUCCESS,
+      GET_HOTEL_DETAILS_FAILURE,
+    ],
+  })
+}
+
+export const POST_HOTEL_REQUEST = "POST_HOTEL_REQUEST"
+export const POST_HOTEL_SUCCESS = "POST_HOTEL_SUCCESS"
+export const POST_HOTEL_FAILURE = "POST_HOTEL_FAILURE"
+
+export function postHotel(hotel: Partial<AdminHotelDetailsModel>) {
+  let endpoint = `/v1.0/admin/hotels`
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [POST_HOTEL_REQUEST, POST_HOTEL_SUCCESS, POST_HOTEL_FAILURE],
+  })
+}
+
+export const PATCH_HOTEL_REQUEST = "PATCH_HOTEL_REQUEST"
+export const PATCH_HOTEL_SUCCESS = "PATCH_HOTEL_SUCCESS"
+export const PATCH_HOTEL_FAILURE = "PATCH_HOTEL_FAILURE"
+
+export function patchHotel(
+  hotelId: number,
+  hotel: Partial<AdminHotelDetailsModel>
+) {
+  let endpoint = `/v1.0/admin/hotels/${hotelId}`
+  return createApiAction({
+    endpoint,
+    body: JSON.stringify(nullifyEmptyString(hotel)),
+    method: "PATCH",
+    types: [PATCH_HOTEL_REQUEST, PATCH_HOTEL_SUCCESS, PATCH_HOTEL_FAILURE],
+  })
+}
+
+export const POST_HOTEL_TEMPLATE_PROPOSAL_REQUEST =
+  "POST_HOTEL_TEMPLATE_PROPOSAL_REQUEST"
+export const POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS =
+  "POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS"
+export const POST_HOTEL_TEMPLATE_PROPOSAL_FAILURE =
+  "POST_HOTEL_TEMPLATE_PROPOSAL_FAILURE"
+
+export function postHotelTemplateProposal(
+  hotelId: number,
+  proposal: AdminLodgingProposalUpdateModel
+) {
+  let endpoint = `/v1.0/admin/hotels/${hotelId}/proposal`
+  return createApiAction({
+    endpoint,
+    method: "POST",
+    body: JSON.stringify(nullifyEmptyString(proposal)),
+    types: [
+      POST_HOTEL_TEMPLATE_PROPOSAL_REQUEST,
+      POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
+      POST_HOTEL_TEMPLATE_PROPOSAL_FAILURE,
+    ],
+  })
+}
+
+export const PUT_HOTEL_TEMPLATE_PROPOSAL_REQUEST =
+  "PUT_HOTEL_TEMPLATE_PROPOSAL_REQUEST"
+export const PUT_HOTEL_TEMPLATE_PROPOSAL_SUCCESS =
+  "PUT_HOTEL_TEMPLATE_PROPOSAL_SUCCESS"
+export const PUT_HOTEL_TEMPLATE_PROPOSAL_FAILURE =
+  "PUT_HOTEL_TEMPLATE_PROPOSAL_FAILURE"
+
+export function putHotelTemplateProposal(
+  hotelId: number,
+  proposal: AdminLodgingProposalUpdateModel
+) {
+  let endpoint = `/v1.0/admin/hotels/${hotelId}/proposal`
+  return createApiAction({
+    endpoint,
+    method: "PUT",
+    body: JSON.stringify(nullifyEmptyString(proposal)),
+    types: [
+      PUT_HOTEL_TEMPLATE_PROPOSAL_REQUEST,
+      PUT_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
+      PUT_HOTEL_TEMPLATE_PROPOSAL_FAILURE,
     ],
   })
 }
@@ -202,43 +288,12 @@ export function deleteSelectedHotel(retreatId: number, hotelId: number) {
   })
 }
 
-export function createProposalForm(
-  obj: Partial<AdminLodgingProposalModel>
-): AdminLodgingProposalUpdateModel {
-  return {
-    dates: obj.dates || null,
-    dates_note: obj.dates_note || null,
-    compare_room_rate: obj.compare_room_rate || null,
-    compare_room_total: obj.compare_room_total || null,
-    currency: obj.currency || "USD",
-    num_guests: obj.num_guests || null,
-    is_all_inclusive: obj.is_all_inclusive ?? false,
-    guestroom_rates: obj.guestroom_rates || null,
-    approx_room_total: obj.approx_room_total || null,
-    resort_fee: obj.resort_fee || null,
-    tax_rates: obj.tax_rates || null,
-    additional_fees: obj.additional_fees || null,
-    suggested_meeting_spaces: obj.suggested_meeting_spaces || null,
-    meeting_room_rates: obj.meeting_room_rates || null,
-    meeting_room_tax_rates: obj.meeting_room_tax_rates || null,
-    food_bev_minimum: obj.food_bev_minimum || null,
-    food_bev_service_fee: obj.food_bev_service_fee || null,
-    avg_breakfast_price: obj.avg_breakfast_price || null,
-    avg_snack_price: obj.avg_snack_price || null,
-    avg_lunch_price: obj.avg_lunch_price || null,
-    avg_dinner_price: obj.avg_dinner_price || null,
-    cost_saving_notes: obj.cost_saving_notes || null,
-    additional_links: (obj.additional_links || []).map((link) => ({
-      link_text: link.link_text,
-      link_url: link.link_url,
-      affinity: link.affinity || null,
-    })),
-  }
-}
-
-export const POST_HOTEL_PROPOSAL_REQUEST = "POST_HOTEL_PROPOSAL_REQUEST"
-export const POST_HOTEL_PROPOSAL_SUCCESS = "POST_HOTEL_PROPOSAL_SUCCESS"
-export const POST_HOTEL_PROPOSAL_FAILURE = "POST_HOTEL_PROPOSAL_FAILURE"
+export const POST_RETREAT_HOTEL_PROPOSAL_REQUEST =
+  "POST_RETREAT_HOTEL_PROPOSAL_REQUEST"
+export const POST_RETREAT_HOTEL_PROPOSAL_SUCCESS =
+  "POST_RETREAT_HOTEL_PROPOSAL_SUCCESS"
+export const POST_RETREAT_HOTEL_PROPOSAL_FAILURE =
+  "POST_RETREAT_HOTEL_PROPOSAL_FAILURE"
 
 /** Adds hotel proposal. */
 export function postHotelProposal(
@@ -254,19 +309,22 @@ export function postHotelProposal(
       typeof value === "undefined" ? null : value
     ),
     types: [
-      POST_HOTEL_PROPOSAL_REQUEST,
-      POST_HOTEL_PROPOSAL_SUCCESS,
-      POST_HOTEL_PROPOSAL_FAILURE,
+      POST_RETREAT_HOTEL_PROPOSAL_REQUEST,
+      POST_RETREAT_HOTEL_PROPOSAL_SUCCESS,
+      POST_RETREAT_HOTEL_PROPOSAL_FAILURE,
     ],
   })
 }
 
-export const PUT_HOTEL_PROPOSAL_REQUEST = "PUT_HOTEL_PROPOSAL_REQUEST"
-export const PUT_HOTEL_PROPOSAL_SUCCESS = "PUT_HOTEL_PROPOSAL_SUCCESS"
-export const PUT_HOTEL_PROPOSAL_FAILURE = "PUT_HOTEL_PROPOSAL_FAILURE"
+export const PUT_RETREAT_HOTEL_PROPOSAL_REQUEST =
+  "PUT_RETREAT_HOTEL_PROPOSAL_REQUEST"
+export const PUT_RETREAT_HOTEL_PROPOSAL_SUCCESS =
+  "PUT_RETREAT_HOTEL_PROPOSAL_SUCCESS"
+export const PUT_RETREAT_HOTEL_PROPOSAL_FAILURE =
+  "PUT_RETREAT_HOTEL_PROPOSAL_FAILURE"
 
 /** Edits hotel proposal. */
-export function putHotelProposal(
+export function putRetreatHotelProposal(
   retreatId: number,
   hotelId: number,
   proposalId: number,
@@ -280,19 +338,22 @@ export function putHotelProposal(
       typeof value === "undefined" ? null : value
     ),
     types: [
-      PUT_HOTEL_PROPOSAL_REQUEST,
-      PUT_HOTEL_PROPOSAL_SUCCESS,
-      PUT_HOTEL_PROPOSAL_FAILURE,
+      PUT_RETREAT_HOTEL_PROPOSAL_REQUEST,
+      PUT_RETREAT_HOTEL_PROPOSAL_SUCCESS,
+      PUT_RETREAT_HOTEL_PROPOSAL_FAILURE,
     ],
   })
 }
 
-export const DELETE_HOTEL_PROPOSAL_REQUEST = "DELETE_HOTEL_PROPOSAL_REQUEST"
-export const DELETE_HOTEL_PROPOSAL_SUCCESS = "DELETE_HOTEL_PROPOSAL_SUCCESS"
-export const DELETE_HOTEL_PROPOSAL_FAILURE = "DELETE_HOTEL_PROPOSAL_FAILURE"
+export const DELETE_RETREAT_HOTEL_PROPOSAL_REQUEST =
+  "DELETE_RETREAT_HOTEL_PROPOSAL_REQUEST"
+export const DELETE_RETREAT_HOTEL_PROPOSAL_SUCCESS =
+  "DELETE_RETREAT_HOTEL_PROPOSAL_SUCCESS"
+export const DELETE_RETREAT_HOTEL_PROPOSAL_FAILURE =
+  "DELETE_RETREAT_HOTEL_PROPOSAL_FAILURE"
 
 /** Adds hotel proposal. */
-export function deleteHotelProposal(
+export function deleteRetreatHotelProposal(
   retreatId: number,
   hotelId: number,
   proposalId: number
@@ -302,9 +363,145 @@ export function deleteHotelProposal(
     endpoint,
     method: "DELETE",
     types: [
-      DELETE_HOTEL_PROPOSAL_REQUEST,
-      DELETE_HOTEL_PROPOSAL_SUCCESS,
-      DELETE_HOTEL_PROPOSAL_FAILURE,
+      DELETE_RETREAT_HOTEL_PROPOSAL_REQUEST,
+      DELETE_RETREAT_HOTEL_PROPOSAL_SUCCESS,
+      DELETE_RETREAT_HOTEL_PROPOSAL_FAILURE,
+    ],
+  })
+}
+
+export const GET_RETREAT_ATTENDEES_REQUEST = "GET_RETREAT_ATTENDEES_REQUEST"
+export const GET_RETREAT_ATTENDEES_SUCCESS = "GET_RETREAT_ATTENDEES_SUCCESS"
+export const GET_RETREAT_ATTENDEES_FAILURE = "GET_RETREAT_ATTENDEES_FAILURE"
+export function getRetreatAttendees(retreatId: number) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_RETREAT_ATTENDEES_REQUEST},
+      {type: GET_RETREAT_ATTENDEES_SUCCESS, meta: {retreatId}},
+      {type: GET_RETREAT_ATTENDEES_FAILURE, meta: {retreatId}},
+    ],
+  })
+}
+
+export const PATCH_RETREAT_ATTENDEE_REQUEST = "PATCH_RETREAT_ATTENDEE_REQUEST"
+export const PATCH_RETREAT_ATTENDEE_SUCCESS = "PATCH_RETREAT_ATTENDEE_SUCCESS"
+export const PATCH_RETREAT_ATTENDEE_FAILURE = "PATCH_RETREAT_ATTENDEE_FAILURE"
+export function patchRetreatAttendee(
+  retreatId: number,
+  attendeeId: number,
+  attendee: AdminRetreatAttendeeUpdateModel
+) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees/${attendeeId}`
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify(attendee, (key, value) =>
+      typeof value === "undefined" ? null : value
+    ),
+    types: [
+      {
+        type: PATCH_RETREAT_ATTENDEE_REQUEST,
+      },
+      {
+        type: PATCH_RETREAT_ATTENDEE_SUCCESS,
+        meta: {retreatId},
+      },
+      {
+        type: PATCH_RETREAT_ATTENDEE_FAILURE,
+        meta: {retreatId},
+      },
+    ],
+  })
+}
+
+export const POST_RETREAT_ATTENDEE_REQUEST = "POST_RETREAT_ATTENDEE_REQUEST"
+export const POST_RETREAT_ATTENDEE_SUCCESS = "POST_RETREAT_ATTENDEE_SUCCESS"
+export const POST_RETREAT_ATTENDEE_FAILURE = "POST_RETREAT_ATTENDEE_FAILURE"
+export function postRetreatAttendee(
+  retreatId: number,
+  attendee: Partial<AdminRetreatAttendeeModel>
+) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify(attendee),
+    types: [
+      {
+        type: POST_RETREAT_ATTENDEE_REQUEST,
+      },
+      {
+        type: POST_RETREAT_ATTENDEE_SUCCESS,
+        meta: {retreatId},
+      },
+      {
+        type: POST_RETREAT_ATTENDEE_FAILURE,
+        meta: {retreatId},
+      },
+    ],
+  })
+}
+
+export const DELETE_RETREAT_ATTENDEES_REQUEST =
+  "DELETE_RETREAT_ATTENDEES_REQUEST"
+export const DELETE_RETREAT_ATTENDEES_SUCCESS =
+  "DELETE_RETREAT_ATTENDEES_SUCCESS"
+export const DELETE_RETREAT_ATTENDEES_FAILURE =
+  "DELETE_RETREAT_ATTENDEES_FAILURE"
+export function deleteRetreatAttendees(retreatId: number, attendeeId: number) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees`
+  return createApiAction({
+    method: "DELETE",
+    endpoint,
+    body: JSON.stringify({attendee_id: attendeeId}),
+    types: [
+      {
+        type: DELETE_RETREAT_ATTENDEES_REQUEST,
+      },
+      {
+        type: DELETE_RETREAT_ATTENDEES_SUCCESS,
+        meta: {retreatId},
+      },
+      {
+        type: DELETE_RETREAT_ATTENDEES_FAILURE,
+        meta: {retreatId},
+      },
+    ],
+  })
+}
+
+export const GET_RETREAT_NOTES_REQUEST = "GET_RETREAT_NOTES_REQUEST"
+export const GET_RETREAT_NOTES_SUCCESS = "GET_RETREAT_NOTES_SUCCESS"
+export const GET_RETREAT_NOTES_FAILURE = "GET_RETREAT_NOTES_FAILURE"
+export function getRetreatNotes(retreatId: number) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/notes`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      GET_RETREAT_NOTES_REQUEST,
+      {type: GET_RETREAT_NOTES_SUCCESS, meta: {retreatId}},
+      {type: GET_RETREAT_NOTES_FAILURE, meta: {retreatId}},
+    ],
+  })
+}
+
+export const POST_RETREAT_NOTES_REQUEST = "POST_RETREAT_NOTES_REQUEST"
+export const POST_RETREAT_NOTES_SUCCESS = "POST_RETREAT_NOTES_SUCCESS"
+export const POST_RETREAT_NOTES_FAILURE = "POST_RETREAT_NOTES_FAILURE"
+export function postRetreatNotes(retreatId: number, note: string) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/notes`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify({note}),
+    types: [
+      POST_RETREAT_NOTES_REQUEST,
+      {type: POST_RETREAT_NOTES_SUCCESS, meta: {retreatId}},
+      {type: POST_RETREAT_NOTES_FAILURE, meta: {retreatId}},
     ],
   })
 }

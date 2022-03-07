@@ -3,7 +3,6 @@ import {
   createMuiTheme,
   ThemeOptions as MuiThemeOptions,
 } from "@material-ui/core/styles"
-import {ExpandMore} from "@material-ui/icons"
 
 export interface FlokTheme extends Theme {}
 
@@ -88,11 +87,6 @@ export const theme = createMuiTheme({
   },
   shape: {borderRadius: VALUES.borderRadius},
   props: {
-    MuiSelect: {
-      IconComponent: ExpandMore,
-      native: true,
-      variant: "outlined",
-    },
     MuiSvgIcon: {
       color: "inherit",
     },

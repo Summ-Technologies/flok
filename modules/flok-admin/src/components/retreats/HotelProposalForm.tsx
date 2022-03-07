@@ -19,7 +19,7 @@ import {
   AdminLodgingProposalModel,
   AdminLodgingProposalUpdateModel,
 } from "../../models"
-import {createProposalForm} from "../../store/actions/admin"
+import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -43,20 +43,24 @@ let useStyles = makeStyles((theme) => ({
   additionalInfoGroup: {
     width: "100%",
   },
+  buttonRoot: {
+    "& .Mui-disabled": {cursor: "not-allowed", pointerEvents: "auto"},
+  },
 }))
 
 type HotelProposalFormProps = {
-  proposal: AdminLodgingProposalModel
+  proposal: Partial<AdminLodgingProposalModel>
   onSave: (values: AdminLodgingProposalUpdateModel) => void
-  onDelete: () => void
+  onDelete?: () => void
+  isProposalTemplate?: boolean
 }
 export default function HotelProposalForm(props: HotelProposalFormProps) {
   let classes = useStyles(props)
   const formik = useFormik({
     enableReinitialize: true,
-    initialValues: createProposalForm(props.proposal),
+    initialValues: nullifyEmptyString(props.proposal),
     validate: (values) => {
-      let linkErrors = values.additional_links.map((link, i) => {
+      let linkErrors = values.additional_links?.map((link, i) => {
         try {
           yup.string().url().validateSync(link.link_url)
         } catch (err) {
@@ -64,7 +68,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
         }
         return {}
       })
-      if (linkErrors.filter((err) => !!err.link_url).length) {
+      if (linkErrors && linkErrors.filter((err) => !!err.link_url).length) {
         return {additional_links: linkErrors}
       } else {
         return undefined
@@ -77,6 +81,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
     style: {whiteSpace: "pre"},
     InputLabelProps: {shrink: true},
     onChange: formik.handleChange,
+    classes: {root: classes.buttonRoot},
   }
 
   return (
@@ -89,6 +94,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           label="Dates"
           multiline
           value={formik.values.dates ?? ""}
+          disabled={props.isProposalTemplate}
         />
         <TextField
           {...textFieldProps}
@@ -96,6 +102,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           label="Dates note"
           multiline
           value={formik.values.dates_note ?? ""}
+          disabled={props.isProposalTemplate}
         />
         <TextField
           {...textFieldProps}
@@ -103,6 +110,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           label="# Guests"
           multiline
           value={formik.values.num_guests ?? ""}
+          disabled={props.isProposalTemplate}
         />
         <TextField
           {...textFieldProps}
@@ -113,7 +121,8 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           value={formik.values.is_all_inclusive ? "true" : "false"}
           onChange={(e) => {
             formik.setFieldValue("is_all_inclusive", e.target.value === "true")
-          }}>
+          }}
+          disabled={props.isProposalTemplate}>
           <option value={"false"}>Not all inclusive</option>
           <option value={"true"}>Is all inclusive</option>
         </TextField>
@@ -121,21 +130,37 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           {...textFieldProps}
           id="compare_room_rate"
           label="Guestroom rates"
-          value={formik.values.compare_room_rate?.toString() ?? ""}
+          value={
+            formik.values.compare_room_rate != null
+              ? formik.values.compare_room_rate.toString()
+              : ""
+          }
           onChange={(e) =>
-            formik.setFieldValue("compare_room_rate", parseInt(e.target.value))
+            formik.setFieldValue(
+              "compare_room_rate",
+              isNaN(parseInt(e.target.value)) ? "" : parseInt(e.target.value)
+            )
           }
           InputProps={{inputComponent: CurrencyNumberFormat as any}}
+          disabled={props.isProposalTemplate}
         />
         <TextField
           {...textFieldProps}
           id="compare_room_total"
           label="Approximate room total"
-          value={formik.values.compare_room_total?.toString() ?? ""}
+          value={
+            formik.values.compare_room_total != null
+              ? formik.values.compare_room_total
+              : ""
+          }
           onChange={(e) =>
-            formik.setFieldValue("compare_room_total", parseInt(e.target.value))
+            formik.setFieldValue(
+              "compare_room_total",
+              isNaN(parseInt(e.target.value)) ? "" : parseInt(e.target.value)
+            )
           }
           InputProps={{inputComponent: CurrencyNumberFormat as any}}
+          disabled={props.isProposalTemplate}
         />
         <TextField
           {...textFieldProps}
@@ -156,6 +181,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           label="Rates"
           multiline
           value={formik.values.guestroom_rates ?? ""}
+          disabled={props.isProposalTemplate}
         />
         <TextField
           {...textFieldProps}
@@ -163,6 +189,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           label="Room total"
           multiline
           value={formik.values.approx_room_total ?? ""}
+          disabled={props.isProposalTemplate}
         />
         <TextField
           {...textFieldProps}
@@ -263,14 +290,13 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           {...textFieldProps}
           id="cost_saving_notes"
           variant="outlined"
-          minRows={5}
           label="Additional notes"
           multiline
           value={formik.values.cost_saving_notes ?? ""}
         />
         <FormControl>
           <AppTypography variant="body2">Additional links</AppTypography>
-          {formik.values.additional_links.map((link, i) => (
+          {formik.values.additional_links?.map((link, i) => (
             <Box display="flex" alignItems="flex-start" marginY={1}>
               <TextField
                 {...textFieldProps}
@@ -334,7 +360,7 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
                 onClick={() => {
                   formik.setFieldValue(
                     "additional_links",
-                    formik.values.additional_links.filter((val, j) => j !== i)
+                    formik.values.additional_links?.filter((val, j) => j !== i)
                   )
                 }}>
                 <Remove fontSize="small" />
@@ -346,8 +372,10 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
               <Add
                 onClick={() => {
                   formik.setFieldValue("additional_links", [
-                    ...formik.values.additional_links,
-                    {link_url: "", link_text: "", affinity: ""},
+                    ...(formik.values.additional_links
+                      ? formik.values.additional_links
+                      : []),
+                    {link_url: "", link_text: "", affinity: null},
                   ])
                 }}
               />
@@ -355,20 +383,26 @@ export default function HotelProposalForm(props: HotelProposalFormProps) {
           </Box>
         </FormControl>
       </Paper>
-      <Box width="100%" display="flex" justifyContent="space-between">
-        <Button color="secondary" variant="outlined" onClick={props.onDelete}>
-          Delete Proposal
-        </Button>
+      <Box
+        width="100%"
+        display="flex"
+        flexDirection="row-reverse"
+        justifyContent="space-between">
         <Button
           disabled={_.isEqual(
-            createProposalForm(formik.values),
-            createProposalForm(formik.initialValues)
+            nullifyEmptyString(formik.values),
+            nullifyEmptyString(formik.initialValues)
           )}
           type="submit"
           color="primary"
           variant="contained">
           Save Changes
         </Button>
+        {props.onDelete && (
+          <Button color="secondary" variant="outlined" onClick={props.onDelete}>
+            Delete Proposal
+          </Button>
+        )}
       </Box>
     </form>
   )

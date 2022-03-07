@@ -23,6 +23,7 @@ let useStyles = makeStyles((theme) => ({
 }))
 
 type HotelSearchModalProps = {
+  submitText?: string
   onSubmit: (hotelId: number) => void
   onClose: () => void
 }
@@ -134,7 +135,7 @@ export default function HotelSearchModal(props: HotelSearchModalProps) {
                   type="submit"
                   color="primary"
                   variant="contained">
-                  Submit
+                  {props.submitText ? props.submitText : "Submit"}
                 </Button>
               </Box>
             </form>
