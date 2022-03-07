@@ -149,62 +149,40 @@ export type AdminDestinationModel = {
 
 // ATTENDEES
 export type AdminTripLegModel = {
-  id: number
-  airline: string
-  dep_airport: string
-  arr_airport: string
-  flight_num: string
-  dep_datetime: Date
-  arr_datetime: Date
-  duration: number // length in s
+  airline: string | null
+  dep_airport: string | null
+  arr_airport: string | null
+  flight_num: string | null
+  dep_datetime: string | null
+  arr_datetime: string | null
+  duration: number | null // length in s
 }
 
 export type AdminRetreatTripModel = {
-  id: number
-  cost: number
-  confirmation_number: string
+  confirmation_number: string | null
   trip_legs: AdminTripLegModel[]
-  duration: number // length in s
+  duration: number | null
 }
 
 export type AdminRetreatTravelModel = {
-  id: number
-  cost: number
-  dep_trip?: AdminRetreatTripModel
-  arr_trip?: AdminRetreatTripModel
-  status: string
+  cost: number | null
+  dep_trip: AdminRetreatTripModel | null
+  arr_trip: AdminRetreatTripModel | null
 }
 
 export type AdminRetreatAttendeeModel = {
   id: number
   email_address: string
-  name: string
-  travel?: AdminRetreatTravelModel
-  city: string
-  dietary_prefs: string
-  notes: string
+  name: string | null
+  travel: AdminRetreatTravelModel | null
+  city: string | null
+  dietary_prefs: string | null
+  notes: string | null
   info_status: RetreatAttendeeInfoStatusType
   flight_status: RetreatAttendeeFlightStatusType
 }
 
-export type AdminRetreatTravelUpdateModel = {
-  id: number
-  cost: number
-  dep_trip: AdminRetreatTripModel
-  arr_trip: AdminRetreatTripModel
-  status: string
-}
-
-export type AdminRetreatAttendeeUpdateModel = {
-  email_address: string
-  name: string
-  travel: AdminRetreatTravelUpdateModel
-  city: string
-  dietary_prefs: string
-  notes: string
-  info_status: RetreatAttendeeInfoStatusType
-  flight_status: RetreatAttendeeFlightStatusType
-}
+export type AdminRetreatAttendeeUpdateModel = Partial<AdminRetreatAttendeeModel>
 
 export type RetreatAttendeeInfoStatusType = "CREATED" | "INFO_ENTERED"
 export const RetreatAttendeeInfoStatusOptions = ["CREATED", "INFO_ENTERED"]

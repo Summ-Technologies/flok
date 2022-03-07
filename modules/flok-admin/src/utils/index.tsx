@@ -4,7 +4,11 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {useLocation} from "react-router-dom"
 import {RootState} from "../store"
-import {getDestinations} from "../store/actions/admin"
+import {
+  getDestinations,
+  getRetreatAttendees,
+  getRetreatDetails,
+} from "../store/actions/admin"
 
 /**
  * returns datestring like:
@@ -88,4 +92,45 @@ export function useDestinations() {
   }, [allDestinations, dispatch])
 
   return [destinations, loading] as const
+}
+
+/**
+ * Get retreat details
+ */
+export function useRetreat(retreatId: number) {
+  let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
+  let retreat = useSelector((state: RootState) => {
+    return state.admin.retreatsDetails[retreatId]
+  })
+  useEffect(() => {
+    async function loadRetreatDetails() {
+      setLoading(true)
+      await dispatch(getRetreatDetails(retreatId))
+      setLoading(false)
+    }
+    if (retreat === undefined) {
+      loadRetreatDetails()
+    }
+  }, [retreatId, dispatch, setLoading, retreat])
+  return [retreat, loading] as const
+}
+
+export function useRetreatAttendees(retreatId: number) {
+  let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
+  let retreatAttendees = useSelector((state: RootState) => {
+    return state.admin.attendeesByRetreat[retreatId]
+  })
+  useEffect(() => {
+    async function loadRetreatAttendees() {
+      setLoading(true)
+      await dispatch(getRetreatAttendees(retreatId))
+      setLoading(false)
+    }
+    if (retreatAttendees === undefined) {
+      loadRetreatAttendees()
+    }
+  }, [retreatId, dispatch, setLoading, retreatAttendees])
+  return [retreatAttendees, loading] as const
 }

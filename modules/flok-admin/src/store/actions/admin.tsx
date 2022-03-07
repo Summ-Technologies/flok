@@ -6,8 +6,6 @@ import {
   AdminRetreatAttendeeUpdateModel,
   AdminRetreatListType,
   AdminRetreatModel,
-  AdminRetreatTravelModel,
-  AdminRetreatTravelUpdateModel,
   AdminSelectedHotelStateTypes,
 } from "../../models"
 import {nullifyEmptyString} from "../../utils"
@@ -388,135 +386,41 @@ export function getRetreatAttendees(retreatId: number) {
   })
 }
 
-function travelToForm(
-  travel: AdminRetreatTravelModel
-): AdminRetreatTravelUpdateModel {
-  console.log(travel.arr_trip)
-  return {
-    id: travel.id,
-    cost: travel.cost,
-    status: travel.status,
-    dep_trip: travel.dep_trip ?? {
-      id: -1,
-      cost: 0,
-      confirmation_number: "",
-      trip_legs: [],
-      duration: 0,
-    },
-    arr_trip: travel.arr_trip ?? {
-      id: -1,
-      cost: 0,
-      confirmation_number: "",
-      trip_legs: [],
-      duration: 0,
-    },
-  }
-}
-
-export function attendeeToForm(
-  attendee: AdminRetreatAttendeeModel
-): AdminRetreatAttendeeUpdateModel {
-  return {
-    ...attendee,
-    travel: travelToForm(
-      attendee.travel ?? {
-        id: -1,
-        cost: 0,
-        status: "PENDING",
-        dep_trip: {
-          id: -1,
-          cost: 0,
-          confirmation_number: "",
-          trip_legs: [],
-          duration: 0,
-        },
-        arr_trip: {
-          id: -1,
-          cost: 0,
-          confirmation_number: "",
-          trip_legs: [],
-          duration: 0,
-        },
-      }
-    ),
-  }
-}
-
-function formToTravel(
-  formVals: AdminRetreatTravelUpdateModel,
-  travelPresent: boolean,
-  arrTrip: boolean,
-  depTrip: boolean
-): AdminRetreatTravelModel | undefined {
-  if (!travelPresent) return undefined
-
-  let travel = formVals as AdminRetreatTravelModel
-  if (!arrTrip) delete travel.arr_trip
-  if (!depTrip) delete travel.dep_trip
-
-  return travel
-}
-
-export function formToAttendee(
-  id: number,
-  formVals: AdminRetreatAttendeeUpdateModel,
-  travelPresent: boolean,
-  arrTripPresent: boolean,
-  depTripPresent: boolean
-): AdminRetreatAttendeeModel {
-  let ret = {
-    id: id,
-    ...formVals,
-    notes: formVals.notes ?? "",
-    dietary_prefs: formVals.dietary_prefs ?? "",
-    city: formVals.city ?? "",
-    name: formVals.name ?? "",
-    travel: formToTravel(
-      formVals.travel,
-      travelPresent,
-      arrTripPresent,
-      depTripPresent
-    ),
-  }
-
-  if (ret.travel === undefined) delete ret.travel
-  return ret
-}
-
-export const PUT_RETREAT_ATTENDEES_REQUEST = "PUT_RETREAT_ATTENDEES_REQUEST"
-export const PUT_RETREAT_ATTENDEES_SUCCESS = "PUT_RETREAT_ATTENDEES_SUCCESS"
-export const PUT_RETREAT_ATTENDEES_FAILURE = "PUT_RETREAT_ATTENDEES_FAILURE"
-export function putRetreatAttendees(
+export const PATCH_RETREAT_ATTENDEE_REQUEST = "PATCH_RETREAT_ATTENDEE_REQUEST"
+export const PATCH_RETREAT_ATTENDEE_SUCCESS = "PATCH_RETREAT_ATTENDEE_SUCCESS"
+export const PATCH_RETREAT_ATTENDEE_FAILURE = "PATCH_RETREAT_ATTENDEE_FAILURE"
+export function patchRetreatAttendee(
   retreatId: number,
-  attendee: AdminRetreatAttendeeModel
+  attendeeId: number,
+  attendee: AdminRetreatAttendeeUpdateModel
 ) {
-  let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees`
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/attendees/${attendeeId}`
   return createApiAction({
-    method: "PUT",
+    method: "PATCH",
     endpoint,
     body: JSON.stringify(attendee, (key, value) =>
       typeof value === "undefined" ? null : value
     ),
     types: [
       {
-        type: PUT_RETREAT_ATTENDEES_REQUEST,
+        type: PATCH_RETREAT_ATTENDEE_REQUEST,
       },
       {
-        type: PUT_RETREAT_ATTENDEES_SUCCESS,
+        type: PATCH_RETREAT_ATTENDEE_SUCCESS,
         meta: {retreatId},
       },
       {
-        type: PUT_RETREAT_ATTENDEES_FAILURE,
+        type: PATCH_RETREAT_ATTENDEE_FAILURE,
         meta: {retreatId},
       },
     ],
   })
 }
 
-export const POST_RETREAT_ATTENDEES_REQUEST = "POST_RETREAT_ATTENDEES_REQUEST"
-export const POST_RETREAT_ATTENDEES_SUCCESS = "POST_RETREAT_ATTENDEES_SUCCESS"
-export const POST_RETREAT_ATTENDEES_FAILURE = "POST_RETREAT_ATTENDEES_FAILURE"
-export function postRetreatAttendees(
+export const POST_RETREAT_ATTENDEE_REQUEST = "POST_RETREAT_ATTENDEE_REQUEST"
+export const POST_RETREAT_ATTENDEE_SUCCESS = "POST_RETREAT_ATTENDEE_SUCCESS"
+export const POST_RETREAT_ATTENDEE_FAILURE = "POST_RETREAT_ATTENDEE_FAILURE"
+export function postRetreatAttendee(
   retreatId: number,
   attendee: Partial<AdminRetreatAttendeeModel>
 ) {
@@ -524,19 +428,17 @@ export function postRetreatAttendees(
   return createApiAction({
     method: "POST",
     endpoint,
-    body: JSON.stringify(attendee, (key, value) =>
-      typeof value === "undefined" ? null : value
-    ),
+    body: JSON.stringify(attendee),
     types: [
       {
-        type: POST_RETREAT_ATTENDEES_REQUEST,
+        type: POST_RETREAT_ATTENDEE_REQUEST,
       },
       {
-        type: POST_RETREAT_ATTENDEES_SUCCESS,
+        type: POST_RETREAT_ATTENDEE_SUCCESS,
         meta: {retreatId},
       },
       {
-        type: POST_RETREAT_ATTENDEES_FAILURE,
+        type: POST_RETREAT_ATTENDEE_FAILURE,
         meta: {retreatId},
       },
     ],

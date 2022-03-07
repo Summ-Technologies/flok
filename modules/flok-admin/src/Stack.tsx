@@ -3,6 +3,7 @@ import {Route, Switch} from "react-router-dom"
 import HomePage from "./pages/HomePage"
 import HotelPage from "./pages/HotelPage"
 import HotelsPage from "./pages/HotelsPage"
+import RetreatAttendeePage from "./pages/RetreatAttendeePage"
 import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatLodgingPage from "./pages/RetreatLodgingPage"
 import RetreatPage from "./pages/RetreatPage"
@@ -46,7 +47,7 @@ export class AppRoutes {
     },
     {
       name: "RetreatAttendeePage",
-      component: <RetreatAttendeesPage />,
+      component: <RetreatAttendeePage />,
       path: "/retreats/:retreatId/attendees/:attendeeId",
     },
     {

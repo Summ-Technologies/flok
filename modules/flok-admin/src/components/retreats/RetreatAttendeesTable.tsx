@@ -1,4 +1,4 @@
-import {Button, Chip, makeStyles} from "@material-ui/core"
+import {Button, makeStyles} from "@material-ui/core"
 import {
   DataGrid,
   GridCellParams,
@@ -8,30 +8,8 @@ import {
 } from "@material-ui/data-grid"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
-import {
-  RetreatAttendeeFlightStatusOptions,
-  RetreatAttendeeInfoStatusOptions,
-} from "../../models"
+import {AdminRetreatAttendeeModel} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
-import {theme} from "../../theme"
-
-function DietList(prefString: string) {
-  if (!prefString) {
-    return <></>
-  }
-  return prefString.split(",").map((s) => (
-    <Chip
-      size="small"
-      label={s}
-      style={{
-        margin: "1px 2px",
-        backgroundColor: theme.palette.primary.main,
-        color: "white",
-        cursor: "pointer",
-      }}
-    />
-  ))
-}
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -49,16 +27,10 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-export type RetreatAttendeesTableRow = {
-  id: number
-  name: string
-  email: string
-  city: string
-  dietaryPrefs: string
-  notes: string
-  infoStatus: string
-  flightStatus: string
-}
+export type RetreatAttendeesTableRow = Pick<
+  AdminRetreatAttendeeModel,
+  "id" | "name" | "email_address" | "city"
+>
 
 type RetreatAttendeesTableProps = {
   rows: RetreatAttendeesTableRow[]
@@ -114,7 +86,7 @@ export default function RetreatAttendeesTable(
     },
     {
       ...commonColDefs,
-      field: "email",
+      field: "email_address",
       headerName: "Email Address",
       width: 200,
     },
@@ -153,22 +125,22 @@ export default function RetreatAttendeesTable(
     //   headerName: "Notes",
     //   width: 200,
     // },
-    {
-      ...commonColDefs,
-      field: "infoStatus",
-      headerName: "Info Status",
-      width: 150,
-      type: "singleSelect",
-      valueOptions: RetreatAttendeeInfoStatusOptions,
-    },
-    {
-      ...commonColDefs,
-      field: "flightStatus",
-      headerName: "Flight Status",
-      width: 150,
-      type: "singleSelect",
-      valueOptions: RetreatAttendeeFlightStatusOptions,
-    },
+    // {
+    //   ...commonColDefs,
+    //   field: "infoStatus",
+    //   headerName: "Info Status",
+    //   width: 150,
+    //   type: "singleSelect",
+    //   valueOptions: RetreatAttendeeInfoStatusOptions,
+    // // },
+    // {
+    //   ...commonColDefs,
+    //   field: "flightStatus",
+    //   headerName: "Flight Status",
+    //   width: 150,
+    //   type: "singleSelect",
+    //   valueOptions: RetreatAttendeeFlightStatusOptions,
+    // },
   ]
   return (
     <DataGrid
