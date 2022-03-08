@@ -3,43 +3,180 @@ import {
   Button,
   Checkbox,
   Dialog,
+  Divider,
   IconButton,
   makeStyles,
   Paper,
   TextField,
+  TextFieldProps,
+  Typography,
 } from "@material-ui/core"
-import {Add, Delete} from "@material-ui/icons"
+import {Add, ArrowDownward, ArrowUpward, Delete} from "@material-ui/icons"
 import {useFormik} from "formik"
 import _ from "lodash"
 import {useState} from "react"
 import {
   AdminHotelDetailsModel,
-  AdminImageOrientationOptions,
+  AdminImageModel,
   AdminImageTagOptions,
-  AdminImageUpdateModel,
 } from "../../models/index"
+import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    flexWrap: "wrap",
+    flex: 1,
+    flexDirection: "column",
+    height: "100%",
     marginLeft: -theme.spacing(2),
-    "& > *": {
-      marginTop: theme.spacing(2),
-      marginLeft: theme.spacing(2),
-      padding: theme.spacing(2),
-    },
   },
   formGroup: {
-    overflowY: "scroll",
+    marginLeft: theme.spacing(2),
+    padding: theme.spacing(2),
+    overflowY: "auto",
+    height: 0,
+    flex: 1,
     display: "flex",
     width: "100%",
-    [theme.breakpoints.up("md")]: {width: `calc(50% - ${theme.spacing(2)}px)`},
     flexDirection: "column",
     "& > *:not(:first-child)": {marginTop: theme.spacing(2)},
-    maxHeight: 625,
+    minHeight: 400,
   },
+}))
+
+export type HotelImageFormType = {hotel: AdminHotelDetailsModel}
+
+export default function HotelImageForm(props: HotelImageFormType) {
+  let classes = useStyles(props)
+  let [uploadImageModalOpen, setUploadImageModalOpen] = useState(false)
+
+  type Form = {
+    spotlight_img?: Partial<AdminImageModel>
+    imgs: Partial<AdminImageModel>[]
+  }
+
+  function nullifyForm(hotel: Form): Form {
+    return {
+      ...nullifyEmptyString(hotel),
+      imgs: hotel.imgs.map((img) => nullifyEmptyString(img)),
+      spotlight_img:
+        hotel.spotlight_img && nullifyEmptyString(hotel.spotlight_img),
+    }
+  }
+
+  let formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      imgs: props.hotel.imgs,
+      spotlight_img: props.hotel.spotlight_img,
+    },
+    onSubmit: (values) => {},
+  })
+
+  const textFieldProps: TextFieldProps = {
+    InputLabelProps: {shrink: true},
+    onChange: formik.handleChange,
+    fullWidth: true,
+  }
+
+  function reorderImgs(direction: "up" | "down", imgIdx: number) {
+    if (direction === "up") {
+      formik.setFieldValue("imgs", [
+        ...formik.values.imgs.slice(undefined, imgIdx - 1),
+        formik.values.imgs[imgIdx],
+        formik.values.imgs[imgIdx - 1],
+        ...formik.values.imgs.slice(imgIdx + 1, undefined),
+      ])
+    } else {
+      formik.setFieldValue("imgs", [
+        ...formik.values.imgs.slice(undefined, imgIdx),
+        formik.values.imgs[imgIdx + 1],
+        formik.values.imgs[imgIdx],
+        ...formik.values.imgs.slice(imgIdx + 2, undefined),
+      ])
+    }
+  }
+
+  return (
+    <form className={classes.root} onSubmit={formik.handleSubmit}>
+      <Paper elevation={0} className={classes.formGroup}>
+        <AppTypography variant="h4">Spotlight image</AppTypography>
+        {formik.values.spotlight_img ? (
+          <ImageFormRow
+            img={formik.values.spotlight_img}
+            formId={"spotlight_img"}
+            textFieldProps={textFieldProps}
+          />
+        ) : (
+          <AppTypography variant="body1">
+            Please upload a spotlight image
+          </AppTypography>
+        )}
+        <Divider />
+        <AppTypography variant="h4">
+          Gallery images ({formik.values.imgs.length})
+        </AppTypography>
+        {formik.values.imgs.map((img, i) => (
+          <>
+            <ImageFormRow
+              key={img.id}
+              img={img}
+              onDelete={() =>
+                formik.setFieldValue(
+                  "imgs",
+                  formik.values.imgs.filter((val, j) => j !== i)
+                )
+              }
+              textFieldProps={textFieldProps}
+              formId={`imgs[${i}]`}
+              onReorderDown={
+                i + 1 !== formik.values.imgs.length
+                  ? () => reorderImgs("down", i)
+                  : undefined
+              }
+              onReorderUp={i !== 0 ? () => reorderImgs("up", i) : undefined}
+            />
+            <Divider />
+          </>
+        ))}
+      </Paper>
+      <Box
+        display="flex"
+        flexDirection="row-reverse"
+        justifyContent="space-between"
+        width="100%"
+        paddingY={1}
+        marginLeft={2}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={_.isEqual(
+            nullifyForm(formik.values),
+            nullifyForm(formik.initialValues)
+          )}>
+          Save Changes
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => setUploadImageModalOpen(true)}>
+          Upload Images
+        </Button>
+        <Dialog
+          open={uploadImageModalOpen}
+          onClose={() => setUploadImageModalOpen(false)}
+          fullWidth>
+          <ImageUploadForm />
+        </Dialog>
+      </Box>
+    </form>
+  )
+}
+
+let useRowStyles = makeStyles((theme) => ({
+  root: {},
   imgRow: {
     display: "flex",
     width: "100%",
@@ -62,275 +199,224 @@ let useStyles = makeStyles((theme) => ({
       opacity: "50%",
     },
   },
-  spotlight: {
+}))
+
+type ImageFormRowProps = {
+  img: AdminImageModel
+  formId: string
+  onReorderDown?: () => void
+  onReorderUp?: () => void
+  onDelete?: () => void
+  textFieldProps: TextFieldProps
+}
+function ImageFormRow(props: ImageFormRowProps) {
+  let classes = useRowStyles(props)
+  let [showImgModal, setShowImgModal] = useState(false)
+  return (
+    <div className={classes.imgRow}>
+      <img
+        src={props.img.image_url}
+        alt={props.img.alt}
+        className={classes.imgPreview}
+        onClick={() => setShowImgModal(true)}
+      />
+      <Dialog
+        open={showImgModal}
+        onClose={() => setShowImgModal(false)}
+        maxWidth="lg">
+        <img src={props.img.image_url} alt={props.img.alt} />
+      </Dialog>
+      <div>
+        <TextField
+          {...props.textFieldProps}
+          id={`${props.formId}.alt`}
+          value={props.img.alt}
+          label="Alt Text"
+          required
+        />
+        <TextField
+          {...props.textFieldProps}
+          id={`${props.formId}.tag`}
+          value={props.img.tag ?? ""}
+          select
+          SelectProps={{native: true}}
+          label="Tag">
+          <option value={""} label="No tag" />
+          {AdminImageTagOptions.map((o, i) => (
+            <option
+              key={i}
+              value={o}
+              label={o
+                .split("_")
+                .map((word) =>
+                  word.length > 0
+                    ? word[0].toLocaleUpperCase() +
+                      word.slice(1).toLocaleLowerCase()
+                    : word
+                )
+                .join(" ")}
+            />
+          ))}
+          {props.img.tag && !AdminImageTagOptions.includes(props.img.tag) ? (
+            <option
+              value={props.img.tag}
+              label={props.img.tag
+                .split("_")
+                .map((word) =>
+                  word.length > 0
+                    ? word[0].toLocaleUpperCase() +
+                      word.slice(1).toLocaleLowerCase()
+                    : word
+                )
+                .join(" ")}
+            />
+          ) : undefined}
+        </TextField>
+        <Box display="flex" justifyContent="flex-end" alignItems="flex-end">
+          {props.onReorderDown && (
+            <IconButton onClick={props.onReorderDown}>
+              <ArrowDownward />
+            </IconButton>
+          )}
+          {props.onReorderUp && (
+            <IconButton onClick={props.onReorderUp}>
+              <ArrowUpward />
+            </IconButton>
+          )}
+          {props.onDelete && (
+            <IconButton onClick={props.onDelete}>
+              <Delete />
+            </IconButton>
+          )}
+        </Box>
+      </div>
+    </div>
+  )
+}
+
+let useUploadFormStyles = makeStyles((theme) => ({
+  root: {
     display: "flex",
     flexDirection: "column",
-    "& > :last-child": {
-      width: 36,
+    padding: theme.spacing(1),
+    "& > *:not(:first-child)": {
+      marginTop: theme.spacing(1),
     },
   },
 }))
 
-export type HotelImageFormType = {hotel: AdminHotelDetailsModel}
+type ImageUploadFormProps = {}
 
-export default function HotelImageForm(props: HotelImageFormType) {
-  let classes = useStyles(props)
-
+function ImageUploadForm(props: ImageUploadFormProps) {
+  let classes = useUploadFormStyles(props)
+  let initialValues: {
+    imgs: {url: string; alt: string; tag?: string; spotlight: boolean}[]
+  } = {
+    imgs: [{url: "", alt: "", spotlight: false}],
+  }
   let formik = useFormik({
-    initialValues: {
-      newImages: [
-        {
-          id: -1,
-          image_url: "",
-          alt: "",
-          orientation: AdminImageOrientationOptions[0],
-          tag: AdminImageTagOptions[0],
-          spotlight: false,
-        },
-      ] as AdminImageUpdateModel[],
-      existingImages: (props.hotel.spotlight_img
-        ? [{...props.hotel.spotlight_img, spotlight: true}]
-        : []
-      ).concat(
-        props.hotel.imgs.map((img) => ({
-          ...img,
-          spotlight: false,
-        }))
-      ) as AdminImageUpdateModel[],
-    },
-    onSubmit: (values) => {},
+    initialValues,
+    onSubmit: () => {},
   })
-
-  let [modalImgIdx, setModalImgIdx] = useState(-1)
-
-  const addImage = () => {
-    formik.setFieldValue(
-      "newImages",
-      formik.values.newImages.concat({
-        id: -1,
-        image_url: "",
-        alt: "",
-        orientation: AdminImageOrientationOptions[0],
-        tag: AdminImageTagOptions[0],
-        spotlight: false,
-      })
-    )
-  }
-
-  const removeImage = (idx: number, existing: boolean) => {
-    if (existing) {
-      formik.setFieldValue(
-        "existingImages",
-        formik.values.existingImages
-          .slice(0, idx)
-          .concat(formik.values.existingImages.slice(idx + 1))
-      )
-    } else {
-      formik.setFieldValue(
-        "newImages",
-        formik.values.newImages
-          .slice(0, idx)
-          .concat(formik.values.newImages.slice(idx + 1))
-      )
-    }
-  }
-
-  const updateSpotlight = (
-    idx: number,
-    existing: boolean,
-    checked: boolean
-  ) => {
-    const existingImages = formik.values.existingImages.map((o) => ({
-      ...o,
-      spotlight: false,
-    }))
-    const newImages = formik.values.newImages.map((o) => ({
-      ...o,
-      spotlight: false,
-    }))
-
-    if (existing && checked) {
-      existingImages[idx].spotlight = true
-    } else if (checked) {
-      newImages[idx].spotlight = false
-    }
-
-    formik.setFieldValue("newImages", newImages)
-    formik.setFieldValue("existingImages", existingImages)
-  }
-
-  const textFieldProps = {
+  let textFieldProps: TextFieldProps = {
     InputLabelProps: {shrink: true},
-    onChange: formik.handleChange,
     fullWidth: true,
+    onChange: formik.handleChange,
   }
 
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
-      <Paper elevation={0} className={classes.formGroup}>
-        <AppTypography variant="h4">Existing Images</AppTypography>
-        {formik.values.existingImages.map((img, i) => (
-          <div className={classes.imgRow}>
-            <img
-              src={img.image_url}
-              alt={img.alt}
-              className={classes.imgPreview}
-              onClick={() => setModalImgIdx(i)}
-            />
-            <Dialog
-              open={modalImgIdx === i}
-              onClose={() => setModalImgIdx(-1)}
-              maxWidth="lg">
-              <img src={img.image_url} alt={img.alt} />
-            </Dialog>
-            <div>
-              <TextField
-                id={`existingImages.${i}.alt`}
-                value={formik.values.existingImages[i].alt}
-                label="Alt Text"
-                {...textFieldProps}
+      <Typography variant="h4">Upload Images</Typography>
+      {formik.values.imgs.map((img, i) => (
+        <Box className={classes.root}>
+          <TextField
+            {...textFieldProps}
+            id={`imgs[${i}].url`}
+            label="Image url"
+            value={formik.values.imgs[i].url}
+            required
+          />
+          <TextField
+            {...textFieldProps}
+            id={`imgs[${i}].alt`}
+            label="Image alt"
+            value={formik.values.imgs[i].alt}
+            required
+          />
+          <TextField
+            {...textFieldProps}
+            id={`imgs[${i}].tag`}
+            select
+            SelectProps={{native: true}}
+            label="Image tag">
+            <option value={""} label="No tag" />
+            {AdminImageTagOptions.map((o, i) => (
+              <option
+                key={i}
+                value={o}
+                label={o
+                  .split("_")
+                  .map((word) =>
+                    word.length > 0
+                      ? word[0].toLocaleUpperCase() +
+                        word.slice(1).toLocaleLowerCase()
+                      : word
+                  )
+                  .join(" ")}
               />
-              <TextField
-                id={`existingImages.${i}.orientation`}
-                value={formik.values.existingImages[i].orientation}
-                select
-                SelectProps={{native: true}}
-                {...textFieldProps}
-                label="Orientation">
-                {AdminImageOrientationOptions.map((o, i) => (
-                  <option key={i} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </TextField>
-              <TextField
-                id={`existingImages.${i}.tag`}
-                value={formik.values.existingImages[i].tag}
-                select
-                SelectProps={{native: true}}
-                {...textFieldProps}
-                label="Tag">
-                {AdminImageTagOptions.map((o, i) => (
-                  <option key={i} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </TextField>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-evenly",
-                  alignItems: "flex-end",
-                }}>
-                <div className={classes.spotlight}>
-                  <AppTypography>Spotlight Image?</AppTypography>
-                  <Checkbox
-                    onClick={() =>
-                      updateSpotlight(
-                        i,
-                        true,
-                        !formik.values.existingImages[i].spotlight
-                      )
-                    }
-                    id={`existingImages.${i}.spotlight`}
-                    value={formik.values.existingImages[i].spotlight}
-                    checked={formik.values.existingImages[i].spotlight}
-                  />
-                </div>
-                <IconButton onClick={() => removeImage(i, true)}>
-                  <Delete />
-                </IconButton>
-              </div>
-            </div>
-          </div>
-        ))}
-      </Paper>
-      <Paper elevation={0} className={classes.formGroup}>
-        <AppTypography variant="h4">New Images</AppTypography>
-        {formik.values.newImages.map((img, i) => (
-          <div className={classes.imgRow}>
-            <div>
-              <TextField
-                id={`newImages.${i}.image_url`}
-                value={formik.values.newImages[i].image_url}
-                label="Image URL"
-                {...textFieldProps}
-                required
+            ))}
+          </TextField>
+          <Box display="flex" justifyContent="space-between">
+            <Box display="flex" alignItems="center">
+              <Checkbox
+                disabled={
+                  formik.values.imgs.filter((a) => a.spotlight).length > 0 &&
+                  !formik.values.imgs[i].spotlight
+                }
+                id={`imgs[${i}].spotlight`}
+                value={formik.values.imgs[i].spotlight}
+                onChange={formik.handleChange}
               />
-              <TextField
-                id={`newImages.${i}.alt`}
-                value={formik.values.newImages[i].alt}
-                label="Alt Text"
-                {...textFieldProps}
-              />
-              <TextField
-                id={`newImages.${i}.orientation`}
-                value={formik.values.newImages[i].orientation}
-                select
-                SelectProps={{native: true}}
-                {...textFieldProps}
-                label="Orientation">
-                {AdminImageOrientationOptions.map((o, i) => (
-                  <option key={i} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </TextField>
-              <TextField
-                id={`newImages.${i}.tag`}
-                value={formik.values.newImages[i].tag}
-                select
-                SelectProps={{native: true}}
-                {...textFieldProps}
-                label="Tag">
-                {AdminImageTagOptions.map((o, i) => (
-                  <option key={i} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </TextField>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-evenly",
-                  alignItems: "flex-end",
-                }}>
-                <div className={classes.spotlight}>
-                  <AppTypography>Spotlight Image?</AppTypography>
-                  <Checkbox
-                    onClick={() =>
-                      updateSpotlight(
-                        i,
-                        false,
-                        !formik.values.existingImages[i].spotlight
-                      )
-                    }
-                    id={`newImages.${i}.spotlight`}
-                    value={formik.values.newImages[i].spotlight}
-                    checked={formik.values.newImages[i].spotlight}
-                  />
-                </div>
-                <IconButton onClick={() => removeImage(i, false)}>
-                  <Delete />
-                </IconButton>
-              </div>
-            </div>
-          </div>
-        ))}
-        <div style={{margin: "0 auto"}}>
-          <IconButton onClick={addImage}>
-            <Add />
-          </IconButton>
-        </div>
-      </Paper>
-      <Box display="flex" flexDirection="row-reverse" width="100%">
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={_.isEqual(formik.values, formik.initialValues)}>
-          Save Changes
-        </Button>
+              <Typography variant="body1">Spotlight image?</Typography>
+            </Box>
+            {i !== 0 || formik.values.imgs.length !== 1 ? (
+              <IconButton
+                size="medium"
+                onClick={() =>
+                  formik.setFieldValue(
+                    "imgs",
+                    formik.values.imgs.filter((val, j) => i !== j)
+                  )
+                }>
+                <Delete fontSize="inherit" />
+              </IconButton>
+            ) : undefined}
+          </Box>
+          {i !== formik.values.imgs.length - 1 ? <Divider /> : undefined}
+        </Box>
+      ))}
+      <Box
+        display="flex"
+        flexDirection="row-reverse"
+        justifyContent="space-between"
+        alignItems="center"
+        paddingX={2}>
+        <IconButton
+          disabled={formik.values.imgs.length > 4}
+          size="medium"
+          onClick={() =>
+            formik.setFieldValue("imgs", [
+              ...formik.values.imgs,
+              {url: "", alt: ""},
+            ])
+          }>
+          <Add fontSize="inherit" />
+        </IconButton>
+        <Box>
+          <Button type="submit" variant="contained" color="primary">
+            Upload
+          </Button>
+        </Box>
       </Box>
     </form>
   )

@@ -41,6 +41,7 @@ let useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
     display: "flex",
     flexDirection: "column",
+    height: 0,
   },
   tabs: {
     paddingLeft: theme.spacing(2),
@@ -49,6 +50,10 @@ let useStyles = makeStyles((theme) => ({
   tab: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
+  },
+  fullPageTab: {
+    flex: "1 1 auto",
+    height: 0,
   },
 }))
 
@@ -117,11 +122,17 @@ function HotelPage(props: HotelPageProps) {
               variant="fullWidth"
               indicatorColor="primary">
               <Tab value="profile" label="Hotel profile" />
-              <Tab value="proposal" label="Hotel template proposal" />
-              <Tab value="images" label="Images" />
+              <Tab value="images" label="Hotel images" />
+              <Tab value="proposal" label="Template proposal" />
             </Tabs>
             <AppTabPanel show={tabValue === "profile"} className={classes.tab}>
               <HotelProfileForm hotel={hotel} />
+            </AppTabPanel>
+            <AppTabPanel
+              show={tabValue === "images"}
+              className={`${classes.tab} ${classes.fullPageTab}`}
+              renderDom="on-shown">
+              <HotelImageForm hotel={hotel} />
             </AppTabPanel>
             <AppTabPanel show={tabValue === "proposal"} className={classes.tab}>
               <Typography variant="h2">Lodging Proposal</Typography>
@@ -157,12 +168,6 @@ function HotelPage(props: HotelPageProps) {
                   </Button>
                 </>
               )}
-            </AppTabPanel>
-            <AppTabPanel
-              show={tabValue === "images"}
-              className={classes.tab}
-              renderDom="on-shown">
-              <HotelImageForm hotel={hotel} />
             </AppTabPanel>
           </>
         )}

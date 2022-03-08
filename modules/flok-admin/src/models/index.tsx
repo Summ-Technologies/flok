@@ -121,11 +121,6 @@ export type AdminLodgingProposalUpdateModel = Partial<
   Omit<AdminLodgingProposalModel, "id" | "created_at">
 >
 
-export type AdminImageOrientationType = "LANDSCAPE" | "PORTRAIT"
-export const AdminImageOrientationOptions = [
-  "LANDSCAPE",
-  "PORTRAIT",
-] as AdminImageOrientationType[]
 export type AdminImageTagType =
   | "MEETING_ROOM"
   | "HOTEL_ROOM"
@@ -141,15 +136,13 @@ export const AdminImageTagOptions = [
   "COMMON_SPACE",
   "MISCELLANEOUS",
 ] as AdminImageTagType[]
+
 export type AdminImageModel = {
   id: number
   image_url: string
   alt: string
-  orientation: AdminImageOrientationType
-  tag: AdminImageTagType
+  tag?: AdminImageTagType
 }
-export type AdminImageUpdateModel = AdminImageModel & {spotlight: boolean}
-
 export type AdminHotelDetailsModel = {
   id: number
   guid: string
