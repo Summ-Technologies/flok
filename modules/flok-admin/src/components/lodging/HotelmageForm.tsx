@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Chip,
   Dialog,
   Divider,
   IconButton,
@@ -16,13 +17,16 @@ import {useFormik} from "formik"
 import _ from "lodash"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
+import config, {IMAGE_SERVER_BASE_URL_KEY} from "../../config"
 import {
   AdminHotelDetailsModel,
   AdminImageModel,
   AdminImageTagOptions,
 } from "../../models/index"
-import {patchHotel} from "../../store/actions/admin"
+import {enqueueSnackbar} from "../../notistack-lib/actions"
+import {patchHotel, PATCH_HOTEL_SUCCESS} from "../../store/actions/admin"
 import {nullifyEmptyString} from "../../utils"
+import AppLoadingScreen from "../base/AppLoadingScreen"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -183,7 +187,7 @@ export default function HotelImageForm(props: HotelImageFormType) {
           open={uploadImageModalOpen}
           onClose={() => setUploadImageModalOpen(false)}
           fullWidth>
-          <ImageUploadForm />
+          <ImageUploadForm hotelId={props.hotel.id} />
         </Dialog>
       </Box>
     </form>
@@ -309,7 +313,7 @@ function ImageFormRow(props: ImageFormRowProps) {
 }
 
 let useUploadFormStyles = makeStyles((theme) => ({
-  root: {
+  verticalSpacing: {
     display: "flex",
     flexDirection: "column",
     padding: theme.spacing(1),
@@ -317,44 +321,106 @@ let useUploadFormStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(1),
     },
   },
+  success: {
+    backgroundColor: theme.palette.success.main,
+    color: theme.palette.common.white,
+  },
+  error: {
+    backgroundColor: theme.palette.error.main,
+    color: theme.palette.common.white,
+  },
 }))
 
-type ImageUploadFormProps = {}
+type ImageUploadFormProps = {
+  hotelId: number
+}
 
 function ImageUploadForm(props: ImageUploadFormProps) {
+  let dispatch = useDispatch()
   let classes = useUploadFormStyles(props)
   let initialValues: {
     imgs: {url: string; alt: string; tag?: string; spotlight: boolean}[]
   } = {
     imgs: [{url: "", alt: "", spotlight: false}],
   }
+  let [uploadLoading, setUploadLoading] = useState(false)
+  let [uploadStatus, setUploadStatus] = useState<boolean[]>([])
   let formik = useFormik({
     initialValues,
-    onSubmit: () => {},
+    onSubmit: (values) => {
+      setUploadLoading(true)
+      fetch(
+        `${config.get(IMAGE_SERVER_BASE_URL_KEY)}/api/hotels/${
+          props.hotelId
+        }/images`,
+        {
+          body: JSON.stringify({imgs: values.imgs}),
+          method: "POST",
+          headers: {"content-type": "application/json"},
+          mode: "cors",
+        }
+      )
+        .then((resp) => resp.json())
+        .then((resp) => {
+          let error = false
+          if (resp.uploads) {
+            setUploadStatus(resp.uploads)
+            if (resp.uploads.filter((status: boolean) => !status).length) {
+              error = true
+            } else {
+              dispatch({
+                type: PATCH_HOTEL_SUCCESS,
+                payload: {hotel: resp.hotel},
+              })
+            }
+          } else {
+            error = true
+          }
+          if (error) {
+            dispatch(
+              enqueueSnackbar({
+                options: {variant: "error"},
+                message: "Something went wrong",
+              })
+            )
+          }
+        })
+        .catch((err) => {
+          dispatch(
+            enqueueSnackbar({
+              options: {variant: "error"},
+              message: "Something went wrong",
+            })
+          )
+        })
+        .finally(() => setUploadLoading(false))
+    },
   })
   let textFieldProps: TextFieldProps = {
     InputLabelProps: {shrink: true},
     fullWidth: true,
     onChange: formik.handleChange,
+    disabled: uploadLoading,
   }
 
   return (
-    <form className={classes.root} onSubmit={formik.handleSubmit}>
+    <form className={classes.verticalSpacing} onSubmit={formik.handleSubmit}>
       <Typography variant="h4">Upload Images</Typography>
+      {uploadLoading ? <AppLoadingScreen /> : undefined}
       {formik.values.imgs.map((img, i) => (
-        <Box className={classes.root}>
+        <Box className={classes.verticalSpacing}>
           <TextField
             {...textFieldProps}
             id={`imgs[${i}].url`}
             label="Image url"
-            value={formik.values.imgs[i].url}
+            value={formik.values.imgs[i].url ?? ""}
             required
           />
           <TextField
             {...textFieldProps}
             id={`imgs[${i}].alt`}
             label="Image alt"
-            value={formik.values.imgs[i].alt}
+            value={formik.values.imgs[i].alt ?? ""}
             required
           />
           <TextField
@@ -362,7 +428,8 @@ function ImageUploadForm(props: ImageUploadFormProps) {
             id={`imgs[${i}].tag`}
             select
             SelectProps={{native: true}}
-            label="Image tag">
+            label="Image tag"
+            value={formik.values.imgs[i].tag ?? ""}>
             <option value={""} label="No tag" />
             {AdminImageTagOptions.map((o, i) => (
               <option
@@ -380,19 +447,28 @@ function ImageUploadForm(props: ImageUploadFormProps) {
               />
             ))}
           </TextField>
-          <Box display="flex" justifyContent="space-between">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center">
             <Box display="flex" alignItems="center">
               <Checkbox
                 disabled={
-                  formik.values.imgs.filter((a) => a.spotlight).length > 0 &&
-                  !formik.values.imgs[i].spotlight
+                  (formik.values.imgs.filter((a) => a.spotlight).length > 0 &&
+                    !formik.values.imgs[i].spotlight) ||
+                  uploadLoading
                 }
                 id={`imgs[${i}].spotlight`}
-                value={formik.values.imgs[i].spotlight}
+                value={formik.values.imgs[i].spotlight ?? false}
                 onChange={formik.handleChange}
               />
               <Typography variant="body1">Spotlight image?</Typography>
             </Box>
+            {uploadStatus[i] === undefined ? undefined : uploadStatus[i] ? (
+              <Chip className={classes.success} label="Success!" />
+            ) : (
+              <Chip className={classes.error} label="Error!" />
+            )}
             {i !== 0 || formik.values.imgs.length !== 1 ? (
               <IconButton
                 size="medium"
@@ -426,10 +502,26 @@ function ImageUploadForm(props: ImageUploadFormProps) {
           }>
           <Add fontSize="inherit" />
         </IconButton>
-        <Box>
-          <Button type="submit" variant="contained" color="primary">
+        <Box display="flex">
+          <Button
+            disabled={uploadLoading}
+            type="submit"
+            variant="contained"
+            color="primary">
             Upload
           </Button>
+          {uploadStatus.length > 0 ? (
+            <Button
+              variant="outlined"
+              color="primary"
+              style={{marginLeft: 4}}
+              onClick={() => {
+                setUploadStatus([])
+                formik.resetForm({values: formik.initialValues})
+              }}>
+              Clear form
+            </Button>
+          ) : undefined}
         </Box>
       </Box>
     </form>
