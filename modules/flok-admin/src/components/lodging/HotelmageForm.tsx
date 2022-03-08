@@ -15,11 +15,13 @@ import {Add, ArrowDownward, ArrowUpward, Delete} from "@material-ui/icons"
 import {useFormik} from "formik"
 import _ from "lodash"
 import {useState} from "react"
+import {useDispatch} from "react-redux"
 import {
   AdminHotelDetailsModel,
   AdminImageModel,
   AdminImageTagOptions,
 } from "../../models/index"
+import {patchHotel} from "../../store/actions/admin"
 import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 
@@ -48,20 +50,29 @@ let useStyles = makeStyles((theme) => ({
 export type HotelImageFormType = {hotel: AdminHotelDetailsModel}
 
 export default function HotelImageForm(props: HotelImageFormType) {
+  let dispatch = useDispatch()
   let classes = useStyles(props)
   let [uploadImageModalOpen, setUploadImageModalOpen] = useState(false)
 
   type Form = {
-    spotlight_img?: Partial<AdminImageModel>
+    spotlight_img?: Partial<AdminImageModel> | null
     imgs: Partial<AdminImageModel>[]
   }
 
-  function nullifyForm(hotel: Form): Form {
+  function nullifyForm(form: Form): Form {
     return {
-      ...nullifyEmptyString(hotel),
-      imgs: hotel.imgs.map((img) => nullifyEmptyString(img)),
-      spotlight_img:
-        hotel.spotlight_img && nullifyEmptyString(hotel.spotlight_img),
+      imgs: form.imgs
+        .map((img) => nullifyEmptyString(img))
+        .map((nullifiedImg) => ({
+          ...nullifiedImg,
+          alt: nullifiedImg.alt ? nullifiedImg.alt : "",
+        })),
+      spotlight_img: form.spotlight_img
+        ? {
+            ...nullifyEmptyString(form.spotlight_img),
+            alt: form.spotlight_img.alt ? form.spotlight_img.alt : "",
+          }
+        : null,
     }
   }
 
@@ -71,7 +82,11 @@ export default function HotelImageForm(props: HotelImageFormType) {
       imgs: props.hotel.imgs,
       spotlight_img: props.hotel.spotlight_img,
     },
-    onSubmit: (values) => {},
+    onSubmit: (values) => {
+      dispatch(
+        patchHotel(props.hotel.id, values as Partial<AdminHotelDetailsModel>)
+      )
+    },
   })
 
   const textFieldProps: TextFieldProps = {
@@ -232,7 +247,6 @@ function ImageFormRow(props: ImageFormRowProps) {
           id={`${props.formId}.alt`}
           value={props.img.alt}
           label="Alt Text"
-          required
         />
         <TextField
           {...props.textFieldProps}
