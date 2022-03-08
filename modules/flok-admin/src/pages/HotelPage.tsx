@@ -18,6 +18,7 @@ import {
 import AppLoadingScreen from "../components/base/AppLoadingScreen"
 import AppTabPanel from "../components/base/AppTabPanel"
 import AppTypography from "../components/base/AppTypography"
+import HotelImageForm from "../components/lodging/HotelmageForm"
 import HotelProfileForm from "../components/lodging/HotelProfileForm"
 import PageBase from "../components/page/PageBase"
 import HotelProposalForm from "../components/retreats/HotelProposalForm"
@@ -77,7 +78,7 @@ function HotelPage(props: HotelPageProps) {
   let [tabQuery, setTabQuery] = useQuery("tab")
   let [tabValue, setTabValue] = useState<string | undefined>(undefined)
   useEffect(() => {
-    const TABS = ["profile", "proposal"]
+    const TABS = ["profile", "proposal", "images"]
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "profile")
   }, [tabQuery, setTabValue])
 
@@ -117,6 +118,7 @@ function HotelPage(props: HotelPageProps) {
               indicatorColor="primary">
               <Tab value="profile" label="Hotel profile" />
               <Tab value="proposal" label="Hotel template proposal" />
+              <Tab value="images" label="Images" />
             </Tabs>
             <AppTabPanel show={tabValue === "profile"} className={classes.tab}>
               <HotelProfileForm hotel={hotel} />
@@ -155,6 +157,12 @@ function HotelPage(props: HotelPageProps) {
                   </Button>
                 </>
               )}
+            </AppTabPanel>
+            <AppTabPanel
+              show={tabValue === "images"}
+              className={classes.tab}
+              renderDom="on-shown">
+              <HotelImageForm hotel={hotel} />
             </AppTabPanel>
           </>
         )}
