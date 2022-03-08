@@ -18,6 +18,7 @@ import {
 import AppLoadingScreen from "../components/base/AppLoadingScreen"
 import AppTabPanel from "../components/base/AppTabPanel"
 import AppTypography from "../components/base/AppTypography"
+import HotelImageForm from "../components/lodging/HotelmageForm"
 import HotelProfileForm from "../components/lodging/HotelProfileForm"
 import PageBase from "../components/page/PageBase"
 import HotelProposalForm from "../components/retreats/HotelProposalForm"
@@ -40,6 +41,7 @@ let useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
     display: "flex",
     flexDirection: "column",
+    height: 0,
   },
   tabs: {
     paddingLeft: theme.spacing(2),
@@ -48,6 +50,10 @@ let useStyles = makeStyles((theme) => ({
   tab: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
+  },
+  fullPageTab: {
+    flex: "1 1 auto",
+    height: 0,
   },
 }))
 
@@ -77,7 +83,7 @@ function HotelPage(props: HotelPageProps) {
   let [tabQuery, setTabQuery] = useQuery("tab")
   let [tabValue, setTabValue] = useState<string | undefined>(undefined)
   useEffect(() => {
-    const TABS = ["profile", "proposal"]
+    const TABS = ["profile", "proposal", "images"]
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "profile")
   }, [tabQuery, setTabValue])
 
@@ -116,10 +122,17 @@ function HotelPage(props: HotelPageProps) {
               variant="fullWidth"
               indicatorColor="primary">
               <Tab value="profile" label="Hotel profile" />
-              <Tab value="proposal" label="Hotel template proposal" />
+              <Tab value="images" label="Hotel images" />
+              <Tab value="proposal" label="Template proposal" />
             </Tabs>
             <AppTabPanel show={tabValue === "profile"} className={classes.tab}>
               <HotelProfileForm hotel={hotel} />
+            </AppTabPanel>
+            <AppTabPanel
+              show={tabValue === "images"}
+              className={`${classes.tab} ${classes.fullPageTab}`}
+              renderDom="on-shown">
+              <HotelImageForm hotel={hotel} />
             </AppTabPanel>
             <AppTabPanel show={tabValue === "proposal"} className={classes.tab}>
               <Typography variant="h2">Lodging Proposal</Typography>
