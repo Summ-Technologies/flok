@@ -12,5 +12,11 @@ echo "window.appConfig={}" > /usr/share/nginx/html/config.js
 echo "window.appConfig.server_base_url=\"$API_URL\"" >> /usr/share/nginx/html/config.js
 echo "window.appConfig.images_base_url=\"$IMAGES_URL\"" >> /usr/share/nginx/html/config.js
 
+if [[ -z "$IMAGE_SERVER_BASE_URL" ]]; then
+    echo "IMAGE_SERVER_BASE_URL environment variable not set. Hotel image upload will not work."
+else
+    echo "window.appConfig.image_server_base_url=\"$IMAGE_SERVER_BASE_URL\"" >> /usr/share/nginx/html/config.js
+fi
+
 echo "Final config.js file"
 cat /usr/share/nginx/html/config.js
