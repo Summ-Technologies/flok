@@ -159,7 +159,8 @@ export function postHotel(hotel: Partial<AdminHotelDetailsModel>) {
   let endpoint = `/v1.0/admin/hotels`
   return createApiAction({
     endpoint,
-    method: "GET",
+    body: JSON.stringify(hotel),
+    method: "POST",
     types: [POST_HOTEL_REQUEST, POST_HOTEL_SUCCESS, POST_HOTEL_FAILURE],
   })
 }

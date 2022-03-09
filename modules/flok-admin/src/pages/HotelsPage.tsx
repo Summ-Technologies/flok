@@ -1,9 +1,12 @@
-import {Button, makeStyles, Typography} from "@material-ui/core"
+import {Button, Dialog, makeStyles} from "@material-ui/core"
+import Box from "@material-ui/core/Box"
+import Typography from "@material-ui/core/Typography"
 import {push} from "connected-react-router"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import HotelSearchModal from "../components/lodging/HotelSearchModal"
+import NewHotelForm from "../components/lodging/NewHotelForm"
 import PageBase from "../components/page/PageBase"
 import {AppRoutes} from "../Stack"
 
@@ -36,6 +39,7 @@ function HotelsPage(props: LodgingContentPageProps) {
   let dispatch = useDispatch()
 
   let [hotelSearchOpen, setHotelSearchOpen] = useState(false)
+  let [newHotelOpen, setNewHotelOpen] = useState(false)
 
   return (
     <PageBase>
@@ -53,26 +57,43 @@ function HotelsPage(props: LodgingContentPageProps) {
             <li>add/edit default proposals (aka proposals database)</li>
           </ul>
         </Typography>
-        <div>
+        <Box display="flex">
           <Button
             color="primary"
-            variant="outlined"
+            variant="contained"
             onClick={() => setHotelSearchOpen(true)}>
             Select hotel
           </Button>
-        </div>
-        {hotelSearchOpen && (
-          <HotelSearchModal
-            submitText="Select"
-            onSubmit={(hotelId) =>
-              dispatch(
-                push(
-                  AppRoutes.getPath("HotelPage", {hotelId: hotelId.toString()})
+          {hotelSearchOpen && (
+            <HotelSearchModal
+              submitText="Select"
+              onSubmit={(hotelId) =>
+                dispatch(
+                  push(
+                    AppRoutes.getPath("HotelPage", {
+                      hotelId: hotelId.toString(),
+                    })
+                  )
                 )
-              )
-            }
-            onClose={() => setHotelSearchOpen(false)}
-          />
+              }
+              onClose={() => setHotelSearchOpen(false)}
+            />
+          )}
+          <Box ml={1} clone>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => setNewHotelOpen(true)}>
+              Add a new hotel
+            </Button>
+          </Box>
+        </Box>
+        {newHotelOpen && (
+          <Dialog open={newHotelOpen} onClose={() => setNewHotelOpen(false)}>
+            <Box p={2}>
+              <NewHotelForm />
+            </Box>
+          </Dialog>
         )}
       </div>
     </PageBase>
