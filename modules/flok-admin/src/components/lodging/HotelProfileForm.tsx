@@ -11,9 +11,14 @@ import {useFormik} from "formik"
 import _ from "lodash"
 import React, {useState} from "react"
 import {useDispatch} from "react-redux"
+import * as yup from "yup"
 import {AdminHotelDetailsModel} from "../../models"
 import {patchHotel} from "../../store/actions/admin"
-import {nullifyEmptyString, useDestinations} from "../../utils"
+import {
+  getTextFieldErrorProps,
+  nullifyEmptyString,
+  useDestinations,
+} from "../../utils"
 import AppLoadingScreen from "../base/AppLoadingScreen"
 
 let useStyles = makeStyles((theme) => ({
@@ -60,6 +65,7 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
       website_url: props.hotel.website_url,
       sub_location: props.hotel.sub_location,
     }),
+    validationSchema: yup.object({website_url: yup.string().url()}),
     onSubmit: updateHotelProfile,
   })
   const commonTextFieldProps: TextFieldProps = {
@@ -107,6 +113,23 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
         </TextField>
         <TextField
           {...commonTextFieldProps}
+          id="sub_location"
+          label="Sub Location"
+          value={formik.values.sub_location ?? ""}
+          fullWidth
+          helperText='Only add if it should be different from the "main" destination'
+        />
+        <TextField
+          {...commonTextFieldProps}
+          id="website_url"
+          type="url"
+          label="Website URL"
+          value={formik.values.website_url ?? ""}
+          fullWidth
+          {...getTextFieldErrorProps(formik, "website_url")}
+        />
+        <TextField
+          {...commonTextFieldProps}
           id="description_short"
           label="Description (short)"
           value={formik.values.description_short ?? ""}
@@ -130,21 +153,6 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
           value={formik.values.airport_travel_time ?? ""}
           fullWidth
         />
-        <TextField
-          {...commonTextFieldProps}
-          id="website_url"
-          type="url"
-          label="Website URL"
-          value={formik.values.website_url ?? ""}
-          fullWidth
-        />
-        <TextField
-          {...commonTextFieldProps}
-          id="sub_location"
-          label="Sub Location"
-          value={formik.values.sub_location ?? ""}
-          fullWidth
-        />
       </Paper>
       <Box width="100%" display="flex" justifyContent="flex-end">
         <Button
@@ -152,7 +160,9 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
             _.isEqual(
               nullifyEmptyString(formik.values),
               nullifyEmptyString(formik.initialValues)
-            ) || loadingUpdate
+            ) ||
+            loadingUpdate ||
+            !formik.isValid
           }
           type="submit"
           color="primary"
