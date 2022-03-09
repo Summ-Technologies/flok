@@ -1,3 +1,4 @@
+import {TextFieldProps} from "@material-ui/core"
 import {push} from "connected-react-router"
 import _ from "lodash"
 import {useEffect, useState} from "react"
@@ -133,4 +134,15 @@ export function useRetreatAttendees(retreatId: number) {
     }
   }, [retreatId, dispatch, setLoading, retreatAttendees])
   return [retreatAttendees, loading] as const
+}
+
+export function getTextFieldErrorProps(
+  formik: any,
+  field: string
+): TextFieldProps {
+  let isError = formik.errors && !!formik.errors[field]
+  return {
+    error: isError,
+    helperText: isError && formik.errors && formik.errors[field],
+  }
 }

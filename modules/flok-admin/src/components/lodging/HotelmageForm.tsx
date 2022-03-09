@@ -504,7 +504,7 @@ function ImageUploadForm(props: ImageUploadFormProps) {
         </IconButton>
         <Box display="flex">
           <Button
-            disabled={uploadLoading}
+            disabled={uploadLoading || uploadStatus.length > 0}
             type="submit"
             variant="contained"
             color="primary">
