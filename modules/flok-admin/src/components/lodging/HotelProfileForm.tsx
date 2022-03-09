@@ -57,6 +57,8 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
       airport: props.hotel.airport,
       airport_travel_time: props.hotel.airport_travel_time,
       description_short: props.hotel.description_short,
+      website_url: props.hotel.website_url,
+      sub_location: props.hotel.sub_location,
     }),
     onSubmit: updateHotelProfile,
   })
@@ -126,6 +128,21 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
           type="number"
           label="Aiport travel time (in mins)"
           value={formik.values.airport_travel_time ?? ""}
+          fullWidth
+        />
+        <TextField
+          {...commonTextFieldProps}
+          id="website_url"
+          type="url"
+          label="Website URL"
+          value={formik.values.website_url ?? ""}
+          fullWidth
+        />
+        <TextField
+          {...commonTextFieldProps}
+          id="sub_location"
+          label="Sub Location"
+          value={formik.values.sub_location ?? ""}
           fullWidth
         />
       </Paper>
