@@ -154,6 +154,8 @@ export type AdminHotelDetailsModel = {
   airport_travel_time: number | null
   imgs: AdminImageModel[]
   spotlight_img?: AdminImageModel
+  website_url: string
+  sub_location: string
 }
 
 export type AdminHotelModel = Pick<
