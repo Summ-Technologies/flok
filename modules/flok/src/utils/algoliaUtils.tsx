@@ -3,7 +3,6 @@ import config, {
   ALGOLIA_DESTINATIONS_INDEX_KEY,
   ALGOLIA_HOTELS_INDEX_KEY,
 } from "../config"
-import {FilterAnswerModel} from "../models/retreat"
 
 class _AlgoliaClient {
   searchClient: SearchClient | undefined
@@ -44,37 +43,10 @@ export let AlgoliaClient = new _AlgoliaClient()
 /**
  * Deterministic independent of ordering
  */
-export function getAlgoliaHotelFilterString(
-  selectedFilterAnswers: number[],
-  filterAnswers: FilterAnswerModel[],
-  selectedDestinationIds: number[]
-) {
-  let retreatFilters = filterAnswers
-    .filter((ans) => selectedFilterAnswers.includes(ans.id))
-    .sort()
-    .filter((ans) => ans.algolia_filter)
-    .map((ans) => `${ans.algolia_filter}`)
-    .filter((_) => _)
-    .join(" OR ")
+export function getAlgoliaHotelFilterString(selectedDestinationIds: number[]) {
   let destinationFilters = selectedDestinationIds
     .map((id) => `destination_id=${id}`)
     .sort()
     .join(" OR ")
-  return [retreatFilters, destinationFilters]
-    .filter((_) => _)
-    .map((filt) => `(${filt})`)
-    .join(" AND ")
-}
-
-export function getAlgoliaDestinationFilterString(
-  selectedFilterAnswers: number[],
-  filterAnswers: FilterAnswerModel[]
-) {
-  return filterAnswers
-    .filter((ans) => selectedFilterAnswers.includes(ans.id))
-    .sort()
-    .filter((ans) => ans.algolia_filter)
-    .map((ans) => `${ans.algolia_filter}`)
-    .filter((_) => _)
-    .join(" OR ")
+  return destinationFilters
 }

@@ -39,9 +39,6 @@ export type AdminRetreatUpdateModel = Pick<
   | "preferences_dates_flexible_months"
   | "preferences_dates_exact_start"
   | "preferences_dates_exact_end"
-  | "flok_admin_owner"
-  | "flok_admin_state"
-  | "state"
 >
 
 export const RetreatStateOptions = [
@@ -120,17 +117,51 @@ export type AdminLodgingProposalModel = {
   }[]
 }
 
-export type AdminLodgingProposalUpdateModel = Omit<
-  AdminLodgingProposalModel,
-  "id" | "created_at"
+export type AdminLodgingProposalUpdateModel = Partial<
+  Omit<AdminLodgingProposalModel, "id" | "created_at">
 >
 
-export type AdminHotelModel = {
+export type AdminImageTagType =
+  | "MEETING_ROOM"
+  | "HOTEL_ROOM"
+  | "HOTEL_EXTERIOR"
+  | "DINING_AREA"
+  | "COMMON_SPACE"
+  | "MISCELLANEOUS"
+export const AdminImageTagOptions = [
+  "MEETING_ROOM",
+  "HOTEL_ROOM",
+  "HOTEL_EXTERIOR",
+  "DINING_AREA",
+  "COMMON_SPACE",
+  "MISCELLANEOUS",
+] as AdminImageTagType[]
+
+export type AdminImageModel = {
+  id: number
+  image_url: string
+  alt: string
+  tag?: AdminImageTagType
+}
+export type AdminHotelDetailsModel = {
   id: number
   guid: string
   destination_id: number
   name: string
+  template_proposal: AdminLodgingProposalModel | null
+  description_short: string | null
+  airport: string | null
+  airport_travel_time: number | null
+  imgs: AdminImageModel[]
+  spotlight_img?: AdminImageModel
+  website_url: string
+  sub_location: string
 }
+
+export type AdminHotelModel = Pick<
+  AdminHotelDetailsModel,
+  "id" | "guid" | "name" | "destination_id"
+>
 
 export type AdminDestinationModel = {
   id: number
@@ -140,4 +171,56 @@ export type AdminDestinationModel = {
   state_abbreviation?: string
   country?: string
   country_abbreviation?: string
+}
+
+// ATTENDEES
+export type AdminTripLegModel = {
+  airline: string | null
+  dep_airport: string | null
+  arr_airport: string | null
+  flight_num: string | null
+  dep_datetime: string | null
+  arr_datetime: string | null
+  duration: number | null // length in s
+}
+
+export type AdminRetreatTripModel = {
+  confirmation_number: string | null
+  trip_legs: AdminTripLegModel[]
+  duration: number | null
+}
+
+export type AdminRetreatTravelModel = {
+  cost: number | null
+  dep_trip: AdminRetreatTripModel | null
+  arr_trip: AdminRetreatTripModel | null
+}
+
+export type AdminRetreatAttendeeModel = {
+  id: number
+  email_address: string
+  name: string | null
+  travel: AdminRetreatTravelModel | null
+  city: string | null
+  dietary_prefs: string | null
+  notes: string | null
+  info_status: RetreatAttendeeInfoStatusType
+  flight_status: RetreatAttendeeFlightStatusType
+}
+
+export type AdminRetreatAttendeeUpdateModel = Partial<AdminRetreatAttendeeModel>
+
+export type RetreatAttendeeInfoStatusType = "CREATED" | "INFO_ENTERED"
+export const RetreatAttendeeInfoStatusOptions = ["CREATED", "INFO_ENTERED"]
+
+export type RetreatAttendeeFlightStatusType = "PENDING" | "BOOKED" | "OPT_OUT"
+export const RetreatAttendeeFlightStatusOptions = [
+  "PENDING",
+  "BOOKED",
+  "OPT_OUT",
+]
+
+export type RetreatNoteModel = {
+  note: string
+  created_at: string // date string
 }

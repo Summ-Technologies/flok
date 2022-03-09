@@ -2,6 +2,7 @@ import {
   AppBar,
   Drawer,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemText,
@@ -10,6 +11,8 @@ import {
 } from "@material-ui/core"
 import MenuIcon from "@material-ui/icons/Menu"
 import React, {useState} from "react"
+import {Link as ReactRouterLink} from "react-router-dom"
+import {AppRoutes} from "../../Stack"
 import AppTypography from "../base/AppTypography"
 
 type PageNavProps = {}
@@ -48,14 +51,23 @@ function PageSideNav(props: PageSideNavProps) {
         Flok Admin
       </AppTypography>
       <List className={classes.list}>
-        <ListItem button>
+        <ListItem
+          button
+          component={ReactRouterLink}
+          to={AppRoutes.getPath("HomePage")}>
+          <ListItemText>Home</ListItemText>
+        </ListItem>
+        <ListItem
+          button
+          component={ReactRouterLink}
+          to={AppRoutes.getPath("RetreatsPage")}>
           <ListItemText>Retreats</ListItemText>
         </ListItem>
-        <ListItem button>
-          <ListItemText>Flight groups</ListItemText>
-        </ListItem>
-        <ListItem button>
-          <ListItemText>Lodging content</ListItemText>
+        <ListItem
+          button
+          component={ReactRouterLink}
+          to={AppRoutes.getPath("HotelsPage")}>
+          <ListItemText>Hotel content</ListItemText>
         </ListItem>
       </List>
     </Drawer>
@@ -84,9 +96,15 @@ function PageTopNav(props: PageTopNavProps) {
           aria-label="menu">
           <MenuIcon />
         </IconButton>
-        <AppTypography variant="h3" fontWeight="bold">
-          Flok Admin
-        </AppTypography>
+        <Link
+          to={AppRoutes.getPath("HomePage")}
+          component={ReactRouterLink}
+          color="inherit"
+          underline="none">
+          <AppTypography variant="h3" fontWeight="bold">
+            Flok Admin
+          </AppTypography>
+        </Link>
       </Toolbar>
     </AppBar>
   )

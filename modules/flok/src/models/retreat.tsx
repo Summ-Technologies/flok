@@ -58,12 +58,41 @@ export type RetreatProgressState =
   | "PROPOSAL"
   | "PROPOSAL_READY"
 
+export type RetreatLodgingState =
+  | "NOT_STARTED"
+  | "PROPOSALS_WAITING"
+  | "PROPOSALS_VIEW"
+  | "CONTRACT_NEGOTIATION"
+  | "BOOKED"
+export type FlightState = "NOT_STARTED" | "POLICY_REVIEW" | "BOOKING"
+export type ItineraryState = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
+
+export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
+
+export type RetreatTask = {
+  id: number
+  description?: string
+  title: string
+  link: string
+  user_complete: boolean
+}
+
+export type RetreatToTask = {
+  task: RetreatTask
+  order: number
+  state: RetreatToTaskState
+  due_date?: string
+  link_override?: string
+}
 export type RetreatModel = {
   id: number
   guid: string
   company_name: string
   contact_email: string
   state: RetreatProgressState
+  state_lodging: RetreatLodgingState
+  state_flights: FlightState
+  state_itinerary: ItineraryState
   selected_destinations_ids: number[]
   selected_hotels_ids: number[]
   selected_hotels: RetreatSelectedHotelProposal[]
@@ -74,27 +103,39 @@ export type RetreatModel = {
   preferences_dates_flexible_months?: string[]
   preferences_dates_flexible_num_nights?: number
   flok_sourcing_admin?: FlokInternalAdminModel
+  tasks_todo: RetreatToTask[]
+  tasks_completed: RetreatToTask[]
 }
 
-export type FilterAnswerModel = {
+export type RetreatTripModel = {
   id: number
-  question_id: number
-  title: string
-  algolia_filter: string
-  is_default_answer: boolean
+  cost: number
+  duration: number
+  confirmation_number: string
+  arr_airport: string
+  dep_airport: string
+  arr_datetime: string
+  dep_datetime: string
+  airline: string
 }
 
-export type FilterQuestionModel = {
+export type RetreatTravelModel = {
   id: number
-  title: string
-  more_info: string
-  is_multi_select: boolean
-  question_affinity: string
-  answers: FilterAnswerModel[]
+  cost: number
+  dep_trip?: RetreatTripModel
+  arr_trip?: RetreatTripModel
+  email_address: string
+  name: string
+  status: string
 }
 
-export type FilterResponseModel = {
+export type RetreatAttendeeModel = {
   id: number
-  retreat_id: number
-  answer_id: number
+  email_address: string
+  name: string
+  travel?: RetreatTravelModel
+  city: string
+  dietary_prefs: string
+  notes: string
+  info_status: string
 }

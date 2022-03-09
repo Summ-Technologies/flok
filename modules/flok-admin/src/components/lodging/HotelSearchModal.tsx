@@ -12,6 +12,7 @@ import {AdminHotelModel} from "../../models"
 import {RootState} from "../../store"
 import {getDestinations, getHotelsByDest} from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
+import DestinationSelect from "./DestinationSelect"
 
 let useStyles = makeStyles((theme) => ({
   root: {},
@@ -23,13 +24,13 @@ let useStyles = makeStyles((theme) => ({
 }))
 
 type HotelSearchModalProps = {
+  submitText?: string
   onSubmit: (hotelId: number) => void
   onClose: () => void
 }
 export default function HotelSearchModal(props: HotelSearchModalProps) {
   let classes = useStyles()
   let dispatch = useDispatch()
-  let destinations = useSelector((state: RootState) => state.admin.destinations)
   let destinationsList = useSelector(
     (state: RootState) => state.admin.allDestinations
   )
@@ -82,31 +83,13 @@ export default function HotelSearchModal(props: HotelSearchModalProps) {
                 props.onClose()
               }}
               className={classes.form}>
-              <TextField
-                select
-                SelectProps={{native: true}}
-                fullWidth
-                label="Destinations"
-                placeholder="Select a destination"
-                InputLabelProps={{shrink: true}}
+              <DestinationSelect
                 value={selectedDestinationId}
                 onChange={(e) => {
                   setSelectedDestinationId(parseInt(e.target.value))
                   setSelectedHotelId(undefined)
-                }}>
-                {selectedDestinationId == null && (
-                  <option value={undefined}>Select a destination</option>
-                )}
-                {destinationsList &&
-                  destinationsList
-                    .map((id) => {
-                      return destinations[id]!
-                    })
-                    .sort((a, b) => (a.location > b.location ? 1 : -1))
-                    .map((dest) => (
-                      <option value={dest.id}>{dest.location}</option>
-                    ))}
-              </TextField>
+                }}
+              />
               <TextField
                 select
                 SelectProps={{native: true}}
@@ -134,7 +117,7 @@ export default function HotelSearchModal(props: HotelSearchModalProps) {
                   type="submit"
                   color="primary"
                   variant="contained">
-                  Submit
+                  {props.submitText ? props.submitText : "Submit"}
                 </Button>
               </Box>
             </form>

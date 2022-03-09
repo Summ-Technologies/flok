@@ -1,28 +1,38 @@
 import {
   Box,
   Drawer,
+  Link,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   makeStyles,
+  useMediaQuery,
 } from "@material-ui/core"
 import {
+  ApartmentRounded,
   FlightRounded,
   HomeRounded,
-  ListRounded,
   MapRounded,
-  PersonRounded,
+  PeopleAlt,
   SvgIconComponent,
 } from "@material-ui/icons"
 import {push} from "connected-react-router"
-import React, {PropsWithChildren} from "react"
-import {useDispatch} from "react-redux"
+import React, {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useState,
+} from "react"
+import {useDispatch, useSelector} from "react-redux"
 import AppImage from "../../components/base/AppImage"
-import {AppRoutes} from "../../Stack"
+import {AppRoutes, FlokPageName} from "../../Stack"
+import {RootState} from "../../store"
+import {deleteUserSignin} from "../../store/actions/user"
 import {FlokTheme} from "../../theme"
 
 let DRAWER_WIDTH = 240
+const TRANSITION_DURATION = 250
 
 const useStyles = makeStyles((theme: FlokTheme) => ({
   root: {
@@ -37,37 +47,82 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
+  footer: {
+    marginTop: "auto",
+    marginBottom: theme.spacing(2),
+  },
 }))
 
-let navItem = (title: string, Icon: SvgIconComponent, pageName: string) => [
-  title,
-  <Icon fontSize="large" />,
-  pageName,
-]
+let navItem = (title: string, Icon: SvgIconComponent, pageName: FlokPageName) =>
+  [title, <Icon fontSize="large" />, pageName] as const
 
 let navItems = {
-  overview: navItem("Overview", ListRounded, "OverviewPage"),
-  lodging: navItem("Lodging", HomeRounded, "LodgingFormPage"),
-  attendees: navItem("Attendees", PersonRounded, "AttendeesPage"),
-  flights: navItem("Flights", FlightRounded, "FlightsPage"),
-  itinerary: navItem("Itinerary", MapRounded, "ItineraryPage"),
+  overview: navItem("Overview", HomeRounded, "RetreatHomePage"),
+  lodging: navItem("Lodging", ApartmentRounded, "ProposalsListPage"),
+  attendees: navItem("Attendees", PeopleAlt, "RetreatAttendeesPage"),
+  flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
+  itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
+}
+
+const SidebarContext = createContext<{
+  sidebarOpen: boolean
+  openSidebar: (() => void) | undefined
+  closeSidebar: (() => void) | undefined
+}>({sidebarOpen: false, openSidebar: undefined, closeSidebar: undefined})
+
+export function useSidebar() {
+  const {sidebarOpen, openSidebar, closeSidebar} = useContext(SidebarContext)
+  if (openSidebar === undefined || closeSidebar === undefined) {
+    throw Error("useSidebar must be used within a SidebarProvider")
+  }
+  return {sidebarOpen, openSidebar, closeSidebar}
+}
+
+export function SidebarProvider(props: PropsWithChildren<{}>) {
+  let [sidebarOpen, setSidebarOpen] = useState(false)
+  return (
+    <SidebarContext.Provider
+      value={{
+        sidebarOpen,
+        openSidebar: () => setSidebarOpen(true),
+        closeSidebar: () => setSidebarOpen(false),
+      }}>
+      {props.children}
+    </SidebarContext.Provider>
+  )
 }
 
 type SidenavItemType = keyof typeof navItems
 type PageSidenavProps = {
+  retreatIdx: number
   activeItem?: SidenavItemType
+  companyName?: string
 }
-export default function PageSidenav(
-  props: PropsWithChildren<PageSidenavProps>
-) {
+export default function PageSidenav(props: PageSidenavProps) {
   let dispatch = useDispatch()
   const classes = useStyles()
+  let {sidebarOpen, closeSidebar} = useSidebar()
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
+  )
+
+  let isLoggedIn = useSelector(
+    (state: RootState) => state.user.loginStatus === "LOGGED_IN"
+  )
 
   return (
     <Drawer
+      open={sidebarOpen}
+      transitionDuration={TRANSITION_DURATION}
+      onClose={closeSidebar}
+      color="primary"
       classes={{root: classes.root, paper: classes.paper}}
-      variant="permanent">
-      <Box marginLeft="auto" marginRight="auto" marginBottom={4}>
+      variant={isSmallScreen ? "temporary" : "permanent"}>
+      <Box
+        marginLeft="auto"
+        marginRight="auto"
+        marginBottom={4}
+        style={{display: "flex", alignItems: "flex-end"}}>
         <AppImage
           height="40px"
           alt="White Flok logo"
@@ -77,17 +132,51 @@ export default function PageSidenav(
       <List>
         {Object.keys(navItems).map((item, index) => {
           let sidenavItem = item as SidenavItemType
-          const itemTup = navItems[sidenavItem] as [string, JSX.Element, string]
+          const itemTup = navItems[sidenavItem]
           return (
             <ListItem
               button
               selected={props.activeItem === sidenavItem}
-              onClick={() => dispatch(push(AppRoutes.getPath(itemTup[2])))}>
+              onClick={() => {
+                let redirect = () =>
+                  dispatch(
+                    push(
+                      AppRoutes.getPath(itemTup[2], {
+                        retreatIdx: props.retreatIdx.toString(),
+                      })
+                    )
+                  )
+                if (sidebarOpen) {
+                  closeSidebar()
+                  setTimeout(redirect, TRANSITION_DURATION)
+                } else {
+                  redirect()
+                }
+              }}>
               <ListItemIcon>{itemTup[1]}</ListItemIcon>
               <ListItemText>{itemTup[0]}</ListItemText>
             </ListItem>
           )
         })}
+      </List>
+      <List className={classes.footer}>
+        {props.companyName && (
+          <ListItem>
+            <ListItemText>{props.companyName}</ListItemText>
+          </ListItem>
+        )}
+        {isLoggedIn && (
+          <Link
+            component={ListItem}
+            color="inherit"
+            button
+            dense
+            onClick={() => {
+              dispatch(deleteUserSignin())
+            }}>
+            <ListItemText>Log out</ListItemText>
+          </Link>
+        )}
       </List>
     </Drawer>
   )

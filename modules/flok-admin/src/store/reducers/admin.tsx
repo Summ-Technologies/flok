@@ -2,27 +2,41 @@ import {Action} from "redux"
 import {ApiError} from "redux-api-middleware"
 import {
   AdminDestinationModel,
+  AdminHotelDetailsModel,
   AdminHotelModel,
+  AdminRetreatAttendeeModel,
   AdminRetreatListModel,
   AdminRetreatListType,
   AdminRetreatModel,
+  RetreatNoteModel,
 } from "../../models"
 import {
-  DELETE_HOTEL_PROPOSAL_SUCCESS,
+  DELETE_RETREAT_ATTENDEES_SUCCESS,
+  DELETE_RETREAT_HOTEL_PROPOSAL_SUCCESS,
   DELETE_SELECTED_HOTEL_SUCCESS,
   GET_DESTINATIONS_SUCCESS,
   GET_HOTELS_BY_DEST_SUCCESS,
   GET_HOTELS_BY_ID_SUCCESS,
+  GET_HOTEL_DETAILS_SUCCESS,
   GET_RETREATS_LIST_SUCCESS,
+  GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_DETAILS_FAILURE,
   GET_RETREAT_DETAILS_REQUEST,
   GET_RETREAT_DETAILS_SUCCESS,
-  POST_HOTEL_PROPOSAL_SUCCESS,
+  GET_RETREAT_NOTES_SUCCESS,
+  PATCH_HOTEL_SUCCESS,
+  PATCH_RETREAT_ATTENDEE_SUCCESS,
+  PATCH_RETREAT_DETAILS_FAILURE,
+  PATCH_RETREAT_DETAILS_REQUEST,
+  PATCH_RETREAT_DETAILS_SUCCESS,
+  POST_HOTEL_SUCCESS,
+  POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
+  POST_RETREAT_ATTENDEE_SUCCESS,
+  POST_RETREAT_HOTEL_PROPOSAL_SUCCESS,
+  POST_RETREAT_NOTES_SUCCESS,
   POST_SELECTED_HOTEL_SUCCESS,
-  PUT_HOTEL_PROPOSAL_SUCCESS,
-  PUT_RETREAT_DETAILS_FAILURE,
-  PUT_RETREAT_DETAILS_REQUEST,
-  PUT_RETREAT_DETAILS_SUCCESS,
+  PUT_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
+  PUT_RETREAT_HOTEL_PROPOSAL_SUCCESS,
   PUT_SELECTED_HOTEL_SUCCESS,
 } from "../actions/admin"
 import {ApiAction} from "../actions/api"
@@ -41,7 +55,10 @@ export type AdminState = {
     [key: number]: AdminRetreatModel | undefined
   }
   hotels: {
-    [key: number]: AdminHotelModel | undefined
+    [key: number]: AdminHotelModel | undefined // for name, destination, id
+  }
+  hotelsDetails: {
+    [key: number]: AdminHotelDetailsModel | undefined // for all hotel details
   }
   destinations: {
     [key: number]: AdminDestinationModel | undefined
@@ -52,6 +69,12 @@ export type AdminState = {
     retreatsDetails: {
       [key: number]: ApiStatus | undefined
     }
+  }
+  attendeesByRetreat: {
+    [id: number]: AdminRetreatAttendeeModel[]
+  }
+  notesByRetreat: {
+    [key: number]: RetreatNoteModel[] | undefined
   }
 }
 
@@ -66,9 +89,12 @@ const initialState: AdminState = {
   allDestinations: undefined,
   hotelsByDestination: {},
   hotels: {},
+  hotelsDetails: {},
   api: {
     retreatsDetails: {},
   },
+  attendeesByRetreat: {},
+  notesByRetreat: {},
 }
 
 export default function AdminReducer(
@@ -90,9 +116,9 @@ export default function AdminReducer(
     case GET_RETREAT_DETAILS_REQUEST:
     case GET_RETREAT_DETAILS_SUCCESS:
     case GET_RETREAT_DETAILS_FAILURE:
-    case PUT_RETREAT_DETAILS_REQUEST:
-    case PUT_RETREAT_DETAILS_SUCCESS:
-    case PUT_RETREAT_DETAILS_FAILURE:
+    case PATCH_RETREAT_DETAILS_REQUEST:
+    case PATCH_RETREAT_DETAILS_SUCCESS:
+    case PATCH_RETREAT_DETAILS_FAILURE:
       meta = (action as unknown as {meta: {id: number}}).meta
       action = action as unknown as ApiAction
       payload = (action as unknown as ApiAction).payload as {
@@ -173,7 +199,6 @@ export default function AdminReducer(
       }
     case GET_HOTELS_BY_ID_SUCCESS:
       meta = (action as unknown as {meta: {id: number}}).meta
-      action = action as unknown as ApiAction
       payload = (action as unknown as ApiAction).payload as {
         hotels: AdminHotelModel[]
       }
@@ -187,12 +212,28 @@ export default function AdminReducer(
           ),
         },
       }
+    case GET_HOTEL_DETAILS_SUCCESS:
+    case POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS:
+    case PUT_HOTEL_TEMPLATE_PROPOSAL_SUCCESS:
+    case PATCH_HOTEL_SUCCESS:
+    case POST_HOTEL_SUCCESS:
+      meta = (action as unknown as {meta: {id: number}}).meta
+      payload = (action as unknown as ApiAction).payload as {
+        hotel: AdminHotelDetailsModel
+      }
+      return {
+        ...state,
+        hotelsDetails: {
+          ...state.hotelsDetails,
+          [payload.hotel.id]: payload.hotel,
+        },
+      }
     case POST_SELECTED_HOTEL_SUCCESS:
     case PUT_SELECTED_HOTEL_SUCCESS:
     case DELETE_SELECTED_HOTEL_SUCCESS:
-    case POST_HOTEL_PROPOSAL_SUCCESS:
-    case PUT_HOTEL_PROPOSAL_SUCCESS:
-    case DELETE_HOTEL_PROPOSAL_SUCCESS:
+    case POST_RETREAT_HOTEL_PROPOSAL_SUCCESS:
+    case PUT_RETREAT_HOTEL_PROPOSAL_SUCCESS:
+    case DELETE_RETREAT_HOTEL_PROPOSAL_SUCCESS:
       action = action as unknown as ApiAction
       payload = (action as unknown as ApiAction).payload as {
         retreat: AdminRetreatModel
@@ -202,6 +243,34 @@ export default function AdminReducer(
         retreatsDetails: {
           ...state.retreatsDetails,
           [payload.retreat.id]: payload.retreat,
+        },
+      }
+    case POST_RETREAT_ATTENDEE_SUCCESS:
+    case PATCH_RETREAT_ATTENDEE_SUCCESS:
+    case DELETE_RETREAT_ATTENDEES_SUCCESS:
+    case GET_RETREAT_ATTENDEES_SUCCESS:
+      meta = (action as unknown as {meta: {retreatId: number}}).meta
+      payload = (action as unknown as ApiAction).payload as {
+        attendees: AdminRetreatAttendeeModel[]
+      }
+      return {
+        ...state,
+        attendeesByRetreat: {
+          ...state.attendeesByRetreat,
+          [meta.retreatId]: payload.attendees,
+        },
+      }
+    case GET_RETREAT_NOTES_SUCCESS:
+    case POST_RETREAT_NOTES_SUCCESS:
+      meta = (action as unknown as {meta: {retreatId: number}}).meta
+      payload = (action as unknown as ApiAction).payload as {
+        notes: RetreatNoteModel[]
+      }
+      return {
+        ...state,
+        notesByRetreat: {
+          ...state.notesByRetreat,
+          [meta.retreatId]: payload.notes,
         },
       }
     default:

@@ -11,20 +11,18 @@ import {
   RetreatPreferencesForm,
   RetreatPreferencesFormValues,
 } from "../components/lodging/LodgingForms"
-import RetreatRequired from "../components/lodging/RetreatRequired"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageHeader from "../components/page/PageHeader"
 import PageOverlay from "../components/page/PageOverlay"
-import {ResourceNotFound} from "../models"
+import {ResourceNotFound, ResourceNotFoundType} from "../models"
 import {RetreatModel} from "../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../notistack-lib/actions"
 import {apiNotification} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {updateRetreatPreferences} from "../store/actions/retreat"
-import {convertGuid, useQuery} from "../utils"
-import {useRetreat} from "../utils/lodgingUtils"
+import {useQuery} from "../utils"
 
 type RetreatPreferencesFormPageProps = RouteComponentProps<{
   retreatGuid: string
@@ -34,8 +32,9 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
   let dispatch = useDispatch()
 
   // Path params
-  let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreat(retreatGuid)
+  // let retreatGuid = convertGuid(props.match.params.retreatGuid)
+  let retreatId = 1
+  let retreat: RetreatModel | ResourceNotFoundType = ResourceNotFound
 
   let retreatPreferencesFormLoading = useSelector(
     (state: RootState) => state.api.retreatPreferencesFormLoading
@@ -126,14 +125,16 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
           dispatch(
             push(
               lastQueryParam ??
-                AppRoutes.getPath("RetreatFiltersPage", {retreatGuid})
+                AppRoutes.getPath("RetreatFiltersPage", {
+                  retreaftIdx: retreatId.toString(),
+                })
             )
           )
         }
       }
       dispatch(
         updateRetreatPreferences(
-          retreatGuid,
+          retreatId,
           values.isFlexibleDates,
           values.attendeesLower,
           undefined,
@@ -157,37 +158,36 @@ function RetreatPreferencesFormPage(props: RetreatPreferencesFormPageProps) {
   }
 
   return (
-    <RetreatRequired retreatGuid={retreatGuid}>
-      <PageContainer>
-        <PageBody>
-          <PageOverlay
-            right={
-              <AppPageSpotlightImage
-                imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
-                imageAlt="Fairmont Austin pool overview in the evening"
-                imagePosition="bottom-right"
-              />
-            }>
-            <Box paddingBottom={4}>
-              <PageHeader
-                preHeader={<AppLodgingFlowTimeline currentStep={"INTAKE_2"} />}
-                header="Let's Get Started"
-                subheader="We need just a few details to plan your perfect retreat."
-              />
-            </Box>
-            <RetreatPreferencesForm
-              onSubmit={submitRetreatPreferences}
-              onError={showError}
-              isLoading={retreatPreferencesFormLoading}
-              initialVals={prefilledValues}
-              submitButtonText={
-                previouslyCompleted ? "Update" : "Start planning!"
-              }
+    <PageContainer>
+      <PageBody>
+        <PageOverlay
+          right={
+            <AppPageSpotlightImage
+              imageUrl="https://flok-b32d43c.s3.amazonaws.com/hotels/fairmont_sidebar.png"
+              imageAlt="Fairmont Austin pool overview in the evening"
+              imagePosition="bottom-right"
             />
-          </PageOverlay>
-        </PageBody>
-      </PageContainer>
-    </RetreatRequired>
+          }>
+          <Box paddingBottom={4}>
+            <PageHeader
+              preHeader={<AppLodgingFlowTimeline currentStep={"INTAKE_2"} />}
+              header="Let's Get Started"
+              subheader="We need just a few details to plan your perfect retreat."
+            />
+          </Box>
+          <RetreatPreferencesForm
+            onSubmit={submitRetreatPreferences}
+            onError={showError}
+            isLoading={retreatPreferencesFormLoading}
+            initialVals={prefilledValues}
+            submitButtonText={
+              previouslyCompleted ? "Update" : "Start planning!"
+            }
+          />
+        </PageOverlay>
+      </PageBody>
+    </PageContainer>
   )
 }
+
 export default withRouter(RetreatPreferencesFormPage)

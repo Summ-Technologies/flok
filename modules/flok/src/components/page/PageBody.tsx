@@ -1,5 +1,6 @@
 import {makeStyles} from "@material-ui/core"
 import React, {PropsWithChildren} from "react"
+import PageAppBar from "./PageAppBar"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -14,12 +15,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-type PageBodyProps = PropsWithChildren<{}>
+type PageBodyProps = PropsWithChildren<{appBar?: boolean}>
 export default function PageBody(props: PageBodyProps) {
   const classes = useStyles(props)
   return (
     <div className={classes.root}>
-      <div className={classes.body}>{props.children}</div>
+      <div className={classes.body}>
+        {props.appBar && <PageAppBar />}
+        {props.children}
+      </div>
     </div>
   )
 }

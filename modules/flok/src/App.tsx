@@ -7,6 +7,7 @@ import TagManager from "react-gtm-module"
 import MixPanelProvider from "react-mixpanel-provider-component"
 import {Provider} from "react-redux"
 import {polyfill as seamlessScrollPolyfill} from "seamless-scroll-polyfill"
+import {SidebarProvider} from "./components/page/PageSidenav"
 import config, {GOOGLE_TAG_MANAGER_ID_KEY} from "./config"
 import Notistack from "./notistack-lib/Notistack"
 import Stack from "./Stack"
@@ -35,7 +36,9 @@ export default function App() {
             <SnackbarProvider>
               <Notistack />
               <CssBaseline />
-              <Stack />
+              <SidebarProvider>
+                <Stack />
+              </SidebarProvider>
             </SnackbarProvider>
           </ConnectedRouter>
         </ThemeProvider>
