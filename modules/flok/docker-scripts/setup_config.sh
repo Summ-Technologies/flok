@@ -28,11 +28,6 @@ fi
 [[ ! -z "$GOOGLE_MAPS_ID_HOTEL_PAGE" ]] && echo "window.appConfig.google_maps_id_hotel_page=\"$GOOGLE_MAPS_ID_HOTEL_PAGE\"" >> /usr/share/nginx/html/config.js
 [[ ! -z "$GOOGLE_API_KEY" ]] && echo "window.appConfig.google_api_key=\"$GOOGLE_API_KEY\"" >> /usr/share/nginx/html/config.js
 
-####### Algolia config #######
-[[ ! -z "$ALGOLIA_API_KEY" ]] && echo "window.appConfig.algolia_api_key=\"$ALGOLIA_API_KEY\"" >> /usr/share/nginx/html/config.js
-[[ ! -z "$ALGOLIA_APP_ID" ]] && echo "window.appConfig.algolia_app_id=\"$ALGOLIA_APP_ID\"" >> /usr/share/nginx/html/config.js
-[[ ! -z "$ALGOLIA_DESTINATIONS_INDEX" ]] && echo "window.appConfig.algolia_destinations_index=\"$ALGOLIA_DESTINATIONS_INDEX\"" >> /usr/share/nginx/html/config.js
-[[ ! -z "$ALGOLIA_HOTELS_INDEX" ]] && echo "window.appConfig.algolia_hotels_index=\"$ALGOLIA_HOTELS_INDEX\"" >> /usr/share/nginx/html/config.js
 [[ ! -z "$MAX_TASKS" ]] && echo "window.appConfig.max_tasks=\"$MAX_TASKS\"" >> /usr/share/nginx/html/config.js
 
 echo "Final config.js file"
