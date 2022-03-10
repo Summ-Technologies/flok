@@ -20,7 +20,7 @@ export type RetreatState = {
     [id: number]: RetreatModel | ResourceNotFoundType
   }
   retreatsByGuid: {
-    [guid: string]: RetreatModel | ResourceNotFoundType
+    [guid: string]: RetreatModel | ResourceNotFoundType | undefined
   }
   retreatAttendees: {[id: number]: RetreatAttendeeModel[] | undefined}
 }
@@ -36,7 +36,6 @@ export default function retreatReducer(
   action: Action
 ): RetreatState {
   var payload
-  var newRetreatsState: {[guid: string]: RetreatModel | ResourceNotFoundType}
   var retreatId: number, retreat: RetreatModel
   switch (action.type) {
     case GET_RETREAT_BY_GUID_SUCCESS: // TODO, remove once dashboard release
@@ -55,9 +54,10 @@ export default function retreatReducer(
       // Probably should check for 404 here
       retreatId = (action as unknown as {meta: {retreatId: number}}).meta
         .retreatId
-      newRetreatsState = {...state.retreats}
-      newRetreatsState[retreatId] = ResourceNotFound
-      return {...state, retreats: newRetreatsState}
+      return {
+        ...state,
+        retreats: {...state.retreats, [retreatId]: ResourceNotFound},
+      }
     // TODO, remove once dashboard release
     case GET_RETREAT_BY_GUID_FAILURE:
       let retreatGuid = (action as unknown as {meta: {retreatGuid: string}})
