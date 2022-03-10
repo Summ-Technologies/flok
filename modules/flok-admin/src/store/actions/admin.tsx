@@ -524,3 +524,19 @@ export function getHotelsSearch(search: string) {
     ],
   })
 }
+
+export const GET_USERS_REQUEST = "GET_USERS_REQUEST"
+export const GET_USERS_SUCCESS = "GET_USERS_SUCCESS"
+export const GET_USERS_FAILURE = "GET_USERS_FAILURE"
+export function getUsers(retreatId: number) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/users`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      GET_USERS_REQUEST,
+      {type: GET_USERS_SUCCESS, meta: {retreatId}},
+      {type: GET_USERS_FAILURE, meta: {retreatId}},
+    ],
+  })
+}

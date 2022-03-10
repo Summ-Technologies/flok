@@ -9,6 +9,7 @@ import {
   AdminRetreatListType,
   AdminRetreatModel,
   RetreatNoteModel,
+  User,
 } from "../../models"
 import {
   DELETE_RETREAT_ATTENDEES_SUCCESS,
@@ -25,6 +26,7 @@ import {
   GET_RETREAT_DETAILS_REQUEST,
   GET_RETREAT_DETAILS_SUCCESS,
   GET_RETREAT_NOTES_SUCCESS,
+  GET_USERS_SUCCESS,
   PATCH_HOTEL_SUCCESS,
   PATCH_RETREAT_ATTENDEE_SUCCESS,
   PATCH_RETREAT_DETAILS_FAILURE,
@@ -80,6 +82,9 @@ export type AdminState = {
   notesByRetreat: {
     [key: number]: RetreatNoteModel[] | undefined
   }
+  usersByRetreat: {
+    [id: number]: User[] | undefined
+  }
 }
 
 const initialState: AdminState = {
@@ -100,6 +105,7 @@ const initialState: AdminState = {
   },
   attendeesByRetreat: {},
   notesByRetreat: {},
+  usersByRetreat: {},
 }
 
 export default function AdminReducer(
@@ -289,6 +295,18 @@ export default function AdminReducer(
         hotelsBySearch: {
           ...state.hotelsBySearch,
           [searchStr]: payload.hotels,
+        },
+      }
+    case GET_USERS_SUCCESS:
+      meta = (action as unknown as {meta: {retreatId: number}}).meta
+      payload = (action as unknown as ApiAction).payload as {
+        users: User[]
+      }
+      return {
+        ...state,
+        usersByRetreat: {
+          ...state.usersByRetreat,
+          [meta.retreatId]: payload.users,
         },
       }
     default:
