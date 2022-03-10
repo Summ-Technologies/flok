@@ -56,7 +56,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
 
   // Path and query params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreatByGuid(retreatGuid)
+  let [retreat, loadingRetreat] = useRetreatByGuid(retreatGuid)
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
   let selectedHotels = useMemo(
@@ -72,21 +72,23 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   // Probably not the best way to set loading state, but will do for now
   let [loadingHotels, setLoadingHotels] = useState(false)
   useEffect(() => {
+    async function loadMissingHotels(ids: number[]) {
+      setLoadingHotels(true)
+      await dispatch(getHotels(ids))
+      setLoadingHotels(false)
+    }
     let missingHotels = selectedHotels.filter(
       (selectedHotel) => hotelsById[selectedHotel.hotel_id] === undefined
     )
     if (missingHotels.length > 0) {
-      let filter = missingHotels
-        .map((selectedHotel) => `id=${selectedHotel.hotel_id}`)
-        .join(" OR ")
-      dispatch(getHotels(filter))
-      setLoadingHotels(true)
-    } else {
-      setLoadingHotels(false)
+      let missingHotelIds = missingHotels.map(
+        (selectedHotel) => selectedHotel.hotel_id
+      )
+      loadMissingHotels(missingHotelIds)
     }
   }, [selectedHotels, hotelsById, dispatch, setLoadingHotels])
 
-  let destinations = useDestinations()[0]
+  let [destinations, loadingDestinations] = useDestinations()
 
   let [groupedSelectedHotels, setGroupedSelectedHotels] = useState<
     {destinationId: number; selectedHotels: RetreatSelectedHotelProposal[]}[]
@@ -169,7 +171,7 @@ function ProposalsListPage(props: ProposalsListPageProps) {
             />
             {groupedSelectedHotels.length + unavailableSelectedHotels.length ===
             0 ? (
-              loadingHotels ? (
+              loadingRetreat || loadingHotels || loadingDestinations ? (
                 <AppTypography variant="body1">Loading...</AppTypography>
               ) : (
                 <AppTypography variant="body1">

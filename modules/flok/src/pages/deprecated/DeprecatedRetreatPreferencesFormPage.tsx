@@ -34,7 +34,7 @@ function DeprecatedRetreatPreferencesFormPage(
 
   // Path params
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreatByGuid(retreatGuid)
+  let [retreat] = useRetreatByGuid(retreatGuid)
 
   let retreatPreferencesFormLoading = useSelector(
     (state: RootState) => state.api.retreatPreferencesFormLoading

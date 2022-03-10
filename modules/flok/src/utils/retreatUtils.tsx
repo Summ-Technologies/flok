@@ -1,4 +1,4 @@
-import {useEffect} from "react"
+import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {ResourceNotFoundType} from "../models"
 import {RetreatAttendeeModel, RetreatModel} from "../models/retreat"
@@ -41,13 +41,19 @@ export function useRetreatAttendees(retreatId: number) {
  */
 export function useRetreatByGuid(retreatGuid: string) {
   let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
   let retreat = useSelector(
     (state: RootState) => state.retreat.retreatsByGuid[retreatGuid]
   )
   useEffect(() => {
-    if (!retreat) {
+    async function loadRetreat() {
+      setLoading(true)
       dispatch(getRetreatByGuid(retreatGuid))
+      setLoading(false)
+    }
+    if (!retreat) {
+      loadRetreat()
     }
   }, [retreat, dispatch, retreatGuid])
-  return retreat as RetreatModel | ResourceNotFoundType | undefined
+  return [retreat, loading] as const
 }

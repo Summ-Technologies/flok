@@ -60,17 +60,19 @@ function ProposalsListPage(props: ProposalsListPageProps) {
   // Probably not the best way to set loading state, but will do for now
   let [loadingHotels, setLoadingHotels] = useState(false)
   useEffect(() => {
+    async function loadMissingHotels(ids: number[]) {
+      setLoadingHotels(true)
+      await dispatch(getHotels(ids))
+      setLoadingHotels(false)
+    }
     let missingHotels = selectedHotels.filter(
       (selectedHotel) => hotelsById[selectedHotel.hotel_id] === undefined
     )
     if (missingHotels.length > 0) {
-      let filter = missingHotels
-        .map((selectedHotel) => `id=${selectedHotel.hotel_id}`)
-        .join(" OR ")
-      dispatch(getHotels(filter))
-      setLoadingHotels(true)
-    } else {
-      setLoadingHotels(false)
+      let missingHotelIds = missingHotels.map(
+        (selectedHotel) => selectedHotel.hotel_id
+      )
+      loadMissingHotels(missingHotelIds)
     }
   }, [selectedHotels, hotelsById, dispatch, setLoadingHotels])
 

@@ -121,9 +121,9 @@ function ProposalPage(props: ProposalPageProps) {
   let classes = useStyles(props)
 
   let hotelGuid = convertGuid(props.match.params.hotelGuid)
-  let hotel = useHotel(hotelGuid)
+  let [hotel, loadingHotel] = useHotel(hotelGuid)
   let retreatGuid = convertGuid(props.match.params.retreatGuid)
-  let retreat = useRetreatByGuid(retreatGuid)
+  let [retreat, loadingRetreat] = useRetreatByGuid(retreatGuid)
   let [proposals, setProposals] = useState<HotelLodgingProposal[]>([])
   let [proposal, setProposal] = useState<
     HotelLodgingProposal | ResourceNotFoundType | undefined
@@ -213,7 +213,7 @@ function ProposalPage(props: ProposalPageProps) {
             </a>
           </AppTypography>
         </Box>
-      ) : hotel === undefined ? (
+      ) : hotel === undefined || loadingRetreat || loadingHotel ? (
         <>Loading...</>
       ) : (
         <PageOverlay

@@ -1,127 +1,33 @@
-import {useCallback, useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {ResourceNotFound, ResourceNotFoundType} from "../models"
+import {ResourceNotFound} from "../models"
 import {DestinationModel, HotelModel} from "../models/lodging"
 import {RootState} from "../store"
-import {
-  getDestinations,
-  getHotelById,
-  getHotels,
-} from "../store/actions/lodging"
-import {getAlgoliaHotelFilterString} from "./algoliaUtils"
+import {getDestinations, getHotelByGuid} from "../store/actions/lodging"
 
 // HOOKS
 export function useDestinations() {
   let dispatch = useDispatch()
-  let allDestinations = useSelector(
-    (state: RootState) => state.lodging.destinationsByFilter[""]
-  )
   let destinations = useSelector(
     (state: RootState) => state.lodging.destinations
   )
-  let destinationsLoading = useSelector(
-    (state: RootState) => state.api.getDestinationsLoading
-  )
+  let [loadingDestinations, setLoadingDestinations] = useState(false)
   useEffect(() => {
-    if (!allDestinations) {
-      dispatch(getDestinations(""))
+    async function loadDestinations() {
+      setLoadingDestinations(true)
+      await dispatch(getDestinations())
+      setLoadingDestinations(false)
     }
-  }, [dispatch, allDestinations])
-  return [destinations, destinationsLoading] as const
+    if (!Object.keys(destinations).length) {
+      loadDestinations()
+    }
+  }, [dispatch, destinations])
+  return [destinations, loadingDestinations] as const
 }
 
-/**
- *
- * @returns
- *    1. destination
- *    2. isLoading
- */
-export function useDestination(destinationGuid: string) {
-  let [destinations, destinationsLoading] = useDestinations()
-  let [destination, setDestination] = useState<
-    DestinationModel | ResourceNotFoundType | null
-  >(null)
-  useEffect(() => {
-    if (
-      Object.keys(destinations).length &&
-      destinationGuid &&
-      destination === null
-    ) {
-      setDestination(
-        Object.values(destinations).filter(
-          (dest) => dest.guid === destinationGuid
-        )[0] || ResourceNotFound
-      )
-    }
-  }, [destinations, destinationGuid, destination])
-  return [destination, destinationsLoading] as const
-}
-
-/**
- *
- * @returns Array with
- *    1. hotels: HotelModel[]
- *    2. numHits: number
- *    3. loading: boolean
- *    4. hasMore: boolean
- *    5. getMore: () => void
- */
-export function useHotels(selectedDestinationIds: number[]) {
-  let dispatch = useDispatch()
-
-  let [filter, setFilter] = useState(
-    getAlgoliaHotelFilterString(selectedDestinationIds)
-  )
-  useEffect(() => {
-    setFilter(getAlgoliaHotelFilterString(selectedDestinationIds))
-  }, [selectedDestinationIds])
-
-  let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
-
-  let [hotels, setHotels] = useState<HotelModel[]>([])
-  let [numHits, setNumHits] = useState(0)
-  let [hasMore, setHasMore] = useState(false)
-  let [loading] = useState(false)
-
-  let hotelsFilterState = useSelector(
-    (state: RootState) =>
-      state.lodging.hotelsByFilter[filter] || {
-        hotels: [],
-        hasMore: false,
-        currPage: 0,
-        numHits: 0,
-      }
-  )
-
-  let getMore = useCallback(() => {
-    dispatch(getHotels(filter, hotelsFilterState.currPage + 1))
-  }, [dispatch, filter, hotelsFilterState.currPage])
-
-  useEffect(() => {
-    if (!hotelsFilterState.hotels.length) {
-      dispatch(getHotels(filter))
-    }
-  }, [dispatch, filter, hotelsFilterState.hotels.length])
-
-  useEffect(() => {
-    setHotels(hotelsFilterState.hotels.map((id) => hotelsById[id]))
-    setNumHits(hotelsFilterState.numHits)
-    setHasMore(hotelsFilterState.hasMore)
-  }, [
-    hotelsById,
-    hotelsFilterState.hasMore,
-    hotelsFilterState.hotels,
-    hotelsFilterState.numHits,
-  ])
-
-  return [hotels, numHits, loading, hasMore, getMore] as const
-}
-
-/**
- * @returns HotelModel | ResourceNotFound | undefined
- */
 export function useHotel(hotelGuid: string) {
   let dispatch = useDispatch()
+  let [loadingHotel, setLoadingHotel] = useState(false)
   let hotelId = useSelector(
     (state: RootState) => state.lodging.hotelsGuidMapping[hotelGuid]
   )
@@ -135,12 +41,17 @@ export function useHotel(hotelGuid: string) {
     }
   })
   useEffect(() => {
-    if (!hotel && hotelId !== ResourceNotFound) {
-      dispatch(getHotelById(hotelGuid))
+    async function loadHotel() {
+      setLoadingHotel(true)
+      await dispatch(getHotelByGuid(hotelGuid))
+      setLoadingHotel(false)
+    }
+    if (!hotel && hotel !== ResourceNotFound) {
+      loadHotel()
     }
   }, [hotelGuid, hotel, hotelId, dispatch])
 
-  return hotel
+  return [hotel, loadingHotel] as const
 }
 
 export class DestinationUtils {
