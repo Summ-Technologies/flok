@@ -18,5 +18,7 @@ else
     echo "window.appConfig.image_server_base_url=\"$IMAGE_SERVER_BASE_URL\"" >> /usr/share/nginx/html/config.js
 fi
 
+[[ ! -z "$FLOK_BASE_URL" ]] && echo "window.appConfig.flok_base_url=\"$FLOK_BASE_URL\"" >> /usr/share/nginx/html/config.js
+
 echo "Final config.js file"
 cat /usr/share/nginx/html/config.js

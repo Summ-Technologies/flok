@@ -65,7 +65,7 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
       website_url: props.hotel.website_url,
       sub_location: props.hotel.sub_location,
     }),
-    validationSchema: yup.object({website_url: yup.string().url()}),
+    validationSchema: yup.object({website_url: yup.string().url().nullable()}),
     onSubmit: updateHotelProfile,
   })
   const commonTextFieldProps: TextFieldProps = {

@@ -12,12 +12,14 @@ import {
   Tab,
   Tabs,
   TextField,
+  Typography,
 } from "@material-ui/core"
 import {useFormik} from "formik"
 import querystring from "querystring"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Link as ReactRouterLink} from "react-router-dom"
+import config, {FLOK_BASE_URL_KEY} from "../../config"
 import {AdminRetreatModel, AdminSelectedHotelProposalModel} from "../../models"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
@@ -367,8 +369,27 @@ export default function RetreatLodgingDetails(
 
   return (
     <div className={classes.root}>
-      <Box display="flex" justifyContent="space-between" marginY={2}>
-        <AppTypography variant="h4">Hotel Options</AppTypography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        marginTop={2}
+        marginBottom={1}>
+        <Box display="flex" alignItems="baseline">
+          <AppTypography variant="h4">
+            Hotel Proposals&nbsp;&nbsp;&nbsp;
+          </AppTypography>
+          <Typography
+            variant="body1"
+            component={Link}
+            href={`${config.get(FLOK_BASE_URL_KEY)}/r/${
+              props.retreat.guid
+            }/proposals`}
+            target="_blank"
+            underline="always">
+            See client view
+          </Typography>
+        </Box>
         <Button
           color="primary"
           variant="outlined"
