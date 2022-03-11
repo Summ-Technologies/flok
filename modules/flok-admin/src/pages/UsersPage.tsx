@@ -10,9 +10,10 @@ import {
 import {push} from "connected-react-router"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
-import {RouteComponentProps} from "react-router-dom"
+import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppLoadingScreen from "../components/base/AppLoadingScreen"
 import PageBase from "../components/page/PageBase"
+import NewUserModal from "../components/retreats/NewUserModal"
 import {User} from "../models"
 import {enqueueSnackbar} from "../notistack-lib/actions"
 import {AppRoutes} from "../Stack"
@@ -47,6 +48,9 @@ function UsersPage(props: UsersPageProps) {
   let dispatch = useDispatch()
 
   let [users, loading] = useRetreatUsers(-1)
+
+  let [newUserOpen, setNewUserOpen] = useState(false)
+
   const createTableRows = (user: User[]) =>
     users.map((u) => ({
       id: u.id,
@@ -114,37 +118,52 @@ function UsersPage(props: UsersPageProps) {
       field: "createdAt",
       headerName: "Date Created",
       type: "dateTime",
+      width: 150,
       valueFormatter: (params) => getDateTimeString(params.value as Date),
     },
     {
       field: "retreatIds",
       headerName: "Retreat IDs",
+      width: 200,
       renderCell: (params) => (params.value as number[]).join(", "),
     },
   ]
   return (
     <PageBase>
       <div className={classes.body}>
-        <Typography variant="h1">Retreats Page</Typography>
-        {loading && users !== undefined ? (
+        <Typography variant="h1">Users Page</Typography>
+        {loading || users === undefined ? (
           <AppLoadingScreen />
         ) : (
-          <DataGrid
-            className={classes.table}
-            sortModel={sortModel}
-            onSortModelChange={() => setSortModel(undefined)}
-            rows={createTableRows(users)}
-            columns={tableCols}
-            components={{Toolbar: GridToolbar}}
-            disableSelectionOnClick
-            disableColumnMenu
-            density="compact"
-            pageSize={50}
-            pagination
-            rowsPerPageOptions={[]}
-          />
+          <>
+            <div style={{marginLeft: "auto"}}>
+              <Button
+                onClick={() => setNewUserOpen(true)}
+                variant="outlined"
+                color="primary">
+                Create new user
+              </Button>
+            </div>
+            <DataGrid
+              className={classes.table}
+              sortModel={sortModel}
+              onSortModelChange={() => setSortModel(undefined)}
+              rows={createTableRows(users)}
+              columns={tableCols}
+              components={{Toolbar: GridToolbar}}
+              disableSelectionOnClick
+              disableColumnMenu
+              density="compact"
+              pageSize={50}
+              pagination
+              rowsPerPageOptions={[]}
+            />
+          </>
         )}
       </div>
+      <NewUserModal open={newUserOpen} />
     </PageBase>
   )
 }
+
+export default withRouter(UsersPage)

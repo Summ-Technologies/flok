@@ -38,6 +38,7 @@ import {
   POST_RETREAT_HOTEL_PROPOSAL_SUCCESS,
   POST_RETREAT_NOTES_SUCCESS,
   POST_SELECTED_HOTEL_SUCCESS,
+  POST_USER_SUCCESS,
   PUT_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
   PUT_RETREAT_HOTEL_PROPOSAL_SUCCESS,
   PUT_SELECTED_HOTEL_SUCCESS,
@@ -307,6 +308,21 @@ export default function AdminReducer(
         usersByRetreat: {
           ...state.usersByRetreat,
           [meta.retreatId]: payload.users,
+        },
+      }
+    case POST_USER_SUCCESS:
+      payload = (action as unknown as ApiAction).payload as {
+        user: User
+        login_token: string
+      }
+      if (payload.user.retreat_ids.length !== 1) return state
+      return {
+        ...state,
+        usersByRetreat: {
+          ...state.usersByRetreat,
+          [payload.user.retreat_ids[0]]: state.usersByRetreat[
+            payload.user.retreat_ids[0]
+          ].concat([payload.user]),
         },
       }
     default:

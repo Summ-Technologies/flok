@@ -9,6 +9,7 @@ import RetreatLodgingPage from "./pages/RetreatLodgingPage"
 import RetreatPage from "./pages/RetreatPage"
 import RetreatSalesIntakePage from "./pages/RetreatSalesIntakePage"
 import RetreatsPage from "./pages/RetreatsPage"
+import UsersPage from "./pages/UsersPage"
 
 type FlokRoute = {
   name: string
@@ -74,6 +75,11 @@ export class AppRoutes {
       name: "HotelPage",
       component: <HotelPage />,
       path: "/hotels/:hotelId",
+    },
+    {
+      name: "UsersPage",
+      component: <UsersPage />,
+      path: "/users",
     },
   ]
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {

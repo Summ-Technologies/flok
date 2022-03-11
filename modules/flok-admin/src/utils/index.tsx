@@ -10,6 +10,7 @@ import {
   getHotelsSearch,
   getRetreatAttendees,
   getRetreatDetails,
+  getUsers,
 } from "../store/actions/admin"
 
 /**
@@ -165,4 +166,24 @@ export function useHotelsBySearch(search: string) {
     }
   }, [search, dispatch, results])
   return [results ? results : [], loading] as const
+}
+
+export function useRetreatUsers(retreatId: number) {
+  let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
+  let users = useSelector(
+    (state: RootState) => state.admin.usersByRetreat[retreatId]
+  )
+  useEffect(() => {
+    async function loadUsers() {
+      setLoading(true)
+      await dispatch(getUsers(retreatId))
+      setLoading(false)
+    }
+    if (users === undefined) {
+      loadUsers()
+    }
+  }, [retreatId, users, setLoading, dispatch])
+
+  return [users, loading] as const
 }
