@@ -100,9 +100,16 @@ function HotelAccordionItem(props: {
       </AccordionSummary>
       <AccordionDetails className={classes.accordionDetails}>
         <Box display="flex" alignItems="center">
-          <AppTypography variant="h3" fontWeight="bold">
-            {props.hotel.name}
-          </AppTypography>
+          <Link
+            component={ReactRouterLink}
+            to={AppRoutes.getPath("HotelPage", {
+              hotelId: props.selectedHotel.hotel_id.toString(),
+            })}
+            target="_blank">
+            <AppTypography variant="h3" fontWeight="bold">
+              {props.hotel.name}
+            </AppTypography>
+          </Link>
           <Button
             onClick={() => setRemoveSelectedHotelModalOpen(true)}
             style={{marginLeft: 8}}
