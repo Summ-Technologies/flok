@@ -25,6 +25,7 @@ import {enqueueSnackbar} from "../notistack-lib/actions"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails} from "../store/actions/admin"
+import {theme} from "../theme"
 import {getDateFromString, getDateTimeString, useRetreatUsers} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
@@ -193,6 +194,7 @@ function UsersPage(props: UsersPageProps) {
           <>
             <div style={{marginLeft: "auto"}}>
               <Button
+                style={{marginBottom: theme.spacing(0.5)}}
                 onClick={() => setNewUserOpen(true)}
                 variant="outlined"
                 color="primary">
