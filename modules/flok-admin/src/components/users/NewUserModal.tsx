@@ -1,15 +1,32 @@
-import {Box, Dialog, Paper, TextField, TextFieldProps} from "@material-ui/core"
+import {
+  Box,
+  Button,
+  Dialog,
+  makeStyles,
+  Paper,
+  TextField,
+  TextFieldProps,
+} from "@material-ui/core"
 import {Autocomplete} from "@material-ui/lab"
 import {useFormik} from "formik"
-import {useEffect, useState} from "react"
-import {useDispatch, useSelector} from "react-redux"
+import _ from "lodash"
+import {useState} from "react"
+import {useDispatch} from "react-redux"
 import {AdminRetreatListModel} from "../../models"
-import {RootState} from "../../store"
-import {getRetreatsList, postUser} from "../../store/actions/admin"
+import {postUser} from "../../store/actions/admin"
+import {theme} from "../../theme"
+import {nullifyEmptyString, useRetreatList} from "../../utils"
 import AppTypography from "../base/AppTypography"
 
-type NewUserModalProps = {open: boolean}
+let useStyles = makeStyles((theme) => ({
+  textField: {
+    marginBottom: theme.spacing(1.25),
+  },
+}))
+
+type NewUserModalProps = {open: boolean; onClose: (submitted: boolean) => void}
 export default function NewUserModal(props: NewUserModalProps) {
+  let classes = useStyles(props)
   let dispatch = useDispatch()
   let formik = useFormik({
     enableReinitialize: true,
@@ -28,25 +45,19 @@ export default function NewUserModal(props: NewUserModalProps) {
           values.retreats.map((r) => r.id)
         )
       )
+      props.onClose(true)
     },
   })
 
   let [newOption, setNewOption] = useState("")
 
-  let retreatList = useSelector((state: RootState) => {
-    console.log(state.admin.retreatsList)
-    return state.admin.retreatsList.active
-  })
-  useEffect(() => {
-    if (retreatList.length === 0) {
-      console.log("HI")
-      dispatch(getRetreatsList("active"))
-    }
-  }, [dispatch, retreatList.length])
+  let retreatList = useRetreatList()
 
   const commonTextFieldProps: TextFieldProps = {
     onChange: formik.handleChange,
     InputLabelProps: {shrink: true},
+    fullWidth: true,
+    className: classes.textField,
   }
   return (
     <Dialog open={props.open}>
@@ -62,7 +73,7 @@ export default function NewUserModal(props: NewUserModalProps) {
             <AppTypography variant="body1" fontWeight="bold" paragraph>
               New User
             </AppTypography>
-            <form>
+            <form onSubmit={formik.handleSubmit}>
               <TextField
                 id="email"
                 value={formik.values.email}
@@ -86,7 +97,7 @@ export default function NewUserModal(props: NewUserModalProps) {
                 {...commonTextFieldProps}
               />
               <Autocomplete
-                id="retreatId"
+                id="retreatIds"
                 value={formik.values.retreats}
                 multiple
                 getOptionLabel={(r) =>
@@ -103,6 +114,7 @@ export default function NewUserModal(props: NewUserModalProps) {
                   <TextField
                     {...params}
                     {...commonTextFieldProps}
+                    required
                     inputProps={{
                       ...params.inputProps,
                       onKeyPress: (e) => {
@@ -111,9 +123,10 @@ export default function NewUserModal(props: NewUserModalProps) {
                           return false
                         }
                       },
+                      required: formik.values.retreats.length === 0,
                     }}
                     onChange={undefined}
-                    label="Retreat"
+                    label="Retreat(s)"
                     placeholder="Select a retreat"
                   />
                 )}
@@ -122,6 +135,23 @@ export default function NewUserModal(props: NewUserModalProps) {
                   formik.setFieldValue("retreats", newVals)
                 }
               />
+              <Button
+                disabled={_.isEqual(
+                  nullifyEmptyString(formik.initialValues),
+                  nullifyEmptyString(formik.values)
+                )}
+                type="submit"
+                variant="contained"
+                style={{marginRight: theme.spacing(1)}}
+                color="primary">
+                Submit
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => props.onClose(false)}>
+                Close
+              </Button>
             </form>
           </Box>
         </Paper>

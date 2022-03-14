@@ -563,3 +563,42 @@ export function postUser(
     types: [POST_USER_REQUEST, POST_USER_SUCCESS, POST_HOTEL_FAILURE],
   })
 }
+
+export const PATCH_USER_REQUEST = "PATCH_USER_REQUEST"
+export const PATCH_USER_SUCCESS = "PATCH_USER_SUCCESS"
+export const PATCH_USER_FAILURE = "PATCH_USER_FAILURE"
+export function patchUser(
+  id: number,
+  firstName: string,
+  lastName: string,
+  retreatIds: number[]
+) {
+  let endpoint = `/v1.0/admin/users`
+  return createApiAction({
+    method: "PATCH",
+    body: JSON.stringify({
+      id,
+      first_name: firstName,
+      last_name: lastName,
+      retreat_ids: retreatIds,
+    }),
+    endpoint,
+    types: [PATCH_USER_REQUEST, PATCH_USER_SUCCESS, PATCH_HOTEL_FAILURE],
+  })
+}
+
+export const GET_LOGIN_TOKEN_REQUEST = "GET_LOGIN_TOKEN_REQUEST"
+export const GET_LOGIN_TOKEN_SUCCESS = "GET_LOGIN_TOKEN_SUCCESS"
+export const GET_LOGIN_TOKEN_FAILURE = "GET_LOGIN_TOKEN_FAILURE"
+export function getUserLoginToken(userId: number) {
+  let endpoint = `/v1.0/admin/users/${userId}/login-token`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      GET_LOGIN_TOKEN_REQUEST,
+      {type: GET_LOGIN_TOKEN_SUCCESS, meta: {userId}},
+      GET_LOGIN_TOKEN_FAILURE,
+    ],
+  })
+}

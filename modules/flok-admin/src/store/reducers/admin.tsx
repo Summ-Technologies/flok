@@ -20,6 +20,7 @@ import {
   GET_HOTELS_BY_ID_SUCCESS,
   GET_HOTELS_SEARCH_SUCCESS,
   GET_HOTEL_DETAILS_SUCCESS,
+  GET_LOGIN_TOKEN_SUCCESS,
   GET_RETREATS_LIST_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_DETAILS_FAILURE,
@@ -32,6 +33,7 @@ import {
   PATCH_RETREAT_DETAILS_FAILURE,
   PATCH_RETREAT_DETAILS_REQUEST,
   PATCH_RETREAT_DETAILS_SUCCESS,
+  PATCH_USER_SUCCESS,
   POST_HOTEL_SUCCESS,
   POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
   POST_RETREAT_ATTENDEE_SUCCESS,
@@ -84,7 +86,10 @@ export type AdminState = {
     [key: number]: RetreatNoteModel[] | undefined
   }
   usersByRetreat: {
-    [id: number]: User[] | undefined
+    [id: number]: {[id: number]: User}
+  }
+  userLoginTokens: {
+    [id: number]: string
   }
 }
 
@@ -107,6 +112,7 @@ const initialState: AdminState = {
   attendeesByRetreat: {},
   notesByRetreat: {},
   usersByRetreat: {},
+  userLoginTokens: {},
 }
 
 export default function AdminReducer(
@@ -307,22 +313,47 @@ export default function AdminReducer(
         ...state,
         usersByRetreat: {
           ...state.usersByRetreat,
-          [meta.retreatId]: payload.users,
+          [meta.retreatId]: _.keyBy(payload.users, (u) => u.id),
         },
       }
     case POST_USER_SUCCESS:
+    case PATCH_USER_SUCCESS:
       payload = (action as unknown as ApiAction).payload as {
         user: User
-        login_token: string
+        login_token?: string
       }
-      if (payload.user.retreat_ids.length !== 1) return state
-      return {
+      if (payload.user.retreat_ids.length === 0) return state
+      let newState = {
         ...state,
         usersByRetreat: {
           ...state.usersByRetreat,
-          [payload.user.retreat_ids[0]]: state.usersByRetreat[
-            payload.user.retreat_ids[0]
-          ].concat([payload.user]),
+          [-1]: {
+            ...state.usersByRetreat[-1],
+            [payload.user.id]: payload.user,
+          },
+          [payload.user.retreat_ids[0]]: {
+            ...state.usersByRetreat[payload.user.retreat_ids[0]],
+            [payload.user.id]: payload.user,
+          },
+        },
+      }
+      if (payload.login_token) {
+        newState.userLoginTokens = {
+          ...newState.userLoginTokens,
+          [payload.user.id]: payload.login_token,
+        }
+      }
+      return newState
+    case GET_LOGIN_TOKEN_SUCCESS:
+      payload = (action as unknown as ApiAction).payload as {
+        login_token: string
+      }
+      meta = (action as unknown as {meta: {userId: number}}).meta
+      return {
+        ...state,
+        userLoginTokens: {
+          ...state.userLoginTokens,
+          [meta.userId]: payload.login_token,
         },
       }
     default:

@@ -1,4 +1,4 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Breadcrumbs, Button, Link, makeStyles} from "@material-ui/core"
 import Typography from "@material-ui/core/Typography"
 import {
   DataGrid,
@@ -7,17 +7,25 @@ import {
   GridSortModel,
   GridToolbar,
 } from "@material-ui/data-grid"
-import {push} from "connected-react-router"
-import {useState} from "react"
-import {useDispatch} from "react-redux"
-import {RouteComponentProps, withRouter} from "react-router-dom"
+import _ from "lodash"
+import {useEffect, useState} from "react"
+import {useDispatch, useSelector} from "react-redux"
+import {
+  Link as ReactRouterLink,
+  RouteComponentProps,
+  withRouter,
+} from "react-router-dom"
 import AppLoadingScreen from "../components/base/AppLoadingScreen"
+import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
-import NewUserModal from "../components/retreats/NewUserModal"
+import NewUserModal from "../components/users/NewUserModal"
+import UserInfoModal from "../components/users/UserInfoModal"
 import {User} from "../models"
 import {enqueueSnackbar} from "../notistack-lib/actions"
 import {AppRoutes} from "../Stack"
-import {getDateTimeString, useRetreatUsers} from "../utils"
+import {RootState} from "../store"
+import {getRetreatDetails} from "../store/actions/admin"
+import {getDateFromString, getDateTimeString, useRetreatUsers} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -41,18 +49,35 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type UsersPageProps = RouteComponentProps<{}>
+type UsersPageProps = RouteComponentProps<{retreatId?: string}>
 
 function UsersPage(props: UsersPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
 
-  let [users, loading] = useRetreatUsers(-1)
+  let retreatId = props.match.params.retreatId
+    ? parseInt(props.match.params.retreatId)
+    : -1
+
+  let [users, loading] = useRetreatUsers(retreatId)
+
+  let retreat = useSelector((state: RootState) =>
+    retreatId === -1
+      ? {company_name: ""}
+      : state.admin.retreatsDetails[retreatId]
+  )
+  useEffect(() => {
+    if (retreatId !== -1 && retreat === undefined) {
+      dispatch(getRetreatDetails(retreatId))
+    }
+  })
+
+  let [activeUser, setActiveUser] = useState<User | undefined>(undefined)
 
   let [newUserOpen, setNewUserOpen] = useState(false)
 
-  const createTableRows = (user: User[]) =>
-    users.map((u) => ({
+  const createTableRows = (users: {[id: number]: User}) =>
+    _.values(users).map((u) => ({
       id: u.id,
       firstName: u.first_name,
       lastName: u.last_name,
@@ -64,11 +89,21 @@ function UsersPage(props: UsersPageProps) {
     let rowIdAsString = params.getValue(params.id, "id")?.toString()
     let rowId = rowIdAsString ? parseInt(rowIdAsString) : null
     if (rowId != null && !isNaN(rowId)) {
-      dispatch(
-        push({
-          pathname: AppRoutes.getPath("UserPage", {userId: rowId.toString()}),
-        })
-      )
+      setActiveUser(users[rowId])
+      // if (retreatId !== -1) {
+      //   dispatch(
+      //     push(
+      //       AppRoutes.getPath("RetreatUserPage", {
+      //         userId: rowId.toString(),
+      //         retreatId: retreatId.toString(),
+      //       })
+      //     )
+      //   )
+      // } else {
+      //   dispatch(
+      //     push(AppRoutes.getPath("UserPage", {userId: rowId.toString()}))
+      //   )
+      // }
     } else {
       dispatch(enqueueSnackbar({message: "Something went wrong"}))
     }
@@ -119,7 +154,8 @@ function UsersPage(props: UsersPageProps) {
       headerName: "Date Created",
       type: "dateTime",
       width: 150,
-      valueFormatter: (params) => getDateTimeString(params.value as Date),
+      valueFormatter: (params) =>
+        getDateTimeString(getDateFromString(params.value as string)),
     },
     {
       field: "retreatIds",
@@ -131,6 +167,25 @@ function UsersPage(props: UsersPageProps) {
   return (
     <PageBase>
       <div className={classes.body}>
+        {retreatId !== -1 && (
+          <Breadcrumbs aria-label="breadcrumb">
+            <Link
+              color="inherit"
+              to={AppRoutes.getPath("RetreatsPage")}
+              component={ReactRouterLink}>
+              All Retreats
+            </Link>
+            <Link
+              color="inherit"
+              to={AppRoutes.getPath("RetreatPage", {
+                retreatId: retreatId.toString(),
+              })}
+              component={ReactRouterLink}>
+              {retreat?.company_name}
+            </Link>
+            <AppTypography color="textPrimary">Users</AppTypography>
+          </Breadcrumbs>
+        )}
         <Typography variant="h1">Users Page</Typography>
         {loading || users === undefined ? (
           <AppLoadingScreen />
@@ -161,7 +216,17 @@ function UsersPage(props: UsersPageProps) {
           </>
         )}
       </div>
-      <NewUserModal open={newUserOpen} />
+      <NewUserModal
+        open={newUserOpen}
+        onClose={(submitted) => setNewUserOpen(false)}
+      />
+      {activeUser && (
+        <UserInfoModal
+          user={activeUser}
+          open={activeUser !== undefined}
+          onClose={() => setActiveUser(undefined)}
+        />
+      )}
     </PageBase>
   )
 }

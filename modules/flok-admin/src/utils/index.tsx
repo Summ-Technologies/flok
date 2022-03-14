@@ -10,6 +10,7 @@ import {
   getHotelsSearch,
   getRetreatAttendees,
   getRetreatDetails,
+  getRetreatsList,
   getUsers,
 } from "../store/actions/admin"
 
@@ -186,4 +187,22 @@ export function useRetreatUsers(retreatId: number) {
   }, [retreatId, users, setLoading, dispatch])
 
   return [users, loading] as const
+}
+
+export function useRetreatList() {
+  let dispatch = useDispatch()
+  let retreatList = useSelector((state: RootState) => {
+    return state.admin.retreatsList.active
+      .concat(state.admin.retreatsList.inactive)
+      .concat(state.admin.retreatsList.complete)
+  })
+  useEffect(() => {
+    if (retreatList.length === 0) {
+      dispatch(getRetreatsList("active"))
+      dispatch(getRetreatsList("inactive"))
+      dispatch(getRetreatsList("complete"))
+    }
+  }, [dispatch, retreatList.length])
+
+  return retreatList
 }

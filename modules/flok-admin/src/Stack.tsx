@@ -77,10 +77,25 @@ export class AppRoutes {
       path: "/hotels/:hotelId",
     },
     {
-      name: "UsersPage",
+      name: "AllUsersPage",
       component: <UsersPage />,
       path: "/users",
     },
+    // {
+    //   name: "UserPage",
+    //   component: <UserPage />,
+    //   path: "/users/:userId",
+    // },
+    {
+      name: "RetreatUsersPage",
+      component: <UsersPage />,
+      path: "/retreats/:retreatId/users",
+    },
+    // {
+    //   name: "RetreatUserPage",
+    //   component: <UserPage />,
+    //   path: "/retreats/:retreatId/users/:userId",
+    // },
   ]
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {
     return routes.map((route) => (
