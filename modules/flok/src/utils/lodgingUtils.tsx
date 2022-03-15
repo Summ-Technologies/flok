@@ -97,9 +97,15 @@ export class DestinationUtils {
     includeEmoji: boolean = false,
     hotel: HotelModel | undefined = undefined
   ) {
-    let locationStr = `${
-      (hotel && hotel.sub_location) || destination.location
-    }, ${destination.state_abbreviation || destination.country}`
+    let locationStr = ""
+    // Hack for only sublocation if it includes state: see https://goflok.slack.com/archives/C02HR2Y7J66/p1647367887286479
+    if (hotel && hotel.sub_location && hotel.sub_location.includes(",")) {
+      locationStr = hotel.sub_location
+    } else {
+      locationStr = `${
+        (hotel && hotel.sub_location) || destination.location
+      }, ${destination.state_abbreviation || destination.country}`
+    }
     if (includeEmoji) {
       let emoji = DestinationUtils.getCountryEmoji(destination)
       if (emoji) {
