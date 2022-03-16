@@ -99,7 +99,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
 
-  let attendeeTravelInfo = useRetreatAttendees(retreat.id)
+  let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
   let [newAttendeeName, setNewAttendeeName] = useState("")
@@ -162,7 +162,6 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
               },
             ]}
             rows={
-              attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
               attendeeTravelInfo !== undefined
                 ? attendeeTravelInfo.map((info) => ({
                     id: info.id,

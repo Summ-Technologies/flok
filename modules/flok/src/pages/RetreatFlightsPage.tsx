@@ -64,7 +64,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
 
-  let attendeeTravelInfo = useRetreatAttendees(retreat.id)
+  let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
   return (
     <PageContainer>
@@ -115,7 +115,6 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
               },
             ]}
             rows={
-              attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
               attendeeTravelInfo !== undefined
                 ? attendeeTravelInfo.map((info) => ({
                     id: info.id,

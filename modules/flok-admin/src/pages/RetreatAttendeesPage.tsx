@@ -2,12 +2,14 @@ import {
   Box,
   Breadcrumbs,
   Button,
+  Dialog,
   Link,
   makeStyles,
   Typography,
 } from "@material-ui/core"
 import {push} from "connected-react-router"
 import _ from "lodash"
+import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {
   Link as ReactRouterLink,
@@ -16,6 +18,7 @@ import {
 } from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
+import NewRetreatAttendeeForm from "../components/retreats/NewRetreatAttendeeForm"
 import RetreatAttendeesTable from "../components/retreats/RetreatAttendeesTable"
 import {AppRoutes} from "../Stack"
 import {theme} from "../theme"
@@ -46,6 +49,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
   // Get retreat data
   let [retreat] = useRetreat(retreatId)
   let [retreatAttendees] = useRetreatAttendees(retreatId)
+  let [newAttendeeOpen, setNewAttendeeOpen] = useState(false)
 
   return (
     <PageBase>
@@ -75,9 +79,21 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
           justifyContent="flex-end"
           width="100%"
           marginBottom={theme.spacing(0.25)}>
-          <Button variant="outlined" color="primary">
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setNewAttendeeOpen(true)}>
             Create New Attendee
           </Button>
+          <Dialog
+            fullWidth
+            open={newAttendeeOpen}
+            onClose={() => setNewAttendeeOpen(false)}>
+            <NewRetreatAttendeeForm
+              retreatId={retreatId}
+              onSuccess={() => setNewAttendeeOpen(false)}
+            />
+          </Dialog>
         </Box>
         <RetreatAttendeesTable
           rows={

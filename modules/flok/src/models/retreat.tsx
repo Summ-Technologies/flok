@@ -1,5 +1,3 @@
-import {FlokInternalAdminModel} from "./user"
-
 export type RetreatSelectedHotelProposalState =
   | "SELECTED"
   | "PENDING"
@@ -49,7 +47,7 @@ export type RetreatSelectedHotelProposal = {
   hotel_proposals?: HotelLodgingProposal[]
 }
 
-export type RetreatProgressState =
+export type RetreatProgressState =  // Deprecated
   | "INTAKE_1"
   | "INTAKE_2"
   | "FILTER_SELECT"
@@ -58,14 +56,34 @@ export type RetreatProgressState =
   | "PROPOSAL"
   | "PROPOSAL_READY"
 
-export type RetreatLodgingState =
-  | "NOT_STARTED"
-  | "PROPOSALS_WAITING"
-  | "PROPOSALS_VIEW"
-  | "CONTRACT_NEGOTIATION"
-  | "BOOKED"
-export type FlightState = "NOT_STARTED" | "POLICY_REVIEW" | "BOOKING"
-export type ItineraryState = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
+export const OrderedRetreatLodgingState = [
+  "NOT_STARTED",
+  "PROPOSALS_WAITING",
+  "PROPOSALS_VIEW",
+  "BOOKED",
+] as const
+export type RetreatLodgingState = typeof OrderedRetreatLodgingState[number]
+
+export const OrderedRetreatAttendeesState = [
+  "NOT_STARTED",
+  "FORM_REVIEW",
+  "REGISTRATION_OPEN",
+] as const
+export type RetreatAttendeesState = typeof OrderedRetreatAttendeesState[number]
+
+export const OrderedRetreatFlightsState = [
+  "NOT_STARTED",
+  "POLICY_REVIEW",
+  "BOOKING",
+] as const
+export type RetreatFlightsState = typeof OrderedRetreatFlightsState[number]
+
+export const OrderedRetreatItineraryState = [
+  "NOT_STARTED",
+  "IN_PROGRESS",
+  "COMPLETED",
+] as const
+export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
 
 export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
 
@@ -88,21 +106,37 @@ export type RetreatModel = {
   id: number
   guid: string
   company_name: string
-  contact_email: string
   state: RetreatProgressState
-  state_lodging: RetreatLodgingState
-  state_flights: FlightState
-  state_itinerary: ItineraryState
-  selected_destinations_ids: number[]
-  selected_hotels_ids: number[]
-  selected_hotels: RetreatSelectedHotelProposal[]
-  preferences_num_attendees_lower?: number
+
+  // Retreat data related to the intake form
+  contact_email: string
+  preferences_num_attendees_lower?: number // `_lower` is legacy, treat this as the number input in form
   preferences_is_dates_flexible?: boolean
   preferences_dates_exact_start?: string
   preferences_dates_exact_end?: string
   preferences_dates_flexible_months?: string[]
   preferences_dates_flexible_num_nights?: number
-  flok_sourcing_admin?: FlokInternalAdminModel
+
+  // Retreat data related to lodging
+  lodging_state?: RetreatLodgingState
+  lodging_final_start_date?: string
+  lodging_final_end_date?: string
+  lodging_final_destination?: string
+  lodging_final_hotel_id?: number
+  lodging_final_contract_notes?: string
+  lodging_final_contract_url?: string
+  selected_hotels_ids: number[]
+  selected_hotels: RetreatSelectedHotelProposal[]
+
+  // Retreat data related to flights
+  attendees_state?: RetreatAttendeesState
+
+  // Retreat data related to flights
+  flights_state?: RetreatFlightsState
+
+  // Retreat data related to itinerary
+  itinerary_state?: RetreatItineraryState
+
   tasks_todo: RetreatToTask[]
   tasks_completed: RetreatToTask[]
 }
@@ -126,7 +160,7 @@ export type RetreatTravelModel = {
   arr_trip?: RetreatTripModel
   email_address: string
   name: string
-  status: string
+  status: string // OPT_OUT | BOOKED | PENDING
 }
 
 export type RetreatAttendeeModel = {
