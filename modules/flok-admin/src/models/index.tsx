@@ -27,6 +27,8 @@ export type AdminRetreatModel = {
   flok_admin_owner: string | null
   flok_admin_state: string | null // One of retreat state options
   selected_hotels: AdminSelectedHotelProposalModel[]
+  tasks_completed: RetreatToTask[]
+  tasks_todo: RetreatToTask[]
 }
 
 export type AdminRetreatUpdateModel = Pick<
@@ -223,4 +225,23 @@ export const RetreatAttendeeFlightStatusOptions = [
 export type RetreatNoteModel = {
   note: string
   created_at: string // date string
+}
+
+// TASKS
+export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
+export const RetreatToTaskStateOptions = ["TODO", "COMPLETED", "HIDDEN"]
+
+export type RetreatTask = {
+  id: number
+  description?: string
+  title: string
+  link: string
+  user_complete: boolean
+}
+
+export type RetreatToTask = {
+  task: RetreatTask
+  order: number
+  state: RetreatToTaskState
+  due_date?: string
 }

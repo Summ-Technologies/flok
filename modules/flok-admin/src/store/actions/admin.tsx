@@ -7,6 +7,7 @@ import {
   AdminRetreatListType,
   AdminRetreatModel,
   AdminSelectedHotelStateTypes,
+  RetreatToTaskState,
 } from "../../models"
 import {nullifyEmptyString} from "../../utils"
 import {createApiAction} from "./api"
@@ -503,6 +504,28 @@ export function postRetreatNotes(retreatId: number, note: string) {
       POST_RETREAT_NOTES_REQUEST,
       {type: POST_RETREAT_NOTES_SUCCESS, meta: {retreatId}},
       {type: POST_RETREAT_NOTES_FAILURE, meta: {retreatId}},
+    ],
+  })
+}
+
+export const PATCH_RETREAT_TASK_REQUEST = "PATCH_RETREAT_TASK_REQUEST"
+export const PATCH_RETREAT_TASK_SUCCCESS = "PATCH_RETREAT_TASK_SUCCCESS"
+export const PATCH_RETREAT_TASK_FAILURE = "PATCH_RETREAT_TASK_FAILURE"
+export function patchRetreatTask(
+  retreatId: number,
+  order: number,
+  state?: RetreatToTaskState,
+  dueDate?: Date
+) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/tasks`
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify({order, state, dueDate}),
+    types: [
+      {type: PATCH_RETREAT_TASK_REQUEST, meta: {id: retreatId}},
+      {type: PATCH_RETREAT_ATTENDEE_SUCCESS, meta: {id: retreatId}},
+      {type: PATCH_RETREAT_TASK_FAILURE, meta: {id: retreatId}},
     ],
   })
 }

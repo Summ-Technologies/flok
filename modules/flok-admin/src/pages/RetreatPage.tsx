@@ -114,6 +114,15 @@ function RetreatPage(props: RetreatPageProps) {
               Itinerary
             </Link>
           </Typography>
+          <Typography variant="body1" component="li">
+            <Link
+              component={ReactRouterLink}
+              to={AppRoutes.getPath("RetreatTasksPage", {
+                retreatId: retreatId.toString(),
+              })}>
+              Tasks
+            </Link>
+          </Typography>
         </ul>
       </div>
     </PageBase>

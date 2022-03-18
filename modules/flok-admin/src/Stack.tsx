@@ -9,6 +9,7 @@ import RetreatLodgingPage from "./pages/RetreatLodgingPage"
 import RetreatPage from "./pages/RetreatPage"
 import RetreatSalesIntakePage from "./pages/RetreatSalesIntakePage"
 import RetreatsPage from "./pages/RetreatsPage"
+import RetreatTasksPage from "./pages/RetreatTasksPage"
 
 type FlokRoute = {
   name: string
@@ -64,6 +65,11 @@ export class AppRoutes {
       name: "RetreatItineraryPage",
       component: <RetreatAttendeesPage />,
       path: "/retreats/:retreatId/itinerary",
+    },
+    {
+      name: "RetreatTasksPage",
+      component: <RetreatTasksPage />,
+      path: "/retreats/:retreatId/tasks",
     },
     {
       name: "HotelsPage",

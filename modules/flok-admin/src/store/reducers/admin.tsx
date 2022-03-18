@@ -29,6 +29,7 @@ import {
   PATCH_RETREAT_DETAILS_FAILURE,
   PATCH_RETREAT_DETAILS_REQUEST,
   PATCH_RETREAT_DETAILS_SUCCESS,
+  PATCH_RETREAT_TASK_SUCCCESS,
   POST_HOTEL_SUCCESS,
   POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
   POST_RETREAT_ATTENDEE_SUCCESS,
@@ -119,6 +120,7 @@ export default function AdminReducer(
     case PATCH_RETREAT_DETAILS_REQUEST:
     case PATCH_RETREAT_DETAILS_SUCCESS:
     case PATCH_RETREAT_DETAILS_FAILURE:
+    case PATCH_RETREAT_TASK_SUCCCESS:
       meta = (action as unknown as {meta: {id: number}}).meta
       action = action as unknown as ApiAction
       payload = (action as unknown as ApiAction).payload as {

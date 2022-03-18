@@ -21,6 +21,7 @@ import PageSidenav from "../components/page/PageSidenav"
 import config, {MAX_TASKS} from "../config"
 import {RetreatToTask} from "../models/retreat"
 import {putRetreatTask} from "../store/actions/retreat"
+import {parseTaskTemplates} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -127,20 +128,20 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
   useEffect(() => {
     if (MAX_TASKS_SHOWN === undefined) {
       setTodoTasksExtra([])
-      setTodoTasks(retreat.tasks_todo)
+      setTodoTasks(parseTaskTemplates(retreat, retreatIdx).tasks_todo)
     } else {
       setTodoTasksExtra(
-        retreat.tasks_todo
-          .slice(MAX_TASKS_SHOWN)
+        parseTaskTemplates(retreat, retreatIdx)
+          .tasks_todo.slice(MAX_TASKS_SHOWN)
           .sort((a, b) => a.order - b.order)
       )
       setTodoTasks(
-        retreat.tasks_todo
-          .slice(0, MAX_TASKS_SHOWN)
+        parseTaskTemplates(retreat, retreatIdx)
+          .tasks_todo.slice(0, MAX_TASKS_SHOWN)
           .sort((a, b) => a.order - b.order)
       )
     }
-  }, [MAX_TASKS_SHOWN, setTodoTasksExtra, setTodoTasks, retreat])
+  }, [MAX_TASKS_SHOWN, setTodoTasksExtra, setTodoTasks, retreat, retreatIdx])
 
   return (
     <PageContainer>
@@ -231,9 +232,10 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
             )}
           </AppTypography>
           <AppTodoList
-            retreatToTasks={retreat.tasks_completed.sort(
-              (a, b) => b.order - a.order
-            )}
+            retreatToTasks={parseTaskTemplates(
+              retreat,
+              retreatIdx
+            ).tasks_completed.sort((a, b) => b.order - a.order)}
             handleCheckboxClick={handleTaskClick}
             orderBadge={false}
             collapsed={completedTasksCollapsed}
