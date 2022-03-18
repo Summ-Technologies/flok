@@ -146,11 +146,19 @@ export type RetreatTripModel = {
   cost: number
   duration: number
   confirmation_number: string
-  arr_airport: string
-  dep_airport: string
-  arr_datetime: string
-  dep_datetime: string
-  airline: string
+  trip_legs: RetreatTripLeg[]
+}
+
+// aka flight
+export type RetreatTripLeg = {
+  trip_id: number
+  airline?: string
+  dep_airport?: string
+  dep_datetime?: string
+  arr_airport?: string
+  arr_datetime?: string
+  flight_num?: string
+  duration?: number // number of minutes
 }
 
 export type RetreatTravelModel = {
@@ -160,7 +168,6 @@ export type RetreatTravelModel = {
   arr_trip?: RetreatTripModel
   email_address: string
   name: string
-  status: string // OPT_OUT | BOOKED | PENDING
 }
 
 export type RetreatAttendeeModel = {
@@ -168,8 +175,9 @@ export type RetreatAttendeeModel = {
   email_address: string
   name: string
   travel?: RetreatTravelModel
-  city: string
+  city?: string
   dietary_prefs: string
   notes: string
   info_status: string
+  flight_status: "PENDING" | "OPT_OUT" | "BOOKED"
 }

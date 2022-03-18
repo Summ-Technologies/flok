@@ -1,10 +1,13 @@
-import {Box, Link, makeStyles, Typography} from "@material-ui/core"
+import {Box, Chip, Link, makeStyles, Typography} from "@material-ui/core"
+import {sortBy} from "lodash"
 import {
   Link as RouterLink,
   RouteComponentProps,
   withRouter,
 } from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
+import AppMoreInfoIcon from "../components/base/AppMoreInfoIcon"
+import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
@@ -37,6 +40,18 @@ let useStyles = makeStyles((theme) => ({
       color: theme.palette.success.main,
     },
   },
+  infoChip: {
+    borderColor: theme.palette.text.secondary,
+    color: theme.palette.text.secondary,
+  },
+  successChip: {
+    borderColor: theme.palette.success.main,
+    color: theme.palette.success.main,
+  },
+  warningChip: {
+    borderColor: theme.palette.error.main,
+    color: theme.palette.error.main,
+  },
 }))
 
 function currencyFormat(num: Number) {
@@ -47,14 +62,11 @@ function dateFormat(date: Date | undefined) {
   if (date === undefined) {
     return ""
   }
-  return date.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZoneName: "short",
+  let dateFormatter = Intl.DateTimeFormat("en-US", {
+    dateStyle: "short",
+    timeStyle: "short",
   })
+  return dateFormatter.format(date)
 }
 
 type RetreatFlightsProps = RouteComponentProps<{retreatIdx: string}>
@@ -94,49 +106,133 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
             headers={[
               {
                 name: "Employee",
-                comparator: (r1, r2) =>
-                  r1[0].toString().localeCompare(r2[0].toString()),
+                colId: "name",
+                comparator: (r1, r2) => {
+                  if (!r1.item.name) {
+                    return -1
+                  }
+                  if (!r2.item.name) {
+                    return 1
+                  }
+                  return r1.item.name
+                    .toString()
+                    .localeCompare(r2.item.name.toString())
+                },
               },
-              {name: "Retreat Arrival"},
-              {name: "Retreat Departure"},
-              {name: "Cost"},
+              {
+                name: "Retreat Arrival",
+                colId: "arrival",
+                renderCell: (val) => (
+                  <AppTypography>
+                    {!isNaN(new Date(val as string).getTime())
+                      ? dateFormat(new Date(val as string))
+                      : undefined}
+                  </AppTypography>
+                ),
+              },
+              {
+                name: "Retreat Departure",
+                colId: "departure",
+                renderCell: (val) => (
+                  <AppTypography>
+                    {!isNaN(new Date(val as string).getTime())
+                      ? dateFormat(new Date(val as string))
+                      : undefined}
+                  </AppTypography>
+                ),
+              },
+              {
+                name: "Cost",
+                colId: "cost",
+                renderCell: (val) => (
+                  <AppTypography>
+                    {val ? currencyFormat(val as number) : undefined}
+                  </AppTypography>
+                ),
+              },
               {
                 name: "Status",
+                colId: "status",
+                renderCell: (val) => {
+                  if (val === "BOOKED") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label={"Booked"}
+                        className={classes.successChip}
+                      />
+                    )
+                  } else if (val === "OPT_OUT") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label={
+                          <>
+                            Opt'd Out&nbsp;
+                            <AppMoreInfoIcon tooltipText="This attendee does not require flights to the retreat." />
+                          </>
+                        }
+                        className={classes.infoChip}
+                      />
+                    )
+                  } else {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label={"To Book"}
+                        className={classes.warningChip}
+                      />
+                    )
+                  }
+                },
                 comparator: (r1, r2) => {
-                  let comp = 0
-                  if (r1[4].toString().toLowerCase() === "pending") {
-                    comp += 1
+                  let order = ["BOOKED", "OPT_OUT", "PENDING"]
+                  let r1val = order.indexOf(r1.item.status ?? "")
+                  let r2val = order.indexOf(r2.item.status ?? "")
+                  if (r1val === r2val) {
+                    return 0
+                  } else if (r1val > r2val) {
+                    return -1
+                  } else {
+                    return 1
                   }
-                  if (r2[4].toString().toLowerCase() === "pending") {
-                    comp -= 1
-                  }
-                  return comp
                 },
               },
             ]}
             rows={
               attendeeTravelInfo !== undefined
-                ? attendeeTravelInfo.map((info) => ({
-                    id: info.id,
-                    cols: [
-                      info.name,
-                      info.travel?.arr_trip?.arr_datetime ? (
-                        dateFormat(
-                          new Date(info.travel?.arr_trip?.arr_datetime!)
-                        )
-                      ) : (
-                        <></>
-                      ),
-                      info.travel?.dep_trip?.dep_datetime ? (
-                        dateFormat(
-                          new Date(info.travel?.dep_trip?.dep_datetime!)
-                        )
-                      ) : (
-                        <></>
-                      ),
-                      info.travel ? currencyFormat(info.travel.cost) : "",
-                      info.travel ? info.travel.status : "PENDING",
-                    ],
+                ? sortBy(attendeeTravelInfo, (attendee) => {
+                    if (attendee.flight_status === "BOOKED") {
+                      return 0
+                    } else if (attendee.flight_status === "OPT_OUT") {
+                      return 1
+                    } else {
+                      return 2
+                    }
+                  }).map((attendee) => ({
+                    id: attendee.travel?.id ?? -1,
+                    item: {
+                      id: attendee.travel?.id ?? -1,
+                      name: attendee.name,
+                      arrival:
+                        attendee.travel &&
+                        attendee.travel.arr_trip &&
+                        attendee.travel.arr_trip.trip_legs.length
+                          ? attendee.travel.arr_trip.trip_legs[
+                              attendee.travel.arr_trip.trip_legs.length - 1
+                            ].arr_datetime
+                          : undefined,
+                      departure:
+                        attendee.travel &&
+                        attendee.travel.dep_trip &&
+                        attendee.travel.dep_trip.trip_legs.length
+                          ? attendee.travel.dep_trip.trip_legs[0].dep_datetime
+                          : undefined,
+                      cost: attendee.travel ? attendee.travel.cost : undefined,
+                      status: attendee.flight_status
+                        ? attendee.flight_status
+                        : "PENDING",
+                    },
                   }))
                 : []
             }

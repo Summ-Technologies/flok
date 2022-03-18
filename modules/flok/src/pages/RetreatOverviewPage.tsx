@@ -144,8 +144,8 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
     ) {
       let numBookedFlights = attendees.filter(
         (attendee) =>
-          attendee.travel &&
-          ["OPT_OUT", "BOOKED"].includes(attendee.travel.status)
+          attendee.flight_status &&
+          ["OPT_OUT", "BOOKED"].includes(attendee.flight_status)
       ).length
       setFlightsOverview(
         `${numBookedFlights} / ${getRegisteredAttendees(attendees).length}`

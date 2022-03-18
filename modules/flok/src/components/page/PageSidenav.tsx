@@ -135,6 +135,7 @@ export default function PageSidenav(props: PageSidenavProps) {
           const itemTup = navItems[sidenavItem]
           return (
             <ListItem
+              key={index}
               button
               selected={props.activeItem === sidenavItem}
               onClick={() => {
