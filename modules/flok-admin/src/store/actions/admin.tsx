@@ -508,24 +508,47 @@ export function postRetreatNotes(retreatId: number, note: string) {
   })
 }
 
+export const GET_RETREAT_TASKS_REQUEST = "GET_RETREAT_TASK_REQUEST"
+export const GET_RETREAT_TASKS_SUCCESS = "GET_RETREAT_TASK_SUCCCESS"
+export const GET_RETREAT_TASKS_FAILURE = "GET_RETREAT_TASK_FAILURE"
+export function getRetreatTasks(retreatId: number) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/tasks`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_RETREAT_TASKS_REQUEST, meta: {retreatId}},
+      {type: GET_RETREAT_TASKS_SUCCESS, meta: {retreatId}},
+      {type: GET_RETREAT_TASKS_FAILURE, meta: {retreatId}},
+    ],
+  })
+}
+
 export const PATCH_RETREAT_TASK_REQUEST = "PATCH_RETREAT_TASK_REQUEST"
-export const PATCH_RETREAT_TASK_SUCCCESS = "PATCH_RETREAT_TASK_SUCCCESS"
+export const PATCH_RETREAT_TASK_SUCCESS = "PATCH_RETREAT_TASK_SUCCCESS"
 export const PATCH_RETREAT_TASK_FAILURE = "PATCH_RETREAT_TASK_FAILURE"
 export function patchRetreatTask(
   retreatId: number,
+  taskId: number,
   order: number,
-  state?: RetreatToTaskState,
-  dueDate?: Date
+  state: RetreatToTaskState,
+  dueDate: Date,
+  taskVars: any
 ) {
-  let endpoint = `/v1.0/admin/retreats/${retreatId}/tasks`
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/tasks/${taskId}`
   return createApiAction({
     method: "PATCH",
     endpoint,
-    body: JSON.stringify({order, state, dueDate}),
+    body: JSON.stringify({
+      order,
+      state,
+      dueDate,
+      taskVars: JSON.stringify(taskVars),
+    }),
     types: [
-      {type: PATCH_RETREAT_TASK_REQUEST, meta: {id: retreatId}},
-      {type: PATCH_RETREAT_ATTENDEE_SUCCESS, meta: {id: retreatId}},
-      {type: PATCH_RETREAT_TASK_FAILURE, meta: {id: retreatId}},
+      {type: PATCH_RETREAT_TASK_REQUEST, meta: {retreatId}},
+      {type: PATCH_RETREAT_TASK_SUCCESS, meta: {retreatId}},
+      {type: PATCH_RETREAT_TASK_FAILURE, meta: {retreatId}},
     ],
   })
 }

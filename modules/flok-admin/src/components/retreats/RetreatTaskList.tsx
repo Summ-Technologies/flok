@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core"
 import {CalendarToday, ExpandMore} from "@material-ui/icons"
 import {useFormik} from "formik"
+import _ from "lodash"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RetreatToTask, RetreatToTaskStateOptions} from "../../models"
@@ -40,6 +41,9 @@ let useItemStyles = makeStyles((theme) => ({
   desc: {
     paddingLeft: 42,
     paddingBottom: 12,
+    "& > *": {
+      marginBottom: theme.spacing(2),
+    },
   },
   iconExpanded: {
     transform: "rotateZ(180deg)",
@@ -52,6 +56,13 @@ let useItemStyles = makeStyles((theme) => ({
     width: "30%",
     maxWidth: 200,
     marginBottom: 12,
+  },
+  input: {
+    margin: theme.spacing(0.5),
+  },
+  submitButton: {
+    display: "block",
+    marginTop: theme.spacing(0.5),
   },
 }))
 
@@ -75,14 +86,17 @@ function TodoListItem(props: {
       state: task.state,
       dueDate: task.due_date ?? "",
       order: task.order,
+      taskVars: task.task_vars,
     },
     onSubmit: (values) => {
       dispatch(
         patchRetreatTask(
           retreatId,
+          task.task.id,
           values.order,
           values.state,
-          new Date(values.dueDate)
+          new Date(values.dueDate),
+          values.taskVars
         )
       )
     },
@@ -129,6 +143,13 @@ function TodoListItem(props: {
       </div>
       <Collapse in={expanded}>
         <div className={classes.desc}>
+          {task.task.description ? (
+            <>
+              <AppTypography variant="h4">Description</AppTypography>
+              <AppTypography>{task.task.description}</AppTypography>
+            </>
+          ) : undefined}
+          <AppTypography variant="h4">Basic Task Info</AppTypography>
           <form onSubmit={formik.handleSubmit}>
             <TextField
               id="state"
@@ -136,12 +157,14 @@ function TodoListItem(props: {
               SelectProps={{native: true}}
               onChange={formik.handleChange}
               label="State"
+              className={classes.input}
               value={formik.values.state}>
               {RetreatToTaskStateOptions.map((o, i) => (
                 <option key={i} value={o} label={o} />
               ))}
             </TextField>
             <TextField
+              className={classes.input}
               id="dueDate"
               type="date"
               value={formik.values.dueDate}
@@ -149,14 +172,66 @@ function TodoListItem(props: {
               onChange={formik.handleChange}
             />
             <TextField
-              disabled
+              className={classes.input}
               id="order"
               type="number"
               value={formik.values.order}
               onChange={formik.handleChange}
               label="Order"
             />
-            <Button type="submit" variant="contained" color="primary">
+            {formik.values.taskVars?.title ? (
+              <>
+                <AppTypography variant="h4">Title Variables</AppTypography>
+                {Object.keys(formik.values.taskVars.title).map((k, i) => (
+                  <TextField
+                    key={i}
+                    onChange={formik.handleChange}
+                    className={classes.input}
+                    id={`taskVars.title.${k}`}
+                    value={formik.values.taskVars.title[k]}
+                    label={k}
+                  />
+                ))}
+              </>
+            ) : undefined}
+            {formik.values.taskVars?.description ? (
+              <>
+                <AppTypography variant="h4">
+                  Description Variables
+                </AppTypography>
+                {Object.keys(formik.values.taskVars.description).map((k, i) => (
+                  <TextField
+                    key={i}
+                    className={classes.input}
+                    onChange={formik.handleChange}
+                    id={`taskVars.description.${k}`}
+                    value={formik.values.taskVars.description[k]}
+                    label={k}
+                  />
+                ))}
+              </>
+            ) : undefined}
+            {formik.values.taskVars?.link ? (
+              <>
+                <AppTypography variant="h4">Link Variables</AppTypography>
+                {Object.keys(formik.values.taskVars.link).map((k, i) => (
+                  <TextField
+                    key={i}
+                    onChange={formik.handleChange}
+                    className={classes.input}
+                    id={`taskVars.link.${k}`}
+                    value={formik.values.taskVars.link[k]}
+                    label={k}
+                  />
+                ))}
+              </>
+            ) : undefined}
+            <Button
+              className={classes.submitButton}
+              disabled={_.isEqual(formik.values, formik.initialValues)}
+              type="submit"
+              variant="contained"
+              color="primary">
               Submit
             </Button>
           </form>

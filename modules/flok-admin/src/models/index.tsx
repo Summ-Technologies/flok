@@ -27,8 +27,6 @@ export type AdminRetreatModel = {
   flok_admin_owner: string | null
   flok_admin_state: string | null // One of retreat state options
   selected_hotels: AdminSelectedHotelProposalModel[]
-  tasks_completed: RetreatToTask[]
-  tasks_todo: RetreatToTask[]
 }
 
 export type AdminRetreatUpdateModel = Pick<
@@ -244,4 +242,5 @@ export type RetreatToTask = {
   order: number
   state: RetreatToTaskState
   due_date?: string
+  task_vars: {link?: any; description?: any; title?: any}
 }

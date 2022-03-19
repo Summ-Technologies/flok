@@ -11,7 +11,7 @@ import PageBase from "../components/page/PageBase"
 import AppTodoList from "../components/retreats/RetreatTaskList"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
-import {getRetreatDetails} from "../store/actions/admin"
+import {getRetreatDetails, getRetreatTasks} from "../store/actions/admin"
 import {useQuery} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
@@ -52,11 +52,21 @@ function RetreatTasksPage(props: RetreatTasksPageProps) {
     return state.admin.retreatsDetails[retreatId]
   })
 
+  let tasks = useSelector((state: RootState) => {
+    return state.admin.tasksByRetreat[retreatId]
+  })
+
   useEffect(() => {
     if (!retreat) {
       dispatch(getRetreatDetails(retreatId))
     }
   }, [retreat, dispatch, retreatId])
+
+  useEffect(() => {
+    if (!tasks) {
+      dispatch(getRetreatTasks(retreatId))
+    }
+  }, [tasks, dispatch, retreatId])
 
   return (
     <PageBase>
@@ -79,14 +89,14 @@ function RetreatTasksPage(props: RetreatTasksPageProps) {
           <AppTypography color="textPrimary">Tasks</AppTypography>
         </Breadcrumbs>
         <Typography variant="h1">{retreat?.company_name} - Tasks</Typography>
-        <AppTodoList
-          retreatId={retreatId}
-          retreatToTasks={(retreat?.tasks_completed ?? []).concat(
-            retreat?.tasks_todo ?? []
-          )}
-          orderBadge={false}
-          collapsed={false}
-        />
+        {tasks !== undefined ? (
+          <AppTodoList
+            retreatId={retreatId}
+            retreatToTasks={tasks}
+            orderBadge={false}
+            collapsed={false}
+          />
+        ) : undefined}
       </div>
     </PageBase>
   )
