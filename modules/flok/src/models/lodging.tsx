@@ -25,6 +25,7 @@ export type HotelModel = {
   name: string
   destination_id: number
   sub_location?: string
+  street_address?: string
 
   website_url: string
   description_short: string

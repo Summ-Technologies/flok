@@ -1,4 +1,5 @@
 import {
+  Button,
   Grid,
   Hidden,
   Link,
@@ -60,10 +61,24 @@ let useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
     },
   },
+  hotelDetail: {
+    marginTop: theme.spacing(1),
+    width: "100%",
+    paddingLeft: theme.spacing(0.5),
+    "& > .MuiTypography-body1": {
+      whiteSpace: "pre-wrap",
+    },
+    "& > :nth-child(2)": {
+      marginLeft: theme.spacing(1),
+    },
+    "& > .MuiTypography-body2": {
+      marginBottom: theme.spacing(0.5),
+    },
+  },
 }))
 
-type FinalHotelPageBodyProps = {retreat: RetreatModel; retreatIdx: number}
-export default function FinalHotelPageBody(props: FinalHotelPageBodyProps) {
+type RetreatHotelPageBodyProps = {retreat: RetreatModel; retreatIdx: number}
+export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
   let {retreat} = {...props}
   let classes = useStyles(props)
   let dispatch = useDispatch()
@@ -72,6 +87,10 @@ export default function FinalHotelPageBody(props: FinalHotelPageBodyProps) {
     if (retreat.lodging_final_hotel_id) {
       return state.lodging.hotels[retreat.lodging_final_hotel_id]
     }
+  })
+
+  const dateFormatter = Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
   })
 
   // Probably not the best way to set loading state, but will do for now
@@ -129,13 +148,49 @@ export default function FinalHotelPageBody(props: FinalHotelPageBodyProps) {
             className={classes.overlay}>
             <div className={classes.overlayBody}>
               <Paper className={classes.hotelDetailsSection}>
-                <Typography variant="h4">Contract info</Typography>
-              </Paper>
-              <Paper className={classes.hotelDetailsSection}>
-                <Typography variant="h4">Contract info</Typography>
-              </Paper>
-              <Paper className={classes.hotelDetailsSection}>
-                <Typography variant="h4">Contract info</Typography>
+                <Typography variant="h4">Contract</Typography>
+                {retreat.lodging_final_start_date &&
+                retreat.lodging_final_end_date ? (
+                  <div className={classes.hotelDetail}>
+                    <Typography variant="body2">
+                      <strong>Dates</strong>
+                    </Typography>
+                    <Typography variant="body1">
+                      {dateFormatter.format(
+                        new Date(retreat.lodging_final_start_date)
+                      )}{" "}
+                      -{" "}
+                      {dateFormatter.format(
+                        new Date(retreat.lodging_final_end_date)
+                      )}
+                    </Typography>
+                  </div>
+                ) : undefined}
+                {retreat.lodging_final_contract_notes ? (
+                  <div className={classes.hotelDetail}>
+                    <Typography variant="body2">
+                      <strong>Contract notes</strong>
+                    </Typography>
+                    <Typography variant="body1">
+                      {retreat.lodging_final_contract_notes}
+                    </Typography>
+                  </div>
+                ) : undefined}
+                {retreat.lodging_final_contract_url ? (
+                  <div className={classes.hotelDetail}>
+                    <Typography variant="body2">
+                      <strong>Signed contract</strong>
+                    </Typography>
+                    <Button
+                      size="small"
+                      color="primary"
+                      variant="contained"
+                      href={retreat.lodging_final_contract_url}
+                      target="_blank">
+                      View
+                    </Button>
+                  </div>
+                ) : undefined}
               </Paper>
               {hotel.imgs.length ? (
                 <Hidden mdUp>

@@ -1,7 +1,7 @@
 import {makeStyles} from "@material-ui/core"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import FinalHotelPageBody from "../components/lodging/FinalHotelPageBody"
 import ProposalList from "../components/lodging/ProposalsListPageBody"
+import RetreatHotelPageBody from "../components/lodging/RetreatHotelPageBody"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
@@ -36,7 +36,7 @@ function LodgingPage(props: LodgingPageProps) {
       <PageBody appBar>
         <div className={classes.root}>
           {retreat.lodging_state === "BOOKED" ? (
-            <FinalHotelPageBody retreat={retreat} retreatIdx={retreatIdx} />
+            <RetreatHotelPageBody retreat={retreat} retreatIdx={retreatIdx} />
           ) : (
             <ProposalList retreat={retreat} retreatIdx={retreatIdx} />
           )}

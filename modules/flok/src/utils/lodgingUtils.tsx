@@ -121,7 +121,9 @@ export class HotelUtils {
     let airportHours = Math.floor(mins / 60)
     let airportMins = mins % 60
     return `${
-      airportHours > 0 ? `${airportHours}hr${airportHours > 1 ? "s" : ""} ` : ""
-    }${airportMins}mins`
+      airportHours > 0
+        ? `${airportHours} hr${airportHours > 1 ? "s" : ""} `
+        : ""
+    }${airportMins} mins`
   }
 }
