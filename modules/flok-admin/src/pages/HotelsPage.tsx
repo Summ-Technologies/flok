@@ -6,6 +6,7 @@ import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import HotelSearchModal from "../components/lodging/HotelSearchModal"
+import HotelsMap from "../components/lodging/HotelsMap"
 import NewHotelForm from "../components/lodging/NewHotelForm"
 import PageBase from "../components/page/PageBase"
 import {AppRoutes} from "../Stack"
@@ -41,6 +42,13 @@ function HotelsPage(props: LodgingContentPageProps) {
   let [hotelSearchOpen, setHotelSearchOpen] = useState(false)
   let [newHotelOpen, setNewHotelOpen] = useState(false)
 
+  if (true) {
+    return (
+      <PageBase>
+        <HotelsMap />
+      </PageBase>
+    )
+  }
   return (
     <PageBase>
       <div className={classes.body}>

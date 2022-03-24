@@ -5,18 +5,23 @@ export const SERVER_BASE_URL_KEY = "server_base_url"
 export const IMAGES_BASE_URL_KEY = "images_base_url"
 export const IMAGE_SERVER_BASE_URL_KEY = "image_server_base_url"
 export const FLOK_BASE_URL_KEY = "flok_base_url"
+export const GOOGLE_API_KEY = "google_api_key"
+export const GOOGLE_MAPS_ID_HOTEL_PAGE_KEY = "google_maps_id_hotel_page"
 type ConfigKey =
   | typeof APP_VERSION_KEY
   | typeof SERVER_BASE_URL_KEY
   | typeof IMAGES_BASE_URL_KEY
   | typeof IMAGE_SERVER_BASE_URL_KEY
   | typeof FLOK_BASE_URL_KEY
+  | typeof GOOGLE_API_KEY
+  | typeof GOOGLE_MAPS_ID_HOTEL_PAGE_KEY
 
 class Config {
   appConfig: {[key: string]: any}
   defaultConfig: {[key: string]: any} = {
     [APP_VERSION_KEY]: process.env.REACT_APP_VERSION,
     [FLOK_BASE_URL_KEY]: "https://app.goflok.com",
+    [GOOGLE_MAPS_ID_HOTEL_PAGE_KEY]: "209c3e9f6984bce3",
   }
   constructor() {
     this.appConfig = {}
