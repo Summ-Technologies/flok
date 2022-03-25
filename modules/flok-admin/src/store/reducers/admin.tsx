@@ -17,6 +17,7 @@ import {
   GET_DESTINATIONS_SUCCESS,
   GET_HOTELS_BY_DEST_SUCCESS,
   GET_HOTELS_BY_ID_SUCCESS,
+  GET_HOTELS_SEARCH_SUCCESS,
   GET_HOTEL_DETAILS_SUCCESS,
   GET_RETREATS_LIST_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
@@ -65,6 +66,9 @@ export type AdminState = {
   }
   allDestinations?: number[]
   hotelsByDestination: {[key: number]: number[]}
+  hotelsBySearch: {
+    [key: string]: {id: number; name: string; location: string}[] | undefined
+  }
   api: {
     retreatsDetails: {
       [key: number]: ApiStatus | undefined
@@ -88,6 +92,7 @@ const initialState: AdminState = {
   destinations: {},
   allDestinations: undefined,
   hotelsByDestination: {},
+  hotelsBySearch: {},
   hotels: {},
   hotelsDetails: {},
   api: {
@@ -271,6 +276,19 @@ export default function AdminReducer(
         notesByRetreat: {
           ...state.notesByRetreat,
           [meta.retreatId]: payload.notes,
+        },
+      }
+    case GET_HOTELS_SEARCH_SUCCESS:
+      let searchStr = (action as unknown as {meta: {search: string}}).meta
+        .search
+      payload = (action as unknown as ApiAction).payload as {
+        hotels: {id: number; name: string; location: string}[]
+      }
+      return {
+        ...state,
+        hotelsBySearch: {
+          ...state.hotelsBySearch,
+          [searchStr]: payload.hotels,
         },
       }
     default:
