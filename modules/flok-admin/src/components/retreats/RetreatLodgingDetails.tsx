@@ -33,10 +33,11 @@ import {
   putRetreatHotelProposal,
   putSelectedHotel,
 } from "../../store/actions/admin"
+import {ApiAction} from "../../store/actions/api"
 import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 import ConfirmationModal from "../base/ConfirmationModal"
-import HotelSearchModal from "../lodging/HotelSearchModal"
+import HotelSelectModal from "../lodging/HotelSelectModal"
 import HotelProposalForm from "./HotelProposalForm"
 
 let useAccordionItemStyles = makeStyles((theme) => ({
@@ -404,10 +405,15 @@ export default function RetreatLodgingDetails(
           Add Hotel
         </Button>
         {newHotelOpen && (
-          <HotelSearchModal
-            onSubmit={(hotelId) =>
-              dispatch(postSelectedHotel(props.retreat.id, hotelId))
-            }
+          <HotelSelectModal
+            onSubmit={async (hotelId) => {
+              let resp = (await dispatch(
+                postSelectedHotel(props.retreat.id, hotelId)
+              )) as unknown as ApiAction
+              if (!resp.error) {
+                setNewHotelOpen(false)
+              }
+            }}
             onClose={() => setNewHotelOpen(false)}
           />
         )}

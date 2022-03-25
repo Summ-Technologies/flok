@@ -7,6 +7,7 @@ import {useLocation} from "react-router-dom"
 import {RootState} from "../store"
 import {
   getDestinations,
+  getHotelsSearch,
   getRetreatAttendees,
   getRetreatDetails,
 } from "../store/actions/admin"
@@ -145,4 +146,23 @@ export function getTextFieldErrorProps(
     error: isError,
     helperText: isError && formik.errors && formik.errors[field],
   }
+}
+
+export function useHotelsBySearch(search: string) {
+  let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
+  let results = useSelector(
+    (state: RootState) => state.admin.hotelsBySearch[search]
+  )
+  useEffect(() => {
+    async function loadHotelsBySearch() {
+      setLoading(true)
+      await dispatch(getHotelsSearch(search))
+      setLoading(false)
+    }
+    if (search.length >= 3 && !results) {
+      loadHotelsBySearch()
+    }
+  }, [search, dispatch, results])
+  return [results ? results : [], loading] as const
 }

@@ -5,7 +5,7 @@ import {push} from "connected-react-router"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import HotelSearchModal from "../components/lodging/HotelSearchModal"
+import HotelSelectModal from "../components/lodging/HotelSelectModal"
 import NewHotelForm from "../components/lodging/NewHotelForm"
 import PageBase from "../components/page/PageBase"
 import {AppRoutes} from "../Stack"
@@ -65,7 +65,7 @@ function HotelsPage(props: LodgingContentPageProps) {
             Select hotel
           </Button>
           {hotelSearchOpen && (
-            <HotelSearchModal
+            <HotelSelectModal
               submitText="Select"
               onSubmit={(hotelId) =>
                 dispatch(

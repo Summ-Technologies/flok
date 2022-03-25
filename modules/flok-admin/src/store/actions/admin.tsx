@@ -506,3 +506,21 @@ export function postRetreatNotes(retreatId: number, note: string) {
     ],
   })
 }
+
+export const GET_HOTELS_SEARCH_REQUEST = "GET_HOTELS_SEARCH_REQUEST"
+export const GET_HOTELS_SEARCH_SUCCESS = "GET_HOTELS_SEARCH_SUCCESS"
+export const GET_HOTELS_SEARCH_FAILURE = "GET_HOTELS_SEARCH_FAILURE"
+export function getHotelsSearch(search: string) {
+  let endpoint = `/v1.0/admin/hotels/search?${new URLSearchParams({
+    q: search,
+  }).toString()}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      GET_HOTELS_SEARCH_REQUEST,
+      {type: GET_HOTELS_SEARCH_SUCCESS, meta: {search}},
+      {type: GET_HOTELS_SEARCH_FAILURE, meta: {search}},
+    ],
+  })
+}
