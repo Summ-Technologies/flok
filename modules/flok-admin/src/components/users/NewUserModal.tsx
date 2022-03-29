@@ -10,7 +10,6 @@ import {
 import {Autocomplete} from "@material-ui/lab"
 import {useFormik} from "formik"
 import _ from "lodash"
-import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {AdminRetreatListModel} from "../../models"
 import {postUser} from "../../store/actions/admin"
@@ -49,8 +48,6 @@ export default function NewUserModal(props: NewUserModalProps) {
     },
   })
 
-  let [newOption, setNewOption] = useState("")
-
   let retreatList = useRetreatList()
 
   const commonTextFieldProps: TextFieldProps = {
@@ -60,7 +57,7 @@ export default function NewUserModal(props: NewUserModalProps) {
     className: classes.textField,
   }
   return (
-    <Dialog open={props.open}>
+    <Dialog open={props.open} onClose={props.onClose}>
       <Box
         position="fixed"
         top="50%"
@@ -107,9 +104,6 @@ export default function NewUserModal(props: NewUserModalProps) {
                 selectOnFocus
                 clearOnBlur
                 handleHomeEndKeys
-                onInputChange={(e, value, reason) => {
-                  if (reason !== "reset" || e != null) setNewOption(value)
-                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}

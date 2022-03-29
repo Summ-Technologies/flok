@@ -6,13 +6,11 @@ import {
   GridSortModel,
   GridToolbar,
 } from "@material-ui/data-grid"
-import {push} from "connected-react-router"
 import _ from "lodash"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {User} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
-import {AppRoutes} from "../../Stack"
 import {
   getDateFromString,
   getDateTimeString,
@@ -20,26 +18,18 @@ import {
 } from "../../utils"
 import AppLoadingScreen from "../base/AppLoadingScreen"
 import NewUserModal from "../users/NewUserModal"
+import UserInfoModal from "./UserInfoModal"
 
 let useStyles = makeStyles((theme) => ({
-  body: {
-    flex: "1 1 auto",
-    width: "100%",
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
-    display: "flex",
-    flexDirection: "column",
-  },
-  tabs: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
+  newUserRow: {
+    marginLeft: "auto",
+    marginBottom: theme.spacing(1),
   },
   table: {
     flex: 1,
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
+    backgroundColor: theme.palette.common.white,
   },
 }))
 
@@ -51,6 +41,7 @@ export default function UsersTable(props: UsersTableProps) {
 
   let [users, loading] = useRetreatUsers(props.retreatId ?? -1)
 
+  let [activeUser, setActiveUser] = useState<User | undefined>(undefined)
   let [newUserOpen, setNewUserOpen] = useState(false)
 
   const createTableRows = (users: {[id: number]: User}) =>
@@ -66,15 +57,26 @@ export default function UsersTable(props: UsersTableProps) {
     let rowIdAsString = params.getValue(params.id, "id")?.toString()
     let rowId = rowIdAsString ? parseInt(rowIdAsString) : null
     if (rowId != null && !isNaN(rowId)) {
-      dispatch(
-        push({
-          pathname: AppRoutes.getPath("UserPage", {userId: rowId.toString()}),
-        })
-      )
+      setActiveUser(users[rowId])
+      // if (retreatId !== -1) {
+      //   dispatch(
+      //     push(
+      //       AppRoutes.getPath("RetreatUserPage", {
+      //         userId: rowId.toString(),
+      //         retreatId: retreatId.toString(),
+      //       })
+      //     )
+      //   )
+      // } else {
+      //   dispatch(
+      //     push(AppRoutes.getPath("UserPage", {userId: rowId.toString()}))
+      //   )
+      // }
     } else {
       dispatch(enqueueSnackbar({message: "Something went wrong"}))
     }
   }
+
   const [sortModel, setSortModel] = useState<GridSortModel | undefined>([
     {
       field: "createdAt",
@@ -137,7 +139,7 @@ export default function UsersTable(props: UsersTableProps) {
         <AppLoadingScreen />
       ) : (
         <>
-          <div style={{marginLeft: "auto"}}>
+          <div className={classes.newUserRow}>
             <Button
               onClick={() => setNewUserOpen(true)}
               variant="outlined"
@@ -165,6 +167,13 @@ export default function UsersTable(props: UsersTableProps) {
         open={newUserOpen}
         onClose={(submitted) => setNewUserOpen(false)}
       />
+      {activeUser && (
+        <UserInfoModal
+          user={activeUser}
+          open={activeUser !== undefined}
+          onClose={() => setActiveUser(undefined)}
+        />
+      )}
     </>
   )
 }

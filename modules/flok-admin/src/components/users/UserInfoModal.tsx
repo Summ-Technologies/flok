@@ -48,7 +48,6 @@ export default function UserInfoModal(props: UserInfoModalProps) {
   let dispatch = useDispatch()
   let [loadingUpdate, setLoadingUpdate] = useState(false)
 
-  let [newOption, setNewOption] = useState("")
   let retreatList = useRetreatList()
   let [initialRetreatsLoaded, setInitialRetreatsLoaded] = useState(false)
 
@@ -105,7 +104,11 @@ export default function UserInfoModal(props: UserInfoModalProps) {
     InputLabelProps: {shrink: true},
   }
   return (
-    <Dialog open={props.open} maxWidth="md" fullWidth={true}>
+    <Dialog
+      open={props.open}
+      maxWidth="md"
+      fullWidth={true}
+      onClose={props.onClose}>
       <Paper>
         <form className={classes.root} onSubmit={formik.handleSubmit}>
           <Paper elevation={0} className={classes.formGroup}>
@@ -149,9 +152,6 @@ export default function UserInfoModal(props: UserInfoModalProps) {
               selectOnFocus
               clearOnBlur
               handleHomeEndKeys
-              onInputChange={(e, value, reason) => {
-                if (reason !== "reset" || e != null) setNewOption(value)
-              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
