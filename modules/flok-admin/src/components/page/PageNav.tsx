@@ -71,6 +71,12 @@ function PageSideNav(props: PageSideNavProps) {
           to={AppRoutes.getPath("HotelsPage")}>
           <ListItemText>Hotel content</ListItemText>
         </ListItem>
+        <ListItem
+          button
+          component={ReactRouterLink}
+          to={AppRoutes.getPath("AllUsersPage")}>
+          <ListItemText>Users</ListItemText>
+        </ListItem>
       </List>
     </Drawer>
   )
