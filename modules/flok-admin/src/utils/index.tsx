@@ -10,6 +10,8 @@ import {
   getHotelsSearch,
   getRetreatAttendees,
   getRetreatDetails,
+  getRetreatsList,
+  getUsers,
 } from "../store/actions/admin"
 
 /**
@@ -165,4 +167,47 @@ export function useHotelsBySearch(search: string) {
     }
   }, [search, dispatch, results])
   return [results ? results : [], loading] as const
+}
+
+export function useRetreatUsers(retreatId: number) {
+  let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
+  let users = useSelector(
+    (state: RootState) => state.admin.usersByRetreat[retreatId]
+  )
+  useEffect(() => {
+    async function loadUsers() {
+      setLoading(true)
+      await dispatch(getUsers(retreatId))
+      setLoading(false)
+    }
+    if (users === undefined) {
+      loadUsers()
+    }
+  }, [retreatId, users, setLoading, dispatch])
+
+  return [users, loading] as const
+}
+
+/**
+ * This has a bug in it. Use at your own risk, not guranteed to include all retreats.
+ */
+export function useRetreatList() {
+  let dispatch = useDispatch()
+  let retreatList = useSelector((state: RootState) => {
+    return state.admin.retreatsList.active
+      .concat(state.admin.retreatsList.inactive)
+      .concat(state.admin.retreatsList.complete)
+  })
+
+  // This is inherently buggy. If active retreats are loaded, then this won't load inactive retreats and vice-versa.
+  useEffect(() => {
+    if (retreatList.length === 0) {
+      dispatch(getRetreatsList("active"))
+      dispatch(getRetreatsList("inactive"))
+      dispatch(getRetreatsList("complete"))
+    }
+  }, [dispatch, retreatList.length])
+
+  return retreatList
 }

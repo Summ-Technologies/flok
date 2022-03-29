@@ -1,3 +1,4 @@
+import _ from "lodash"
 import {Action} from "redux"
 import {ApiError} from "redux-api-middleware"
 import {
@@ -9,6 +10,7 @@ import {
   AdminRetreatListType,
   AdminRetreatModel,
   RetreatNoteModel,
+  User,
 } from "../../models"
 import {
   DELETE_RETREAT_ATTENDEES_SUCCESS,
@@ -19,23 +21,27 @@ import {
   GET_HOTELS_BY_ID_SUCCESS,
   GET_HOTELS_SEARCH_SUCCESS,
   GET_HOTEL_DETAILS_SUCCESS,
+  GET_LOGIN_TOKEN_SUCCESS,
   GET_RETREATS_LIST_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_DETAILS_FAILURE,
   GET_RETREAT_DETAILS_REQUEST,
   GET_RETREAT_DETAILS_SUCCESS,
   GET_RETREAT_NOTES_SUCCESS,
+  GET_USERS_SUCCESS,
   PATCH_HOTEL_SUCCESS,
   PATCH_RETREAT_ATTENDEE_SUCCESS,
   PATCH_RETREAT_DETAILS_FAILURE,
   PATCH_RETREAT_DETAILS_REQUEST,
   PATCH_RETREAT_DETAILS_SUCCESS,
+  PATCH_USER_SUCCESS,
   POST_HOTEL_SUCCESS,
   POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
   POST_RETREAT_ATTENDEE_SUCCESS,
   POST_RETREAT_HOTEL_PROPOSAL_SUCCESS,
   POST_RETREAT_NOTES_SUCCESS,
   POST_SELECTED_HOTEL_SUCCESS,
+  POST_USER_SUCCESS,
   PUT_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
   PUT_RETREAT_HOTEL_PROPOSAL_SUCCESS,
   PUT_SELECTED_HOTEL_SUCCESS,
@@ -80,6 +86,12 @@ export type AdminState = {
   notesByRetreat: {
     [key: number]: RetreatNoteModel[] | undefined
   }
+  usersByRetreat: {
+    [id: number]: {[id: number]: User}
+  }
+  userLoginTokens: {
+    [id: number]: string
+  }
 }
 
 const initialState: AdminState = {
@@ -100,6 +112,8 @@ const initialState: AdminState = {
   },
   attendeesByRetreat: {},
   notesByRetreat: {},
+  usersByRetreat: {},
+  userLoginTokens: {},
 }
 
 export default function AdminReducer(
@@ -289,6 +303,58 @@ export default function AdminReducer(
         hotelsBySearch: {
           ...state.hotelsBySearch,
           [searchStr]: payload.hotels,
+        },
+      }
+    case GET_USERS_SUCCESS:
+      meta = (action as unknown as {meta: {retreatId: number}}).meta
+      payload = (action as unknown as ApiAction).payload as {
+        users: User[]
+      }
+      return {
+        ...state,
+        usersByRetreat: {
+          ...state.usersByRetreat,
+          [meta.retreatId]: _.keyBy(payload.users, (u) => u.id),
+        },
+      }
+    case POST_USER_SUCCESS:
+    case PATCH_USER_SUCCESS:
+      payload = (action as unknown as ApiAction).payload as {
+        user: User
+        login_token?: string
+      }
+      if (payload.user.retreat_ids.length === 0) return state
+      let newState = {
+        ...state,
+        usersByRetreat: {
+          ...state.usersByRetreat,
+          [-1]: {
+            ...state.usersByRetreat[-1],
+            [payload.user.id]: payload.user,
+          },
+          [payload.user.retreat_ids[0]]: {
+            ...state.usersByRetreat[payload.user.retreat_ids[0]],
+            [payload.user.id]: payload.user,
+          },
+        },
+      }
+      if (payload.login_token) {
+        newState.userLoginTokens = {
+          ...newState.userLoginTokens,
+          [payload.user.id]: payload.login_token,
+        }
+      }
+      return newState
+    case GET_LOGIN_TOKEN_SUCCESS:
+      payload = (action as unknown as ApiAction).payload as {
+        login_token: string
+      }
+      meta = (action as unknown as {meta: {userId: number}}).meta
+      return {
+        ...state,
+        userLoginTokens: {
+          ...state.userLoginTokens,
+          [meta.userId]: payload.login_token,
         },
       }
     default:

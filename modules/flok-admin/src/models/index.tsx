@@ -224,3 +224,12 @@ export type RetreatNoteModel = {
   note: string
   created_at: string // date string
 }
+
+export type User = {
+  id: number
+  email: string
+  first_name: string
+  last_name: string
+  created_at: string // datetime
+  retreat_ids: number[]
+}
