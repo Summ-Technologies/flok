@@ -189,6 +189,9 @@ export function useRetreatUsers(retreatId: number) {
   return [users, loading] as const
 }
 
+/**
+ * This has a bug in it. Use at your own risk, not guranteed to include all retreats.
+ */
 export function useRetreatList() {
   let dispatch = useDispatch()
   let retreatList = useSelector((state: RootState) => {
@@ -196,6 +199,8 @@ export function useRetreatList() {
       .concat(state.admin.retreatsList.inactive)
       .concat(state.admin.retreatsList.complete)
   })
+
+  // This is inherently buggy. If active retreats are loaded, then this won't load inactive retreats and vice-versa.
   useEffect(() => {
     if (retreatList.length === 0) {
       dispatch(getRetreatsList("active"))
