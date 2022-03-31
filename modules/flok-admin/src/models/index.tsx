@@ -27,6 +27,12 @@ export type AdminRetreatModel = {
   flok_admin_owner: string | null
   flok_admin_state: string | null // One of retreat state options
   selected_hotels: AdminSelectedHotelProposalModel[]
+
+  intake_state: RetreatIntakeState
+  lodging_state: RetreatLodgingState
+  attendees_state: RetreatAttendeesState
+  flights_state: RetreatFlightsState
+  itinerary_state: RetreatItineraryState
 }
 
 export type AdminRetreatUpdateModel = Pick<
@@ -233,3 +239,43 @@ export type User = {
   created_at: string // datetime
   retreat_ids: number[]
 }
+
+/****************** Retreat states types (keep synced with models/retreat.tsx in flok) ******************/
+export const OrderedRetreatIntakeState = [
+  "SIGNED_UP",
+  "INTAKE_CALL",
+  "FOLLOW_UP",
+  "NOT_MOVING_FORWARD",
+  "INVOICED",
+  "HANDOFF",
+] as const
+export type RetreatIntakeState = typeof OrderedRetreatIntakeState[number]
+
+export const OrderedRetreatLodgingState = [
+  "NOT_STARTED",
+  "PROPOSALS",
+  "CONTRACT",
+  "HANDOFF",
+] as const
+export type RetreatLodgingState = typeof OrderedRetreatLodgingState[number]
+
+export const OrderedRetreatAttendeesState = [
+  "NOT_STARTED",
+  "FORM_REVIEW",
+  "REGISTRATION_OPEN",
+] as const
+export type RetreatAttendeesState = typeof OrderedRetreatAttendeesState[number]
+
+export const OrderedRetreatFlightsState = [
+  "NOT_STARTED",
+  "POLICY_REVIEW",
+  "BOOKING",
+] as const
+export type RetreatFlightsState = typeof OrderedRetreatFlightsState[number]
+
+export const OrderedRetreatItineraryState = [
+  "NOT_STARTED",
+  "IN_PROGRESS",
+] as const
+export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
+/****************** End retreat states types ******************/

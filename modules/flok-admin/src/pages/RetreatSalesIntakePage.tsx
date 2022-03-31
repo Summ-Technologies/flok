@@ -18,6 +18,7 @@ import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import RetreatNotes from "../components/retreats/RetreatNotes"
 import RetreatSalesIntakeForm from "../components/retreats/RetreatSalesIntakeForm"
+import {RetreatStateSelector} from "../components/retreats/RetreatStatesForm"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails} from "../store/actions/admin"
@@ -34,6 +35,12 @@ let useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
     display: "flex",
     flexDirection: "column",
+  },
+  pageTitle: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   tabBody: {
     flex: "1 1 auto",
@@ -87,9 +94,20 @@ function RetreatSalesIntakePage(props: RetreatSalesIntakePageProps) {
           </Link>
           <AppTypography color="textPrimary">Sales Intake</AppTypography>
         </Breadcrumbs>
-        <Typography variant="h1">
-          {retreat?.company_name} - Sales Intake
-        </Typography>
+        <div className={classes.pageTitle}>
+          <Typography variant="h1">
+            {retreat?.company_name} - Sales Intake
+          </Typography>
+          {retreat ? (
+            <form>
+              <RetreatStateSelector
+                stateType="intake"
+                value={retreat.intake_state}
+                size="small"
+              />
+            </form>
+          ) : undefined}
+        </div>
         {retreat && (
           <>
             <Tabs
