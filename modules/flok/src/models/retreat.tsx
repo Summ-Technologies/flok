@@ -56,11 +56,22 @@ export type RetreatProgressState =  // Deprecated
   | "PROPOSAL"
   | "PROPOSAL_READY"
 
+/****************** Retreat states types (keep synced with models/retreat.tsx in flok) ******************/
+export const OrderedRetreatIntakeState = [
+  "SIGNED_UP",
+  "INTAKE_CALL",
+  "FOLLOW_UP",
+  "NOT_MOVING_FORWARD",
+  "INVOICED",
+  "HANDOFF",
+] as const
+export type RetreatIntakeState = typeof OrderedRetreatIntakeState[number]
+
 export const OrderedRetreatLodgingState = [
   "NOT_STARTED",
-  "PROPOSALS_WAITING",
-  "PROPOSALS_VIEW",
-  "BOOKED",
+  "PROPOSALS",
+  "CONTRACT",
+  "HANDOFF",
 ] as const
 export type RetreatLodgingState = typeof OrderedRetreatLodgingState[number]
 
@@ -81,9 +92,9 @@ export type RetreatFlightsState = typeof OrderedRetreatFlightsState[number]
 export const OrderedRetreatItineraryState = [
   "NOT_STARTED",
   "IN_PROGRESS",
-  "COMPLETED",
 ] as const
 export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
+/****************** End retreat states types ******************/
 
 export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
 
