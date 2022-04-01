@@ -9,6 +9,7 @@ import {
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
+import RetreatStateTitle from "../components/retreats/RetreatStateTitle"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails} from "../store/actions/admin"
@@ -52,7 +53,6 @@ function RetreatLodgingPage(props: RetreatLodgingPageProps) {
       setDelayLoad(false)
     }
   }, [delayLoad])
-
   return (
     <PageBase>
       <div className={classes.body}>
@@ -73,7 +73,7 @@ function RetreatLodgingPage(props: RetreatLodgingPageProps) {
           </Link>
           <AppTypography color="textPrimary">Lodging</AppTypography>
         </Breadcrumbs>
-        <Typography variant="h1">{retreat?.company_name} - Lodging</Typography>
+        <RetreatStateTitle retreat={retreat} classes={classes} type="lodging"/>
         {retreat && !delayLoad && <RetreatLodgingDetails retreat={retreat} />}
       </div>
     </PageBase>

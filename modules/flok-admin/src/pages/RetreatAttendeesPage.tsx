@@ -20,6 +20,7 @@ import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import NewRetreatAttendeeForm from "../components/retreats/NewRetreatAttendeeForm"
 import RetreatAttendeesTable from "../components/retreats/RetreatAttendeesTable"
+import RetreatStateTitle from "../components/retreats/RetreatStateTitle"
 import {AppRoutes} from "../Stack"
 import {theme} from "../theme"
 import {useRetreat, useRetreatAttendees} from "../utils"
@@ -71,9 +72,9 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
           </Link>
           <AppTypography color="textPrimary">Attendees</AppTypography>
         </Breadcrumbs>
-        <Typography variant="h1">
-          {retreat?.company_name} - Attendees
-        </Typography>
+
+        <RetreatStateTitle retreat={retreat} classes={classes} type="attendees"/>
+
         <Box
           display="flex"
           justifyContent="flex-end"

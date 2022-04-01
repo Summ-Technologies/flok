@@ -6,7 +6,9 @@ import {
   Typography,
 } from "@material-ui/core"
 import {useFormik} from "formik"
+import _ from "lodash"
 import React from "react"
+import { useDispatch } from "react-redux"
 import {
   AdminRetreatModel,
   OrderedRetreatAttendeesState,
@@ -20,6 +22,7 @@ import {
   RetreatItineraryState,
   RetreatLodgingState,
 } from "../../models"
+import { patchRetreatDetails } from "../../store/actions/admin"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -53,7 +56,7 @@ let useStyles = makeStyles((theme) => ({
     },
     "& > *:not(:first-child)": {
       marginTop: theme.spacing(1),
-    },
+    }
   },
 }))
 
@@ -62,6 +65,7 @@ type RetreatStatesFormProps = {
 }
 export default function RetreatStatesForm(props: RetreatStatesFormProps) {
   let classes = useStyles(props)
+  let dispatch = useDispatch()
   let formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -71,7 +75,17 @@ export default function RetreatStatesForm(props: RetreatStatesFormProps) {
       flights_state: props.retreat.flights_state,
       itinerary_state: props.retreat.itinerary_state,
     },
-    onSubmit: (values) => {},
+    onSubmit: (values) => {
+      let dispatchValues = {...values}
+      for (const key in dispatchValues) {
+        let valueKey = key as keyof typeof dispatchValues
+        if (!dispatchValues[valueKey]) {
+          delete dispatchValues[valueKey]
+        }
+      }
+      console.log(dispatchValues)
+      // dispatch(patchRetreatDetails(props.retreat.id, dispatchValues))
+    },
   })
 
   const textFieldProps: TextFieldProps = {
@@ -123,7 +137,7 @@ export default function RetreatStatesForm(props: RetreatStatesFormProps) {
         />
       </div>
       <div className={classes.footer}>
-        <Button variant="contained" color="primary" type="submit">
+        <Button variant="contained" color="primary" type="submit" disabled={_.isEqual(formik.initialValues, formik.values)}>
           Save State
         </Button>
       </div>
@@ -131,7 +145,7 @@ export default function RetreatStatesForm(props: RetreatStatesFormProps) {
   )
 }
 
-type RetreatStateTypes = {
+export type RetreatStateTypes = {
   intake: RetreatIntakeState
   lodging: RetreatLodgingState
   attendees: RetreatAttendeesState
@@ -178,8 +192,8 @@ export function RetreatStateSelector<T extends keyof RetreatStateTypes>(
   let options = RetreatStateTypesOptions[props.stateType]
   return (
     <TextField {...otherProps}>
-      {options.map((val) => (
-        <option value={val}>{val}</option>
+      {options.map((val:  keyof typeof options | any) => (
+        <option value={val} key={val}>{val}</option>
       ))}
     </TextField>
   )

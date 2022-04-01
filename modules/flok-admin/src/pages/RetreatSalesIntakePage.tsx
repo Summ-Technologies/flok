@@ -19,6 +19,7 @@ import PageBase from "../components/page/PageBase"
 import RetreatNotes from "../components/retreats/RetreatNotes"
 import RetreatSalesIntakeForm from "../components/retreats/RetreatSalesIntakeForm"
 import {RetreatStateSelector} from "../components/retreats/RetreatStatesForm"
+import RetreatStateTitle from "../components/retreats/RetreatStateTitle"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails} from "../store/actions/admin"
@@ -94,20 +95,9 @@ function RetreatSalesIntakePage(props: RetreatSalesIntakePageProps) {
           </Link>
           <AppTypography color="textPrimary">Sales Intake</AppTypography>
         </Breadcrumbs>
-        <div className={classes.pageTitle}>
-          <Typography variant="h1">
-            {retreat?.company_name} - Sales Intake
-          </Typography>
-          {retreat ? (
-            <form>
-              <RetreatStateSelector
-                stateType="intake"
-                value={retreat.intake_state}
-                size="small"
-              />
-            </form>
-          ) : undefined}
-        </div>
+
+        <RetreatStateTitle retreat={retreat} classes={classes} type="intake" />
+
         {retreat && (
           <>
             <Tabs
