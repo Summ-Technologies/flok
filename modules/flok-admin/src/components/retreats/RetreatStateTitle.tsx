@@ -19,10 +19,18 @@ let useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: "10px",
   },
   stateForm: {
     display: "flex",
     alignItems: "center",
+  },
+  selector: {
+    backgroundColor: "white",
+    borderRadius: "10px",
+  },
+  saveButton: {
+    marginLeft: "10px",
   },
 }))
 
@@ -98,15 +106,7 @@ function RetreatStateTitle(props: {
   >
 
   return (
-    <div
-      className={classes.pageTitle}
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "10px",
-      }}>
+    <div className={classes.pageTitle}>
       <Typography variant="h1">
         {retreat.company_name} {titleObj.title}
       </Typography>
@@ -122,15 +122,14 @@ function RetreatStateTitle(props: {
             label={
               type[0].toUpperCase() + type.substring(1, type.length) + " state"
             }
-            style={{backgroundColor: "white", borderRadius: "10px"}}
+            className={classes.selector}
           />
           <Button
             variant="contained"
             type="submit"
             disabled={_.isEqual(formik.initialValues, formik.values)}
             color="primary"
-            style={{marginLeft: "10px"}}>
-            {" "}
+            className={classes.saveButton}>
             Save
           </Button>
         </form>
