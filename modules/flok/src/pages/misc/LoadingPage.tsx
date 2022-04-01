@@ -1,5 +1,6 @@
-import {Box, CircularProgress} from "@material-ui/core"
+import {Box} from "@material-ui/core"
 import React from "react"
+import AppLoadingScreen from "../../components/base/AppLoadingScreen"
 import PageContainer from "../../components/page/PageContainer"
 
 type LoadingPageProps = {}
@@ -12,7 +13,7 @@ export default function LoadingPage(props: LoadingPageProps) {
         display="flex"
         justifyContent="center"
         alignItems="center">
-        <CircularProgress />
+        <AppLoadingScreen />
       </Box>
     </PageContainer>
   )

@@ -1,4 +1,4 @@
-import {Breadcrumbs, Link, makeStyles, Typography} from "@material-ui/core"
+import {Box, Breadcrumbs, Link, makeStyles, Typography} from "@material-ui/core"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
@@ -8,6 +8,7 @@ import {
 } from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
+import RetreatStatesForm from "../components/retreats/RetreatStatesForm"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatAttendees, getRetreatDetails} from "../store/actions/admin"
@@ -124,6 +125,11 @@ function RetreatPage(props: RetreatPageProps) {
             </Link>
           </Typography>
         </ul>
+        {retreat != null && (
+          <Box marginTop={2}>
+            <RetreatStatesForm retreat={retreat} />
+          </Box>
+        )}
       </div>
     </PageBase>
   )

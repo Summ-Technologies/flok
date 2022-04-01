@@ -169,7 +169,7 @@ export default function AppTodoList(props: {
         <Badge
           className={classes.wrapper}
           anchorOrigin={{vertical: "top", horizontal: "left"}}
-          badgeContent={t.order}
+          badgeContent={<>&nbsp;{`${t.order}`}&nbsp;</>}
           overlap="rectangle"
           invisible={!props.orderBadge}
           color="primary">

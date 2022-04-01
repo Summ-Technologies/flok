@@ -16,9 +16,11 @@ import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
+import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+import {RetreatAttendeeModel} from "../models/retreat"
 import {
   deleteRetreatAttendees,
   postRetreatAttendees,
@@ -36,19 +38,19 @@ const HtmlTooltip = styled(({className, ...props}) => (
   },
 }))
 
-function DietList(prefString: string | undefined) {
-  if (!prefString) {
+function DietList(props: {prefString: string | undefined}) {
+  if (!props.prefString) {
     return <></>
   }
-  const prefs = prefString.split(",").map((s) => (
+  const prefs = props.prefString.split(",").map((s) => (
     <Chip
+      key={s}
       size="small"
-      label={s}
+      label={s ? s[0].toLocaleUpperCase() + s.slice(1) : ""}
       style={{
         margin: "1px 2px",
         backgroundColor: theme.palette.primary.main,
         color: "white",
-        cursor: "pointer",
       }}
     />
   ))
@@ -99,7 +101,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
 
-  let attendeeTravelInfo = useRetreatAttendees(retreat.id)
+  let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
   let [newAttendeeName, setNewAttendeeName] = useState("")
@@ -151,37 +153,94 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
             headers={[
               {
                 name: "Employee",
-                comparator: (r1, r2) =>
-                  r1[0].toString().localeCompare(r2[0].toString()),
+                colId: "name",
+                comparator: (r1, r2) => {
+                  if (!r1.item.name) {
+                    return -1
+                  }
+                  if (!r2.item.name) {
+                    return 1
+                  }
+                  return r1.item.name
+                    .toString()
+                    .localeCompare(r2.item.name.toString())
+                },
               },
-              {name: "Email"},
-              {name: "Employee City"},
-              {name: "Dietary Preferences"},
+              {name: "Email", colId: "email_address"},
               {
-                name: "Other notes",
+                name: "Employee City",
+                colId: "city",
+                comparator: (r1, r2) => {
+                  if (r1.item.city == null) {
+                    return -1
+                  } else if (r2.item.city == null) {
+                    return 1
+                  } else {
+                    return r1.item.city.localeCompare(r2.item.city)
+                  }
+                },
+              },
+              {
+                name: "Dietary Preferences",
+                colId: "dietary_prefs",
+                renderCell: (val) => (
+                  <DietList
+                    prefString={val as RetreatAttendeeModel["dietary_prefs"]}
+                  />
+                ),
+              },
+              {
+                name: "",
+                colId: "notes",
+                renderCell: (val) => {
+                  if (val) {
+                    return (
+                      <HtmlTooltip
+                        placement="left"
+                        title={
+                          <AppTypography
+                            color="textPrimary"
+                            style={{whiteSpace: "pre-wrap"}}>
+                            {val}
+                          </AppTypography>
+                        }>
+                        <div>
+                          <AppTypography underline>Other notes</AppTypography>
+                        </div>
+                      </HtmlTooltip>
+                    )
+                  } else {
+                    return <></>
+                  }
+                },
               },
             ]}
             rows={
-              attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
               attendeeTravelInfo !== undefined
-                ? attendeeTravelInfo.map((info) => ({
-                    id: info.id,
-                    disabled: !info.info_status.endsWith("INFO_ENTERED"),
-                    tooltip: !info.info_status.endsWith("INFO_ENTERED")
-                      ? "Once the attendee fills out the registration form you will be able to view more of their information here."
-                      : "",
-                    cols: [
-                      info.name,
-                      info.email_address,
-                      info.city,
-                      DietList(info.dietary_prefs),
-                      info.notes,
-                    ],
-                  }))
+                ? attendeeTravelInfo
+                    .sort((a, b) => {
+                      let getVal = (val: RetreatAttendeeModel) => {
+                        switch (val.info_status) {
+                          case "INFO_ENTERED":
+                            return 1
+                          default:
+                            return 0
+                        }
+                      }
+                      return getVal(b) - getVal(a)
+                    })
+                    .map((info: RetreatAttendeeModel) => ({
+                      id: info.id,
+                      disabled: !info.info_status.endsWith("INFO_ENTERED"),
+                      tooltip: !info.info_status.endsWith("INFO_ENTERED")
+                        ? "Once the attendee fills out the registration form you will be able to view more of their information here."
+                        : "",
+                      item: info,
+                    }))
                 : []
             }
             rowDeleteCallback={(row) => {
-              dispatch(deleteRetreatAttendees(retreat.id, row.id))
+              dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
             }}
           />
           <div className={classes.addBtn}>

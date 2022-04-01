@@ -8,13 +8,13 @@ import DeprecatedProposalPage from "./pages/deprecated/DeprecatedProposalPage"
 import DeprecatedProposalsListPage from "./pages/deprecated/DeprecatedProposalsListPage"
 import DeprecatedRetreatPreferencesFormPage from "./pages/deprecated/DeprecatedRetreatPreferencesFormPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
+import ProposalsListPage from "./pages/LodgingPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import ProtectedRoute from "./pages/misc/ProtectedRoute"
 import RedirectPage from "./pages/misc/RedirectPage"
 import RetreatProvider from "./pages/misc/RetreatProvider"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import ProposalPage from "./pages/ProposalPage"
-import ProposalsListPage from "./pages/ProposalsListPage"
 import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatItineraryPage from "./pages/RetreatItineraryPage"
@@ -42,7 +42,7 @@ export class AppRoutes {
     RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
-    ProposalsListPage: "/r/:retreatIdx/proposals",
+    LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
 
     // TODO, remove once dashboard release
@@ -142,7 +142,7 @@ export default function Stack() {
               component={RetreatItineraryPage}
             />
             <ProtectedRoute
-              path={AppRoutes.getPath("ProposalsListPage")}
+              path={AppRoutes.getPath("LodgingPage")}
               exact
               component={ProposalsListPage}
             />

@@ -58,7 +58,7 @@ let navItem = (title: string, Icon: SvgIconComponent, pageName: FlokPageName) =>
 
 let navItems = {
   overview: navItem("Overview", HomeRounded, "RetreatHomePage"),
-  lodging: navItem("Lodging", ApartmentRounded, "ProposalsListPage"),
+  lodging: navItem("Lodging", ApartmentRounded, "LodgingPage"),
   attendees: navItem("Attendees", PeopleAlt, "RetreatAttendeesPage"),
   flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
   itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
@@ -135,6 +135,7 @@ export default function PageSidenav(props: PageSidenavProps) {
           const itemTup = navItems[sidenavItem]
           return (
             <ListItem
+              key={index}
               button
               selected={props.activeItem === sidenavItem}
               onClick={() => {

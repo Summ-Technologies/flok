@@ -1,11 +1,4 @@
-import {
-  Breadcrumbs,
-  Link,
-  makeStyles,
-  Tab,
-  Tabs,
-  Typography,
-} from "@material-ui/core"
+import {Breadcrumbs, Link, makeStyles, Tab, Tabs} from "@material-ui/core"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
@@ -18,6 +11,7 @@ import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import RetreatNotes from "../components/retreats/RetreatNotes"
 import RetreatSalesIntakeForm from "../components/retreats/RetreatSalesIntakeForm"
+import RetreatStateTitle from "../components/retreats/RetreatStateTitle"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails} from "../store/actions/admin"
@@ -34,6 +28,12 @@ let useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(4),
     display: "flex",
     flexDirection: "column",
+  },
+  pageTitle: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   tabBody: {
     flex: "1 1 auto",
@@ -87,9 +87,8 @@ function RetreatSalesIntakePage(props: RetreatSalesIntakePageProps) {
           </Link>
           <AppTypography color="textPrimary">Sales Intake</AppTypography>
         </Breadcrumbs>
-        <Typography variant="h1">
-          {retreat?.company_name} - Sales Intake
-        </Typography>
+
+        {retreat && <RetreatStateTitle retreat={retreat} type="intake" />}
         {retreat && (
           <>
             <Tabs
