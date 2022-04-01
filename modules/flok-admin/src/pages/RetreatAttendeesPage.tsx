@@ -98,7 +98,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
           rows={
             retreatAttendees
               ? retreatAttendees.map((a) =>
-                  _.pick(a, ["id", "name", "email_address", "city"])
+                  _.pick(a, ["id", "name", "email_address", "info_status"])
                 )
               : []
           }
