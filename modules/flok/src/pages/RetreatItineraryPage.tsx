@@ -1,7 +1,5 @@
-import {Box, List, ListItem, makeStyles, Typography} from "@material-ui/core"
-import {useState} from "react"
+import {makeStyles, Typography} from "@material-ui/core"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import AppTravefyItinerary from "../components/base/AppTravefyItinerary"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
@@ -27,7 +25,7 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
   let classes = useStyles(props)
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
-  let [id, setId] = useState("6yw9rqwxd98wqz2arnptxnkqw2ut2xq")
+  // let [id, setId] = useState("6yw9rqwxd98wqz2arnptxnkqw2ut2xq")
 
   return (
     <PageContainer>
@@ -39,7 +37,7 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
       <PageBody appBar>
         <div className={classes.root}>
           <Typography variant="h1">Itinerary</Typography>
-          <Box display="flex" height="100%" position="relative">
+          {/* <Box display="flex" height="100%" position="relative">
             <List>
               <ListItem
                 selected={id === "6yw9rqus2rtwqz2agqajrlfbler4tqq"}
@@ -63,7 +61,7 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
             <div className={classes.itineraryContainer}>
               <AppTravefyItinerary travefyItineraryId={id} />
             </div>
-          </Box>
+          </Box> */}
         </div>
       </PageBody>
     </PageContainer>
