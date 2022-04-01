@@ -22,6 +22,7 @@ import {
   RetreatItineraryState,
   RetreatLodgingState,
 } from "../../models"
+import {patchRetreatDetails} from "../../store/actions/admin"
 
 let useStyles = makeStyles((theme) => ({
   root: {

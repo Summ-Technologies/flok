@@ -10,6 +10,7 @@ import {
   OrderedRetreatItineraryState,
   OrderedRetreatLodgingState,
 } from "../../models"
+import {patchRetreatDetails} from "../../store/actions/admin"
 import {RetreatStateSelector, RetreatStateTypes} from "./RetreatStatesForm"
 
 let useStyles = makeStyles((theme) => ({
