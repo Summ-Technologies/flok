@@ -26,13 +26,27 @@ export type AdminRetreatModel = {
   flok_admin_signup_type: string | null
   flok_admin_owner: string | null
   flok_admin_state: string | null // One of retreat state options
-  selected_hotels: AdminSelectedHotelProposalModel[]
 
-  intake_state: RetreatIntakeState
-  lodging_state: RetreatLodgingState
-  attendees_state: RetreatAttendeesState
-  flights_state: RetreatFlightsState
-  itinerary_state: RetreatItineraryState
+  intake_state?: RetreatIntakeState
+
+  // Retreat data related to lodging
+  lodging_state?: RetreatLodgingState
+  selected_hotels: AdminSelectedHotelProposalModel[]
+  lodging_final_start_date?: string
+  lodging_final_end_date?: string
+  lodging_final_destination?: string
+  lodging_final_hotel_id?: number
+  lodging_final_contract_notes?: string
+  lodging_final_contract_url?: string
+
+  // Retreat data related to flights
+  attendees_state?: RetreatAttendeesState
+
+  // Retreat data related to flights
+  flights_state?: RetreatFlightsState
+
+  // Retreat data related to itinerary
+  itinerary_state?: RetreatItineraryState
 }
 
 export type AdminRetreatUpdateModel = Pick<

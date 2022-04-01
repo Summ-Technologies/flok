@@ -1,4 +1,4 @@
-import {Breadcrumbs, Link, makeStyles} from "@material-ui/core"
+import {Breadcrumbs, Link, makeStyles, Tab, Tabs} from "@material-ui/core"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
@@ -6,13 +6,16 @@ import {
   RouteComponentProps,
   withRouter,
 } from "react-router-dom"
+import AppTabPanel from "../components/base/AppTabPanel"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
+import RetreatHotelContractForm from "../components/retreats/RetreatHotelContractForm"
 import RetreatLodgingDetails from "../components/retreats/RetreatLodgingDetails"
 import RetreatStateTitle from "../components/retreats/RetreatStateTitle"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails} from "../store/actions/admin"
+import {useQuery} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -35,6 +38,13 @@ function RetreatLodgingPage(props: RetreatLodgingPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let retreatId = parseInt(props.match.params.retreatId) || -1 // -1 for an id that will always return 404
+
+  let [tabQuery, setTabQuery] = useQuery("tab")
+  let [tabValue, setTabValue] = useState<string | undefined>(undefined)
+  useEffect(() => {
+    const TABS = ["proposals", "contract"]
+    setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "proposals")
+  }, [tabQuery, setTabValue])
 
   // Get retreat data
   let retreat = useSelector((state: RootState) => {
@@ -74,7 +84,22 @@ function RetreatLodgingPage(props: RetreatLodgingPageProps) {
           <AppTypography color="textPrimary">Lodging</AppTypography>
         </Breadcrumbs>
         {retreat && <RetreatStateTitle retreat={retreat} type="lodging" />}{" "}
-        {retreat && !delayLoad && <RetreatLodgingDetails retreat={retreat} />}
+        <Tabs
+          indicatorColor="primary"
+          centered
+          value={tabValue}
+          onChange={(e, newVal) =>
+            setTabQuery(newVal === "proposals" ? null : newVal)
+          }>
+          <Tab value={"proposals"} label="Proposals" />
+          <Tab value={"contract"} label="Contract" />
+        </Tabs>
+        <AppTabPanel show={tabValue === "proposals"} renderDom="always">
+          {retreat && <RetreatLodgingDetails retreat={retreat} />}
+        </AppTabPanel>
+        <AppTabPanel show={tabValue === "contract"} renderDom="always">
+          {retreat && <RetreatHotelContractForm retreat={retreat} />}
+        </AppTabPanel>
       </div>
     </PageBase>
   )

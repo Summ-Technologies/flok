@@ -1,7 +1,7 @@
 import {TextFieldProps} from "@material-ui/core"
 import {push} from "connected-react-router"
 import _ from "lodash"
-import {useEffect, useState} from "react"
+import {useCallback, useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {useLocation} from "react-router-dom"
 import {RootState} from "../store"
@@ -47,19 +47,22 @@ export function useQuery(param: string) {
   }, [searchString, setParamVal, param])
 
   /* If null is given for newParamVal, delete the param */
-  function setParam(newParamVal: string | null) {
-    let allParams = new URLSearchParams(searchString)
-    if (newParamVal == null) {
-      allParams.delete(param)
-    } else {
-      allParams.set(param, newParamVal)
-    }
-    dispatch(
-      push({
-        search: `${allParams.toString() ? "?" + allParams.toString() : ""}`,
-      })
-    )
-  }
+  let setParam = useCallback(
+    (newParamVal: string | null) => {
+      let allParams = new URLSearchParams(searchString)
+      if (newParamVal == null) {
+        allParams.delete(param)
+      } else {
+        allParams.set(param, newParamVal)
+      }
+      dispatch(
+        push({
+          search: `${allParams.toString() ? "?" + allParams.toString() : ""}`,
+        })
+      )
+    },
+    [param, dispatch, searchString]
+  )
   return [paramVal, setParam] as const
 }
 

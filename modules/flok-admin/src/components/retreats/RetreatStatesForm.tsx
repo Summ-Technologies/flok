@@ -166,7 +166,7 @@ const RetreatStateTypesOptions: {
 export type RetreatStateSelectorProps<T extends keyof RetreatStateTypes> =
   TextFieldProps & {
     stateType: T
-    value: RetreatStateTypes[T]
+    value?: RetreatStateTypes[T]
   }
 export function RetreatStateSelector<T extends keyof RetreatStateTypes>(
   props: RetreatStateSelectorProps<T>
