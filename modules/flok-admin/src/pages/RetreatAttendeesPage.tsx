@@ -5,7 +5,6 @@ import {
   Dialog,
   Link,
   makeStyles,
-  Typography,
 } from "@material-ui/core"
 import {push} from "connected-react-router"
 import _ from "lodash"
@@ -73,8 +72,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
           <AppTypography color="textPrimary">Attendees</AppTypography>
         </Breadcrumbs>
 
-        <RetreatStateTitle retreat={retreat} classes={classes} type="attendees"/>
-
+        {retreat && <RetreatStateTitle retreat={retreat} type="attendees" />}
         <Box
           display="flex"
           justifyContent="flex-end"

@@ -1,4 +1,4 @@
-import {Breadcrumbs, Link, makeStyles, Typography} from "@material-ui/core"
+import {Breadcrumbs, Link, makeStyles} from "@material-ui/core"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
@@ -73,7 +73,7 @@ function RetreatLodgingPage(props: RetreatLodgingPageProps) {
           </Link>
           <AppTypography color="textPrimary">Lodging</AppTypography>
         </Breadcrumbs>
-        <RetreatStateTitle retreat={retreat} classes={classes} type="lodging"/>
+        {retreat && <RetreatStateTitle retreat={retreat} type="lodging" />}{" "}
         {retreat && !delayLoad && <RetreatLodgingDetails retreat={retreat} />}
       </div>
     </PageBase>
