@@ -292,6 +292,7 @@ export default function AdminReducer(
           ...state.tasksByRetreat,
           [meta.retreatId]: payload.tasks.map((t) => {
             t.task_vars = JSON.parse(t.task_vars as string)
+            t.templates = JSON.parse(t.templates as unknown as string)
             return t
           }),
         },

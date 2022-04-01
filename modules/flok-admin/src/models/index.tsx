@@ -243,4 +243,9 @@ export type RetreatToTask = {
   state: RetreatToTaskState
   due_date?: string
   task_vars: {link?: any; description?: any; title?: any}
+  templates: {
+    description: string
+    title: string
+    link: string
+  }
 }

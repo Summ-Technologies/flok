@@ -1,5 +1,6 @@
 import {
   Badge,
+  Box,
   Button,
   Checkbox,
   Chip,
@@ -7,16 +8,18 @@ import {
   IconButton,
   Link,
   makeStyles,
-  TextField,
+  Modal,
+  Paper,
 } from "@material-ui/core"
 import {CalendarToday, ExpandMore} from "@material-ui/icons"
 import {useFormik} from "formik"
-import _ from "lodash"
 import {useState} from "react"
+import ReactMarkdown from "react-markdown"
 import {useDispatch} from "react-redux"
-import {RetreatToTask, RetreatToTaskStateOptions} from "../../models"
+import {RetreatToTask} from "../../models"
 import {patchRetreatTask} from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
+import RetreatTaskForm from "./RetreatTaskForm"
 
 const dateFormatShort = (date: Date) =>
   new Date(date).toLocaleDateString("en-US", {month: "short", day: "numeric"})
@@ -64,6 +67,10 @@ let useItemStyles = makeStyles((theme) => ({
     display: "block",
     marginTop: theme.spacing(0.5),
   },
+  subtitle: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+  },
 }))
 
 function TodoListItem(props: {
@@ -74,6 +81,7 @@ function TodoListItem(props: {
   let classes = useItemStyles(props)
   let {task, retreatId} = props
   let [expanded, setExpanded] = useState(false)
+  let [open, setOpen] = useState(false)
 
   const handleExpandClick = () => {
     setExpanded(!expanded)
@@ -131,112 +139,41 @@ function TodoListItem(props: {
         ) : (
           <></>
         )}
-        {task.task.description ? (
-          <IconButton
-            onClick={handleExpandClick}
-            className={expanded ? classes.iconExpanded : ""}>
-            <ExpandMore />
-          </IconButton>
-        ) : (
-          <div style={{padding: 24}}></div>
-        )}
+        <IconButton
+          onClick={handleExpandClick}
+          className={expanded ? classes.iconExpanded : ""}>
+          <ExpandMore />
+        </IconButton>
       </div>
       <Collapse in={expanded}>
         <div className={classes.desc}>
           {task.task.description ? (
             <>
               <AppTypography variant="h4">Description</AppTypography>
-              <AppTypography>{task.task.description}</AppTypography>
+              <ReactMarkdown>{task.task.description}</ReactMarkdown>
             </>
           ) : undefined}
-          <AppTypography variant="h4">Basic Task Info</AppTypography>
-          <form onSubmit={formik.handleSubmit}>
-            <TextField
-              id="state"
-              select
-              SelectProps={{native: true}}
-              onChange={formik.handleChange}
-              label="State"
-              className={classes.input}
-              value={formik.values.state}>
-              {RetreatToTaskStateOptions.map((o, i) => (
-                <option key={i} value={o} label={o} />
-              ))}
-            </TextField>
-            <TextField
-              className={classes.input}
-              id="dueDate"
-              type="date"
-              value={formik.values.dueDate}
-              label="Due Date"
-              onChange={formik.handleChange}
-            />
-            <TextField
-              className={classes.input}
-              id="order"
-              type="number"
-              value={formik.values.order}
-              onChange={formik.handleChange}
-              label="Order"
-            />
-            {formik.values.taskVars?.title ? (
-              <>
-                <AppTypography variant="h4">Title Variables</AppTypography>
-                {Object.keys(formik.values.taskVars.title).map((k, i) => (
-                  <TextField
-                    key={i}
-                    onChange={formik.handleChange}
-                    className={classes.input}
-                    id={`taskVars.title.${k}`}
-                    value={formik.values.taskVars.title[k]}
-                    label={k}
-                  />
-                ))}
-              </>
-            ) : undefined}
-            {formik.values.taskVars?.description ? (
-              <>
-                <AppTypography variant="h4">
-                  Description Variables
-                </AppTypography>
-                {Object.keys(formik.values.taskVars.description).map((k, i) => (
-                  <TextField
-                    key={i}
-                    className={classes.input}
-                    onChange={formik.handleChange}
-                    id={`taskVars.description.${k}`}
-                    value={formik.values.taskVars.description[k]}
-                    label={k}
-                  />
-                ))}
-              </>
-            ) : undefined}
-            {formik.values.taskVars?.link ? (
-              <>
-                <AppTypography variant="h4">Link Variables</AppTypography>
-                {Object.keys(formik.values.taskVars.link).map((k, i) => (
-                  <TextField
-                    key={i}
-                    onChange={formik.handleChange}
-                    className={classes.input}
-                    id={`taskVars.link.${k}`}
-                    value={formik.values.taskVars.link[k]}
-                    label={k}
-                  />
-                ))}
-              </>
-            ) : undefined}
-            <Button
-              className={classes.submitButton}
-              disabled={_.isEqual(formik.values, formik.initialValues)}
-              type="submit"
-              variant="contained"
-              color="primary">
-              Submit
-            </Button>
-          </form>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setOpen(true)}>
+            Edit Task
+          </Button>
         </div>
       </Collapse>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <Box
+          position="fixed"
+          top="50%"
+          left="50%"
+          style={{
+            transform: "translate(-50%, -50%)",
+          }}>
+          <Paper elevation={1} style={{padding: 12}}>
+            <RetreatTaskForm retreatId={retreatId} task={task} />
+          </Paper>
+        </Box>
+      </Modal>
     </div>
   )
 }
