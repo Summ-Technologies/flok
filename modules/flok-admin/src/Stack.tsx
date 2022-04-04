@@ -5,6 +5,7 @@ import HotelPage from "./pages/HotelPage"
 import HotelsPage from "./pages/HotelsPage"
 import RetreatAttendeePage from "./pages/RetreatAttendeePage"
 import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
+import RetreatItineraryPage from "./pages/RetreatItineraryPage"
 import RetreatLodgingPage from "./pages/RetreatLodgingPage"
 import RetreatPage from "./pages/RetreatPage"
 import RetreatSalesIntakePage from "./pages/RetreatSalesIntakePage"
@@ -63,7 +64,7 @@ export class AppRoutes {
     },
     {
       name: "RetreatItineraryPage",
-      component: <RetreatAttendeesPage />,
+      component: <RetreatItineraryPage />,
       path: "/retreats/:retreatId/itinerary",
     },
     {
