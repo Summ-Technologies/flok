@@ -69,7 +69,7 @@ export class AppRoutes {
 
 export default function Stack() {
   // TODO, remove once released dashboard
-  const DASHBOARD_RELEASE = true
+  const DASHBOARD_RELEASE = false
   if (!DASHBOARD_RELEASE) {
     return (
       <Switch>
