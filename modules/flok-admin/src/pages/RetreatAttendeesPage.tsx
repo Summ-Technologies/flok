@@ -50,7 +50,6 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
   let [retreat] = useRetreat(retreatId)
   let [retreatAttendees] = useRetreatAttendees(retreatId)
   let [newAttendeeOpen, setNewAttendeeOpen] = useState(false)
-
   return (
     <PageBase>
       <div className={classes.body}>
