@@ -47,14 +47,15 @@ export type RetreatSelectedHotelProposal = {
   hotel_proposals?: HotelLodgingProposal[]
 }
 
-export type RetreatProgressState =  // Deprecated
-  | "INTAKE_1"
-  | "INTAKE_2"
-  | "FILTER_SELECT"
-  | "DESTINATION_SELECT"
-  | "HOTEL_SELECT"
-  | "PROPOSAL"
-  | "PROPOSAL_READY"
+export type RetreatProgressState = // Deprecated
+
+    | "INTAKE_1"
+    | "INTAKE_2"
+    | "FILTER_SELECT"
+    | "DESTINATION_SELECT"
+    | "HOTEL_SELECT"
+    | "PROPOSAL"
+    | "PROPOSAL_READY"
 
 /****************** Retreat states types (keep synced with models/retreat.tsx in flok) ******************/
 export const OrderedRetreatIntakeState = [
@@ -150,6 +151,10 @@ export type RetreatModel = {
 
   tasks_todo: RetreatToTask[]
   tasks_completed: RetreatToTask[]
+
+  //Retreat itinerary links
+  itinerary_first_draft_link?: string
+  itinerary_final_draft_link?: string
 }
 
 export type RetreatTripModel = {
