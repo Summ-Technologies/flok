@@ -2,6 +2,7 @@ import {makeStyles, Typography} from "@material-ui/core"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
+import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -37,6 +38,7 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
       <PageBody appBar>
         <div className={classes.root}>
           <Typography variant="h1">Itinerary</Typography>
+          {retreat.itinerary_state !== "BOOKING" && <PageLockedModal />}
           {/* <Box display="flex" height="100%" position="relative">
             <List>
               <ListItem

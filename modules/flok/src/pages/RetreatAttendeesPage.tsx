@@ -19,8 +19,9 @@ import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
+import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
-import {RetreatAttendeeModel} from "../models/retreat"
+import {RetreatAttendeeModel, SampleLockedAttendees} from "../models/retreat"
 import {
   deleteRetreatAttendees,
   postRetreatAttendees,
@@ -110,7 +111,9 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     name: false,
     email: false,
   })
-
+  if (retreat.attendees_state !== "REGISTRATION_OPEN") {
+    attendeeTravelInfo = SampleLockedAttendees
+  }
   const handleNewAttendeeSubmit = () => {
     const errorState = {name: false, email: false}
     if (newAttendeeName === "") {
@@ -149,6 +152,9 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
       <PageBody appBar>
         <div className={classes.section}>
           <Typography variant="h1">Attendees</Typography>
+          {retreat.attendees_state !== "REGISTRATION_OPEN" && (
+            <PageLockedModal pageDesc="This page will be unlocked when attendee registration opens" />
+          )}
           <AppExpandableTable
             headers={[
               {
