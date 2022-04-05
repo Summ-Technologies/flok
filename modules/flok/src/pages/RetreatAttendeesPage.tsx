@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Chip,
   Dialog,
@@ -6,12 +7,21 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
+  Link,
   makeStyles,
+  Paper,
   styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
   TextField,
   Tooltip,
   Typography,
 } from "@material-ui/core"
+import CloseIcon from "@material-ui/icons/Close"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -91,6 +101,26 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
   },
+  notAttendingButton: {
+    cursor: "pointer",
+  },
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+  table: {
+    minWidth: "40vw",
+  },
+  notAttendingDialogBody: {
+    padding: "0 !important",
+    maxHeight: "30vh",
+  },
+  allAttendingP: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
 }))
 
 type RetreatAttendeesProps = RouteComponentProps<{retreatIdx: string}>
@@ -110,6 +140,11 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     name: false,
     email: false,
   })
+  const [openNotAttendingModel, setOpenNotAttendingModel] = useState(false)
+
+  const handleClose = () => {
+    setOpenNotAttendingModel(false)
+  }
 
   const handleNewAttendeeSubmit = () => {
     const errorState = {name: false, email: false}
@@ -148,7 +183,26 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
       />
       <PageBody appBar>
         <div className={classes.section}>
-          <Typography variant="h1">Attendees</Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="flex-end">
+            <Typography variant="h1">Attendees</Typography>
+            <Link
+              variant="body1"
+              underline="always"
+              className={classes.notAttendingButton}
+              onClick={() => {
+                setOpenNotAttendingModel(true)
+              }}>
+              View invitees not coming (
+              {attendeeTravelInfo &&
+                attendeeTravelInfo.filter((attendee) => {
+                  return attendee.info_status === "NOT_ATTENDING"
+                }).length}
+              )
+            </Link>
+          </Box>
           <AppExpandableTable
             headers={[
               {
@@ -218,6 +272,9 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
             rows={
               attendeeTravelInfo !== undefined
                 ? attendeeTravelInfo
+                    .filter(
+                      (attendee) => attendee.info_status !== "NOT_ATTENDING"
+                    )
                     .sort((a, b) => {
                       let getVal = (val: RetreatAttendeeModel) => {
                         switch (val.info_status) {
@@ -297,6 +354,57 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
             <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
           </DialogActions>
         </Dialog>
+        {/* not attending modal below */}
+        <div>
+          <Dialog
+            onClose={handleClose}
+            aria-labelledby="customized-dialog-title"
+            open={openNotAttendingModel}>
+            <DialogTitle id="customized-dialog-title">
+              Invitees not attending
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={() => {
+                  setOpenNotAttendingModel(false)
+                }}>
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent dividers className={classes.notAttendingDialogBody}>
+              {attendeeTravelInfo &&
+              attendeeTravelInfo.filter((attendee) => {
+                return attendee.info_status === "NOT_ATTENDING"
+              }).length ? (
+                <TableContainer component={Paper}>
+                  <Table className={classes.table} aria-label="simple table">
+                    <TableBody>
+                      {attendeeTravelInfo &&
+                        attendeeTravelInfo
+                          .filter((attendee) => {
+                            return attendee.info_status === "NOT_ATTENDING"
+                          })
+                          .map((attendee) => (
+                            <TableRow key={attendee.id}>
+                              <TableCell component="th" scope="row">
+                                {attendee.name}
+                              </TableCell>
+                              <TableCell align="right">
+                                {attendee.email_address}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <p className={classes.allAttendingP}>
+                  No invitees are registered as not attending
+                </p>
+              )}
+            </DialogContent>
+          </Dialog>
+        </div>
       </PageBody>
     </PageContainer>
   )
