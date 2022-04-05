@@ -25,15 +25,17 @@ let useStyles = makeStyles((theme) => ({
   },
   draftBox: {
     padding: theme.spacing(3),
-    justifyContent: "center",
-    alignItems: "center",
     display: "flex",
     flexDirection: "column",
   },
   linkButton: {
+    width: "fit-content",
     marginTop: theme.spacing(2),
     "&:hover": {
       textDecoration: "none",
+    },
+    "&.Mui-disabled.MuiButton-root": {
+      pointerEvents: "auto",
     },
   },
   lockIcon: {
@@ -46,7 +48,11 @@ let useStyles = makeStyles((theme) => ({
     textDecoration: "none",
   },
   linksDiv: {
-    marginTop: "15%",
+    paddingTop: theme.spacing(1),
+    paddingLeft: theme.spacing(2),
+  },
+  buttonWrapper: {
+    width: "fit-content",
   },
 }))
 
@@ -68,84 +74,47 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
           <Typography variant="h1">Itinerary</Typography>
           <div className={classes.linksDiv}>
             <Box className={classes.draftBox}>
-              <Typography variant="h2" className={classes.draftHeading}>
-                Working Draft{" "}
+              <Typography variant="h4" className={classes.draftHeading}>
+                Working Draft
                 <AppMoreInfoIcon tooltipText="Your retreat designer will present an initial itinerary draft and then will iterate based on your feedback." />
               </Typography>
-              {!!retreat.itinerary_first_draft_link ? (
+              <Tooltip
+                title="This link will be added as soon as it's available"
+                disableHoverListener={!!retreat.itinerary_first_draft_link}
+                arrow>
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.linkButton}
                   disabled={!retreat.itinerary_first_draft_link}
-                  onClick={() => {
-                    window.open(`${retreat.itinerary_first_draft_link}`)
-                  }}
+                  href={retreat.itinerary_first_draft_link}
                   size="large">
                   Working Draft
                 </Button>
-              ) : (
-                <Tooltip
-                  title="This link will be added as soon as it's available"
-                  arrow>
-                  <div>
-                    {" "}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.linkButton}
-                      disabled={!retreat.itinerary_first_draft_link}
-                      onClick={() => {
-                        window.open(`${retreat.itinerary_first_draft_link}`)
-                      }}
-                      size="large">
-                      Working Draft
-                    </Button>{" "}
-                  </div>
-                </Tooltip>
-              )}
+              </Tooltip>
             </Box>
             <Box className={classes.draftBox}>
-              <Typography variant="h2" className={classes.draftHeading}>
+              <Typography variant="h4" className={classes.draftHeading}>
                 {!retreat.itinerary_final_draft_link && (
                   <LockIcon fontSize="small" className={classes.lockIcon} />
-                )}{" "}
-                Final Draft{" "}
+                )}
+                Final Draft
                 <AppMoreInfoIcon tooltipText="Your retreat designer will create a final itinerary using Travefy. This itinerary can be shared with all of the attendees before your retreat! " />
               </Typography>
-
-              {!!retreat.itinerary_final_draft_link ? (
+              <Tooltip
+                title="This link will be added as soon as it's available"
+                disableHoverListener={!!retreat.itinerary_final_draft_link}
+                arrow>
                 <Button
                   variant="contained"
                   color="primary"
                   className={classes.linkButton}
                   disabled={!retreat.itinerary_final_draft_link}
-                  onClick={() => {
-                    window.open(`${retreat.itinerary_final_draft_link}`)
-                  }}
+                  href={retreat.itinerary_final_draft_link}
                   size="large">
                   Final Draft
                 </Button>
-              ) : (
-                <Tooltip
-                  title="This link will be added as soon as it's available"
-                  arrow>
-                  <div>
-                    {" "}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      className={classes.linkButton}
-                      disabled={!retreat.itinerary_final_draft_link}
-                      onClick={() => {
-                        window.open(`${retreat.itinerary_final_draft_link}`)
-                      }}
-                      size="large">
-                      Final Draft
-                    </Button>{" "}
-                  </div>
-                </Tooltip>
-              )}
+              </Tooltip>
             </Box>
           </div>
         </div>
