@@ -66,7 +66,6 @@ function RetreatAttendeePage(props: RetreatAttendeePageProps) {
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "info")
   }, [tabQuery, setTabValue])
 
-  console.log(tabValue)
   return (
     <PageBase>
       <div className={classes.body}>
