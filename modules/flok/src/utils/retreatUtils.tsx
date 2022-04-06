@@ -1,7 +1,12 @@
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
+import {Constants} from "../config"
 import {ResourceNotFoundType} from "../models"
-import {RetreatAttendeeModel, RetreatModel} from "../models/retreat"
+import {
+  RetreatAttendeeModel,
+  RetreatModel,
+  RetreatToTask,
+} from "../models/retreat"
 import {RootState} from "../store"
 import {getRetreat, getRetreatAttendees} from "../store/actions/retreat"
 
@@ -48,20 +53,10 @@ export function useRetreatAttendees(retreatId: number) {
 //   return retreat as RetreatModel | ResourceNotFoundType | undefined
 // }
 
-export function parseTaskTemplates(retreat: RetreatModel, retreatIdx: number) {
-  retreat.tasks_completed.forEach((t) => {
-    t.task.link = t.task.link.replaceAll(
-      "%%retreatIdx%%",
-      retreatIdx.toString()
-    )
-  })
-
-  retreat.tasks_todo.forEach((t) => {
-    t.task.link = t.task.link.replaceAll(
-      "%%retreatIdx%%",
-      retreatIdx.toString()
-    )
-  })
-
-  return retreat
+export function parseRetreatTask(task: RetreatToTask, baseUrl: string) {
+  let parsedTask = {...task}
+  if (task.link) {
+    parsedTask.link = task.link.replaceAll(Constants.retreatBaseUrlVar, baseUrl)
+  }
+  return parsedTask
 }

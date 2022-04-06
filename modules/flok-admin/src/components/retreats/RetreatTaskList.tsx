@@ -1,23 +1,20 @@
 import {
   Badge,
-  Box,
   Button,
   Checkbox,
   Chip,
   Collapse,
+  Dialog,
   IconButton,
   Link,
   makeStyles,
-  Modal,
   Paper,
+  Tooltip,
 } from "@material-ui/core"
-import {CalendarToday, ExpandMore} from "@material-ui/icons"
-import {useFormik} from "formik"
+import {CalendarToday, Error, ExpandMore} from "@material-ui/icons"
 import {useState} from "react"
 import ReactMarkdown from "react-markdown"
-import {useDispatch} from "react-redux"
 import {RetreatToTask} from "../../models"
-import {patchRetreatTask} from "../../store/actions/admin"
 import AppTypography from "../base/AppTypography"
 import RetreatTaskForm from "./RetreatTaskForm"
 
@@ -60,9 +57,6 @@ let useItemStyles = makeStyles((theme) => ({
     maxWidth: 200,
     marginBottom: 12,
   },
-  input: {
-    margin: theme.spacing(0.5),
-  },
   submitButton: {
     display: "block",
     marginTop: theme.spacing(0.5),
@@ -70,6 +64,10 @@ let useItemStyles = makeStyles((theme) => ({
   subtitle: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
+  },
+  taskFormModal: {
+    padding: theme.spacing(2),
+    width: "100%",
   },
 }))
 
@@ -87,29 +85,6 @@ function TodoListItem(props: {
     setExpanded(!expanded)
   }
 
-  let dispatch = useDispatch()
-  let formik = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      state: task.state,
-      dueDate: task.due_date ?? "",
-      order: task.order,
-      taskVars: task.task_vars,
-    },
-    onSubmit: (values) => {
-      dispatch(
-        patchRetreatTask(
-          retreatId,
-          task.task.id,
-          values.order,
-          values.state,
-          new Date(values.dueDate),
-          values.taskVars
-        )
-      )
-    },
-  })
-
   return (
     <div className={classes.root}>
       <div className={classes.summary}>
@@ -119,14 +94,16 @@ function TodoListItem(props: {
           color="default"
         />
         <AppTypography className={classes.title}>
-          {task.task.link ? (
-            <Link
-              href={task.task.link}
-              target={task.task.link.startsWith(".") ? "_self" : "_blank"}>
-              {task.task.title}
-            </Link>
+          {task.link ? (
+            <Tooltip title={<>{`Link to: ${task.link}`}</>}>
+              <Link
+                href={task.link.startsWith("http") ? task.link : undefined}
+                target={task.link.startsWith("http") ? "_blank" : undefined}>
+                {task.title}
+              </Link>
+            </Tooltip>
           ) : (
-            <>{task.task.title}</>
+            <>{task.title}</>
           )}
         </AppTypography>
         <div style={{flexGrow: 1}}></div>
@@ -139,6 +116,23 @@ function TodoListItem(props: {
         ) : (
           <></>
         )}
+        {task.task_vars &&
+        Object.values(task.task_vars).filter((v) => v).length ? (
+          <Tooltip
+            title={
+              'This task is missing required input variables. Please "Edit task" to update those variables.'
+            }>
+            <Chip
+              style={{backgroundColor: "red", color: "white"}}
+              label={"Requires input"}
+              icon={<Error style={{color: "white"}} />}
+              color="default"
+              size="small"
+            />
+          </Tooltip>
+        ) : (
+          <></>
+        )}
         <IconButton
           onClick={handleExpandClick}
           className={expanded ? classes.iconExpanded : ""}>
@@ -147,10 +141,10 @@ function TodoListItem(props: {
       </div>
       <Collapse in={expanded}>
         <div className={classes.desc}>
-          {task.task.description ? (
+          {task.description ? (
             <>
               <AppTypography variant="h4">Description</AppTypography>
-              <ReactMarkdown>{task.task.description}</ReactMarkdown>
+              <ReactMarkdown>{task.description}</ReactMarkdown>
             </>
           ) : undefined}
           <Button
@@ -161,19 +155,15 @@ function TodoListItem(props: {
           </Button>
         </div>
       </Collapse>
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <Box
-          position="fixed"
-          top="50%"
-          left="50%"
-          style={{
-            transform: "translate(-50%, -50%)",
-          }}>
-          <Paper elevation={1} style={{padding: 12}}>
-            <RetreatTaskForm retreatId={retreatId} task={task} />
-          </Paper>
-        </Box>
-      </Modal>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        fullWidth
+        maxWidth="lg">
+        <Paper elevation={1} className={classes.taskFormModal}>
+          <RetreatTaskForm retreatId={retreatId} retreatToTask={task} />
+        </Paper>
+      </Dialog>
     </div>
   )
 }

@@ -229,23 +229,25 @@ export type RetreatNoteModel = {
 export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
 export const RetreatToTaskStateOptions = ["TODO", "COMPLETED", "HIDDEN"]
 
+// This is the Jinja templated task
 export type RetreatTask = {
   id: number
-  description?: string
   title: string
-  link: string
-  user_complete: boolean
+  description?: string
+  link?: string
 }
 
 export type RetreatToTask = {
-  task: RetreatTask
+  retreat_id: number
+  task_id: number
+  // Task fields (rendered)
+  title: string
+  description?: string
+  link?: string
+  // RetreatToTask fields
   order: number
   state: RetreatToTaskState
   due_date?: string
-  task_vars: {link?: any; description?: any; title?: any}
-  templates: {
-    description: string
-    title: string
-    link: string
-  }
+  task_vars: {[key: string]: string | null}
+  task_template: RetreatTask
 }

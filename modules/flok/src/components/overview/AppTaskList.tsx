@@ -11,6 +11,7 @@ import {CalendarToday, ExpandMore} from "@material-ui/icons"
 import {useState} from "react"
 import ReactMarkdown from "react-markdown"
 import {RetreatToTask} from "../../models/retreat"
+import {parseRetreatTask} from "../../utils/retreatUtils"
 import AppTypography from "../base/AppTypography"
 
 const dateFormatShort = (date: Date) =>
@@ -74,20 +75,12 @@ function TodoListItem(props: {
           color="default"
         />
         <AppTypography className={classes.title}>
-          {task.link_override ? (
-            <Link
-              href={task.link_override}
-              target={task.link_override.startsWith(".") ? "_self" : "_blank"}>
-              {task.task.title}
-            </Link>
-          ) : task.task.link ? (
-            <Link
-              href={task.task.link}
-              target={task.task.link.startsWith(".") ? "_self" : "_blank"}>
-              {task.task.title}
+          {task.link ? (
+            <Link href={task.link} target={task.link}>
+              {task.title}
             </Link>
           ) : (
-            <>{task.task.title}</>
+            task.title
           )}
         </AppTypography>
         <div style={{flexGrow: 1}}></div>
@@ -100,7 +93,7 @@ function TodoListItem(props: {
         ) : (
           <></>
         )}
-        {task.task.description ? (
+        {task.description ? (
           <IconButton
             onClick={handleExpandClick}
             className={expanded ? classes.iconExpanded : ""}>
@@ -129,10 +122,10 @@ function TodoListItem(props: {
             <></>
           )}
           <AppTypography fontWeight="bold" style={{lineHeight: "2em"}}>
-            {task.task.title}
+            {task.title}
           </AppTypography>
           <ReactMarkdown>
-            {task.task.description ? task.task.description : ""}
+            {task.description ? task.description : ""}
           </ReactMarkdown>
         </div>
       </Collapse>
@@ -158,6 +151,7 @@ let useListStyles = makeStyles((theme) => ({
 }))
 export default function AppTodoList(props: {
   retreatToTasks: RetreatToTask[]
+  retreatBaseUrl: string // used for relative links to other pages
   handleCheckboxClick: (task: RetreatToTask) => void
   orderBadge: boolean
   collapsed?: boolean
@@ -165,21 +159,24 @@ export default function AppTodoList(props: {
   let classes = useListStyles(props)
   return (
     <Collapse in={!props.collapsed}>
-      {props.retreatToTasks.map((t, i) => (
-        <Badge
-          className={classes.wrapper}
-          anchorOrigin={{vertical: "top", horizontal: "left"}}
-          badgeContent={t.order}
-          overlap="rectangle"
-          invisible={!props.orderBadge}
-          color="primary">
-          <TodoListItem
-            task={t}
-            disabled={i !== 0}
-            handleCheckboxClick={props.handleCheckboxClick}
-          />
-        </Badge>
-      ))}
+      {props.retreatToTasks.map((t, i) => {
+        let task: RetreatToTask = parseRetreatTask(t, props.retreatBaseUrl)
+        return (
+          <Badge
+            className={classes.wrapper}
+            anchorOrigin={{vertical: "top", horizontal: "left"}}
+            badgeContent={task.order}
+            overlap="rectangle"
+            invisible={!props.orderBadge}
+            color="primary">
+            <TodoListItem
+              task={task}
+              disabled={i !== 0}
+              handleCheckboxClick={props.handleCheckboxClick}
+            />
+          </Badge>
+        )
+      })}
     </Collapse>
   )
 }

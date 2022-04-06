@@ -525,25 +525,23 @@ export function getRetreatTasks(retreatId: number) {
 }
 
 export const PATCH_RETREAT_TASK_REQUEST = "PATCH_RETREAT_TASK_REQUEST"
-export const PATCH_RETREAT_TASK_SUCCESS = "PATCH_RETREAT_TASK_SUCCCESS"
+export const PATCH_RETREAT_TASK_SUCCESS = "PATCH_RETREAT_TASK_SUCCESS"
 export const PATCH_RETREAT_TASK_FAILURE = "PATCH_RETREAT_TASK_FAILURE"
 export function patchRetreatTask(
   retreatId: number,
   taskId: number,
-  order: number,
   state: RetreatToTaskState,
-  dueDate: Date,
-  taskVars: any
+  dueDate: string,
+  taskVars: {[key: string]: string | null}
 ) {
   let endpoint = `/v1.0/admin/retreats/${retreatId}/tasks/${taskId}`
   return createApiAction({
     method: "PATCH",
     endpoint,
     body: JSON.stringify({
-      order,
       state,
-      dueDate,
-      taskVars: JSON.stringify(taskVars),
+      due_date: dueDate ? dueDate : null,
+      task_vars: taskVars,
     }),
     types: [
       {type: PATCH_RETREAT_TASK_REQUEST, meta: {retreatId}},

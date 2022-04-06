@@ -69,20 +69,14 @@ export type ItineraryState = "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"
 
 export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
 
-export type RetreatTask = {
-  id: number
-  description?: string
-  title: string
-  link: string
-  user_complete: boolean
-}
-
 export type RetreatToTask = {
-  task: RetreatTask
+  task_id: number
   order: number
   state: RetreatToTaskState
   due_date?: string
-  link_override?: string
+  title: string
+  description?: string
+  link?: string
 }
 export type RetreatModel = {
   id: number

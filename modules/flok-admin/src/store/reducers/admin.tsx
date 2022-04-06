@@ -80,7 +80,7 @@ export type AdminState = {
     [key: number]: RetreatNoteModel[] | undefined
   }
   tasksByRetreat: {
-    [id: number]: RetreatToTask[]
+    [id: number]: RetreatToTask[] | undefined
   }
 }
 
@@ -290,11 +290,7 @@ export default function AdminReducer(
         ...state,
         tasksByRetreat: {
           ...state.tasksByRetreat,
-          [meta.retreatId]: payload.tasks.map((t) => {
-            t.task_vars = JSON.parse(t.task_vars as string)
-            t.templates = JSON.parse(t.templates as unknown as string)
-            return t
-          }),
+          [meta.retreatId]: payload.tasks,
         },
       }
     default:

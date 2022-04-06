@@ -1,5 +1,5 @@
 import {Breadcrumbs, Link, makeStyles, Typography} from "@material-ui/core"
-import {useEffect, useState} from "react"
+import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
   Link as ReactRouterLink,
@@ -12,7 +12,6 @@ import AppTodoList from "../components/retreats/RetreatTaskList"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails, getRetreatTasks} from "../store/actions/admin"
-import {useQuery} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -40,12 +39,6 @@ function RetreatTasksPage(props: RetreatTasksPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let retreatId = parseInt(props.match.params.retreatId) || -1 // -1 for an id that will always return 404
-  let [tabQuery, setTabQuery] = useQuery("tab")
-  let [tabValue, setTabValue] = useState<string | undefined>(undefined)
-  useEffect(() => {
-    const TABS = ["notes", "intake"]
-    setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "intake")
-  }, [tabQuery, setTabValue])
 
   // Get retreat data
   let retreat = useSelector((state: RootState) => {
