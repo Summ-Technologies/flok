@@ -1,15 +1,18 @@
-import {Breadcrumbs, Link, makeStyles} from "@material-ui/core"
+import {Breadcrumbs, Link, makeStyles, Tab, Tabs} from "@material-ui/core"
+import {useEffect, useState} from "react"
 import {
   Link as ReactRouterLink,
   RouteComponentProps,
   withRouter,
 } from "react-router-dom"
+import AppTabPanel from "../components/base/AppTabPanel"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
+import FlightsTravelPoliciesForm from "../components/retreats/FlightsTravelPoliciesForm"
 import RetreatFlightsTable from "../components/retreats/RetreatFlightsTable"
 import RetreatStateTitle from "../components/retreats/RetreatStateTitle"
 import {AppRoutes} from "../Stack"
-import {useRetreat, useRetreatAttendees} from "../utils"
+import {useQuery, useRetreat, useRetreatAttendees} from "../utils"
 type RetreatFlightsPageProps = RouteComponentProps<{
   retreatId: string
 }>
@@ -24,11 +27,22 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
+  tabBody: {
+    flex: "1 1 auto",
+    minHeight: 0,
+  },
 }))
 
 function RetreatFlightsPage(props: RetreatFlightsPageProps) {
   let classes = useStyles(props)
   let retreatId = parseInt(props.match.params.retreatId) || -1 // -1 for an id that will always return 404
+  let [tabQuery, setTabQuery] = useQuery("tab")
+  let [tabValue, setTabValue] = useState<string | undefined>(undefined)
+  useEffect(() => {
+    const TABS = ["other info", "flights"]
+    setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "flights")
+  }, [tabQuery, setTabValue])
+
   // Get retreat data
   let [retreat] = useRetreat(retreatId)
   let [retreatAttendees] = useRetreatAttendees(retreatId)
@@ -54,10 +68,31 @@ function RetreatFlightsPage(props: RetreatFlightsPageProps) {
         </Breadcrumbs>
         {retreat && <RetreatStateTitle retreat={retreat} type="flights" />}
         {retreat && (
-          <RetreatFlightsTable
-            retreatAttendees={retreatAttendees}
-            retreatId={retreatId}
-          />
+          <>
+            <Tabs
+              value={tabValue}
+              onChange={(e, newVal) =>
+                setTabQuery(newVal === "flights" ? null : newVal)
+              }
+              variant="fullWidth"
+              indicatorColor="primary">
+              <Tab value="flights" label="Flights" />
+              <Tab value="other info" label="Other info" />
+            </Tabs>
+            <AppTabPanel
+              show={tabValue === "flights"}
+              className={classes.tabBody}>
+              <RetreatFlightsTable
+                retreatAttendees={retreatAttendees}
+                retreatId={retreatId}
+              />
+            </AppTabPanel>
+            <AppTabPanel
+              show={tabValue === "other info"}
+              className={classes.tabBody}>
+              <FlightsTravelPoliciesForm retreatId={retreat.id} />
+            </AppTabPanel>
+          </>
         )}
       </div>
     </PageBase>
