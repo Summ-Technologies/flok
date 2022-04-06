@@ -39,7 +39,7 @@ function RetreatFlightsPage(props: RetreatFlightsPageProps) {
   let [tabQuery, setTabQuery] = useQuery("tab")
   let [tabValue, setTabValue] = useState<string | undefined>(undefined)
   useEffect(() => {
-    const TABS = ["other info", "flights"]
+    const TABS = ["info", "flights"]
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "flights")
   }, [tabQuery, setTabValue])
 
@@ -77,7 +77,7 @@ function RetreatFlightsPage(props: RetreatFlightsPageProps) {
               variant="fullWidth"
               indicatorColor="primary">
               <Tab value="flights" label="Flights" />
-              <Tab value="other info" label="Other info" />
+              <Tab value="info" label="Other info" />
             </Tabs>
             <AppTabPanel
               show={tabValue === "flights"}
@@ -87,9 +87,7 @@ function RetreatFlightsPage(props: RetreatFlightsPageProps) {
                 retreatId={retreatId}
               />
             </AppTabPanel>
-            <AppTabPanel
-              show={tabValue === "other info"}
-              className={classes.tabBody}>
+            <AppTabPanel show={tabValue === "info"} className={classes.tabBody}>
               <FlightsTravelPoliciesForm retreatId={retreat.id} />
             </AppTabPanel>
           </>

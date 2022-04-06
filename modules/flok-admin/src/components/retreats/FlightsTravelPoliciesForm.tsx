@@ -13,24 +13,6 @@ import {patchRetreatDetails} from "../../store/actions/admin"
 import {getTextFieldErrorProps, useRetreat} from "../../utils"
 
 let useStyles = makeStyles((theme) => ({
-  body: {
-    flex: "1 1 auto",
-    width: "100%",
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(4),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
-    display: "flex",
-    flexDirection: "column",
-  },
-  header: {
-    width: "100%",
-    marginBottom: theme.spacing(1),
-  },
-  footer: {
-    paddingTop: theme.spacing(1),
-  },
-
   root: {
     borderRadius: theme.shape.borderRadius,
     paddingTop: theme.spacing(1),
@@ -41,15 +23,21 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexWrap: "wrap",
     marginTop: theme.spacing(1),
-    marginLeft: theme.spacing(10),
-    marginRight: theme.spacing(10),
     "& > *:not(:first-child)": {
       marginTop: theme.spacing(1),
     },
+    maxWidth: theme.breakpoints.values.lg,
+    marginLeft: "auto",
+    marginRight: "auto",
   },
-  textField: {
-    marginBottom: theme.spacing(1.25),
+  header: {
+    width: "100%",
+    marginBottom: theme.spacing(1),
   },
+  footer: {
+    paddingTop: theme.spacing(1),
+  },
+  textField: {},
 }))
 
 function FlightsTravelPoliciesForm(props: {retreatId: number}) {
