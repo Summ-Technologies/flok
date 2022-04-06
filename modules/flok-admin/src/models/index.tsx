@@ -1,13 +1,17 @@
 export type AdminRetreatListType = "active" | "inactive" | "complete"
 export type AdminRetreatListModel = {
   id: number
-  guid: string
   company_name: string
   contact_email: string
   preferences_num_attendees_lower: number
   flok_admin_state: string
   flok_admin_owner: string
   created_at: string
+  intake_state: RetreatIntakeState
+  lodging_state: RetreatLodgingState
+  attendees_state: RetreatAttendeesState
+  flights_state: RetreatFlightsState
+  itinerary_state: RetreatItineraryState
 }
 export type AdminRetreatModel = {
   id: number
@@ -48,10 +52,12 @@ export type AdminRetreatModel = {
   // Retreat data related to itinerary
   itinerary_state?: RetreatItineraryState
 
-  //Andrew added for task
-
+  // Retreat links
   itinerary_first_draft_link?: string
   itinerary_final_draft_link?: string
+
+  flights_travel_policies_link: string | null
+  attendees_registration_form_id: string | null
 }
 
 export type AdminRetreatUpdateModel = Pick<
