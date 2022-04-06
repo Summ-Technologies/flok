@@ -6,7 +6,10 @@ import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AuthForm from "../../components/forms/AuthForm"
 import PageContainer from "../../components/page/PageContainer"
+import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
+import {apiNotification} from "../../notistack-lib/utils"
 import {AppRoutes} from "../../Stack"
+import {ApiAction} from "../../store/actions/api"
 import {getUserResetToken, postUserReset} from "../../store/actions/user"
 import UserGetters from "../../store/getters/user"
 import {apiToModel} from "../../utils/apiUtils"
@@ -62,9 +65,23 @@ function AuthResetPage(props: AuthResetPageProps) {
     }
   }, [dispatch, loginToken, loginTokenUserEmail])
 
-  function submitForm(vals: {password: string}) {
-    dispatch(postUserReset(loginToken, vals.password))
-    dispatch(push(AppRoutes.getPath("RetreatHomePage", {retreatIdx: "0"})))
+  async function submitForm(vals: {password: string}) {
+    let authResponse = (await dispatch(
+      postUserReset(loginToken, vals.password)
+    )) as unknown as ApiAction
+    if (!authResponse.error) {
+      dispatch(push(AppRoutes.getPath("RetreatHomePage", {retreatIdx: "0"})))
+    } else {
+      dispatch(
+        enqueueSnackbar(
+          apiNotification(
+            "Something went wrong.",
+            (key) => dispatch(closeSnackbar(key)),
+            true
+          )
+        )
+      )
+    }
   }
   let classes = useStyles(props)
   return (
