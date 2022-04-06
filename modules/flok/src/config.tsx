@@ -109,4 +109,5 @@ export const Constants = {
    * The key used to save a retreat GUID in local storage
    */
   localStorageRetreatIdxKey: "activeRetreatIdx",
+  retreatBaseUrlVar: "%%RETREAT_BASE_URL%%",
 }

@@ -118,6 +118,15 @@ function RetreatPage(props: RetreatPageProps) {
           <Typography variant="body1" component="li">
             <Link
               component={ReactRouterLink}
+              to={AppRoutes.getPath("RetreatTasksPage", {
+                retreatId: retreatId.toString(),
+              })}>
+              Tasks
+            </Link>
+          </Typography>
+          <Typography variant="body1" component="li">
+            <Link
+              component={ReactRouterLink}
               to={AppRoutes.getPath("RetreatUsersPage", {
                 retreatId: retreatId.toString(),
               })}>
