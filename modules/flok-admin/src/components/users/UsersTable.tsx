@@ -11,6 +11,7 @@ import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {User} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
+import {patchUser} from "../../store/actions/admin"
 import {
   getDateFromString,
   getDateTimeString,
@@ -18,6 +19,7 @@ import {
 } from "../../utils"
 import AppLoadingScreen from "../base/AppLoadingScreen"
 import NewUserModal from "../users/NewUserModal"
+import SearchUserModal from "./SearchUserModal"
 import UserInfoModal from "./UserInfoModal"
 
 let useStyles = makeStyles((theme) => ({
@@ -43,6 +45,7 @@ export default function UsersTable(props: UsersTableProps) {
 
   let [activeUser, setActiveUser] = useState<User | undefined>(undefined)
   let [newUserOpen, setNewUserOpen] = useState(false)
+  let [addUserOpen, setAddUserOpen] = useState(false)
 
   const createTableRows = (users: {[id: number]: User}) =>
     _.values(users).map((u) => ({
@@ -75,6 +78,18 @@ export default function UsersTable(props: UsersTableProps) {
     } else {
       dispatch(enqueueSnackbar({message: "Something went wrong"}))
     }
+  }
+
+  const handleAddUser = (user: User) => {
+    dispatch(
+      patchUser(
+        user.id,
+        user.first_name,
+        user.last_name,
+        _.uniq(user.retreat_ids.concat([props.retreatId ?? -1]))
+      )
+    )
+    setAddUserOpen(false)
   }
 
   const [sortModel, setSortModel] = useState<GridSortModel | undefined>([
@@ -140,6 +155,15 @@ export default function UsersTable(props: UsersTableProps) {
       ) : (
         <>
           <div className={classes.newUserRow}>
+            {props.retreatId && (
+              <Button
+                onClick={() => setAddUserOpen(true)}
+                variant="contained"
+                style={{marginRight: 6}}
+                color="primary">
+                Add existing user
+              </Button>
+            )}
             <Button
               onClick={() => setNewUserOpen(true)}
               variant="outlined"
@@ -165,6 +189,7 @@ export default function UsersTable(props: UsersTableProps) {
       )}
       <NewUserModal
         open={newUserOpen}
+        autofill={props.retreatId}
         onClose={(submitted) => setNewUserOpen(false)}
       />
       {activeUser && (
@@ -174,6 +199,11 @@ export default function UsersTable(props: UsersTableProps) {
           onClose={() => setActiveUser(undefined)}
         />
       )}
+      <SearchUserModal
+        onSubmit={(user) => handleAddUser(user)}
+        open={addUserOpen}
+        onClose={() => setAddUserOpen(false)}
+      />
     </>
   )
 }

@@ -319,29 +319,30 @@ export default function AdminReducer(
       }
     case POST_USER_SUCCESS:
     case PATCH_USER_SUCCESS:
-      payload = (action as unknown as ApiAction).payload as {
+      let thisPayload = (action as unknown as ApiAction).payload as {
         user: User
         login_token?: string
       }
-      if (payload.user.retreat_ids.length === 0) return state
       let newState = {
         ...state,
         usersByRetreat: {
           ...state.usersByRetreat,
           [-1]: {
             ...state.usersByRetreat[-1],
-            [payload.user.id]: payload.user,
-          },
-          [payload.user.retreat_ids[0]]: {
-            ...state.usersByRetreat[payload.user.retreat_ids[0]],
-            [payload.user.id]: payload.user,
+            [thisPayload.user.id]: thisPayload.user,
           },
         },
-      }
-      if (payload.login_token) {
+      } as AdminState
+      thisPayload.user.retreat_ids.forEach((id) => {
+        newState.usersByRetreat[id] = {
+          ...newState.usersByRetreat[id],
+          [thisPayload.user.id]: thisPayload.user,
+        }
+      })
+      if (thisPayload.login_token) {
         newState.userLoginTokens = {
           ...newState.userLoginTokens,
-          [payload.user.id]: payload.login_token,
+          [thisPayload.user.id]: thisPayload.login_token,
         }
       }
       return newState

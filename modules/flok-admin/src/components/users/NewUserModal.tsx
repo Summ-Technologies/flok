@@ -23,17 +23,24 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type NewUserModalProps = {open: boolean; onClose: (submitted: boolean) => void}
+type NewUserModalProps = {
+  open: boolean
+  onClose: (submitted: boolean) => void
+  autofill?: number
+}
 export default function NewUserModal(props: NewUserModalProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
+  let retreatList = useRetreatList()
   let formik = useFormik({
     enableReinitialize: true,
     initialValues: {
       email: null,
       firstName: null,
       lastName: null,
-      retreats: [] as AdminRetreatListModel[],
+      retreats: (props.autofill !== undefined && props.autofill !== -1
+        ? [retreatList.find((val) => val.id === props.autofill)]
+        : []) as AdminRetreatListModel[],
     },
     onSubmit: (values) => {
       dispatch(
@@ -47,8 +54,6 @@ export default function NewUserModal(props: NewUserModalProps) {
       props.onClose(true)
     },
   })
-
-  let retreatList = useRetreatList()
 
   const commonTextFieldProps: TextFieldProps = {
     onChange: formik.handleChange,
