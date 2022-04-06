@@ -79,6 +79,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   let retreat = useRetreat()
 
   let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
+
   if (retreat.flights_state !== "BOOKING") {
     attendeeTravelInfo = SampleLockedAttendees
   }

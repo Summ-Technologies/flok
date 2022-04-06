@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Chip,
   Dialog,
@@ -6,7 +7,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  IconButton, makeStyles,
+  IconButton,
+  Link,
+  makeStyles,
   Paper,
   styled,
   Table,
@@ -16,26 +19,26 @@ import {
   TableRow,
   TextField,
   Tooltip,
-  Typography
+  Typography,
 } from "@material-ui/core"
 import CloseIcon from "@material-ui/icons/Close"
-import { useState } from "react"
-import { useDispatch } from "react-redux"
-import { RouteComponentProps, withRouter } from "react-router-dom"
+import {useState} from "react"
+import {useDispatch} from "react-redux"
+import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
-import { RetreatAttendeeModel, SampleLockedAttendees } from "../models/retreat"
+import {RetreatAttendeeModel, SampleLockedAttendees} from "../models/retreat"
 import {
   deleteRetreatAttendees,
-  postRetreatAttendees
+  postRetreatAttendees,
 } from "../store/actions/retreat"
-import { theme } from "../theme"
-import { useRetreatAttendees } from "../utils/retreatUtils"
-import { useRetreat } from "./misc/RetreatProvider"
+import {theme} from "../theme"
+import {useRetreatAttendees} from "../utils/retreatUtils"
+import {useRetreat} from "./misc/RetreatProvider"
 
 const HtmlTooltip = styled(({className, ...props}) => (
   <Tooltip {...props} classes={{popper: className}} />
@@ -149,7 +152,6 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     setOpenNotAttendingModel(false)
   }
 
-
   const handleNewAttendeeSubmit = () => {
     const errorState = {name: false, email: false}
     if (newAttendeeName === "") {
@@ -187,12 +189,11 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
       />
       <PageBody appBar>
         <div className={classes.section}>
-<<<<<<< HEAD
           <Typography variant="h1">Attendees</Typography>
           {retreat.attendees_state !== "REGISTRATION_OPEN" && (
             <PageLockedModal pageDesc="This page will be unlocked when attendee registration opens" />
           )}
-=======
+
           <Box
             display="flex"
             justifyContent="space-between"
@@ -213,7 +214,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
               )
             </Link>
           </Box>
->>>>>>> master
+
           <AppExpandableTable
             headers={[
               {
