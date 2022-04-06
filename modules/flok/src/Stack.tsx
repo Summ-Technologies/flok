@@ -1,5 +1,5 @@
 import React from "react"
-import { Route, Switch } from "react-router-dom"
+import {Route, Switch} from "react-router-dom"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import SigninPage from "./pages/auth/SigninPage"
 import DeprecatedHomeRoutingPage from "./pages/deprecated/DeprecatedHomeRoutingPage"

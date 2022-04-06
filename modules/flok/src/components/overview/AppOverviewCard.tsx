@@ -1,7 +1,7 @@
-import { makeStyles, Paper } from "@material-ui/core"
-import { SvgIconComponent } from "@material-ui/icons"
+import {makeStyles, Paper} from "@material-ui/core"
+import {SvgIconComponent} from "@material-ui/icons"
 import clsx from "clsx"
-import React, { PropsWithChildren } from "react"
+import React, {PropsWithChildren} from "react"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppTypography from "../base/AppTypography"
 

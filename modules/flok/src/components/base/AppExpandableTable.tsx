@@ -4,12 +4,13 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead, TableRow as AppTableRow,
-  Tooltip
+  TableHead,
+  TableRow as AppTableRow,
+  Tooltip,
 } from "@material-ui/core"
 import Table from "@material-ui/core/Table"
-import { Delete, SwapVert } from "@material-ui/icons"
-import React, { useState } from "react"
+import {Delete, SwapVert} from "@material-ui/icons"
+import React, {useState} from "react"
 import AppTypography from "./AppTypography"
 
 type ExpandableRowProps<T> = {

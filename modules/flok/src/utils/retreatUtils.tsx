@@ -1,27 +1,10 @@
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Constants} from "../config"
-import {ResourceNotFoundType} from "../models"
-import {RetreatModel, RetreatToTask} from "../models/retreat"
+import {RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
-import {
-  getRetreat,
-  getRetreatAttendees,
-  getRetreatByGuid,
-} from "../store/actions/retreat"
+import {getRetreatAttendees, getRetreatByGuid} from "../store/actions/retreat"
 
-export function useRetreat(retreatId: number) {
-  let dispatch = useDispatch()
-  let retreat = useSelector(
-    (state: RootState) => state.retreat.retreats[retreatId]
-  )
-  useEffect(() => {
-    if (!retreat) {
-      dispatch(getRetreat(retreatId))
-    }
-  }, [retreat, dispatch, retreatId])
-  return retreat as RetreatModel | ResourceNotFoundType | undefined
-}
 export function useRetreatAttendees(retreatId: number) {
   let dispatch = useDispatch()
   let attendees = useSelector(

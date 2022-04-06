@@ -1,8 +1,8 @@
-import { Action } from "redux"
-import { ResourceNotFound, ResourceNotFoundType } from "../../models"
-import { RetreatAttendeesApiResponse } from "../../models/api"
-import { RetreatAttendeeModel, RetreatModel } from "../../models/retreat"
-import { ApiAction } from "../actions/api"
+import {Action} from "redux"
+import {ResourceNotFound, ResourceNotFoundType} from "../../models"
+import {RetreatAttendeesApiResponse} from "../../models/api"
+import {RetreatAttendeeModel, RetreatModel} from "../../models/retreat"
+import {ApiAction} from "../actions/api"
 import {
   DELETE_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
@@ -12,7 +12,7 @@ import {
   GET_RETREAT_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
-  PUT_RETREAT_TASK_SUCCESS
+  PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
 
 export type RetreatState = {

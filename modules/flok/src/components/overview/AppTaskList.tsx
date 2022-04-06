@@ -75,13 +75,7 @@ function TodoListItem(props: {
           color="default"
         />
         <AppTypography className={classes.title}>
-          {task.link ? (
-            <Link href={task.link} target={task.link}>
-              {task.title}
-            </Link>
-          ) : (
-            task.title
-          )}
+          {task.link ? <Link href={task.link}>{task.title}</Link> : task.title}
         </AppTypography>
         <div style={{flexGrow: 1}}></div>
         {task.due_date ? (
@@ -165,7 +159,7 @@ export default function AppTodoList(props: {
           <Badge
             className={classes.wrapper}
             anchorOrigin={{vertical: "top", horizontal: "left"}}
-            badgeContent={task.order}
+            badgeContent={<>&nbsp;{`${t.order}`}&nbsp;</>}
             overlap="rectangle"
             invisible={!props.orderBadge}
             color="primary">

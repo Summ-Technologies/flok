@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import { ResourceNotFound } from "../models"
-import { DestinationModel, HotelModel } from "../models/lodging"
-import { RootState } from "../store"
-import {
-  getDestinations, getHotelByGuid
-} from "../store/actions/lodging"
+import {useEffect, useState} from "react"
+import {useDispatch, useSelector} from "react-redux"
+import {ResourceNotFound} from "../models"
+import {DestinationModel, HotelModel} from "../models/lodging"
+import {RootState} from "../store"
+import {getDestinations, getHotelByGuid} from "../store/actions/lodging"
 
 // HOOKS
 export function useDestinations() {
