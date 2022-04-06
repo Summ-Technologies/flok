@@ -1,5 +1,6 @@
 import {
   Button,
+  Link,
   makeStyles,
   TextField,
   TextFieldProps,
@@ -90,6 +91,19 @@ function AttendeesRegistrationFormIdForm(props: {retreatId: number}) {
         {...getTextFieldErrorProps(formik, "attendees_registration_form_id")}
         value={formik.values.attendees_registration_form_id}
         label=" Attendees Registration Form Id"
+        helperText={
+          formik.values.attendees_registration_form_id ? (
+            <>
+              Form link:{" "}
+              <Link
+                href={`https://docs.google.com/forms/d/e/${formik.values.attendees_registration_form_id}/viewform`}
+                target="_blank">
+                https://docs.google.com/forms/d/e/
+                {formik.values.attendees_registration_form_id}/viewform
+              </Link>
+            </>
+          ) : undefined
+        }
       />
       <div className={classes.footer}>
         <Button
