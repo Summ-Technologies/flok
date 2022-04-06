@@ -35,7 +35,8 @@ function LodgingPage(props: LodgingPageProps) {
       />
       <PageBody appBar>
         <div className={classes.root}>
-          {retreat.lodging_state === "CONTRACT" ? (
+          {retreat.lodging_state === "CONTRACT" ||
+          retreat.lodging_state === "HANDOFF" ? (
             <RetreatHotelPageBody retreat={retreat} retreatIdx={retreatIdx} />
           ) : (
             <ProposalList retreat={retreat} retreatIdx={retreatIdx} />
