@@ -84,14 +84,25 @@ function RetreatAttendeePage(props: RetreatAttendeePageProps) {
             component={ReactRouterLink}>
             {retreat?.company_name}
           </Link>
-          <Link
-            color="inherit"
-            to={AppRoutes.getPath("RetreatAttendeesPage", {
-              retreatId: retreatId.toString(),
-            })}
-            component={ReactRouterLink}>
-            Attendees
-          </Link>
+          {tabValue === "flights" ? (
+            <Link
+              color="inherit"
+              to={AppRoutes.getPath("RetreatFlightsPage", {
+                retreatId: retreatId.toString(),
+              })}
+              component={ReactRouterLink}>
+              Flights
+            </Link>
+          ) : (
+            <Link
+              color="inherit"
+              to={AppRoutes.getPath("RetreatAttendeesPage", {
+                retreatId: retreatId.toString(),
+              })}
+              component={ReactRouterLink}>
+              Attendees
+            </Link>
+          )}
           <AppTypography color="textPrimary">{attendee?.name}</AppTypography>
         </Breadcrumbs>
         <Typography variant="h1">{attendee?.name}</Typography>
