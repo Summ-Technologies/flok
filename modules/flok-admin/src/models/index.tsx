@@ -48,10 +48,12 @@ export type AdminRetreatModel = {
   // Retreat data related to itinerary
   itinerary_state?: RetreatItineraryState
 
-  //Andrew added for task
-
+  // Retreat links
   itinerary_first_draft_link?: string
   itinerary_final_draft_link?: string
+
+  flights_travel_policies_link: string | null
+  attendees_registration_form_id: string | null
 }
 
 export type AdminRetreatUpdateModel = Pick<

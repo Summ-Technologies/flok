@@ -5,24 +5,28 @@ import {
   Dialog,
   Link,
   makeStyles,
+  Tab,
+  Tabs,
 } from "@material-ui/core"
 import {push} from "connected-react-router"
 import _ from "lodash"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import {
   Link as ReactRouterLink,
   RouteComponentProps,
   withRouter,
 } from "react-router-dom"
+import AppTabPanel from "../components/base/AppTabPanel"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
+import AttendeesRegistrationFormIdForm from "../components/retreats/AttendeesRegistrationFormIdForm"
 import NewRetreatAttendeeForm from "../components/retreats/NewRetreatAttendeeForm"
 import RetreatAttendeesTable from "../components/retreats/RetreatAttendeesTable"
 import RetreatStateTitle from "../components/retreats/RetreatStateTitle"
 import {AppRoutes} from "../Stack"
 import {theme} from "../theme"
-import {useRetreat, useRetreatAttendees} from "../utils"
+import {useQuery, useRetreat, useRetreatAttendees} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -35,6 +39,10 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
+  tabBody: {
+    flex: "1 1 auto",
+    minHeight: 0,
+  },
 }))
 
 type RetreatAttendeesPageProps = RouteComponentProps<{
@@ -45,6 +53,12 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let retreatId = parseInt(props.match.params.retreatId) || -1 // -1 for an id that will always return 404
+  let [tabQuery, setTabQuery] = useQuery("tab")
+  let [tabValue, setTabValue] = useState<string | undefined>(undefined)
+  useEffect(() => {
+    const TABS = ["info", "attendees"]
+    setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "attendees")
+  }, [tabQuery, setTabValue])
 
   // Get retreat data
   let [retreat] = useRetreat(retreatId)
@@ -93,25 +107,52 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
             />
           </Dialog>
         </Box>
-        <RetreatAttendeesTable
-          rows={
-            retreatAttendees
-              ? retreatAttendees.map((a) =>
-                  _.pick(a, ["id", "name", "email_address", "info_status"])
-                )
-              : []
-          }
-          onSelect={(id: number) => {
-            dispatch(
-              push(
-                AppRoutes.getPath("RetreatAttendeePage", {
-                  retreatId: retreatId.toString(),
-                  attendeeId: id.toString(),
-                })
-              )
-            )
-          }}
-        />
+
+        {retreat && (
+          <>
+            <Tabs
+              value={tabValue}
+              onChange={(e, newVal) =>
+                setTabQuery(newVal === "attendees" ? null : newVal)
+              }
+              variant="fullWidth"
+              indicatorColor="primary">
+              <Tab value="attendees" label="Attendees" />
+              <Tab value="info" label="Other info" />
+            </Tabs>
+            <AppTabPanel
+              show={tabValue === "attendees"}
+              className={classes.tabBody}>
+              <RetreatAttendeesTable
+                rows={
+                  retreatAttendees
+                    ? retreatAttendees.map((a) =>
+                        _.pick(a, [
+                          "id",
+                          "name",
+                          "email_address",
+                          "info_status",
+                        ])
+                      )
+                    : []
+                }
+                onSelect={(id: number) => {
+                  dispatch(
+                    push(
+                      AppRoutes.getPath("RetreatAttendeePage", {
+                        retreatId: retreatId.toString(),
+                        attendeeId: id.toString(),
+                      })
+                    )
+                  )
+                }}
+              />
+            </AppTabPanel>
+            <AppTabPanel show={tabValue === "info"} className={classes.tabBody}>
+              <AttendeesRegistrationFormIdForm retreatId={retreat.id} />
+            </AppTabPanel>
+          </>
+        )}
       </div>
     </PageBase>
   )
