@@ -12,9 +12,7 @@ import AppImage from "../base/AppImage"
 import {useSidebar} from "./PageSidenav"
 
 let useStyles = makeStyles((theme) => ({
-  root: {
-    zIndex: 1400,
-  },
+  root: {},
   menuButton: {
     marginRight: theme.spacing(2),
   },

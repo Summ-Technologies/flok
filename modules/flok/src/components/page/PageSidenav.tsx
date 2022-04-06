@@ -46,7 +46,6 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
 
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
-    zIndex: 1500,
   },
   footer: {
     marginTop: "auto",

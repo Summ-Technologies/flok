@@ -15,6 +15,7 @@ function PageLockedModal(props: {pageDesc?: string}) {
       aria-labelledby="simple-dialog-title"
       open={true}
       disableBackdropClick={false}
+      style={{zIndex: 1000}}
       classes={{
         root: classes.MuiBackdrop,
       }}>
