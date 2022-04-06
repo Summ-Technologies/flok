@@ -8,7 +8,7 @@ import DeprecatedProposalPage from "./pages/deprecated/DeprecatedProposalPage"
 import DeprecatedProposalsListPage from "./pages/deprecated/DeprecatedProposalsListPage"
 import DeprecatedRetreatPreferencesFormPage from "./pages/deprecated/DeprecatedRetreatPreferencesFormPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
-import ProposalsListPage from "./pages/LodgingPage"
+import LodgingPage from "./pages/LodgingPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import ProtectedRoute from "./pages/misc/ProtectedRoute"
 import RedirectPage from "./pages/misc/RedirectPage"
@@ -144,7 +144,7 @@ export default function Stack() {
             <ProtectedRoute
               path={AppRoutes.getPath("LodgingPage")}
               exact
-              component={ProposalsListPage}
+              component={LodgingPage}
             />
             <ProtectedRoute
               path={AppRoutes.getPath("ProposalPage")}

@@ -72,6 +72,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
   let [attendees] = useRetreatAttendees(retreat.id)
+  let retreatBaseUrl = `/r/${retreatIdx}`
 
   let [datesOverview, setDatesOverview] = useState<string | undefined>(
     undefined
@@ -182,7 +183,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
   const handleTaskClick = (task: RetreatToTask) => {
     dispatch(
       putRetreatTask(
-        task.task.id,
+        task.task_id,
         retreat.id,
         task.state === "COMPLETED" ? "TODO" : "COMPLETED"
       )
@@ -272,6 +273,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
           </AppTypography>
           <AppTodoList
             retreatToTasks={todoTasks}
+            retreatBaseUrl={retreatBaseUrl}
             handleCheckboxClick={handleTaskClick}
             orderBadge={true}
           />
@@ -279,6 +281,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
             <>
               <AppTodoList
                 retreatToTasks={todoTasksExtra}
+                retreatBaseUrl={retreatBaseUrl}
                 handleCheckboxClick={handleTaskClick}
                 orderBadge={true}
                 collapsed={todoTasksCollapsed}
@@ -320,6 +323,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
             retreatToTasks={retreat.tasks_completed.sort(
               (a, b) => b.order - a.order
             )}
+            retreatBaseUrl={retreatBaseUrl}
             handleCheckboxClick={handleTaskClick}
             orderBadge={false}
             collapsed={completedTasksCollapsed}
