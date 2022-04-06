@@ -117,6 +117,7 @@ export function postUserReset(loginToken: string, password: string) {
     if (!signupResponse.error) {
       dispatch(setUserLoggedIn())
     }
+    return signupResponse
   }
 }
 
