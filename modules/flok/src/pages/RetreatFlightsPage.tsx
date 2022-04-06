@@ -10,7 +10,9 @@ import AppMoreInfoIcon from "../components/base/AppMoreInfoIcon"
 import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
+import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
+import {SampleLockedAttendees} from "../models/retreat"
 import {AppRoutes} from "../Stack"
 import {useRetreatAttendees} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
@@ -78,6 +80,10 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
 
   let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
+  if (retreat.flights_state !== "BOOKING") {
+    attendeeTravelInfo = SampleLockedAttendees
+  }
+
   return (
     <PageContainer>
       <PageSidenav
@@ -92,6 +98,9 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
             justifyContent="space-between"
             alignItems="flex-end">
             <Typography variant="h1">Flights</Typography>
+            {retreat.flights_state !== "BOOKING" && (
+              <PageLockedModal pageDesc="This page will be unlocked when flight booking begins" />
+            )}
             <Link
               variant="body1"
               underline="always"

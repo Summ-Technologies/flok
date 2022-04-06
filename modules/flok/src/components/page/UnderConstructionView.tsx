@@ -21,13 +21,8 @@ let useStyles = makeStyles((theme) => ({
   },
   modal: {
     backgroundColor: "#FFF",
-    border: "1px solid rgba(0, 0, 0, 0.1)",
     borderRadius: 5,
-    "-webkit-box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "-moz-box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "-webkit-background-clip": "padding-box",
-    "-moz-background-clip": "padding-box",
+    boxShadow: "0 3px 7px rgba(0, 0, 0, 0.3)",
     backgroundClip: "padding-box",
     maxWidth: "40vw",
     maxHeight: "40vh",
@@ -82,10 +77,12 @@ export default function UnderConstructionView(
           </Icon>
         </div>
         <div className={classes.modalBody}>
-          <AppTypography>
-            We are currently working to create new services to help improve your
-            planning experience.
-          </AppTypography>
+          {!props.pageDesc && (
+            <AppTypography>
+              We are currently working to create new services to help improve
+              your planning experience.
+            </AppTypography>
+          )}
           {props.pageDesc && (
             <>
               <br />

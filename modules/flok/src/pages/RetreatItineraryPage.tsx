@@ -4,6 +4,7 @@ import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppMoreInfoIcon from "../components/base/AppMoreInfoIcon"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
+import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -72,6 +73,10 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
       <PageBody appBar>
         <div className={classes.root}>
           <Typography variant="h1">Itinerary</Typography>
+          {retreat.itinerary_state !== "BOOKING" && (
+            <PageLockedModal pageDesc="This page will be unlocked when we begin booking your itinerary" />
+          )}
+
           <div className={classes.linksDiv}>
             <Box className={classes.draftBox}>
               <Typography variant="h4" className={classes.draftHeading}>
