@@ -1,10 +1,12 @@
 import {Box, makeStyles} from "@material-ui/core"
+import {push} from "connected-react-router"
 import querystring from "querystring"
 import React, {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AuthForm from "../../components/forms/AuthForm"
 import PageContainer from "../../components/page/PageContainer"
+import {AppRoutes} from "../../Stack"
 import {getUserResetToken, postUserReset} from "../../store/actions/user"
 import UserGetters from "../../store/getters/user"
 import {apiToModel} from "../../utils/apiUtils"
@@ -59,6 +61,7 @@ function AuthResetPage(props: AuthResetPageProps) {
 
   function submitForm(vals: {password: string}) {
     dispatch(postUserReset(loginToken, vals.password))
+    dispatch(push(AppRoutes.getPath("RetreatHomePage", {retreatIdx: "0"})))
   }
   let classes = useStyles(props)
   return (
