@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Chip,
   Dialog,
@@ -6,19 +7,30 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
+  Link,
   makeStyles,
+  Paper,
   styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
   TextField,
   Tooltip,
   Typography,
 } from "@material-ui/core"
+import CloseIcon from "@material-ui/icons/Close"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
+import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+import {RetreatAttendeeModel} from "../models/retreat"
 import {
   deleteRetreatAttendees,
   postRetreatAttendees,
@@ -36,19 +48,19 @@ const HtmlTooltip = styled(({className, ...props}) => (
   },
 }))
 
-function DietList(prefString: string | undefined) {
-  if (!prefString) {
+function DietList(props: {prefString: string | undefined}) {
+  if (!props.prefString) {
     return <></>
   }
-  const prefs = prefString.split(",").map((s) => (
+  const prefs = props.prefString.split(",").map((s) => (
     <Chip
+      key={s}
       size="small"
-      label={s}
+      label={s ? s[0].toLocaleUpperCase() + s.slice(1) : ""}
       style={{
         margin: "1px 2px",
         backgroundColor: theme.palette.primary.main,
         color: "white",
-        cursor: "pointer",
       }}
     />
   ))
@@ -89,6 +101,26 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
   },
+  notAttendingButton: {
+    cursor: "pointer",
+  },
+  closeButton: {
+    position: "absolute",
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
+  },
+  table: {
+    minWidth: "40vw",
+  },
+  notAttendingDialogBody: {
+    padding: "0 !important",
+    maxHeight: "30vh",
+  },
+  allAttendingP: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
 }))
 
 type RetreatAttendeesProps = RouteComponentProps<{retreatIdx: string}>
@@ -99,7 +131,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
 
-  let attendeeTravelInfo = useRetreatAttendees(retreat.id)
+  let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
   let [newAttendeeName, setNewAttendeeName] = useState("")
@@ -108,6 +140,11 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     name: false,
     email: false,
   })
+  const [openNotAttendingModel, setOpenNotAttendingModel] = useState(false)
+
+  const handleClose = () => {
+    setOpenNotAttendingModel(false)
+  }
 
   const handleNewAttendeeSubmit = () => {
     const errorState = {name: false, email: false}
@@ -146,42 +183,121 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
       />
       <PageBody appBar>
         <div className={classes.section}>
-          <Typography variant="h1">Attendees</Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="flex-end">
+            <Typography variant="h1">Attendees</Typography>
+            <Link
+              variant="body1"
+              underline="always"
+              className={classes.notAttendingButton}
+              onClick={() => {
+                setOpenNotAttendingModel(true)
+              }}>
+              View invitees not coming (
+              {attendeeTravelInfo &&
+                attendeeTravelInfo.filter((attendee) => {
+                  return attendee.info_status === "NOT_ATTENDING"
+                }).length}
+              )
+            </Link>
+          </Box>
           <AppExpandableTable
             headers={[
               {
                 name: "Employee",
-                comparator: (r1, r2) =>
-                  r1[0].toString().localeCompare(r2[0].toString()),
+                colId: "name",
+                comparator: (r1, r2) => {
+                  if (!r1.item.name) {
+                    return -1
+                  }
+                  if (!r2.item.name) {
+                    return 1
+                  }
+                  return r1.item.name
+                    .toString()
+                    .localeCompare(r2.item.name.toString())
+                },
               },
-              {name: "Email"},
-              {name: "Employee City"},
-              {name: "Dietary Preferences"},
+              {name: "Email", colId: "email_address"},
               {
-                name: "Other notes",
+                name: "Employee City",
+                colId: "city",
+                comparator: (r1, r2) => {
+                  if (r1.item.city == null) {
+                    return -1
+                  } else if (r2.item.city == null) {
+                    return 1
+                  } else {
+                    return r1.item.city.localeCompare(r2.item.city)
+                  }
+                },
+              },
+              {
+                name: "Dietary Preferences",
+                colId: "dietary_prefs",
+                renderCell: (val) => (
+                  <DietList
+                    prefString={val as RetreatAttendeeModel["dietary_prefs"]}
+                  />
+                ),
+              },
+              {
+                name: "",
+                colId: "notes",
+                renderCell: (val) => {
+                  if (val) {
+                    return (
+                      <HtmlTooltip
+                        placement="left"
+                        title={
+                          <AppTypography
+                            color="textPrimary"
+                            style={{whiteSpace: "pre-wrap"}}>
+                            {val}
+                          </AppTypography>
+                        }>
+                        <div>
+                          <AppTypography underline>Other notes</AppTypography>
+                        </div>
+                      </HtmlTooltip>
+                    )
+                  } else {
+                    return <></>
+                  }
+                },
               },
             ]}
             rows={
-              attendeeTravelInfo !== "RESOURCE_NOT_FOUND" &&
               attendeeTravelInfo !== undefined
-                ? attendeeTravelInfo.map((info) => ({
-                    id: info.id,
-                    disabled: !info.info_status.endsWith("INFO_ENTERED"),
-                    tooltip: !info.info_status.endsWith("INFO_ENTERED")
-                      ? "Once the attendee fills out the registration form you will be able to view more of their information here."
-                      : "",
-                    cols: [
-                      info.name,
-                      info.email_address,
-                      info.city,
-                      DietList(info.dietary_prefs),
-                      info.notes,
-                    ],
-                  }))
+                ? attendeeTravelInfo
+                    .filter(
+                      (attendee) => attendee.info_status !== "NOT_ATTENDING"
+                    )
+                    .sort((a, b) => {
+                      let getVal = (val: RetreatAttendeeModel) => {
+                        switch (val.info_status) {
+                          case "INFO_ENTERED":
+                            return 1
+                          default:
+                            return 0
+                        }
+                      }
+                      return getVal(b) - getVal(a)
+                    })
+                    .map((info: RetreatAttendeeModel) => ({
+                      id: info.id,
+                      disabled: !info.info_status.endsWith("INFO_ENTERED"),
+                      tooltip: !info.info_status.endsWith("INFO_ENTERED")
+                        ? "Once the attendee fills out the registration form you will be able to view more of their information here."
+                        : "",
+                      item: info,
+                    }))
                 : []
             }
             rowDeleteCallback={(row) => {
-              dispatch(deleteRetreatAttendees(retreat.id, row.id))
+              dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
             }}
           />
           <div className={classes.addBtn}>
@@ -238,6 +354,57 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
             <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
           </DialogActions>
         </Dialog>
+        {/* not attending modal below */}
+        <div>
+          <Dialog
+            onClose={handleClose}
+            aria-labelledby="customized-dialog-title"
+            open={openNotAttendingModel}>
+            <DialogTitle id="customized-dialog-title">
+              Invitees not attending
+              <IconButton
+                aria-label="close"
+                className={classes.closeButton}
+                onClick={() => {
+                  setOpenNotAttendingModel(false)
+                }}>
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent dividers className={classes.notAttendingDialogBody}>
+              {attendeeTravelInfo &&
+              attendeeTravelInfo.filter((attendee) => {
+                return attendee.info_status === "NOT_ATTENDING"
+              }).length ? (
+                <TableContainer component={Paper}>
+                  <Table className={classes.table} aria-label="simple table">
+                    <TableBody>
+                      {attendeeTravelInfo &&
+                        attendeeTravelInfo
+                          .filter((attendee) => {
+                            return attendee.info_status === "NOT_ATTENDING"
+                          })
+                          .map((attendee) => (
+                            <TableRow key={attendee.id}>
+                              <TableCell component="th" scope="row">
+                                {attendee.name}
+                              </TableCell>
+                              <TableCell align="right">
+                                {attendee.email_address}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <p className={classes.allAttendingP}>
+                  No invitees are registered as not attending
+                </p>
+              )}
+            </DialogContent>
+          </Dialog>
+        </div>
       </PageBody>
     </PageContainer>
   )

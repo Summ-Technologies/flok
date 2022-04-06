@@ -26,7 +26,32 @@ export type AdminRetreatModel = {
   flok_admin_signup_type: string | null
   flok_admin_owner: string | null
   flok_admin_state: string | null // One of retreat state options
+
+  intake_state?: RetreatIntakeState
+
+  // Retreat data related to lodging
+  lodging_state?: RetreatLodgingState
   selected_hotels: AdminSelectedHotelProposalModel[]
+  lodging_final_start_date?: string
+  lodging_final_end_date?: string
+  lodging_final_destination?: string
+  lodging_final_hotel_id?: number
+  lodging_final_contract_notes?: string
+  lodging_final_contract_url?: string
+
+  // Retreat data related to flights
+  attendees_state?: RetreatAttendeesState
+
+  // Retreat data related to flights
+  flights_state?: RetreatFlightsState
+
+  // Retreat data related to itinerary
+  itinerary_state?: RetreatItineraryState
+
+  //Andrew added for task
+
+  itinerary_first_draft_link?: string
+  itinerary_final_draft_link?: string
 }
 
 export type AdminRetreatUpdateModel = Pick<
@@ -251,3 +276,51 @@ export type RetreatToTask = {
   task_vars: {[key: string]: string | null}
   task_template: RetreatTask
 }
+export type User = {
+  id: number
+  email: string
+  first_name: string
+  last_name: string
+  created_at: string // datetime
+  retreat_ids: number[]
+}
+
+/****************** Retreat states types (keep synced with models/retreat.tsx in flok) ******************/
+export const OrderedRetreatIntakeState = [
+  "SIGNED_UP",
+  "INTAKE_CALL",
+  "FOLLOW_UP",
+  "NOT_MOVING_FORWARD",
+  "INVOICED",
+  "HANDOFF",
+] as const
+export type RetreatIntakeState = typeof OrderedRetreatIntakeState[number]
+
+export const OrderedRetreatLodgingState = [
+  "NOT_STARTED",
+  "PROPOSALS",
+  "CONTRACT",
+  "HANDOFF",
+] as const
+export type RetreatLodgingState = typeof OrderedRetreatLodgingState[number]
+
+export const OrderedRetreatAttendeesState = [
+  "NOT_STARTED",
+  "FORM_REVIEW",
+  "REGISTRATION_OPEN",
+] as const
+export type RetreatAttendeesState = typeof OrderedRetreatAttendeesState[number]
+
+export const OrderedRetreatFlightsState = [
+  "NOT_STARTED",
+  "POLICY_REVIEW",
+  "BOOKING",
+] as const
+export type RetreatFlightsState = typeof OrderedRetreatFlightsState[number]
+
+export const OrderedRetreatItineraryState = [
+  "NOT_STARTED",
+  "IN_PROGRESS",
+] as const
+export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
+/****************** End retreat states types ******************/

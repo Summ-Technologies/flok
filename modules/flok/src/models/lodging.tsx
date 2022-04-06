@@ -1,14 +1,5 @@
 import {ImageModel} from "."
 
-// keep the following in parity (enables us to check if strings are of budget type)
-export type BudgetType = "$" | "$$" | "$$$" | "$$$$"
-export const BudgetTypeVals = ["$", "$$", "$$$", "$$$$"]
-
-export type LodgingTag = {
-  id: number
-  name: string
-}
-
 // Destinations
 export type DestinationModel = {
   id: number
@@ -20,14 +11,10 @@ export type DestinationModel = {
   country: string
   country_abbreviation?: string
 
-  tagline: string
-  description: string
   description_short: string
-  detail_sections: {header: string; body: string}[]
 
   spotlight_img: ImageModel
   imgs: ImageModel[]
-  lodging_tags: LodgingTag[]
 }
 
 // Hotels
@@ -38,21 +25,13 @@ export type HotelModel = {
   name: string
   destination_id: number
   sub_location?: string
-
-  price: BudgetType
-  rating: number // should be 1 - 5
-  num_rooms: number
-  website_url: string
-  tagline: string
-  description: string
-  description_short: string
   street_address?: string
-  address_coordinates?: [number, number]
+
+  website_url: string
+  description_short: string
   airport_travel_time?: number
   airport?: string
-  is_flok_recommended?: boolean
 
   spotlight_img: ImageModel
   imgs: ImageModel[]
-  lodging_tags: LodgingTag[]
 }

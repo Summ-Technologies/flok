@@ -122,7 +122,7 @@ function ProposalPage(props: ProposalPageProps) {
   let classes = useStyles(props)
 
   let hotelGuid = convertGuid(props.match.params.hotelGuid)
-  let hotel = useHotel(hotelGuid)
+  let [hotel] = useHotel(hotelGuid)
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
   let [proposals, setProposals] = useState<HotelLodgingProposal[]>([])
@@ -214,7 +214,7 @@ function ProposalPage(props: ProposalPageProps) {
           <AppTypography variant="body1">
             Proposal missing or unavailable. View your{" "}
             <a
-              href={AppRoutes.getPath("ProposalsListPage", {
+              href={AppRoutes.getPath("LodgingPage", {
                 retreatIdx: retreatIdx.toString(),
               })}>
               proposals list

@@ -1,7 +1,8 @@
-import {makeStyles, Paper} from "@material-ui/core"
-import {SvgIconComponent} from "@material-ui/icons"
+import { makeStyles, Paper } from "@material-ui/core"
+import { SvgIconComponent } from "@material-ui/icons"
 import clsx from "clsx"
-import React, {PropsWithChildren} from "react"
+import React, { PropsWithChildren } from "react"
+import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -34,6 +35,7 @@ type AppOverviewCardProps = {
   label: string
   value?: string
   Icon: SvgIconComponent
+  moreInfo?: string
 }
 
 export default function AppOverviewCard(props: AppOverviewCardProps) {
@@ -42,7 +44,15 @@ export default function AppOverviewCard(props: AppOverviewCardProps) {
   return (
     <Paper variant="outlined" className={clsx(classes.root, props.color)}>
       <props.Icon />
-      <AppTypography variant="body1">{props.label}</AppTypography>
+      <AppTypography variant="body1">
+        {props.label}
+        {props.moreInfo && (
+          <>
+            {" "}
+            <AppMoreInfoIcon tooltipText={props.moreInfo} />
+          </>
+        )}
+      </AppTypography>
       <AppTypography variant="h3">{props.value ?? "--"}</AppTypography>
     </Paper>
   )

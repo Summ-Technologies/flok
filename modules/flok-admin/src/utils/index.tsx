@@ -1,14 +1,17 @@
 import {TextFieldProps} from "@material-ui/core"
 import {push} from "connected-react-router"
 import _ from "lodash"
-import {useEffect, useState} from "react"
+import {useCallback, useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {useLocation} from "react-router-dom"
 import {RootState} from "../store"
 import {
   getDestinations,
+  getHotelsSearch,
   getRetreatAttendees,
   getRetreatDetails,
+  getRetreatsList,
+  getUsers,
 } from "../store/actions/admin"
 
 /**
@@ -44,19 +47,22 @@ export function useQuery(param: string) {
   }, [searchString, setParamVal, param])
 
   /* If null is given for newParamVal, delete the param */
-  function setParam(newParamVal: string | null) {
-    let allParams = new URLSearchParams(searchString)
-    if (newParamVal == null) {
-      allParams.delete(param)
-    } else {
-      allParams.set(param, newParamVal)
-    }
-    dispatch(
-      push({
-        search: `${allParams.toString() ? "?" + allParams.toString() : ""}`,
-      })
-    )
-  }
+  let setParam = useCallback(
+    (newParamVal: string | null) => {
+      let allParams = new URLSearchParams(searchString)
+      if (newParamVal == null) {
+        allParams.delete(param)
+      } else {
+        allParams.set(param, newParamVal)
+      }
+      dispatch(
+        push({
+          search: `${allParams.toString() ? "?" + allParams.toString() : ""}`,
+        })
+      )
+    },
+    [param, dispatch, searchString]
+  )
   return [paramVal, setParam] as const
 }
 
@@ -145,4 +151,66 @@ export function getTextFieldErrorProps(
     error: isError,
     helperText: isError && formik.errors && formik.errors[field],
   }
+}
+
+export function useHotelsBySearch(search: string) {
+  let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
+  let results = useSelector(
+    (state: RootState) => state.admin.hotelsBySearch[search]
+  )
+  useEffect(() => {
+    async function loadHotelsBySearch() {
+      setLoading(true)
+      await dispatch(getHotelsSearch(search))
+      setLoading(false)
+    }
+    if (search.length >= 3 && !results) {
+      loadHotelsBySearch()
+    }
+  }, [search, dispatch, results])
+  return [results ? results : [], loading] as const
+}
+
+export function useRetreatUsers(retreatId: number) {
+  let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
+  let users = useSelector(
+    (state: RootState) => state.admin.usersByRetreat[retreatId]
+  )
+  useEffect(() => {
+    async function loadUsers() {
+      setLoading(true)
+      await dispatch(getUsers(retreatId))
+      setLoading(false)
+    }
+    if (users === undefined) {
+      loadUsers()
+    }
+  }, [retreatId, users, setLoading, dispatch])
+
+  return [users, loading] as const
+}
+
+/**
+ * This has a bug in it. Use at your own risk, not guranteed to include all retreats.
+ */
+export function useRetreatList() {
+  let dispatch = useDispatch()
+  let retreatList = useSelector((state: RootState) => {
+    return state.admin.retreatsList.active
+      .concat(state.admin.retreatsList.inactive)
+      .concat(state.admin.retreatsList.complete)
+  })
+
+  // This is inherently buggy. If active retreats are loaded, then this won't load inactive retreats and vice-versa.
+  useEffect(() => {
+    if (retreatList.length === 0) {
+      dispatch(getRetreatsList("active"))
+      dispatch(getRetreatsList("inactive"))
+      dispatch(getRetreatsList("complete"))
+    }
+  }, [dispatch, retreatList.length])
+
+  return retreatList
 }

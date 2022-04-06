@@ -1,4 +1,4 @@
-import {Button, makeStyles} from "@material-ui/core"
+import {Button, Chip, makeStyles} from "@material-ui/core"
 import {
   DataGrid,
   GridCellParams,
@@ -8,7 +8,10 @@ import {
 } from "@material-ui/data-grid"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
-import {AdminRetreatAttendeeModel} from "../../models"
+import {
+  AdminRetreatAttendeeModel,
+  RetreatAttendeeInfoStatusType,
+} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
 
 let useStyles = makeStyles((theme) => ({
@@ -29,7 +32,7 @@ let useStyles = makeStyles((theme) => ({
 
 export type RetreatAttendeesTableRow = Pick<
   AdminRetreatAttendeeModel,
-  "id" | "name" | "email_address" | "city"
+  "id" | "name" | "email_address" | "info_status"
 >
 
 type RetreatAttendeesTableProps = {
@@ -90,57 +93,48 @@ export default function RetreatAttendeesTable(
       headerName: "Email Address",
       width: 200,
     },
-    // {
-    //   ...commonColDefs,
-    //   field: "city",
-    //   headerName: "City",
-    //   width: 200,
-    // },
-    // {
-    //   ...commonColDefs,
-    //   field: "dietaryPrefs",
-    //   headerName: "Dietary Preferences",
-    //   width: 200,
-    //   renderCell: (params) => {
-    //     if (!params.value) {
-    //       return <></>
-    //     }
-    //     return (params.value as string).split(",").map((s) => (
-    //       <Chip
-    //         size="small"
-    //         label={s}
-    //         style={{
-    //           margin: 1,
-    //           backgroundColor: theme.palette.primary.main,
-    //           color: "white",
-    //           cursor: "pointer",
-    //         }}
-    //       />
-    //     ))
-    //   },
-    // },
-    // {
-    //   ...commonColDefs,
-    //   field: "notes",
-    //   headerName: "Notes",
-    //   width: 200,
-    // },
-    // {
-    //   ...commonColDefs,
-    //   field: "infoStatus",
-    //   headerName: "Info Status",
-    //   width: 150,
-    //   type: "singleSelect",
-    //   valueOptions: RetreatAttendeeInfoStatusOptions,
-    // // },
-    // {
-    //   ...commonColDefs,
-    //   field: "flightStatus",
-    //   headerName: "Flight Status",
-    //   width: 150,
-    //   type: "singleSelect",
-    //   valueOptions: RetreatAttendeeFlightStatusOptions,
-    // },
+    {
+      ...commonColDefs,
+      field: "infoStatus",
+      headerName: "Reg. Status",
+      width: 250,
+      type: "string",
+      sortComparator: (v1, v2) => {
+        if (v1 && v2) {
+          return (v1 as string).localeCompare(v2 as string)
+        } else if (v1) {
+          return 1
+        } else {
+          return -1
+        }
+      },
+      renderCell: (params) => {
+        let val: RetreatAttendeeInfoStatusType = params.getValue(
+          params.id,
+          "info_status"
+        ) as RetreatAttendeeInfoStatusType
+        switch (val) {
+          case "CREATED":
+            return (
+              <Chip
+                size="small"
+                label="Pending"
+                style={{backgroundColor: "yellow"}}
+              />
+            )
+          case "INFO_ENTERED":
+            return (
+              <Chip
+                size="small"
+                label="Registered"
+                style={{color: "white", backgroundColor: "green"}}
+              />
+            )
+          default:
+            return <></>
+        }
+      },
+    },
   ]
   return (
     <DataGrid

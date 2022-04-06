@@ -5,11 +5,13 @@ import HotelPage from "./pages/HotelPage"
 import HotelsPage from "./pages/HotelsPage"
 import RetreatAttendeePage from "./pages/RetreatAttendeePage"
 import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
+import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatLodgingPage from "./pages/RetreatLodgingPage"
 import RetreatPage from "./pages/RetreatPage"
 import RetreatSalesIntakePage from "./pages/RetreatSalesIntakePage"
 import RetreatsPage from "./pages/RetreatsPage"
 import RetreatTasksPage from "./pages/RetreatTasksPage"
+import UsersPage from "./pages/UsersPage"
 
 type FlokRoute = {
   name: string
@@ -53,7 +55,7 @@ export class AppRoutes {
     },
     {
       name: "RetreatFlightsPage",
-      component: <RetreatAttendeesPage />,
+      component: <RetreatFlightsPage />,
       path: "/retreats/:retreatId/flights",
     },
     {
@@ -81,6 +83,26 @@ export class AppRoutes {
       component: <HotelPage />,
       path: "/hotels/:hotelId",
     },
+    {
+      name: "AllUsersPage",
+      component: <UsersPage />,
+      path: "/users",
+    },
+    // {
+    //   name: "UserPage",
+    //   component: <UserPage />,
+    //   path: "/users/:userId",
+    // },
+    {
+      name: "RetreatUsersPage",
+      component: <UsersPage />,
+      path: "/retreats/:retreatId/users",
+    },
+    // {
+    //   name: "RetreatUserPage",
+    //   component: <UserPage />,
+    //   path: "/retreats/:retreatId/users/:userId",
+    // },
   ]
   static getRoutes(routes: FlokRoute[]): JSX.Element[] {
     return routes.map((route) => (

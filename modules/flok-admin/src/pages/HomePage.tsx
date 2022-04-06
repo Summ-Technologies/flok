@@ -43,6 +43,13 @@ function HomePage(props: HomePageProps) {
               Hotel content & lodging proposals database
             </Link>
           </Typography>
+          <Typography variant="body1" component="li">
+            <Link
+              component={ReactRouterLink}
+              to={AppRoutes.getPath("AllUsersPage")}>
+              All Users
+            </Link>
+          </Typography>
         </ul>
       </div>
     </PageBase>

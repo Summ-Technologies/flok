@@ -12,6 +12,8 @@ const useStyles = makeStyles((theme) => ({
   body: {
     flex: 1,
     overflow: "auto",
+    display: "flex",
+    flexDirection: "column",
   },
 }))
 

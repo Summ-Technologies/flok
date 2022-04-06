@@ -23,69 +23,69 @@ type RetreatAccountHeaderProps = {
 export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
   let classes = useStyles(props)
   let retreatName = `${props.retreat.company_name}'s Retreat`
-  let datesString: string | undefined = undefined
-  if (props.retreat.preferences_is_dates_flexible) {
-    let dates: Date[] = []
+  // let datesString: string | undefined = undefined
+  // if (props.retreat.preferences_is_dates_flexible) {
+  //   let dates: Date[] = []
 
-    if (props.retreat.preferences_dates_exact_end) {
-      let ds = props.retreat.preferences_dates_exact_end
-        .split(/\D/)
-        .map((s) => parseInt(s))
-      if (ds.length >= 3) {
-        ds[1] = ds[1] - 1
-        dates.push(new Date(ds[0], ds[1], ds[2]))
-      }
-    }
-    if (props.retreat.preferences_dates_exact_start) {
-      let ds = props.retreat.preferences_dates_exact_start
-        .split(/\D/)
-        .map((s) => parseInt(s))
-      if (ds.length >= 3) {
-        ds[1] = ds[1] - 1
-        dates.push(new Date(ds[0], ds[1], ds[2]))
-      }
-    }
-    let dateStrings = dates.map((d, i) => {
-      let dateOptions: Intl.DateTimeFormatOptions = {
-        weekday: undefined,
-        day: "numeric",
-        month: "short",
-        year: i + 1 === dates.length ? "numeric" : undefined,
-      }
-      return d.toLocaleDateString("en-US", dateOptions)
-    })
-    datesString = dateStrings.join(" - ")
-  } else {
-    // is flexible dates
-    let dateStrings: string[] = []
-    if (props.retreat.preferences_dates_flexible_num_nights != null) {
-      dateStrings.push(
-        `${props.retreat.preferences_dates_flexible_num_nights} nights`
-      )
-    }
-    if (
-      props.retreat.preferences_dates_flexible_months &&
-      props.retreat.preferences_dates_flexible_months.length
-    ) {
-      let max2Months = props.retreat.preferences_dates_flexible_months.slice(
-        0,
-        2
-      )
-      dateStrings.push(
-        max2Months
-          .map((mon, i) => {
-            let [month, year] = mon.split("-")
-            let val = month[0].toUpperCase() + month.slice(1, undefined)
-            if (i + 1 === max2Months.length) {
-              val += ` ${year}`
-            }
-            return val
-          })
-          .join(", ")
-      )
-      datesString = dateStrings.join(" in ")
-    }
-  }
+  //   if (props.retreat.preferences_dates_exact_end) {
+  //     let ds = props.retreat.preferences_dates_exact_end
+  //       .split(/\D/)
+  //       .map((s) => parseInt(s))
+  //     if (ds.length >= 3) {
+  //       ds[1] = ds[1] - 1
+  //       dates.push(new Date(ds[0], ds[1], ds[2]))
+  //     }
+  //   }
+  //   if (props.retreat.preferences_dates_exact_start) {
+  //     let ds = props.retreat.preferences_dates_exact_start
+  //       .split(/\D/)
+  //       .map((s) => parseInt(s))
+  //     if (ds.length >= 3) {
+  //       ds[1] = ds[1] - 1
+  //       dates.push(new Date(ds[0], ds[1], ds[2]))
+  //     }
+  //   }
+  //   let dateStrings = dates.map((d, i) => {
+  //     let dateOptions: Intl.DateTimeFormatOptions = {
+  //       weekday: undefined,
+  //       day: "numeric",
+  //       month: "short",
+  //       year: i + 1 === dates.length ? "numeric" : undefined,
+  //     }
+  //     return d.toLocaleDateString("en-US", dateOptions)
+  //   })
+  //   datesString = dateStrings.join(" - ")
+  // } else {
+  //   // is flexible dates
+  //   let dateStrings: string[] = []
+  //   if (props.retreat.preferences_dates_flexible_num_nights != null) {
+  //     dateStrings.push(
+  //       `${props.retreat.preferences_dates_flexible_num_nights} nights`
+  //     )
+  //   }
+  //   if (
+  //     props.retreat.preferences_dates_flexible_months &&
+  //     props.retreat.preferences_dates_flexible_months.length
+  //   ) {
+  //     let max2Months = props.retreat.preferences_dates_flexible_months.slice(
+  //       0,
+  //       2
+  //     )
+  //     dateStrings.push(
+  //       max2Months
+  //         .map((mon, i) => {
+  //           let [month, year] = mon.split("-")
+  //           let val = month[0].toUpperCase() + month.slice(1, undefined)
+  //           if (i + 1 === max2Months.length) {
+  //             val += ` ${year}`
+  //           }
+  //           return val
+  //         })
+  //         .join(", ")
+  //     )
+  //     datesString = dateStrings.join(" in ")
+  //   }
+  // }
 
   let numAttendees = props.retreat.preferences_num_attendees_lower
     ? props.retreat.preferences_num_attendees_lower
@@ -95,11 +95,11 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
       <AppTypography variant="body1" fontWeight="bold" noWrap>
         {retreatName}
       </AppTypography>
-      {datesString != null ? (
+      {/* {datesString != null ? (
         <AppTypography variant="body1" noWrap>
           {datesString}
         </AppTypography>
-      ) : undefined}
+      ) : undefined} */}
       {numAttendees != null ? (
         <AppTypography variant="body1" noWrap>
           ~{numAttendees} attendees

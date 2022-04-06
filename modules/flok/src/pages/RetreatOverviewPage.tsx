@@ -1,14 +1,14 @@
 import {Box, makeStyles, Typography} from "@material-ui/core"
 import {
   Apartment,
-  CalendarToday,
   CheckCircle,
   Error,
   Flight,
   People,
+  Room,
 } from "@material-ui/icons"
 import {useEffect, useState} from "react"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router"
 import AppTypography from "../components/base/AppTypography"
 import AppOverviewCard, {
@@ -19,8 +19,16 @@ import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import config, {MAX_TASKS} from "../config"
-import {RetreatToTask} from "../models/retreat"
+import {
+  OrderedRetreatAttendeesState,
+  OrderedRetreatFlightsState,
+  RetreatAttendeeModel,
+  RetreatToTask,
+} from "../models/retreat"
+import {RootState} from "../store"
+import {getHotels} from "../store/actions/lodging"
 import {putRetreatTask} from "../store/actions/retreat"
+import {useRetreatAttendees} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -29,6 +37,9 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       paddingLeft: theme.spacing(1),
     },
+  },
+  overviewHeader: {
+    marginBottom: theme.spacing(1),
   },
   headerIcon: {
     marginRight: theme.spacing(1),
@@ -57,55 +68,118 @@ type RetreatOverviewProps = RouteComponentProps<{retreatIdx: string}>
 function RetreatOverviewPage(props: RetreatOverviewProps) {
   let classes = useStyles()
   // Path and query params
+  let dispatch = useDispatch()
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
+  let [attendees] = useRetreatAttendees(retreat.id)
   let retreatBaseUrl = `/r/${retreatIdx}`
 
   let [datesOverview, setDatesOverview] = useState<string | undefined>(
     undefined
   )
-  let [flightsOverview, setFlightsOverview] = useState<string | undefined>(
-    undefined
-  )
+
+  function getRegisteredAttendees(attendees: RetreatAttendeeModel[]) {
+    return attendees.filter(
+      (attendee) => attendee.info_status === "INFO_ENTERED"
+    )
+  }
+
   useEffect(() => {
-    setFlightsOverview(undefined)
-    setDatesOverview(undefined)
-  }, [setDatesOverview, setFlightsOverview])
+    if (
+      Date.parse(retreat.lodging_final_start_date ?? "") &&
+      Date.parse(retreat.lodging_final_end_date ?? "")
+    ) {
+      const formatter = Intl.DateTimeFormat("en-us", {
+        dateStyle: "medium",
+        timeStyle: undefined,
+      })
+      let startDateParts = formatter.format(
+        new Date(retreat.lodging_final_start_date!)
+      )
+      let endDateParts = formatter.format(
+        new Date(retreat.lodging_final_end_date!)
+      )
+      setDatesOverview(`${startDateParts} - ${endDateParts}`)
+    } else {
+      const DEFAULT_DATES = "Dates: TBD"
+      setDatesOverview(DEFAULT_DATES)
+    }
+  }, [
+    setDatesOverview,
+    retreat.lodging_final_end_date,
+    retreat.lodging_final_start_date,
+  ])
+
+  let [destinationOverview, setDestinationOverview] = useState<
+    string | undefined
+  >(retreat.lodging_final_destination)
+  useEffect(() => {
+    setDestinationOverview(retreat.lodging_final_destination)
+  }, [retreat.lodging_final_destination])
 
   let [attendeesOverview, setAttendeesOverview] = useState<string | undefined>(
     undefined
   )
   useEffect(() => {
-    setAttendeesOverview(
-      retreat.preferences_num_attendees_lower?.toString() ?? ""
-    )
-  }, [retreat.preferences_num_attendees_lower])
+    if (
+      attendees &&
+      retreat.attendees_state &&
+      OrderedRetreatAttendeesState.indexOf(retreat.attendees_state) >=
+        OrderedRetreatAttendeesState.indexOf("REGISTRATION_OPEN")
+    ) {
+      setAttendeesOverview(getRegisteredAttendees(attendees).length.toString())
+    } else {
+      setAttendeesOverview(undefined)
+    }
+  }, [attendees, retreat.attendees_state])
+
+  let [flightsOverview, setFlightsOverview] = useState<string | undefined>(
+    undefined
+  )
+  useEffect(() => {
+    if (
+      attendees &&
+      retreat.flights_state &&
+      OrderedRetreatFlightsState.indexOf(retreat.flights_state) >=
+        OrderedRetreatFlightsState.indexOf("POLICY_REVIEW")
+    ) {
+      let numBookedFlights = attendees.filter(
+        (attendee) =>
+          attendee.flight_status &&
+          ["OPT_OUT", "BOOKED"].includes(attendee.flight_status)
+      ).length
+      setFlightsOverview(
+        `${numBookedFlights} / ${getRegisteredAttendees(attendees).length}`
+      )
+    } else {
+      setFlightsOverview(undefined)
+    }
+  }, [setFlightsOverview, attendees, retreat.flights_state])
 
   let [lodgingOverview, setLodgingOverview] = useState<string | undefined>(
     undefined
   )
-  useEffect(() => {
-    let newVal = undefined
-    switch (retreat.state_lodging) {
-      case "NOT_STARTED":
-        break
-      case "PROPOSALS_WAITING":
-        newVal = "Gathering proposals"
-        break
-      case "PROPOSALS_VIEW":
-        newVal = "Reviewing venues"
-        break
-      case "CONTRACT_NEGOTIATION":
-        newVal = "Negotiating contract"
-        break
-      case "BOOKED":
-        newVal = "Booked"
-        break
+  let selectedHotel = useSelector((state: RootState) => {
+    if (retreat.lodging_final_hotel_id != null) {
+      return state.lodging.hotels[retreat.lodging_final_hotel_id]
     }
-    setLodgingOverview(newVal)
-  }, [retreat.state_lodging])
+  })
+  useEffect(() => {
+    if (
+      retreat.lodging_final_hotel_id != null &&
+      (!selectedHotel || selectedHotel.id !== retreat.lodging_final_hotel_id)
+    ) {
+      dispatch(getHotels([retreat.lodging_final_hotel_id]))
+    }
+  }, [retreat.lodging_final_hotel_id, dispatch, selectedHotel])
+  useEffect(() => {
+    if (selectedHotel) {
+      setLodgingOverview(selectedHotel.name)
+    } else {
+      setLodgingOverview(undefined)
+    }
+  }, [setLodgingOverview, selectedHotel])
 
-  let dispatch = useDispatch()
   const handleTaskClick = (task: RetreatToTask) => {
     dispatch(
       putRetreatTask(
@@ -141,7 +215,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
           .sort((a, b) => a.order - b.order)
       )
     }
-  }, [MAX_TASKS_SHOWN, setTodoTasksExtra, setTodoTasks, retreat, retreatIdx])
+  }, [MAX_TASKS_SHOWN, setTodoTasksExtra, setTodoTasks, retreat])
 
   return (
     <PageContainer>
@@ -152,17 +226,18 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
       />
       <PageBody appBar>
         <div className={classes.section}>
-          <Typography variant="h1">Overview</Typography>
+          <div className={classes.overviewHeader}>
+            <Typography variant="h1">Overview</Typography>
+            <Typography variant="body1">
+              {retreat.company_name}'s Retreat
+            </Typography>
+            <Typography variant="body1">{datesOverview}</Typography>
+          </div>
           <AppOverviewCardList>
             <AppOverviewCard
-              label="Dates"
-              Icon={CalendarToday}
-              value={datesOverview}
-            />
-            <AppOverviewCard
-              label="Attendees"
-              Icon={People}
-              value={attendeesOverview}
+              label="Destination"
+              Icon={Room}
+              value={destinationOverview}
             />
             <AppOverviewCard
               label="Lodging"
@@ -170,9 +245,20 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
               value={lodgingOverview}
             />
             <AppOverviewCard
+              label="Attendees"
+              Icon={People}
+              value={attendeesOverview}
+              moreInfo={
+                "# of attendees successfully registered for your retreat"
+              }
+            />
+            <AppOverviewCard
               label="Flights"
               Icon={Flight}
-              value={flightsOverview}
+              value={flightsOverview ?? "-- / --"}
+              moreInfo={
+                "# of attendees who've confirmed their flights for your retreat"
+              }
             />
           </AppOverviewCardList>
         </div>

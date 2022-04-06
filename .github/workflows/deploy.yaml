@@ -2,38 +2,30 @@ name: Deploy
 on:
   workflow_call:
     inputs:
-      app:
+      heroku-app:
+        required: true
+        type: string # heroku app name
+      module:
         required: true
         type: string # either flok or flok-admin
     secrets:
       HEROKU_API_KEY:
         required: true
 jobs:
-  deploy-flok:
-    if: ${{ inputs.app == 'flok' }}
+  deploy-module:
     runs-on: ubuntu-latest
     steps:
+      - run: "echo Deploying module: '/modules/${{ inputs.module }}' to Heroku app: '${{ inputs.heroku-app }}'"
       - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12
+      - uses: Summ-Technologies/heroku-config@v1.0.0
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: flok-frontend
-          heroku_email: "jared@goflok.com"
-          appdir: "modules/flok"
-          dontautocreate: true
-          stack: "container"
-          env_file: /.env.prod
-  deploy-flok-admin:
-    if: ${{ inputs.app == 'flok-admin' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.12.12
+          heroku_app_name: ${{ inputs.heroku-app }}
+          envfile_path: modules/${{ inputs.module }}/.env.prod
+      - uses: gonuit/heroku-docker-deploy@v1.3.3
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: flok-admin
-          heroku_email: "jared@goflok.com"
-          appdir: "modules/flok-admin"
-          dontautocreate: true
-          stack: "container"
-          env_file: /.env.prod
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ inputs.heroku-app }}
+          email: "jared@goflok.com"
+          dockerfile_directory: "./modules/${{ inputs.module }}/"
+          dockerfile_name: "Dockerfile"

@@ -4,16 +4,19 @@ export const APP_VERSION_KEY = "app_version"
 export const SERVER_BASE_URL_KEY = "server_base_url"
 export const IMAGES_BASE_URL_KEY = "images_base_url"
 export const IMAGE_SERVER_BASE_URL_KEY = "image_server_base_url"
+export const FLOK_BASE_URL_KEY = "flok_base_url"
 type ConfigKey =
   | typeof APP_VERSION_KEY
   | typeof SERVER_BASE_URL_KEY
   | typeof IMAGES_BASE_URL_KEY
   | typeof IMAGE_SERVER_BASE_URL_KEY
+  | typeof FLOK_BASE_URL_KEY
 
 class Config {
   appConfig: {[key: string]: any}
   defaultConfig: {[key: string]: any} = {
     [APP_VERSION_KEY]: process.env.REACT_APP_VERSION,
+    [FLOK_BASE_URL_KEY]: "https://app.goflok.com",
   }
   constructor() {
     this.appConfig = {}

@@ -1,38 +1,23 @@
 import {Action} from "redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {DestinationModel, HotelModel} from "../../models/lodging"
+import {ApiAction} from "../actions/api"
 import {
-  GetDestinationsAction,
-  GetHotelByGuidAction,
-  GetHotelsAction,
-  GET_DESTINATIONS,
-  GET_HOTELS,
-  GET_HOTEL_BY_GUID,
+  GET_DESTINATIONS_SUCCESS,
+  GET_HOTELS_SUCCESS,
+  GET_HOTEL_BY_GUID_FAILURE,
+  GET_HOTEL_BY_GUID_SUCCESS,
 } from "../actions/lodging"
 
 export type LodgingState = {
-  destinationsLoaded: boolean
   destinations: {
     [id: number]: DestinationModel
   }
   destinationsGuidMapping: {
     [guid: string]: number
   }
-  destinationsByFilter: {
-    [filterKey: string]: {
-      destinations: number[]
-    }
-  }
   hotels: {
     [id: number]: HotelModel
-  }
-  hotelsByFilter: {
-    [filterKey: string]: {
-      hotels: number[]
-      hasMore: boolean
-      currPage: number
-      numHits: number
-    }
   }
   hotelsGuidMapping: {
     [guid: string]: number | ResourceNotFoundType
@@ -41,11 +26,8 @@ export type LodgingState = {
 
 const initialState: LodgingState = {
   destinations: {},
-  destinationsLoaded: false,
   destinationsGuidMapping: {},
-  destinationsByFilter: {},
   hotels: {},
-  hotelsByFilter: {},
   hotelsGuidMapping: {},
 }
 
@@ -53,20 +35,13 @@ export default function lodgingReducer(
   state: LodgingState = initialState,
   action: Action
 ): LodgingState {
-  var newDestinationsGuidMapping: {[guid: string]: number}
-  var newHotelsGuidMapping: {[guid: string]: number | ResourceNotFoundType}
-  var newHotels: {[id: number]: HotelModel}
   switch (action.type) {
-    case GET_DESTINATIONS:
-      let destinations = (action as GetDestinationsAction).destinations
+    case GET_DESTINATIONS_SUCCESS:
+      let destinations = (
+        (action as ApiAction).payload as {destinations: DestinationModel[]}
+      ).destinations
       let newDestinations = {...state.destinations}
-      let newDestinationsByFilter = {
-        ...state.destinationsByFilter,
-        [(action as GetDestinationsAction).filterKey]: {
-          destinations: destinations.map((dest) => dest.id),
-        },
-      }
-      newDestinationsGuidMapping = {...state.destinationsGuidMapping}
+      let newDestinationsGuidMapping = {...state.destinationsGuidMapping}
       destinations.forEach((destination) => {
         newDestinations[destination.id] = destination
         newDestinationsGuidMapping[destination.guid] = destination.id
@@ -74,45 +49,34 @@ export default function lodgingReducer(
       return {
         ...state,
         destinations: newDestinations,
-        destinationsByFilter: newDestinationsByFilter,
         destinationsGuidMapping: newDestinationsGuidMapping,
-        destinationsLoaded: true,
       }
-    case GET_HOTELS:
-      let {hotels, filterKey, currPage, hasMore, numHits} =
-        action as GetHotelsAction
-      newHotels = {...state.hotels}
-      let hotelIds = [
-        ...(state.hotelsByFilter[filterKey]
-          ? state.hotelsByFilter[filterKey].hotels
-          : []),
-        ...hotels.map((hotel) => hotel.id),
-      ]
-      let newHotelsByFilter = {
-        ...state.hotelsByFilter,
-        [filterKey]: {hotels: hotelIds, hasMore, currPage, numHits},
+    case GET_HOTEL_BY_GUID_SUCCESS:
+      let hotel = ((action as ApiAction).payload as {hotel: HotelModel}).hotel
+      return {
+        ...state,
+        hotels: {...state.hotels, [hotel.id]: hotel},
+        hotelsGuidMapping: {...state.hotelsGuidMapping, [hotel.guid]: hotel.id},
       }
-      newHotelsGuidMapping = {...state.hotelsGuidMapping}
+    case GET_HOTEL_BY_GUID_FAILURE:
+      let hotelGuid = (action as unknown as {meta: {hotelGuid: string}}).meta
+        .hotelGuid
+      return {
+        ...state,
+        hotelsGuidMapping: {
+          ...state.hotelsGuidMapping,
+          [hotelGuid]: ResourceNotFound,
+        },
+      }
+    case GET_HOTELS_SUCCESS:
+      let hotels = ((action as ApiAction).payload as {hotels: HotelModel[]})
+        .hotels
+      let newHotels = {...state.hotels}
+      let newHotelsGuidMapping = {...state.hotelsGuidMapping}
       hotels.forEach((hotel) => {
         newHotels[hotel.id] = hotel
         newHotelsGuidMapping[hotel.guid] = hotel.id
       })
-      return {
-        ...state,
-        hotels: newHotels,
-        hotelsGuidMapping: newHotelsGuidMapping,
-        hotelsByFilter: newHotelsByFilter,
-      }
-    case GET_HOTEL_BY_GUID:
-      let {guid, hotel} = action as GetHotelByGuidAction
-      newHotelsGuidMapping = {...state.hotelsGuidMapping}
-      newHotels = {...state.hotels}
-      if (hotel === ResourceNotFound) {
-        newHotelsGuidMapping[guid] = ResourceNotFound
-      } else {
-        newHotels[hotel.id] = hotel
-        newHotelsGuidMapping[hotel.guid] = hotel.id
-      }
       return {
         ...state,
         hotels: newHotels,

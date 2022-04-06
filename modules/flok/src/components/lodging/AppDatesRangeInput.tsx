@@ -170,10 +170,8 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
       value: `${months[month]}-${year}`,
     }
   }
-  let thisYear = new Date().getFullYear()
-  let thisMonth = new Date().getMonth()
   let minPlanningDate = new Date()
-  minPlanningDate.setDate(minPlanningDate.getDate() + 42)
+  minPlanningDate.setDate(minPlanningDate.getDate() + 90)
 
   return (
     <ClickAwayListener onClickAway={closePopper}>
@@ -251,13 +249,21 @@ export default function AppRetreatDatesInput(props: AppRetreatDatesInputProps) {
                 </div>
                 <div className={classes.monthsSection}>
                   <AppTypography variant="h4">What months?</AppTypography>
-                  {[thisYear, thisYear + 1].map((year) => {
+                  {[
+                    minPlanningDate.getFullYear(),
+                    minPlanningDate.getFullYear() + 1,
+                  ].map((year) => {
+                    let minPlanningMonth =
+                      minPlanningDate.getDate() > 20
+                        ? minPlanningDate.getMonth() + 1
+                        : minPlanningDate.getMonth()
+                    let monthsIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
                     let options =
-                      thisYear === year
-                        ? [...Array(12 - (thisMonth + 2))].map((v, i) =>
-                            getOption(i + (thisMonth + 2), year)
-                          )
-                        : [...Array(12)].map((v, i) => getOption(i, year))
+                      minPlanningDate.getFullYear() === year
+                        ? monthsIndex
+                            .slice(minPlanningMonth)
+                            .map((v) => getOption(v, year))
+                        : monthsIndex.map((v) => getOption(v, year))
                     return (
                       <div key={year}>
                         <AppTypography variant="body2" fontWeight="bold">

@@ -10,5 +10,6 @@ COPY --from=node-builder /app/docker-scripts/setup_config.sh /docker-entrypoint.
 COPY --from=node-builder /app/public/ ./
 COPY --from=node-builder /app/build/ ./
 COPY ./nginx/default.conf.template /etc/nginx/templates/default.conf.template
+COPY ./nginx/.htpasswd /etc/nginx/.htpasswd
 
 ENV PORT 80

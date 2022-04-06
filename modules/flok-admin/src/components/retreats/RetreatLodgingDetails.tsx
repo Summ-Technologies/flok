@@ -12,12 +12,14 @@ import {
   Tab,
   Tabs,
   TextField,
+  Typography,
 } from "@material-ui/core"
 import {useFormik} from "formik"
 import querystring from "querystring"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Link as ReactRouterLink} from "react-router-dom"
+import config, {FLOK_BASE_URL_KEY} from "../../config"
 import {AdminRetreatModel, AdminSelectedHotelProposalModel} from "../../models"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
@@ -31,10 +33,11 @@ import {
   putRetreatHotelProposal,
   putSelectedHotel,
 } from "../../store/actions/admin"
+import {ApiAction} from "../../store/actions/api"
 import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 import ConfirmationModal from "../base/ConfirmationModal"
-import HotelSearchModal from "../lodging/HotelSearchModal"
+import HotelSelectModal from "../lodging/HotelSelectModal"
 import HotelProposalForm from "./HotelProposalForm"
 
 let useAccordionItemStyles = makeStyles((theme) => ({
@@ -98,9 +101,16 @@ function HotelAccordionItem(props: {
       </AccordionSummary>
       <AccordionDetails className={classes.accordionDetails}>
         <Box display="flex" alignItems="center">
-          <AppTypography variant="h3" fontWeight="bold">
-            {props.hotel.name}
-          </AppTypography>
+          <Link
+            component={ReactRouterLink}
+            to={AppRoutes.getPath("HotelPage", {
+              hotelId: props.selectedHotel.hotel_id.toString(),
+            })}
+            target="_blank">
+            <AppTypography variant="h3" fontWeight="bold">
+              {props.hotel.name}
+            </AppTypography>
+          </Link>
           <Button
             onClick={() => setRemoveSelectedHotelModalOpen(true)}
             style={{marginLeft: 8}}
@@ -367,8 +377,27 @@ export default function RetreatLodgingDetails(
 
   return (
     <div className={classes.root}>
-      <Box display="flex" justifyContent="space-between" marginY={2}>
-        <AppTypography variant="h4">Hotel Options</AppTypography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        marginTop={2}
+        marginBottom={1}>
+        <Box display="flex" alignItems="baseline">
+          <AppTypography variant="h4">
+            Hotel Proposals&nbsp;&nbsp;&nbsp;
+          </AppTypography>
+          <Typography
+            variant="body1"
+            component={Link}
+            href={`${config.get(FLOK_BASE_URL_KEY)}/r/${
+              props.retreat.guid
+            }/proposals`}
+            target="_blank"
+            underline="always">
+            See client view
+          </Typography>
+        </Box>
         <Button
           color="primary"
           variant="outlined"
@@ -376,10 +405,15 @@ export default function RetreatLodgingDetails(
           Add Hotel
         </Button>
         {newHotelOpen && (
-          <HotelSearchModal
-            onSubmit={(hotelId) =>
-              dispatch(postSelectedHotel(props.retreat.id, hotelId))
-            }
+          <HotelSelectModal
+            onSubmit={async (hotelId) => {
+              let resp = (await dispatch(
+                postSelectedHotel(props.retreat.id, hotelId)
+              )) as unknown as ApiAction
+              if (!resp.error) {
+                setNewHotelOpen(false)
+              }
+            }}
             onClose={() => setNewHotelOpen(false)}
           />
         )}

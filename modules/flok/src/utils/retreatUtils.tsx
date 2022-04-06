@@ -1,14 +1,14 @@
-import {useEffect} from "react"
+import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Constants} from "../config"
 import {ResourceNotFoundType} from "../models"
-import {
-  RetreatAttendeeModel,
-  RetreatModel,
-  RetreatToTask,
-} from "../models/retreat"
+import {RetreatModel, RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
-import {getRetreat, getRetreatAttendees} from "../store/actions/retreat"
+import {
+  getRetreat,
+  getRetreatAttendees,
+  getRetreatByGuid,
+} from "../store/actions/retreat"
 
 export function useRetreat(retreatId: number) {
   let dispatch = useDispatch()
@@ -27,12 +27,19 @@ export function useRetreatAttendees(retreatId: number) {
   let attendees = useSelector(
     (state: RootState) => state.retreat.retreatAttendees[retreatId]
   )
+  let [loading, setLoading] = useState(false)
+
   useEffect(() => {
-    if (!attendees) {
+    async function loadAttendees() {
+      setLoading(true)
       dispatch(getRetreatAttendees(retreatId))
+      setLoading(false)
+    }
+    if (!attendees) {
+      loadAttendees()
     }
   }, [attendees, dispatch, retreatId])
-  return attendees as RetreatAttendeeModel[] | ResourceNotFoundType | undefined
+  return [attendees, loading] as const
 }
 
 /**
@@ -40,18 +47,24 @@ export function useRetreatAttendees(retreatId: number) {
  * @param retreatGuid
  * @returns
  */
-// export function useRetreatByGuid(retreatGuid: string) {
-//   let dispatch = useDispatch()
-//   let retreat = useSelector(
-//     (state: RootState) => state.retreat.retreatsByGuid[retreatGuid]
-//   )
-//   useEffect(() => {
-//     if (!retreat) {
-//       dispatch(getRetreatByGuid(retreatGuid))
-//     }
-//   }, [retreat, dispatch, retreatGuid])
-//   return retreat as RetreatModel | ResourceNotFoundType | undefined
-// }
+export function useRetreatByGuid(retreatGuid: string) {
+  let dispatch = useDispatch()
+  let [loading, setLoading] = useState(false)
+  let retreat = useSelector(
+    (state: RootState) => state.retreat.retreatsByGuid[retreatGuid]
+  )
+  useEffect(() => {
+    async function loadRetreat() {
+      setLoading(true)
+      dispatch(getRetreatByGuid(retreatGuid))
+      setLoading(false)
+    }
+    if (!retreat) {
+      loadRetreat()
+    }
+  }, [retreat, dispatch, retreatGuid])
+  return [retreat, loading] as const
+}
 
 export function parseRetreatTask(task: RetreatToTask, baseUrl: string) {
   let parsedTask = {...task}

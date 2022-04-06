@@ -55,6 +55,23 @@ export function postNewRetreat(
   }
 }
 
+export const GET_RETREAT_BY_GUID_REQUEST = "GET_RETREAT_BY_GUID_REQUEST"
+export const GET_RETREAT_BY_GUID_SUCCESS = "GET_RETREAT_BY_GUID_SUCCESS"
+export const GET_RETREAT_BY_GUID_FAILURE = "GET_RETREAT_BY_GUID_FAILURE"
+
+export function getRetreatByGuid(retreatGuid: string) {
+  let endpoint = `/v1.0/retreats-by-guid/${retreatGuid}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      GET_RETREAT_BY_GUID_REQUEST,
+      {type: GET_RETREAT_BY_GUID_SUCCESS, meta: {retreatGuid}},
+      {type: GET_RETREAT_BY_GUID_FAILURE, meta: {retreatGuid}},
+    ],
+  })
+}
+
 export const GET_RETREAT_REQUEST = "GET_RETREAT_REQUEST"
 export const GET_RETREAT_SUCCESS = "GET_RETREAT_SUCCESS"
 export const GET_RETREAT_FAILURE = "GET_RETREAT_FAILURE"

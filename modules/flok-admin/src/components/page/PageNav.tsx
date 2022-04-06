@@ -8,6 +8,8 @@ import {
   ListItemText,
   makeStyles,
   Toolbar,
+  Tooltip,
+  Typography,
 } from "@material-ui/core"
 import MenuIcon from "@material-ui/icons/Menu"
 import React, {useState} from "react"
@@ -69,6 +71,12 @@ function PageSideNav(props: PageSideNavProps) {
           to={AppRoutes.getPath("HotelsPage")}>
           <ListItemText>Hotel content</ListItemText>
         </ListItem>
+        <ListItem
+          button
+          component={ReactRouterLink}
+          to={AppRoutes.getPath("AllUsersPage")}>
+          <ListItemText>Users</ListItemText>
+        </ListItem>
       </List>
     </Drawer>
   )
@@ -104,6 +112,16 @@ function PageTopNav(props: PageTopNavProps) {
           <AppTypography variant="h3" fontWeight="bold">
             Flok Admin
           </AppTypography>
+        </Link>
+        <Link
+          style={{marginLeft: "auto"}}
+          underline="always"
+          color="inherit"
+          href="https://goflok.slack.com/archives/eng-qa"
+          target="_blank">
+          <Tooltip title="Confused about how to use the dashboard? Or is something not working as expected? Reach out to Jared via the #eng-qa Slack channel!">
+            <Typography variant="body2">Get help</Typography>
+          </Tooltip>
         </Link>
       </Toolbar>
     </AppBar>

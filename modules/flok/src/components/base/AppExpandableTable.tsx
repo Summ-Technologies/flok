@@ -4,18 +4,18 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
-  TableRow,
-  Tooltip,
+  TableHead, TableRow as AppTableRow,
+  Tooltip
 } from "@material-ui/core"
 import Table from "@material-ui/core/Table"
-import {Delete, SwapVert} from "@material-ui/icons"
-import React, {useState} from "react"
+import { Delete, SwapVert } from "@material-ui/icons"
+import React, { useState } from "react"
 import AppTypography from "./AppTypography"
 
-type ExpandableRowProps = {
-  cols: (JSX.Element | String)[]
-  body: JSX.Element
+type ExpandableRowProps<T> = {
+  item: {id: number} & T
+  headers: AppTableHeaderType<T>[]
+  body?: JSX.Element
   disabled?: boolean
   tooltip?: string
   onDelete?: () => void
@@ -72,20 +72,25 @@ const useExpandableRowStyles = makeStyles({
   },
 })
 
-function ExpandableRow(props: ExpandableRowProps) {
+function ExpandableRow<T>(props: ExpandableRowProps<T>) {
   let classes = useExpandableRowStyles()
   // let [open, setOpen] = useState(false)
   return (
     <React.Fragment>
       <Tooltip title={props.tooltip ? props.tooltip : ""}>
-        <TableRow
+        <AppTableRow
           className={
             props.disabled ? classes.mainRowDisabled : classes.mainRow
           }>
-          {props.cols.map((c) => (
+          {props.headers.map((header, i) => (
             <TableCell
+              key={i}
               className={props.disabled ? classes.cellDisabled : classes.cell}>
-              {c instanceof String ? <AppTypography>{c}</AppTypography> : c}
+              {header.renderCell ? (
+                header.renderCell(props.item[header.colId])
+              ) : (
+                <AppTypography>{props.item[header.colId]}</AppTypography>
+              )}
             </TableCell>
           ))}
           {/* <TableCell>
@@ -104,7 +109,7 @@ function ExpandableRow(props: ExpandableRowProps) {
               </IconButton>
             </TableCell>
           )}
-        </TableRow>
+        </AppTableRow>
         {/* <TableRow className={classes.expandRow}>
         <TableCell
           className={classes.expandCell}
@@ -153,27 +158,26 @@ const useTableStyles = makeStyles({
   },
 })
 
-type AppExpandableTableProps = {
-  headers: Array<{
-    name: string
-    comparator?: (
-      r1: (string | JSX.Element)[],
-      r2: (string | JSX.Element)[]
-    ) => number
-  }>
-  rows: Array<{
-    id: number
-    disabled?: boolean
-    tooltip?: string
-    cols: (string | JSX.Element)[]
-  }>
-  rowDeleteCallback?: (row: {
-    id: number
-    cols: (string | JSX.Element)[]
-  }) => void
+type AppTableRowType<T> = {
+  disabled?: boolean
+  tooltip?: string
+  item: {id: number} & T
+}
+type AppTableHeaderType<T> = {
+  name: string
+  colId: keyof T
+  comparator?: (r1: AppTableRowType<T>, r2: AppTableRowType<T>) => number
+  renderCell?: (val: T[keyof T]) => JSX.Element
+}
+type AppExpandableTableProps<T> = {
+  headers: AppTableHeaderType<T>[]
+  rows: AppTableRowType<T>[]
+  rowDeleteCallback?: (row: AppTableRowType<T>) => void
 }
 
-export default function AppExpandableTable(props: AppExpandableTableProps) {
+export default function AppExpandableTable<T>(
+  props: AppExpandableTableProps<T>
+) {
   let classes = useTableStyles()
 
   let [order, setOrder] = useState<"asc" | "desc">("desc")
@@ -190,30 +194,23 @@ export default function AppExpandableTable(props: AppExpandableTableProps) {
 
   const getComparator = () => {
     let headerObj = props.headers.filter((h) => h.name === orderBy)[0]
-    let fn = (r1: (string | JSX.Element)[], r2: (string | JSX.Element)[]) =>
-      r1[0].toString().localeCompare(r2[0].toString())
-
+    let fn = (r1: AppTableRowType<T>, r2: AppTableRowType<T>) => 0
     if (headerObj !== undefined && headerObj.comparator) {
       fn = headerObj.comparator
     }
     if (order === "asc") {
-      fn = (r1: (string | JSX.Element)[], r2: (string | JSX.Element)[]) =>
-        fn(r1, r2) * -1
+      return (r1: AppTableRowType<T>, r2: AppTableRowType<T>) => fn(r1, r2) * -1
     }
-
-    return (
-      r1: {id: number; cols: (string | JSX.Element)[]},
-      r2: {id: number; cols: (string | JSX.Element)[]}
-    ) => fn(r1.cols, r2.cols)
+    return fn
   }
 
   return (
     <TableContainer>
       <Table className={classes.root}>
         <TableHead>
-          <TableRow className={classes.header}>
-            {props.headers.map((h) => (
-              <TableCell>
+          <AppTableRow className={classes.header}>
+            {props.headers.map((h, i) => (
+              <TableCell key={i}>
                 <div className={classes.headerCell}>
                   <AppTypography variant="h3">{h.name}</AppTypography>
                   {h.comparator ? (
@@ -229,7 +226,7 @@ export default function AppExpandableTable(props: AppExpandableTableProps) {
               </TableCell>
             ))}
             {/* <TableCell /> */}
-          </TableRow>
+          </AppTableRow>
         </TableHead>
         <TableBody className={classes.body}>
           {props.rows
@@ -237,8 +234,9 @@ export default function AppExpandableTable(props: AppExpandableTableProps) {
             .sort(getComparator())
             .map((data) => (
               <ExpandableRow
-                cols={data.cols}
-                body={<></>}
+                key={data.item.id}
+                item={data.item}
+                headers={props.headers}
                 disabled={data.disabled}
                 tooltip={data.tooltip}
                 onDelete={
