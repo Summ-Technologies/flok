@@ -11,6 +11,7 @@ import RetreatLodgingPage from "./pages/RetreatLodgingPage"
 import RetreatPage from "./pages/RetreatPage"
 import RetreatSalesIntakePage from "./pages/RetreatSalesIntakePage"
 import RetreatsPage from "./pages/RetreatsPage"
+import RetreatTasksPage from "./pages/RetreatTasksPage"
 import UsersPage from "./pages/UsersPage"
 
 type FlokRoute = {
@@ -67,6 +68,11 @@ export class AppRoutes {
       name: "RetreatItineraryPage",
       component: <RetreatItineraryPage />,
       path: "/retreats/:retreatId/itinerary",
+    },
+    {
+      name: "RetreatTasksPage",
+      component: <RetreatTasksPage />,
+      path: "/retreats/:retreatId/tasks",
     },
     {
       name: "HotelsPage",

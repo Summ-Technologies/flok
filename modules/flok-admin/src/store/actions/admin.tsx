@@ -7,6 +7,7 @@ import {
   AdminRetreatListType,
   AdminRetreatModel,
   AdminSelectedHotelStateTypes,
+  RetreatToTaskState,
 } from "../../models"
 import {nullifyEmptyString} from "../../utils"
 import {createApiAction} from "./api"
@@ -507,6 +508,21 @@ export function postRetreatNotes(retreatId: number, note: string) {
   })
 }
 
+export const GET_RETREAT_TASKS_REQUEST = "GET_RETREAT_TASK_REQUEST"
+export const GET_RETREAT_TASKS_SUCCESS = "GET_RETREAT_TASK_SUCCCESS"
+export const GET_RETREAT_TASKS_FAILURE = "GET_RETREAT_TASK_FAILURE"
+export function getRetreatTasks(retreatId: number) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/tasks`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_RETREAT_TASKS_REQUEST, meta: {retreatId}},
+      {type: GET_RETREAT_TASKS_SUCCESS, meta: {retreatId}},
+      {type: GET_RETREAT_TASKS_FAILURE, meta: {retreatId}},
+    ],
+  })
+}
 export const GET_HOTELS_SEARCH_REQUEST = "GET_HOTELS_SEARCH_REQUEST"
 export const GET_HOTELS_SEARCH_SUCCESS = "GET_HOTELS_SEARCH_SUCCESS"
 export const GET_HOTELS_SEARCH_FAILURE = "GET_HOTELS_SEARCH_FAILURE"
@@ -521,6 +537,33 @@ export function getHotelsSearch(search: string) {
       GET_HOTELS_SEARCH_REQUEST,
       {type: GET_HOTELS_SEARCH_SUCCESS, meta: {search}},
       {type: GET_HOTELS_SEARCH_FAILURE, meta: {search}},
+    ],
+  })
+}
+
+export const PATCH_RETREAT_TASK_REQUEST = "PATCH_RETREAT_TASK_REQUEST"
+export const PATCH_RETREAT_TASK_SUCCESS = "PATCH_RETREAT_TASK_SUCCESS"
+export const PATCH_RETREAT_TASK_FAILURE = "PATCH_RETREAT_TASK_FAILURE"
+export function patchRetreatTask(
+  retreatId: number,
+  taskId: number,
+  state: RetreatToTaskState,
+  dueDate: string,
+  taskVars: {[key: string]: string | null}
+) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/tasks/${taskId}`
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify({
+      state,
+      due_date: dueDate ? dueDate : null,
+      task_vars: taskVars,
+    }),
+    types: [
+      {type: PATCH_RETREAT_TASK_REQUEST, meta: {retreatId}},
+      {type: PATCH_RETREAT_TASK_SUCCESS, meta: {retreatId}},
+      {type: PATCH_RETREAT_TASK_FAILURE, meta: {retreatId}},
     ],
   })
 }

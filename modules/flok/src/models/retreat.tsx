@@ -47,14 +47,15 @@ export type RetreatSelectedHotelProposal = {
   hotel_proposals?: HotelLodgingProposal[]
 }
 
-export type RetreatProgressState =  // Deprecated
-  | "INTAKE_1"
-  | "INTAKE_2"
-  | "FILTER_SELECT"
-  | "DESTINATION_SELECT"
-  | "HOTEL_SELECT"
-  | "PROPOSAL"
-  | "PROPOSAL_READY"
+export type RetreatProgressState = // Deprecated
+
+    | "INTAKE_1"
+    | "INTAKE_2"
+    | "FILTER_SELECT"
+    | "DESTINATION_SELECT"
+    | "HOTEL_SELECT"
+    | "PROPOSAL"
+    | "PROPOSAL_READY"
 
 /****************** Retreat states types (keep synced with models/retreat.tsx in flok) ******************/
 export const OrderedRetreatIntakeState = [
@@ -98,20 +99,14 @@ export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
 
 export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
 
-export type RetreatTask = {
-  id: number
-  description?: string
-  title: string
-  link: string
-  user_complete: boolean
-}
-
 export type RetreatToTask = {
-  task: RetreatTask
+  task_id: number
   order: number
   state: RetreatToTaskState
   due_date?: string
-  link_override?: string
+  title: string
+  description?: string
+  link?: string
 }
 export type RetreatModel = {
   id: number
@@ -150,6 +145,10 @@ export type RetreatModel = {
 
   tasks_todo: RetreatToTask[]
   tasks_completed: RetreatToTask[]
+
+  //Retreat itinerary links
+  itinerary_first_draft_link?: string
+  itinerary_final_draft_link?: string
 }
 
 export type RetreatTripModel = {
@@ -192,3 +191,216 @@ export type RetreatAttendeeModel = {
   info_status: string
   flight_status: "PENDING" | "OPT_OUT" | "BOOKED"
 }
+
+export const SampleLockedAttendees = [
+  {
+    dietary_prefs: "Vegan",
+    info_status: "INFO_ENTERED",
+    name: "Eli Manning",
+    id: 1,
+    notes: "Says they are vegan but not really",
+    city: "New York",
+    flight_status: "BOOKED",
+    travel: {
+      id: 1,
+      cost: 450,
+      arr_trip: {
+        id: 1,
+        cost: 250,
+        confirmation_number: 12345,
+        trip_legs: [
+          {
+            trip_id: 1,
+            airline: "Jet Blue",
+            dep_airport: "LGA",
+            dep_datetime: "2022-04-07T13:33:14.195Z",
+            arr_airport: "LAX",
+            arr_datetime: "2022-04-06T13:33:14.195Z",
+            flight_num: "967",
+            duration: "300",
+          },
+        ],
+      },
+      dep_trip: {
+        id: 1,
+        cost: 250,
+        confirmation_number: 12345,
+        trip_legs: [
+          {
+            trip_id: 1,
+            airline: "Jet Blue",
+            dep_airport: "LGA",
+            dep_datetime: "2022-04-10T13:33:14.195Z",
+            arr_airport: "LAX",
+            arr_datetime: "2022-04-06T13:33:14.195Z",
+            flight_num: "967",
+            duration: "300",
+          },
+        ],
+      },
+    },
+    email_address: "tp@123.com",
+  },
+  {
+    dietary_prefs: "Vegan",
+    info_status: "CREATED",
+    name: "Tiki Barber",
+    id: 1,
+    travel: undefined,
+    notes: "",
+    city: "New York",
+    flight_status: "OPT_OUT",
+    email_address: "tp@123.com",
+  },
+  {
+    dietary_prefs: "Paleo",
+    info_status: "INFO_ADDED",
+    name: "Jeremy Shockey",
+    id: 1,
+    travel: {
+      id: 1,
+      cost: 400,
+      arr_trip: {
+        id: 1,
+        cost: 250,
+        confirmation_number: 12345,
+        trip_legs: [
+          {
+            trip_id: 1,
+            airline: "Jet Blue",
+            dep_airport: "LGA",
+            dep_datetime: "2022-04-05T18:31:27.963Z",
+            arr_airport: "LAX",
+            arr_datetime: "2022-04-06T15:25:14.195Z",
+            flight_num: "967",
+            duration: "300",
+          },
+        ],
+      },
+      dep_trip: {
+        id: 1,
+        cost: 250,
+        confirmation_number: 12345,
+        trip_legs: [
+          {
+            trip_id: 1,
+            airline: "Jet Blue",
+            dep_airport: "LGA",
+            dep_datetime: "2022-04-10T13:33:14.195Z",
+            arr_airport: "LAX",
+            arr_datetime: "2022-04-06T13:33:14.195Z",
+            flight_num: "967",
+            duration: "300",
+          },
+        ],
+      },
+    },
+    notes: "",
+    city: "New York",
+    flight_status: "BOOKED",
+    email_address: "tp@123.com",
+  },
+  {
+    dietary_prefs: "Vegan",
+    info_status: "INFO_ENTERED",
+    name: "Kevin Boss",
+    id: 1,
+    travel: {
+      id: 1,
+      cost: 325,
+      arr_trip: {
+        id: 1,
+        cost: 250,
+        confirmation_number: 12345,
+        trip_legs: [
+          {
+            trip_id: 1,
+            airline: "Jet Blue",
+            dep_airport: "LGA",
+            dep_datetime: "2022-04-05T18:31:27.963Z",
+            arr_airport: "LAX",
+            arr_datetime: "2022-04-06T13:33:14.195Z",
+            flight_num: "967",
+            duration: "300",
+          },
+        ],
+      },
+      dep_trip: {
+        id: 1,
+        cost: 250,
+        confirmation_number: 12345,
+        trip_legs: [
+          {
+            trip_id: 1,
+            airline: "Jet Blue",
+            dep_airport: "LGA",
+            dep_datetime: "2022-04-10T13:33:14.195Z",
+            arr_airport: "LAX",
+            arr_datetime: "2022-04-06T13:33:14.195Z",
+            flight_num: "967",
+            duration: "300",
+          },
+        ],
+      },
+    },
+    notes: "Says they are vegan but not really",
+    city: "New York",
+    flight_status: "BOOKED",
+    email_address: "tp@123.com",
+  },
+  {
+    dietary_prefs: "Kosher",
+    info_status: "CREATED",
+    name: "Plaxico Burress",
+    id: 1,
+    travel: undefined,
+    notes: "",
+    city: "New York",
+    flight_status: "PENDING",
+    email_address: "tp@123.com",
+  },
+  {
+    dietary_prefs: "Paleo",
+    info_status: "INFO_ADDED",
+    name: "Amani Toomer",
+    id: 1,
+    travel: undefined,
+    notes: "",
+    city: "New York",
+    flight_status: "OPT_OUT",
+    email_address: "tp@123.com",
+  },
+  {
+    dietary_prefs: "Vegan",
+    info_status: "INFO_ENTERED",
+    name: "Ahmad Bradshaw",
+    id: 1,
+    travel: undefined,
+    notes: "Says they are vegan but not really",
+    city: "New York",
+    flight_status: "PENDING",
+    email_address: "tp@123.com",
+  },
+  {
+    dietary_prefs: "Vegetarian",
+    info_status: "CREATED",
+    name: "Brandon Jacobs",
+    id: 1,
+    travel: undefined,
+    notes: "",
+    city: "New York",
+    flight_status: "PENDING",
+    email_address: "tp@123.com",
+  },
+  {
+    dietary_prefs: "Paleo",
+    info_status: "INFO_ADDED",
+    name: "Mario Manningham",
+    id: 1,
+    travel: undefined,
+    notes: "",
+    city: "New York",
+    flight_status: "PENDING",
+    email_address: "tp@123.com",
+  },
+] as RetreatAttendeeModel[]

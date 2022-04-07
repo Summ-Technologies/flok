@@ -48,10 +48,12 @@ export type AdminRetreatModel = {
   // Retreat data related to itinerary
   itinerary_state?: RetreatItineraryState
 
-  //Andrew added for task
-
+  // Retreat links
   itinerary_first_draft_link?: string
   itinerary_final_draft_link?: string
+
+  flights_travel_policies_link: string | null
+  attendees_registration_form_id: string | null
 }
 
 export type AdminRetreatUpdateModel = Pick<
@@ -250,6 +252,32 @@ export type RetreatNoteModel = {
   created_at: string // date string
 }
 
+// TASKS
+export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
+export const RetreatToTaskStateOptions = ["TODO", "COMPLETED", "HIDDEN"]
+
+// This is the Jinja templated task
+export type RetreatTask = {
+  id: number
+  title: string
+  description?: string
+  link?: string
+}
+
+export type RetreatToTask = {
+  retreat_id: number
+  task_id: number
+  // Task fields (rendered)
+  title: string
+  description?: string
+  link?: string
+  // RetreatToTask fields
+  order: number
+  state: RetreatToTaskState
+  due_date?: string
+  task_vars: {[key: string]: string | null}
+  task_template: RetreatTask
+}
 export type User = {
   id: number
   email: string

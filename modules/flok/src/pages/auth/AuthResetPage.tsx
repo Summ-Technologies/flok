@@ -1,10 +1,15 @@
-import {Box, makeStyles} from "@material-ui/core"
+import {Box, makeStyles, Typography} from "@material-ui/core"
+import {push} from "connected-react-router"
 import querystring from "querystring"
 import React, {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AuthForm from "../../components/forms/AuthForm"
 import PageContainer from "../../components/page/PageContainer"
+import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
+import {apiNotification} from "../../notistack-lib/utils"
+import {AppRoutes} from "../../Stack"
+import {ApiAction} from "../../store/actions/api"
 import {getUserResetToken, postUserReset} from "../../store/actions/user"
 import UserGetters from "../../store/getters/user"
 import {apiToModel} from "../../utils/apiUtils"
@@ -40,6 +45,10 @@ let useStyles = makeStyles((theme) => ({
     backgroundSize: "cover",
     backgroundPosition: "center",
   },
+
+  errorMessageText: {
+    padding: theme.spacing(2),
+  },
 }))
 export type AuthResetPageProps = RouteComponentProps<{}>
 function AuthResetPage(props: AuthResetPageProps) {
@@ -50,28 +59,49 @@ function AuthResetPage(props: AuthResetPageProps) {
   let loginTokenUserEmail = useSelector(
     UserGetters.getUserForLoginToken(loginToken)
   )
-
   useEffect(() => {
     if (loginToken !== undefined && loginTokenUserEmail === undefined) {
       dispatch(getUserResetToken(loginToken))
     }
   }, [dispatch, loginToken, loginTokenUserEmail])
 
-  function submitForm(vals: {password: string}) {
-    dispatch(postUserReset(loginToken, vals.password))
+  async function submitForm(vals: {password: string}) {
+    let authResponse = (await dispatch(
+      postUserReset(loginToken, vals.password)
+    )) as unknown as ApiAction
+    if (!authResponse.error) {
+      dispatch(push(AppRoutes.getPath("RetreatHomePage", {retreatIdx: "0"})))
+    } else {
+      dispatch(
+        enqueueSnackbar(
+          apiNotification(
+            "Something went wrong.",
+            (key) => dispatch(closeSnackbar(key)),
+            true
+          )
+        )
+      )
+    }
   }
   let classes = useStyles(props)
   return (
     <PageContainer>
       <Box className={classes.body}>
         <Box className={classes.modal}>
-          {loginTokenUserEmail !== undefined && (
+          {loginTokenUserEmail !== undefined ? (
             <AuthForm
               submitForm={submitForm}
               submitText="Submit"
               prefilledEmail={loginTokenUserEmail}
               title="Set Your Password"
             />
+          ) : (
+            <Box>
+              <Typography variant="h4" className={classes.errorMessageText}>
+                Oops. Looks like we can't find your login token. Please try
+                again.
+              </Typography>
+            </Box>
           )}
         </Box>
       </Box>

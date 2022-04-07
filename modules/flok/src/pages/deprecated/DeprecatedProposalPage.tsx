@@ -525,9 +525,9 @@ function ProposalPage(props: ProposalPageProps) {
                     ) : undefined}
                   </Paper>
                 )}
-                {(proposal.meeting_room_rates ||
-                  proposal.suggested_meeting_spaces ||
-                  proposal.meeting_room_tax_rates) && (
+                {proposal.meeting_room_rates ||
+                proposal.suggested_meeting_spaces ||
+                proposal.meeting_room_tax_rates ? (
                   <Paper className={classes.detailsSection}>
                     <AppTypography variant="h3" fontWeight="bold">
                       Meeting Space
@@ -588,9 +588,9 @@ function ProposalPage(props: ProposalPageProps) {
                       </div>
                     ) : undefined}
                   </Paper>
-                )}
-                {(proposal.cost_saving_notes ||
-                  proposal.additional_links?.length) && (
+                ) : undefined}
+                {proposal.cost_saving_notes ||
+                proposal.additional_links?.length ? (
                   <Paper className={classes.detailsSection}>
                     <AppTypography variant="h3" fontWeight="bold">
                       Additional Info
@@ -628,7 +628,7 @@ function ProposalPage(props: ProposalPageProps) {
                       </div>
                     ) : undefined}
                   </Paper>
-                )}
+                ) : undefined}
               </div>
               <Hidden mdUp>
                 <AppImageGrid images={hotel.imgs} />

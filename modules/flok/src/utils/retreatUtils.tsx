@@ -1,5 +1,7 @@
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
+import {Constants} from "../config"
+import {RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
 import {getRetreatAttendees, getRetreatByGuid} from "../store/actions/retreat"
 
@@ -45,4 +47,12 @@ export function useRetreatByGuid(retreatGuid: string) {
     }
   }, [retreat, dispatch, retreatGuid])
   return [retreat, loading] as const
+}
+
+export function parseRetreatTask(task: RetreatToTask, baseUrl: string) {
+  let parsedTask = {...task}
+  if (task.link) {
+    parsedTask.link = task.link.replaceAll(Constants.retreatBaseUrlVar, baseUrl)
+  }
+  return parsedTask
 }

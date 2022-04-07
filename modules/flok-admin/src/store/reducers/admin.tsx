@@ -10,6 +10,7 @@ import {
   AdminRetreatListType,
   AdminRetreatModel,
   RetreatNoteModel,
+  RetreatToTask,
   User,
 } from "../../models"
 import {
@@ -28,12 +29,14 @@ import {
   GET_RETREAT_DETAILS_REQUEST,
   GET_RETREAT_DETAILS_SUCCESS,
   GET_RETREAT_NOTES_SUCCESS,
+  GET_RETREAT_TASKS_SUCCESS,
   GET_USERS_SUCCESS,
   PATCH_HOTEL_SUCCESS,
   PATCH_RETREAT_ATTENDEE_SUCCESS,
   PATCH_RETREAT_DETAILS_FAILURE,
   PATCH_RETREAT_DETAILS_REQUEST,
   PATCH_RETREAT_DETAILS_SUCCESS,
+  PATCH_RETREAT_TASK_SUCCESS,
   PATCH_USER_SUCCESS,
   POST_HOTEL_SUCCESS,
   POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
@@ -87,6 +90,9 @@ export type AdminState = {
     [key: number]: RetreatNoteModel[] | undefined
   }
   allUsers?: {[id: number]: User}
+  tasksByRetreat: {
+    [id: number]: RetreatToTask[] | undefined
+  }
   usersByRetreat: {
     [id: number]: {[id: number]: User}
   }
@@ -113,6 +119,7 @@ const initialState: AdminState = {
   },
   attendeesByRetreat: {},
   notesByRetreat: {},
+  tasksByRetreat: {},
   usersByRetreat: {},
   userLoginTokens: {},
 }
@@ -292,6 +299,19 @@ export default function AdminReducer(
         notesByRetreat: {
           ...state.notesByRetreat,
           [meta.retreatId]: payload.notes,
+        },
+      }
+    case GET_RETREAT_TASKS_SUCCESS:
+    case PATCH_RETREAT_TASK_SUCCESS:
+      meta = (action as unknown as {meta: {retreatId: number}}).meta
+      payload = (action as unknown as ApiAction).payload as {
+        tasks: RetreatToTask[]
+      }
+      return {
+        ...state,
+        tasksByRetreat: {
+          ...state.tasksByRetreat,
+          [meta.retreatId]: payload.tasks,
         },
       }
     case GET_HOTELS_SEARCH_SUCCESS:
