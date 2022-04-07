@@ -39,8 +39,6 @@ export type RetreatsTableRow = {
   companyName: string
   contactEmail: string
   numAttendees: number
-  flokOwner: string
-  flokState: string
   createdAt: Date
   intake_state: RetreatIntakeState
   lodging_state: RetreatLodgingState

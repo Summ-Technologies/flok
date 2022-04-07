@@ -76,8 +76,6 @@ function RetreatsPage(props: RetreatsPageProps) {
         companyName: retreat.company_name,
         contactEmail: retreat.contact_email,
         numAttendees: retreat.preferences_num_attendees_lower,
-        flokOwner: retreat.flok_admin_owner,
-        flokState: retreat.flok_admin_state,
         createdAt: getDateFromString(retreat.created_at),
         intake_state: retreat.intake_state,
         lodging_state: retreat.lodging_state,

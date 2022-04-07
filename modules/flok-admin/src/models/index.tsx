@@ -4,8 +4,6 @@ export type AdminRetreatListModel = {
   company_name: string
   contact_email: string
   preferences_num_attendees_lower: number
-  flok_admin_state: string
-  flok_admin_owner: string
   created_at: string
   intake_state: RetreatIntakeState
   lodging_state: RetreatLodgingState
