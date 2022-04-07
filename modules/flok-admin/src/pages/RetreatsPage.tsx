@@ -73,13 +73,15 @@ function RetreatsPage(props: RetreatsPageProps) {
     retreats.forEach((retreat) => {
       rowsDict[retreat.id] = {
         id: retreat.id,
-        guid: retreat.guid,
         companyName: retreat.company_name,
         contactEmail: retreat.contact_email,
         numAttendees: retreat.preferences_num_attendees_lower,
-        flokOwner: retreat.flok_admin_owner,
-        flokState: retreat.flok_admin_state,
         createdAt: getDateFromString(retreat.created_at),
+        intake_state: retreat.intake_state,
+        lodging_state: retreat.lodging_state,
+        attendees_state: retreat.attendees_state,
+        flights_state: retreat.flights_state,
+        itinerary_state: retreat.itinerary_state,
       }
     })
     return rowsDict
@@ -96,7 +98,6 @@ function RetreatsPage(props: RetreatsPageProps) {
   let completeRetreats = useSelector((state: RootState) => {
     return transformToRows(state.admin.retreatsList.complete)
   })
-
   return (
     <PageBase>
       <div className={classes.body}>

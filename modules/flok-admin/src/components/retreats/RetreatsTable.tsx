@@ -8,7 +8,13 @@ import {
 } from "@material-ui/data-grid"
 import React, {useState} from "react"
 import {useDispatch} from "react-redux"
-import {RetreatStateOptions} from "../../models"
+import {
+  RetreatAttendeesState,
+  RetreatFlightsState,
+  RetreatIntakeState,
+  RetreatItineraryState,
+  RetreatLodgingState,
+} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
 import {getDateTimeString} from "../../utils"
 
@@ -30,13 +36,15 @@ let useStyles = makeStyles((theme) => ({
 
 export type RetreatsTableRow = {
   id: number
-  guid: string
   companyName: string
   contactEmail: string
   numAttendees: number
-  flokOwner: string
-  flokState: string
   createdAt: Date
+  intake_state: RetreatIntakeState
+  lodging_state: RetreatLodgingState
+  attendees_state: RetreatAttendeesState
+  flights_state: RetreatFlightsState
+  itinerary_state: RetreatItineraryState
 }
 
 type RetreatsTableProps = {
@@ -87,12 +95,6 @@ export default function RetreatsTable(props: RetreatsTableProps) {
     },
     {
       ...commonColDefs,
-      field: "guid",
-      headerName: "GUID",
-      width: 200,
-    },
-    {
-      ...commonColDefs,
       field: "companyName",
       headerName: "Company",
       width: 200,
@@ -106,17 +108,33 @@ export default function RetreatsTable(props: RetreatsTableProps) {
     },
     {
       ...commonColDefs,
-      field: "flokOwner",
-      headerName: "Flok Owner",
-      width: 150,
+      field: "intake_state",
+      headerName: "Intake State",
+      width: 200,
     },
     {
       ...commonColDefs,
-      field: "flokState",
-      headerName: "Flok State",
-      width: 150,
-      type: "singleSelect",
-      valueOptions: RetreatStateOptions,
+      field: "lodging_state",
+      headerName: "Lodging State",
+      width: 200,
+    },
+    {
+      ...commonColDefs,
+      field: "attendees_state",
+      headerName: "Attendees State",
+      width: 200,
+    },
+    {
+      ...commonColDefs,
+      field: "flights_state",
+      headerName: "Flights State",
+      width: 200,
+    },
+    {
+      ...commonColDefs,
+      field: "itinerary_state",
+      headerName: "Itinerary State",
+      width: 200,
     },
     {
       ...commonColDefs,

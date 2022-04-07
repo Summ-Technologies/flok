@@ -1,13 +1,15 @@
 export type AdminRetreatListType = "active" | "inactive" | "complete"
 export type AdminRetreatListModel = {
   id: number
-  guid: string
   company_name: string
   contact_email: string
   preferences_num_attendees_lower: number
-  flok_admin_state: string
-  flok_admin_owner: string
   created_at: string
+  intake_state: RetreatIntakeState
+  lodging_state: RetreatLodgingState
+  attendees_state: RetreatAttendeesState
+  flights_state: RetreatFlightsState
+  itinerary_state: RetreatItineraryState
 }
 export type AdminRetreatModel = {
   id: number
