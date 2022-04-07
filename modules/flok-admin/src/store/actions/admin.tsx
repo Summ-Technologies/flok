@@ -7,6 +7,7 @@ import {
   AdminRetreatListType,
   AdminRetreatModel,
   AdminSelectedHotelStateTypes,
+  RetreatTask,
   RetreatToTaskState,
 } from "../../models"
 import {nullifyEmptyString} from "../../utils"
@@ -642,6 +643,59 @@ export function getUserLoginToken(userId: number) {
       GET_LOGIN_TOKEN_REQUEST,
       {type: GET_LOGIN_TOKEN_SUCCESS, meta: {userId}},
       GET_LOGIN_TOKEN_FAILURE,
+    ],
+  })
+}
+
+export const GET_TASKS_LIST_REQUEST = "GET_TASKS_LIST_REQUEST"
+export const GET_TASKS_LIST_SUCCESS = "GET_TASKS_LIST_SUCCESS"
+export const GET_TASKS_LIST_FAILURE = "GET_TASKS_LIST_FAILURE"
+
+export function getTasksList() {
+  let endpoint = "/v1.0/admin/tasks"
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [
+      {type: GET_TASKS_LIST_REQUEST},
+      {type: GET_TASKS_LIST_SUCCESS},
+      {type: GET_TASKS_LIST_FAILURE},
+    ],
+  })
+}
+
+export const PATCH_TASK_REQUEST = "PATCH_TASK_REQUEST"
+export const PATCH_TASK_SUCCESS = "PATCH_TASK_SUCCESS"
+export const PATCH_TASK_FAILURE = "PATCH_TASK_FAILURE"
+export function patchTask(task_id: string, taskDetails: Partial<RetreatTask>) {
+  let endpoint = `/v1.0/admin/tasks/${task_id}`
+  return createApiAction({
+    endpoint,
+    method: "PATCH",
+    body: JSON.stringify(taskDetails, (key, value) =>
+      typeof value === "undefined" ? null : value
+    ),
+    types: [
+      {type: PATCH_TASK_REQUEST, meta: {task_id}},
+      {type: PATCH_TASK_SUCCESS, meta: {task_id}},
+      {type: PATCH_TASK_FAILURE, meta: {task_id}},
+    ],
+  })
+}
+
+export const GET_TASK_REQUEST = "GET_TASKS_LIST_REQUEST"
+export const GET_TASK_SUCCESS = "GET_TASKS_LIST_SUCCESS"
+export const GET_TASK_FAILURE = "GET_TASKS_LIST_FAILURE"
+
+export function getTask(task_id: number) {
+  let endpoint = `/v1.0/admin/tasks/${task_id}`
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [
+      {type: GET_TASK_REQUEST, meta: {task_id}},
+      {type: GET_TASK_SUCCESS, meta: {task_id}},
+      {type: GET_TASK_FAILURE, meta: {task_id}},
     ],
   })
 }

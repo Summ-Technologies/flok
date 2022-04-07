@@ -8,9 +8,8 @@ import {
 } from "@material-ui/data-grid"
 import React, {useState} from "react"
 import {useDispatch} from "react-redux"
-import {RetreatStateOptions} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
-import {getDateTimeString} from "../../utils"
+import {TasksTableRow} from "../retreats/RetreatsTable"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -39,19 +38,11 @@ export type RetreatsTableRow = {
   createdAt: Date
 }
 
-type RetreatsTableProps = {
-  rows: RetreatsTableRow[]
+type TasksTableProps = {
+  rows: TasksTableRow[]
   onSelect: (id: number) => void
 }
-
-export type TasksTableRow = {
-  id: number
-  title: string
-  description: string | undefined
-  link: string | undefined
-}
-
-export default function RetreatsTable(props: RetreatsTableProps) {
+export default function TasksTable(props: TasksTableProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   function onViewRetreat(params: GridCellParams) {
@@ -65,12 +56,12 @@ export default function RetreatsTable(props: RetreatsTableProps) {
   }
   const [sortModel, setSortModel] = useState<GridSortModel | undefined>([
     {
-      field: "createdAt",
-      sort: "desc",
+      field: "id",
+      sort: "asc",
     },
   ])
   const commonColDefs = {}
-  const retreatsTableColumns: GridColDef[] = [
+  const tasksTableColumns: GridColDef[] = [
     {
       ...commonColDefs,
       field: "button",
@@ -95,44 +86,21 @@ export default function RetreatsTable(props: RetreatsTableProps) {
     },
     {
       ...commonColDefs,
-      field: "guid",
-      headerName: "GUID",
+      field: "title",
+      headerName: "Title",
       width: 200,
     },
     {
       ...commonColDefs,
-      field: "companyName",
-      headerName: "Company",
+      field: "description",
+      headerName: "Description",
       width: 200,
     },
     {
       ...commonColDefs,
-      field: "numAttendees",
-      headerName: "# Attendees",
-      width: 100,
-      hideSortIcons: false,
-    },
-    {
-      ...commonColDefs,
-      field: "flokOwner",
-      headerName: "Flok Owner",
-      width: 150,
-    },
-    {
-      ...commonColDefs,
-      field: "flokState",
-      headerName: "Flok State",
-      width: 150,
-      type: "singleSelect",
-      valueOptions: RetreatStateOptions,
-    },
-    {
-      ...commonColDefs,
-      field: "createdAt",
-      headerName: "Created At",
-      width: 250,
-      type: "dateTime",
-      valueFormatter: (params) => getDateTimeString(params.value as Date),
+      field: "link",
+      headerName: "Link",
+      width: 200,
     },
   ]
   return (
@@ -142,7 +110,7 @@ export default function RetreatsTable(props: RetreatsTableProps) {
       sortModel={sortModel}
       onSortModelChange={() => setSortModel(undefined)}
       rows={props.rows}
-      columns={retreatsTableColumns}
+      columns={tasksTableColumns}
       components={{
         Toolbar: GridToolbar,
       }}

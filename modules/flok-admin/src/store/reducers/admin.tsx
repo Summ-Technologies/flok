@@ -10,6 +10,7 @@ import {
   AdminRetreatListType,
   AdminRetreatModel,
   RetreatNoteModel,
+  RetreatTask,
   RetreatToTask,
   User,
 } from "../../models"
@@ -30,6 +31,8 @@ import {
   GET_RETREAT_DETAILS_SUCCESS,
   GET_RETREAT_NOTES_SUCCESS,
   GET_RETREAT_TASKS_SUCCESS,
+  GET_TASKS_LIST_SUCCESS,
+  GET_TASK_SUCCESS,
   GET_USERS_SUCCESS,
   PATCH_HOTEL_SUCCESS,
   PATCH_RETREAT_ATTENDEE_SUCCESS,
@@ -37,6 +40,7 @@ import {
   PATCH_RETREAT_DETAILS_REQUEST,
   PATCH_RETREAT_DETAILS_SUCCESS,
   PATCH_RETREAT_TASK_SUCCESS,
+  PATCH_TASK_SUCCESS,
   PATCH_USER_SUCCESS,
   POST_HOTEL_SUCCESS,
   POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
@@ -98,6 +102,9 @@ export type AdminState = {
   userLoginTokens: {
     [id: number]: string
   }
+  tasks: {
+    [id: number]: RetreatTask | undefined
+  }
 }
 
 const initialState: AdminState = {
@@ -121,6 +128,7 @@ const initialState: AdminState = {
   tasksByRetreat: {},
   usersByRetreat: {},
   userLoginTokens: {},
+  tasks: {},
 }
 
 export default function AdminReducer(
@@ -375,6 +383,31 @@ export default function AdminReducer(
         userLoginTokens: {
           ...state.userLoginTokens,
           [meta.userId]: payload.login_token,
+        },
+      }
+    case GET_TASKS_LIST_SUCCESS:
+      payload = (action as unknown as ApiAction).payload as {
+        tasks: RetreatTask[]
+      }
+      return {
+        ...state,
+        tasks: {
+          ...state.tasks,
+          ...payload.tasks.reduce(
+            (last, curr) => ({...last, [curr.id]: curr}),
+            {}
+          ),
+        },
+      }
+    case PATCH_TASK_SUCCESS:
+    case GET_TASK_SUCCESS:
+      payload = (action as unknown as ApiAction).payload as {task: RetreatTask}
+      meta = (action as unknown as {meta: {taskId: number}}).meta
+      return {
+        ...state,
+        tasks: {
+          ...state.tasks,
+          [payload.task.id]: payload.task,
         },
       }
     default:
