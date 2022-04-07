@@ -151,3 +151,22 @@ export function getUserHome() {
     {onSuccess: (dispatch) => dispatch(setUserLoggedIn())}
   )
 }
+
+// Send Password Reset Email
+export const POST_FORGOT_PASSWORD_REQUEST = "POST_FORGOT_PASSWORD_REQUEST"
+export const POST_FORGOT_PASSWORD_SUCCESS = "POST_FORGOT_PASSWORD_SUCCESS"
+export const POST_FORGOT_PASSWORD_FAILURE = "POST_FORGOT_PASSWORD_FAILURE"
+
+export function postForgotPassword(email: string) {
+  let endpoint = `/v1.0/auth/reset-email`
+  return createApiAction({
+    endpoint,
+    method: "POST",
+    types: [
+      POST_FORGOT_PASSWORD_SUCCESS,
+      POST_FORGOT_PASSWORD_SUCCESS,
+      POST_FORGOT_PASSWORD_FAILURE,
+    ],
+    body: JSON.stringify({email}),
+  })
+}

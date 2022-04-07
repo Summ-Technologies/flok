@@ -2,6 +2,7 @@ import {
   Button,
   IconButton,
   InputAdornment,
+  Link,
   makeStyles,
   StandardProps,
   TextField,
@@ -10,7 +11,10 @@ import {
 import {VisibilityOffRounded, VisibilityRounded} from "@material-ui/icons"
 import {useFormik} from "formik"
 import {useState} from "react"
+import {Link as RouterLink} from "react-router-dom"
 import * as yup from "yup"
+import {AppRoutes} from "../../Stack"
+import {theme} from "../../theme"
 import AppTypography from "../base/AppTypography"
 
 const useStyles = makeStyles((theme) => ({
@@ -41,6 +45,7 @@ interface AuthCardProps
   prefilledEmail?: string
   submitText: string
   title: string
+  forgotPassword?: boolean
 }
 export default function AuthForm(props: AuthCardProps) {
   const classes = useStyles()
@@ -130,6 +135,16 @@ export default function AuthForm(props: AuthCardProps) {
           style={{marginTop: 12}}>
           {props.submitText}
         </Button>
+        {props.forgotPassword ? (
+          <Link
+            variant="body1"
+            style={{marginLeft: theme.spacing(0.5)}}
+            underline="always"
+            component={RouterLink}
+            to={AppRoutes.getPath("ForgotPasswordPage")}>
+            Forgot password?
+          </Link>
+        ) : undefined}
       </form>
     </>
   )

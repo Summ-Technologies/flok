@@ -53,6 +53,7 @@ function SigninPage(props: SigninPageProps) {
             submitForm={handleLogin}
             submitText="Login"
             title="Good To See You"
+            forgotPassword
           />
         </div>
       </div>
