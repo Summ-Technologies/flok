@@ -86,6 +86,7 @@ export type AdminState = {
   notesByRetreat: {
     [key: number]: RetreatNoteModel[] | undefined
   }
+  allUsers?: {[id: number]: User}
   usersByRetreat: {
     [id: number]: {[id: number]: User}
   }
@@ -122,6 +123,7 @@ export default function AdminReducer(
 ): AdminState {
   var payload
   var meta
+  var newState: AdminState
   switch (action.type) {
     case GET_RETREATS_LIST_SUCCESS:
       meta = (action as unknown as {meta: {state: AdminRetreatListType}}).meta
@@ -310,28 +312,25 @@ export default function AdminReducer(
       payload = (action as unknown as ApiAction).payload as {
         users: User[]
       }
-      return {
-        ...state,
-        usersByRetreat: {
-          ...state.usersByRetreat,
-          [meta.retreatId]: _.keyBy(payload.users, (u) => u.id),
-        },
+      newState = {...state} as AdminState
+      if (meta.retreatId !== undefined) {
+        newState.usersByRetreat[meta.retreatId] = _.keyBy(
+          payload.users,
+          (u) => u.id
+        )
+      } else {
+        newState.allUsers = _.keyBy(payload.users, (u) => u.id)
       }
+      return newState
     case POST_USER_SUCCESS:
     case PATCH_USER_SUCCESS:
       let thisPayload = (action as unknown as ApiAction).payload as {
         user: User
         login_token?: string
       }
-      let newState = {
+      newState = {
         ...state,
-        usersByRetreat: {
-          ...state.usersByRetreat,
-          [-1]: {
-            ...state.usersByRetreat[-1],
-            [thisPayload.user.id]: thisPayload.user,
-          },
-        },
+        allUsers: {...state.allUsers, [thisPayload.user.id]: thisPayload.user},
       } as AdminState
       thisPayload.user.retreat_ids.forEach((id) => {
         newState.usersByRetreat[id] = {

@@ -38,7 +38,7 @@ export default function NewUserModal(props: NewUserModalProps) {
       email: null,
       firstName: null,
       lastName: null,
-      retreats: (props.autofill !== undefined && props.autofill !== -1
+      retreats: (props.autofill !== undefined
         ? [retreatList.find((val) => val.id === props.autofill)]
         : []) as AdminRetreatListModel[],
     },

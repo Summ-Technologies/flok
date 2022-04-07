@@ -528,8 +528,10 @@ export function getHotelsSearch(search: string) {
 export const GET_USERS_REQUEST = "GET_USERS_REQUEST"
 export const GET_USERS_SUCCESS = "GET_USERS_SUCCESS"
 export const GET_USERS_FAILURE = "GET_USERS_FAILURE"
-export function getUsers(retreatId: number) {
-  let endpoint = `/v1.0/admin/users?retreat_id=${retreatId}`
+export function getUsers(retreatId?: number) {
+  let endpoint = retreatId
+    ? `/v1.0/admin/users?retreat_id=${retreatId}`
+    : `/v1.0/admin/users`
   return createApiAction({
     method: "GET",
     endpoint,

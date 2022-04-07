@@ -44,15 +44,15 @@ function UsersPage(props: UsersPageProps) {
 
   let retreatId = props.match.params.retreatId
     ? parseInt(props.match.params.retreatId)
-    : -1
+    : undefined
 
   let retreat = useSelector((state: RootState) =>
-    retreatId === -1
+    retreatId === undefined
       ? {company_name: ""}
       : state.admin.retreatsDetails[retreatId]
   )
   useEffect(() => {
-    if (retreatId !== -1 && retreat === undefined) {
+    if (retreatId !== undefined && retreat === undefined) {
       dispatch(getRetreatDetails(retreatId))
     }
   })
@@ -60,7 +60,7 @@ function UsersPage(props: UsersPageProps) {
   return (
     <PageBase>
       <div className={classes.body}>
-        {retreatId !== -1 && (
+        {retreatId !== undefined && (
           <Breadcrumbs aria-label="breadcrumb">
             <Link
               color="inherit"

@@ -4,13 +4,13 @@ import {
   ListItemText,
   Modal,
   Paper,
-  TextField,
+  TextField
 } from "@material-ui/core"
-import {Autocomplete} from "@material-ui/lab"
+import { Autocomplete } from "@material-ui/lab"
 import _ from "lodash"
-import React, {useState} from "react"
-import {User} from "../../models"
-import {useRetreatUsers} from "../../utils"
+import React, { useState } from "react"
+import { User } from "../../models"
+import { useRetreatUsers } from "../../utils"
 import AppTypography from "../base/AppTypography"
 
 type SearchUserModalProps = {
@@ -20,7 +20,7 @@ type SearchUserModalProps = {
 }
 export default function SearchUserModal(props: SearchUserModalProps) {
   let [input, setInput] = useState("")
-  let [users, loading] = useRetreatUsers(-1)
+  let [users, loading] = useRetreatUsers()
   return (
     <Modal open={props.open} onClose={props.onClose}>
       <Box

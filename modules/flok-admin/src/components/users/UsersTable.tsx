@@ -41,7 +41,7 @@ export default function UsersTable(props: UsersTableProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
 
-  let [users, loading] = useRetreatUsers(props.retreatId ?? -1)
+  let [users, loading] = useRetreatUsers(props.retreatId)
 
   let [activeUser, setActiveUser] = useState<User | undefined>(undefined)
   let [newUserOpen, setNewUserOpen] = useState(false)
@@ -60,21 +60,8 @@ export default function UsersTable(props: UsersTableProps) {
     let rowIdAsString = params.getValue(params.id, "id")?.toString()
     let rowId = rowIdAsString ? parseInt(rowIdAsString) : null
     if (rowId != null && !isNaN(rowId)) {
-      setActiveUser(users[rowId])
-      // if (retreatId !== -1) {
-      //   dispatch(
-      //     push(
-      //       AppRoutes.getPath("RetreatUserPage", {
-      //         userId: rowId.toString(),
-      //         retreatId: retreatId.toString(),
-      //       })
-      //     )
-      //   )
-      // } else {
-      //   dispatch(
-      //     push(AppRoutes.getPath("UserPage", {userId: rowId.toString()}))
-      //   )
-      // }
+      setActiveUser((users ?? {})[rowId])
+      console.log(activeUser, users)
     } else {
       dispatch(enqueueSnackbar({message: "Something went wrong"}))
     }
@@ -86,7 +73,9 @@ export default function UsersTable(props: UsersTableProps) {
         user.id,
         user.first_name,
         user.last_name,
-        _.uniq(user.retreat_ids.concat([props.retreatId ?? -1]))
+        _.uniq(
+          user.retreat_ids.concat(props.retreatId ? [props.retreatId] : [])
+        )
       )
     )
     setAddUserOpen(false)
