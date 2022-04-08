@@ -36,14 +36,14 @@ function TaskPage(props: TaskPageProps) {
   let dispatch = useDispatch()
   let taskId = parseInt(props.match.params.taskId) ?? -1 // -1 for an id that will always return 404
 
-  useEffect(() => {
-    dispatch(getTasksList())
-  }, [dispatch])
-
   // Get task data
   let task = useSelector((state: RootState) => {
     return state.admin.tasks[taskId]
   })
+
+  useEffect(() => {
+    !task && dispatch(getTasksList())
+  }, [dispatch, task])
 
   return (
     <PageBase>
