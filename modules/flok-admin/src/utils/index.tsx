@@ -172,11 +172,11 @@ export function useHotelsBySearch(search: string) {
   return [results ? results : [], loading] as const
 }
 
-export function useRetreatUsers(retreatId: number) {
+export function useRetreatUsers(retreatId?: number | undefined) {
   let dispatch = useDispatch()
   let [loading, setLoading] = useState(false)
-  let users = useSelector(
-    (state: RootState) => state.admin.usersByRetreat[retreatId]
+  let users = useSelector((state: RootState) =>
+    retreatId ? state.admin.usersByRetreat[retreatId] : state.admin.allUsers
   )
   useEffect(() => {
     async function loadUsers() {
