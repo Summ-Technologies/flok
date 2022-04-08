@@ -45,15 +45,6 @@ function TaskPage(props: TaskPageProps) {
     return state.admin.tasks[taskId]
   })
 
-  // useEffect(() => {
-  //   if (!retreat) {
-  //     dispatch(getRetreatDetails(retreatId))
-  //   }
-  //   if (retreatAttendees === undefined) {
-  //     dispatch(getRetreatAttendees(retreatId))
-  //   }
-  // }, [retreat, dispatch, retreatId, retreatAttendees])
-
   return (
     <PageBase>
       <div className={classes.body}>

@@ -44,13 +44,6 @@ type RetreatsTableProps = {
   onSelect: (id: number) => void
 }
 
-export type TasksTableRow = {
-  id: number
-  title: string
-  description: string | undefined
-  link: string | undefined
-}
-
 export default function RetreatsTable(props: RetreatsTableProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()

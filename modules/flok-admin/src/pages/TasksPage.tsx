@@ -4,12 +4,11 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import PageBase from "../components/page/PageBase"
-import {TasksTableRow} from "../components/retreats/RetreatsTable"
-import TasksTable from "../components/tasks/TasksTable"
+import TasksTable, {TasksTableRow} from "../components/tasks/TasksTable"
 import {AdminRetreatListType, RetreatTask} from "../models"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
-import {getRetreatsList, getTasksList} from "../store/actions/admin"
+import {getTasksList} from "../store/actions/admin"
 import {useQuery} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
@@ -48,24 +47,6 @@ function TasksPage(props: RetreatsPageProps) {
   useEffect(() => {
     dispatch(getTasksList())
   }, [dispatch])
-
-  useEffect(() => {
-    if (
-      retreatsTypeQuery == null ||
-      retreatsTypeQuery.toLowerCase() === "active" ||
-      !["inactive", "complete"].includes(retreatsTypeQuery.toLowerCase())
-    ) {
-      setRetreatsType("active")
-    } else {
-      setRetreatsType(retreatsTypeQuery.toLowerCase() as AdminRetreatListType)
-    }
-  }, [retreatsTypeQuery, setRetreatsTypeQuery, setRetreatsType])
-
-  useEffect(() => {
-    if (retreatsType) {
-      dispatch(getRetreatsList(retreatsType))
-    }
-  }, [retreatsType, dispatch])
 
   function transformToRows(tasks: RetreatTask[]): {
     [id: number]: TasksTableRow

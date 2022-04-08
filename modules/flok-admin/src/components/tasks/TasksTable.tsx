@@ -9,7 +9,6 @@ import {
 import React, {useState} from "react"
 import {useDispatch} from "react-redux"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
-import {TasksTableRow} from "../retreats/RetreatsTable"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -27,15 +26,11 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-export type RetreatsTableRow = {
+export type TasksTableRow = {
   id: number
-  guid: string
-  companyName: string
-  contactEmail: string
-  numAttendees: number
-  flokOwner: string
-  flokState: string
-  createdAt: Date
+  title: string
+  description: string | undefined
+  link: string | undefined
 }
 
 type TasksTableProps = {
@@ -45,7 +40,7 @@ type TasksTableProps = {
 export default function TasksTable(props: TasksTableProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
-  function onViewRetreat(params: GridCellParams) {
+  function onViewTask(params: GridCellParams) {
     let rowIdAsString = params.getValue(params.id, "id")?.toString()
     let rowId = rowIdAsString ? parseInt(rowIdAsString) : null
     if (rowId != null && !isNaN(rowId)) {
@@ -73,7 +68,7 @@ export default function TasksTable(props: TasksTableProps) {
         <Button
           variant="contained"
           size="small"
-          onClick={() => onViewRetreat(params)}>
+          onClick={() => onViewTask(params)}>
           View
         </Button>
       ),
