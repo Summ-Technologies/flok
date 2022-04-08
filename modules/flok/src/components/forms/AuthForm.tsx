@@ -14,12 +14,16 @@ import {useState} from "react"
 import {Link as RouterLink} from "react-router-dom"
 import * as yup from "yup"
 import {AppRoutes} from "../../Stack"
-import {theme} from "../../theme"
 import AppTypography from "../base/AppTypography"
 
 const useStyles = makeStyles((theme) => ({
   title: {
     marginBottom: theme.spacing(0.5),
+  },
+  submitRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 }))
 
@@ -124,27 +128,28 @@ export default function AuthForm(props: AuthCardProps) {
             ),
           }}
         />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={
-            formik.errors.email !== undefined ||
-            formik.errors.password !== undefined
-          }
-          style={{marginTop: 12}}>
-          {props.submitText}
-        </Button>
-        {props.forgotPassword ? (
-          <Link
-            variant="body1"
-            style={{marginLeft: theme.spacing(0.5)}}
-            underline="always"
-            component={RouterLink}
-            to={AppRoutes.getPath("ForgotPasswordPage")}>
-            Forgot password?
-          </Link>
-        ) : undefined}
+        <div className={classes.submitRow}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={
+              formik.errors.email !== undefined ||
+              formik.errors.password !== undefined
+            }
+            style={{marginTop: 12}}>
+            {props.submitText}
+          </Button>
+          {props.forgotPassword ? (
+            <Link
+              variant="body1"
+              underline="always"
+              component={RouterLink}
+              to={AppRoutes.getPath("ForgotPasswordPage")}>
+              Forgot password?
+            </Link>
+          ) : undefined}
+        </div>
       </form>
     </>
   )

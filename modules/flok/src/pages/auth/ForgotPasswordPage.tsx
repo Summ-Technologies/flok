@@ -10,7 +10,10 @@ import {
 import * as yup from "yup"
 import AppTypography from "../../components/base/AppTypography"
 import PageContainer from "../../components/page/PageContainer"
+import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
+import {apiNotification} from "../../notistack-lib/utils"
 import {AppRoutes} from "../../Stack"
+import {ApiAction} from "../../store/actions/api"
 import {postForgotPassword} from "../../store/actions/user"
 import {theme} from "../../theme"
 
@@ -47,9 +50,8 @@ let useStyles = makeStyles((theme) => ({
   },
   buttons: {
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignContent: "flex-start",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 }))
 
@@ -70,10 +72,23 @@ function AuthResetPage(props: AuthResetPageProps) {
       email: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      dispatch(postForgotPassword(values.email))
-      setSubmitted(true)
-      console.log(submitted)
+    onSubmit: async (values) => {
+      let forgotPwResponse = (await dispatch(
+        postForgotPassword(values.email)
+      )) as unknown as ApiAction
+      if (forgotPwResponse.error) {
+        dispatch(
+          enqueueSnackbar(
+            apiNotification(
+              "Something went wrong",
+              (key) => dispatch(closeSnackbar(key)),
+              true
+            )
+          )
+        )
+      } else {
+        setSubmitted(true)
+      }
     },
     validateOnMount: true,
   })
