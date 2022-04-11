@@ -86,7 +86,7 @@ function TodoListItem(props: {
             className={classes.chip}
             label={
               <>
-                Flok Task
+                Flok Task{" "}
                 <AppMoreInfoIcon tooltipText="Don't worry about completing this task. We'll handle it for you, and mark the item as completed when we're finished" />
               </>
             }></Chip>
