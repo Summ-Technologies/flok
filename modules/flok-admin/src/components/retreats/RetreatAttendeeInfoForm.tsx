@@ -103,7 +103,14 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
   }
 
   let [newOption, setNewOption] = useState("")
-  const DIETARY_OPTIONS = new Set(["Vegetarian", "Vegan"])
+  const DIETARY_OPTIONS = new Set([
+    "Gluten Free",
+    "Peanut Free",
+    "Dairy Free",
+    "Vegetarian",
+    "Vegan",
+    "Kosher",
+  ])
 
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
