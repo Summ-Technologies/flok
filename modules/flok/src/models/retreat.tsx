@@ -107,6 +107,7 @@ export type RetreatToTask = {
   title: string
   description?: string
   link?: string
+  is_flok_task?: boolean
 }
 export type RetreatModel = {
   id: number
