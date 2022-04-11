@@ -80,7 +80,6 @@ function TaskForm(props: TaskTableProps) {
       link: yup.string(),
     }),
     onSubmit: (values) => {
-      // retreat && dispatch(patchRetreatDetails(retreat.id, values))
       task && dispatch(patchTask(task.id.toString(), values))
     },
   })

@@ -1,6 +1,4 @@
 import {Box, Breadcrumbs, Link, makeStyles, Typography} from "@material-ui/core"
-import {useEffect} from "react"
-import {useDispatch, useSelector} from "react-redux"
 import {
   Link as ReactRouterLink,
   RouteComponentProps,
@@ -10,8 +8,6 @@ import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import TaskForm from "../components/tasks/TaskForm"
 import {AppRoutes} from "../Stack"
-import {RootState} from "../store"
-import {getTasksList} from "../store/actions/admin"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -33,17 +29,7 @@ type TaskPageProps = RouteComponentProps<{taskId: string}>
 
 function TaskPage(props: TaskPageProps) {
   let classes = useStyles(props)
-  let dispatch = useDispatch()
   let taskId = parseInt(props.match.params.taskId) ?? -1 // -1 for an id that will always return 404
-
-  // Get task data
-  let task = useSelector((state: RootState) => {
-    return state.admin.tasks[taskId]
-  })
-
-  useEffect(() => {
-    !task && dispatch(getTasksList())
-  }, [dispatch, task])
 
   return (
     <PageBase>
@@ -55,16 +41,12 @@ function TaskPage(props: TaskPageProps) {
             component={ReactRouterLink}>
             All Tasks
           </Link>
-          {task != null ? (
-            <AppTypography color="textPrimary">{task.title}</AppTypography>
-          ) : undefined}
+          <AppTypography color="textPrimary">{taskId}</AppTypography>
         </Breadcrumbs>
         <Typography variant="h1">Task</Typography>
-        {task != null && (
-          <Box marginTop={2}>
-            <TaskForm taskId={taskId} />
-          </Box>
-        )}
+        <Box marginTop={2}>
+          <TaskForm taskId={taskId} />
+        </Box>
       </div>
     </PageBase>
   )

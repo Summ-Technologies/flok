@@ -683,9 +683,9 @@ export function patchTask(task_id: string, taskDetails: Partial<RetreatTask>) {
   })
 }
 
-export const GET_TASK_REQUEST = "GET_TASKS_LIST_REQUEST"
-export const GET_TASK_SUCCESS = "GET_TASKS_LIST_SUCCESS"
-export const GET_TASK_FAILURE = "GET_TASKS_LIST_FAILURE"
+export const GET_TASK_REQUEST = "GET_TASK_REQUEST"
+export const GET_TASK_SUCCESS = "GET_TASK_SUCCESS"
+export const GET_TASK_FAILURE = "GET_TASK_FAILURE"
 
 export function getTask(task_id: number) {
   let endpoint = `/v1.0/admin/tasks/${task_id}`

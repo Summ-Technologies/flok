@@ -1,15 +1,14 @@
 import {makeStyles, Typography} from "@material-ui/core"
 import {push} from "connected-react-router"
-import {useEffect, useState} from "react"
+import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import PageBase from "../components/page/PageBase"
 import TasksTable, {TasksTableRow} from "../components/tasks/TasksTable"
-import {AdminRetreatListType, RetreatTask} from "../models"
+import {RetreatTask} from "../models"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getTasksList} from "../store/actions/admin"
-import {useQuery} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -33,16 +32,11 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type RetreatsPageProps = RouteComponentProps<{}>
+type TasksPageProps = RouteComponentProps<{}>
 
-function TasksPage(props: RetreatsPageProps) {
+function TasksPage(props: TasksPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
-
-  let [retreatsType, setRetreatsType] = useState<
-    AdminRetreatListType | undefined
-  >(undefined)
-  let [retreatsTypeQuery, setRetreatsTypeQuery] = useQuery("type")
 
   useEffect(() => {
     dispatch(getTasksList())
