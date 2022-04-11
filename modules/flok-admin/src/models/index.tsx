@@ -279,7 +279,9 @@ export type RetreatToTask = {
   due_date?: string
   task_vars: {[key: string]: string | null}
   task_template: RetreatTask
+  is_flok_task: boolean
 }
+
 export type User = {
   id: number
   email: string

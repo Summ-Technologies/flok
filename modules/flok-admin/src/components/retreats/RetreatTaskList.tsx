@@ -69,6 +69,9 @@ let useItemStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     width: "100%",
   },
+  chip: {
+    marginLeft: theme.spacing(1),
+  },
 }))
 
 function TodoListItem(props: {
@@ -104,6 +107,10 @@ function TodoListItem(props: {
             </Tooltip>
           ) : (
             <>{task.title}</>
+          )}
+
+          {task.is_flok_task && (
+            <Chip className={classes.chip} label="Flok Task"></Chip>
           )}
         </AppTypography>
         <div style={{flexGrow: 1}}></div>
