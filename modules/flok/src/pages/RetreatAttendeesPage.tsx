@@ -189,7 +189,6 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
       />
       <PageBody appBar>
         <div className={classes.section}>
-          <Typography variant="h1">Attendees</Typography>
           {retreat.attendees_state !== "REGISTRATION_OPEN" && (
             <PageLockedModal pageDesc="This page will be unlocked when attendee registration opens" />
           )}
