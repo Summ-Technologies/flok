@@ -52,6 +52,10 @@ let useStyles = makeStyles((theme) => ({
   textField: {
     marginBottom: theme.spacing(1.25),
   },
+  dropDown: {
+    minWidth: "140px",
+    marginBottom: theme.spacing(1.25),
+  },
 }))
 
 type TaskTableProps = {taskId: number}
@@ -73,6 +77,7 @@ function TaskForm(props: TaskTableProps) {
       title: task?.title ?? "",
       description: task?.description ?? "",
       link: task?.link ?? "",
+      is_flok_task: task?.is_flok_task ?? false,
     },
     validationSchema: yup.object({
       title: yup.string(),
@@ -111,6 +116,20 @@ function TaskForm(props: TaskTableProps) {
           value={formik.values.link}
           label="Link"
         />
+        <TextField
+          className={classes.dropDown}
+          id="is_flok_task"
+          label="Is Flok Task?"
+          select
+          SelectProps={{native: true}}
+          onChange={(e) => {
+            formik.setFieldValue("is_flok_task", e.target.value === "true")
+          }}
+          value={formik.values.is_flok_task ? "true" : "false"}>
+          <option value={"true"}>True</option>
+          <option value={"false"}>False</option>
+        </TextField>
+
         <TextField
           {...commonTextFieldProps}
           {...getTextFieldErrorProps(formik, "description")}
