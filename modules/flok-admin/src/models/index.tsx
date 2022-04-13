@@ -264,6 +264,7 @@ export type RetreatTask = {
   title: string
   description?: string
   link?: string
+  is_flok_task: Boolean
 }
 
 export type RetreatToTask = {
