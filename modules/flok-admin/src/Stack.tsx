@@ -12,6 +12,8 @@ import RetreatPage from "./pages/RetreatPage"
 import RetreatSalesIntakePage from "./pages/RetreatSalesIntakePage"
 import RetreatsPage from "./pages/RetreatsPage"
 import RetreatTasksPage from "./pages/RetreatTasksPage"
+import TaskPage from "./pages/TaskPage"
+import TasksPage from "./pages/TasksPage"
 import UsersPage from "./pages/UsersPage"
 
 type FlokRoute = {
@@ -28,6 +30,12 @@ type FlokRoute = {
 export class AppRoutes {
   static routes: FlokRoute[] = [
     {name: "HomePage", component: <HomePage />, path: "/"},
+    {name: "TasksPage", component: <TasksPage />, path: "/tasks"},
+    {
+      name: "TaskPage",
+      component: <TaskPage />,
+      path: "/tasks/:taskId",
+    },
     {name: "RetreatsPage", component: <RetreatsPage />, path: "/retreats"},
     {
       name: "RetreatPage",

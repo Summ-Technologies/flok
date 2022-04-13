@@ -8,15 +8,7 @@ import {
 } from "@material-ui/data-grid"
 import React, {useState} from "react"
 import {useDispatch} from "react-redux"
-import {
-  RetreatAttendeesState,
-  RetreatFlightsState,
-  RetreatIntakeState,
-  RetreatItineraryState,
-  RetreatLodgingState,
-} from "../../models"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
-import {getDateTimeString} from "../../utils"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -34,28 +26,21 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-export type RetreatsTableRow = {
+export type TasksTableRow = {
   id: number
-  companyName: string
-  contactEmail: string
-  numAttendees: number
-  createdAt: Date
-  intake_state: RetreatIntakeState
-  lodging_state: RetreatLodgingState
-  attendees_state: RetreatAttendeesState
-  flights_state: RetreatFlightsState
-  itinerary_state: RetreatItineraryState
+  title: string
+  description: string | undefined
+  link: string | undefined
 }
 
-type RetreatsTableProps = {
-  rows: RetreatsTableRow[]
+type TasksTableProps = {
+  rows: TasksTableRow[]
   onSelect: (id: number) => void
 }
-
-export default function RetreatsTable(props: RetreatsTableProps) {
+export default function TasksTable(props: TasksTableProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
-  function onViewRetreat(params: GridCellParams) {
+  function onViewTask(params: GridCellParams) {
     let rowIdAsString = params.getValue(params.id, "id")?.toString()
     let rowId = rowIdAsString ? parseInt(rowIdAsString) : null
     if (rowId != null && !isNaN(rowId)) {
@@ -66,12 +51,12 @@ export default function RetreatsTable(props: RetreatsTableProps) {
   }
   const [sortModel, setSortModel] = useState<GridSortModel | undefined>([
     {
-      field: "createdAt",
-      sort: "desc",
+      field: "id",
+      sort: "asc",
     },
   ])
   const commonColDefs = {}
-  const retreatsTableColumns: GridColDef[] = [
+  const tasksTableColumns: GridColDef[] = [
     {
       ...commonColDefs,
       field: "button",
@@ -83,7 +68,7 @@ export default function RetreatsTable(props: RetreatsTableProps) {
         <Button
           variant="contained"
           size="small"
-          onClick={() => onViewRetreat(params)}>
+          onClick={() => onViewTask(params)}>
           View
         </Button>
       ),
@@ -96,54 +81,21 @@ export default function RetreatsTable(props: RetreatsTableProps) {
     },
     {
       ...commonColDefs,
-      field: "companyName",
-      headerName: "Company",
+      field: "title",
+      headerName: "Title",
       width: 200,
     },
     {
       ...commonColDefs,
-      field: "numAttendees",
-      headerName: "# Attendees",
-      width: 100,
-      hideSortIcons: false,
-    },
-    {
-      ...commonColDefs,
-      field: "intake_state",
-      headerName: "Intake State",
+      field: "description",
+      headerName: "Description",
       width: 200,
     },
     {
       ...commonColDefs,
-      field: "lodging_state",
-      headerName: "Lodging State",
+      field: "link",
+      headerName: "Link",
       width: 200,
-    },
-    {
-      ...commonColDefs,
-      field: "attendees_state",
-      headerName: "Attendees State",
-      width: 200,
-    },
-    {
-      ...commonColDefs,
-      field: "flights_state",
-      headerName: "Flights State",
-      width: 200,
-    },
-    {
-      ...commonColDefs,
-      field: "itinerary_state",
-      headerName: "Itinerary State",
-      width: 200,
-    },
-    {
-      ...commonColDefs,
-      field: "createdAt",
-      headerName: "Created At",
-      width: 250,
-      type: "dateTime",
-      valueFormatter: (params) => getDateTimeString(params.value as Date),
     },
   ]
   return (
@@ -153,7 +105,7 @@ export default function RetreatsTable(props: RetreatsTableProps) {
       sortModel={sortModel}
       onSortModelChange={() => setSortModel(undefined)}
       rows={props.rows}
-      columns={retreatsTableColumns}
+      columns={tasksTableColumns}
       components={{
         Toolbar: GridToolbar,
       }}
