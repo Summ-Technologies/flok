@@ -1,4 +1,5 @@
 import {
+  Button,
   IconButton,
   makeStyles,
   TableBody,
@@ -10,7 +11,10 @@ import {
 } from "@material-ui/core"
 import Table from "@material-ui/core/Table"
 import {Delete, SwapVert} from "@material-ui/icons"
+import {push} from "connected-react-router"
 import React, {useState} from "react"
+import {useDispatch} from "react-redux"
+import {AppRoutes} from "../../Stack"
 import AppTypography from "./AppTypography"
 
 type ExpandableRowProps<T> = {
@@ -75,6 +79,7 @@ const useExpandableRowStyles = makeStyles({
 
 function ExpandableRow<T>(props: ExpandableRowProps<T>) {
   let classes = useExpandableRowStyles()
+  let dispatch = useDispatch()
   // let [open, setOpen] = useState(false)
   return (
     <React.Fragment>
@@ -102,6 +107,21 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
           {props.onDelete && (
             <TableCell
               className={props.disabled ? classes.cellDisabled : classes.cell}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  dispatch(
+                    push(
+                      AppRoutes.getPath("AttendeeProfilePage", {
+                        retreatIdx: "0",
+                        attendeeIdx: props.item.id.toString(),
+                      })
+                    )
+                  )
+                }>
+                View
+              </Button>
               <IconButton
                 size="small"
                 onClick={props.onDelete}
@@ -180,6 +200,7 @@ export default function AppExpandableTable<T>(
   props: AppExpandableTableProps<T>
 ) {
   let classes = useTableStyles()
+  let dispatch = useDispatch()
 
   let [order, setOrder] = useState<"asc" | "desc">("desc")
   let [orderBy, setOrderBy] = useState<String>("")
@@ -214,6 +235,7 @@ export default function AppExpandableTable<T>(
               <TableCell key={i}>
                 <div className={classes.headerCell}>
                   <AppTypography variant="h3">{h.name}</AppTypography>
+
                   {h.comparator ? (
                     <IconButton
                       size="small"

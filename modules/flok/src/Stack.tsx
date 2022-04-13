@@ -1,5 +1,6 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
+import AttendeeProfilePage from "./pages/AttendeeProfilePage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import SigninPage from "./pages/auth/SigninPage"
 import DeprecatedHomeRoutingPage from "./pages/deprecated/DeprecatedHomeRoutingPage"
@@ -44,6 +45,7 @@ export class AppRoutes {
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
+    AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeIdx",
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -69,7 +71,7 @@ export class AppRoutes {
 
 export default function Stack() {
   // TODO, remove once released dashboard
-  const DASHBOARD_RELEASE = false
+  const DASHBOARD_RELEASE = true
   if (!DASHBOARD_RELEASE) {
     return (
       <Switch>
@@ -150,6 +152,11 @@ export default function Stack() {
               path={AppRoutes.getPath("ProposalPage")}
               exact
               component={ProposalPage}
+            />
+            <ProtectedRoute
+              path={AppRoutes.getPath("AttendeeProfilePage")}
+              exact
+              component={AttendeeProfilePage}
             />
           </RetreatProvider>
         )}
