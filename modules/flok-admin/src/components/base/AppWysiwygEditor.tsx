@@ -3,6 +3,7 @@ import {
   BtnBold,
   BtnBulletList,
   BtnItalic,
+  BtnLink,
   BtnNumberedList,
   BtnUnderline,
   Editor,
@@ -23,6 +24,7 @@ export default function AppWysiwygEditor(props: EditorProps) {
           <Separator />
           <BtnNumberedList />
           <BtnBulletList />
+          <BtnLink />
           <Separator />
         </Toolbar>
       </Editor>
