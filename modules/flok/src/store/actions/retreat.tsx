@@ -1,6 +1,6 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
-import {RetreatToTaskState} from "../../models/retreat"
+import {RetreatAttendeeModel, RetreatToTaskState} from "../../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
 import {ApiAction, createApiAction} from "./api"
@@ -149,6 +149,42 @@ export function getRetreatAttendees(retreatId: number) {
       {type: GET_RETREAT_ATTENDEES_REQUEST},
       {type: GET_RETREAT_ATTENDEES_SUCCESS, meta: {retreatId}},
       {type: GET_RETREAT_ATTENDEES_FAILURE, meta: {retreatId}},
+    ],
+  })
+}
+
+export const GET_ATTENDEE_REQUEST = "GET_ATTENDEE_REQUEST"
+export const GET_ATTENDEE_SUCCESS = "GET_ATTENDEE_SUCCESS"
+export const GET_ATTENDEE_FAILURE = "GET_ATTENDEE_FAILURE"
+export function getAttendee(attendeeIdx: number) {
+  let endpoint = `/v1.0/attendees/${attendeeIdx}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_ATTENDEE_REQUEST},
+      {type: GET_ATTENDEE_SUCCESS, meta: {attendeeIdx}},
+      {type: GET_ATTENDEE_FAILURE, meta: {attendeeIdx}},
+    ],
+  })
+}
+
+export const PATCH_ATTENDEE_REQUEST = "PATCH_ATTENDEE_REQUEST"
+export const PATCH_ATTENDEE_SUCCESS = "PATCH_ATTENDEE_SUCCESS"
+export const PATCH_ATTENDEE_FAILURE = "PATCH_ATTENDEE_FAILURE"
+export function patchAttendee(
+  attendeeIdx: number,
+  values: Partial<RetreatAttendeeModel>
+) {
+  let endpoint = `/v1.0/attendees/${attendeeIdx}`
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify(values),
+    types: [
+      {type: PATCH_ATTENDEE_REQUEST},
+      {type: PATCH_ATTENDEE_SUCCESS, meta: {attendeeIdx}},
+      {type: PATCH_ATTENDEE_FAILURE, meta: {attendeeIdx}},
     ],
   })
 }

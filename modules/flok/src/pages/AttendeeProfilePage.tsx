@@ -7,6 +7,7 @@ import {
   Tabs,
   TextField,
   TextFieldProps,
+  useMediaQuery,
 } from "@material-ui/core"
 import {AccountBox, ArrowBackIos, FlightTakeoff} from "@material-ui/icons"
 import {Autocomplete} from "@material-ui/lab"
@@ -22,6 +23,8 @@ import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
+import {getAttendee, patchAttendee} from "../store/actions/retreat"
+import {FlokTheme} from "../theme"
 import {useQuery} from "../utils"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -32,6 +35,9 @@ let useStyles = makeStyles((theme) => ({
       paddingLeft: theme.spacing(1),
     },
     display: "flex",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+    },
   },
   avatar: {
     backgroundColor: "orange",
@@ -57,6 +63,9 @@ let useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     borderRadius: "5px",
     marginLeft: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(2),
+    },
   },
   textField: {
     maxWidth: "25vw",
@@ -99,6 +108,9 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "profile")
   }, [tabQuery, setTabValue])
   let [newOption, setNewOption] = useState("")
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
+  )
   const DIETARY_OPTIONS = new Set([
     "Gluten Free",
     "Peanut Free",
@@ -117,12 +129,13 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
   let attendeeIdx = parseInt(props.match.params.attendeeIdx)
   let retreat = useRetreat()
   let attendee = useSelector((state: RootState) => {
-    if (attendeeIdx != null && state.retreat.retreatAttendees[1030]) {
-      return state.retreat.retreatAttendees[1030].find(
-        (attendee) => attendee.id === attendeeIdx
-      )
+    if (attendeeIdx != null) {
+      return state.retreat.attendees[attendeeIdx]
     }
   })
+  useEffect(() => {
+    !attendee && dispatch(getAttendee(attendeeIdx))
+  }, [attendeeIdx, attendee, dispatch])
   let formik = useFormik({
     initialValues: {
       email_address: attendee ? attendee.email_address : "",
@@ -133,7 +146,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       info_status: attendee ? attendee.info_status : "",
     },
     onSubmit: (values) => {
-      console.log(values)
+      dispatch(patchAttendee(attendeeIdx, values))
     },
     validate: (values) => {
       try {
@@ -162,7 +175,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       <PageBody appBar>
         <div className={classes.section}>
           <Tabs
-            orientation="vertical"
+            orientation={isSmallScreen ? "horizontal" : "vertical"}
             className={classes.tabs}
             value={tabValue}
             onChange={(e, newVal) =>

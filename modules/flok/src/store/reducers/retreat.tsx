@@ -1,15 +1,20 @@
 import {Action} from "redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
-import {RetreatAttendeesApiResponse} from "../../models/api"
+import {
+  AttendeeApiResponse,
+  RetreatAttendeesApiResponse,
+} from "../../models/api"
 import {RetreatAttendeeModel, RetreatModel} from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
   DELETE_RETREAT_ATTENDEES_SUCCESS,
+  GET_ATTENDEE_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_BY_GUID_FAILURE,
   GET_RETREAT_BY_GUID_SUCCESS,
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
+  PATCH_ATTENDEE_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
@@ -23,12 +28,16 @@ export type RetreatState = {
     [guid: string]: RetreatModel | ResourceNotFoundType | undefined
   }
   retreatAttendees: {[id: number]: RetreatAttendeeModel[] | undefined}
+  attendees: {
+    [id: number]: RetreatAttendeeModel
+  }
 }
 
 const initialState: RetreatState = {
   retreats: {},
   retreatsByGuid: {},
   retreatAttendees: {},
+  attendees: {},
 }
 
 export default function retreatReducer(
@@ -36,7 +45,7 @@ export default function retreatReducer(
   action: Action
 ): RetreatState {
   var payload
-  var retreatId: number, retreat: RetreatModel
+  var retreatId: number, retreat: RetreatModel, attendeeId: number
   switch (action.type) {
     case GET_RETREAT_BY_GUID_SUCCESS: // TODO, remove once dashboard release
     case GET_RETREAT_SUCCESS:
@@ -79,6 +88,22 @@ export default function retreatReducer(
         state.retreatAttendees = {
           ...state.retreatAttendees,
           [retreatId]: payload.attendees,
+        }
+        state.attendees = payload.attendees.reduce(
+          (last: any, curr: RetreatAttendeeModel) => {
+            return {...last, [curr.id]: curr}
+          },
+          {}
+        )
+      }
+      return state
+    case GET_ATTENDEE_SUCCESS:
+    case PATCH_ATTENDEE_SUCCESS:
+      payload = (action as ApiAction).payload as AttendeeApiResponse
+      if (payload) {
+        state.attendees = {
+          ...state.attendees,
+          [payload.attendee.id]: payload.attendee,
         }
       }
       return state

@@ -16,3 +16,6 @@ export type RetreatAttendeesApiResponse = {
   message: string
   attendees: RetreatAttendeeModel[]
 }
+export type AttendeeApiResponse = {
+  attendee: RetreatAttendeeModel
+}
