@@ -15,7 +15,7 @@ import {push} from "connected-react-router"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RouteComponentProps} from "react-router-dom"
+import {Prompt, RouteComponentProps} from "react-router-dom"
 import * as yup from "yup"
 import AppTabPanel from "../components/page/AppTabPanel"
 import PageBody from "../components/page/PageBody"
@@ -69,7 +69,7 @@ let useStyles = makeStyles((theme) => ({
   },
   textField: {
     maxWidth: "25vw",
-    minWidth: "400px",
+    minWidth: "320px",
   },
   submitButton: {
     maxWidth: "25vw",
@@ -77,6 +77,9 @@ let useStyles = makeStyles((theme) => ({
   body: {
     width: "100%",
     display: "flex",
+    [theme.breakpoints.down("sm")]: {
+      justifyContent: "center",
+    },
   },
   tabs: {
     paddingLeft: theme.spacing(2),
@@ -133,6 +136,17 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       return state.retreat.attendees[attendeeIdx]
     }
   })
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", alertUser)
+    return () => {
+      window.removeEventListener("beforeunload", alertUser)
+    }
+  }, [])
+  const alertUser = (e: any) => {
+    e.preventDefault()
+    e.returnValue = ""
+  }
   useEffect(() => {
     !attendee && dispatch(getAttendee(attendeeIdx))
   }, [attendeeIdx, attendee, dispatch])
@@ -173,6 +187,12 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       />
 
       <PageBody appBar>
+        <Prompt
+          when={formik.values !== formik.initialValues}
+          message={() =>
+            "Are you sure you want to leave without saving your changes?"
+          }
+        />
         <div className={classes.section}>
           <Tabs
             orientation={isSmallScreen ? "horizontal" : "vertical"}
@@ -204,13 +224,13 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
               className={classes.tab}
               value="profile"
               icon={<AccountBox />}
-              label="Attendee Profile"
+              label={isSmallScreen ? "" : "Attendee Profile"}
             />
             <Tab
               className={classes.tab}
               value="flights"
               icon={<FlightTakeoff />}
-              label="Attendee Flights"
+              label={isSmallScreen ? "" : "Attendee Flights"}
             />
           </Tabs>
           <AppTabPanel
