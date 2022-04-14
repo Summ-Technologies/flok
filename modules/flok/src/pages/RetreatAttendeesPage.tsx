@@ -23,7 +23,7 @@ import {
 } from "@material-ui/core"
 import CloseIcon from "@material-ui/icons/Close"
 import {useState} from "react"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
@@ -32,6 +32,7 @@ import PageContainer from "../components/page/PageContainer"
 import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {RetreatAttendeeModel, SampleLockedAttendees} from "../models/retreat"
+import {RootState} from "../store"
 import {
   deleteRetreatAttendees,
   postRetreatAttendees,
@@ -131,8 +132,11 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
 
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
-
-  let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
+  let [attendeeIdList] = useRetreatAttendees(retreat.id)
+  let attendeesObject = useSelector((state: RootState) => {
+    return state.retreat.attendees
+  })
+  let attendeeTravelInfo = attendeeIdList?.map((id) => attendeesObject[id])
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
   let [newAttendeeName, setNewAttendeeName] = useState("")

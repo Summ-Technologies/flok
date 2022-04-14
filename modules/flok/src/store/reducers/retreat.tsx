@@ -27,7 +27,7 @@ export type RetreatState = {
   retreatsByGuid: {
     [guid: string]: RetreatModel | ResourceNotFoundType | undefined
   }
-  retreatAttendees: {[id: number]: RetreatAttendeeModel[] | undefined}
+  retreatAttendees: {[id: number]: number[] | undefined}
   attendees: {
     [id: number]: RetreatAttendeeModel
   }
@@ -87,7 +87,7 @@ export default function retreatReducer(
       if (payload) {
         state.retreatAttendees = {
           ...state.retreatAttendees,
-          [retreatId]: payload.attendees,
+          [retreatId]: payload.attendees.map((attendee) => attendee.id),
         }
         state.attendees = payload.attendees.reduce(
           (last: any, curr: RetreatAttendeeModel) => {

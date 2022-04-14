@@ -1,5 +1,6 @@
 import {Box, Chip, Link, makeStyles, Typography} from "@material-ui/core"
 import {sortBy} from "lodash"
+import {useSelector} from "react-redux"
 import {
   Link as RouterLink,
   RouteComponentProps,
@@ -14,6 +15,7 @@ import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {SampleLockedAttendees} from "../models/retreat"
 import {AppRoutes} from "../Stack"
+import {RootState} from "../store"
 import {useRetreatAttendees} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -78,7 +80,11 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
 
-  let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
+  let [attendeeIdList] = useRetreatAttendees(retreat.id)
+  let attendeesObject = useSelector((state: RootState) => {
+    return state.retreat.attendees
+  })
+  let attendeeTravelInfo = attendeeIdList?.map((id) => attendeesObject[id])
 
   if (retreat.flights_state !== "BOOKING") {
     attendeeTravelInfo = SampleLockedAttendees
