@@ -13,6 +13,7 @@ import {AccountBox, ArrowBackIos, FlightTakeoff} from "@material-ui/icons"
 import {Autocomplete} from "@material-ui/lab"
 import {push} from "connected-react-router"
 import {useFormik} from "formik"
+import _ from "lodash"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Prompt, RouteComponentProps} from "react-router-dom"
@@ -138,16 +139,6 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
   })
 
   useEffect(() => {
-    window.addEventListener("beforeunload", alertUser)
-    return () => {
-      window.removeEventListener("beforeunload", alertUser)
-    }
-  }, [])
-  const alertUser = (e: any) => {
-    e.preventDefault()
-    e.returnValue = ""
-  }
-  useEffect(() => {
     !attendee && dispatch(getAttendee(attendeeIdx))
   }, [attendeeIdx, attendee, dispatch])
   let formik = useFormik({
@@ -172,12 +163,24 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
     },
     enableReinitialize: true,
   })
+  console.log(formik.initialValues)
+  useEffect(() => {
+    if (!_.isEqual(formik.values, formik.initialValues)) {
+      window.addEventListener("beforeunload", alertUser)
+      return () => {
+        window.removeEventListener("beforeunload", alertUser)
+      }
+    }
+  }, [formik.values, formik.initialValues])
+  const alertUser = (e: any) => {
+    e.preventDefault()
+    e.returnValue = ""
+  }
   const textFieldProps: TextFieldProps = {
     fullWidth: true,
     InputLabelProps: {shrink: true},
     onChange: formik.handleChange,
   }
-  console.log(attendee)
   return (
     <PageContainer>
       <PageSidenav
@@ -188,7 +191,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
 
       <PageBody appBar>
         <Prompt
-          when={formik.values !== formik.initialValues}
+          when={!_.isEqual(formik.values, formik.initialValues)}
           message={() =>
             "Are you sure you want to leave without saving your changes?"
           }
@@ -382,7 +385,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
                   color="primary"
                   type="submit"
                   className={classes.submitButton}
-                  disabled={formik.values === formik.initialValues}>
+                  disabled={_.isEqual(formik.values, formik.initialValues)}>
                   Save
                 </Button>
               </form>
