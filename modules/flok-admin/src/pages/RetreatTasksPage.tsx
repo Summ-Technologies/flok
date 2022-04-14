@@ -9,6 +9,7 @@ import {
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
 import AppTodoList from "../components/retreats/RetreatTaskList"
+import InitTaskButton from "../components/tasks/InitTaskButton"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getRetreatDetails, getRetreatTasks} from "../store/actions/admin"
@@ -82,14 +83,18 @@ function RetreatTasksPage(props: RetreatTasksPageProps) {
           <AppTypography color="textPrimary">Tasks</AppTypography>
         </Breadcrumbs>
         <Typography variant="h1">{retreat?.company_name} - Tasks</Typography>
-        {tasks !== undefined ? (
+        {tasks !== undefined && tasks.length > 0 ? (
           <AppTodoList
             retreatId={retreatId}
             retreatToTasks={tasks}
             orderBadge={false}
             collapsed={false}
           />
-        ) : undefined}
+        ) : (
+          <div style={{width: "auto"}}>
+            <InitTaskButton retreatId={retreatId} />
+          </div>
+        )}
       </div>
     </PageBase>
   )

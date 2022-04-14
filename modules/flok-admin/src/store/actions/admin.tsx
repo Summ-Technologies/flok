@@ -701,3 +701,25 @@ export function getTask(task_id: number) {
     ],
   })
 }
+
+export const ADD_RETREAT_TASKS_REQUEST = "ADD_RETREAT_TASKS_REQUEST"
+export const ADD_RETREAT_TASKS_SUCCESS = "ADD_RETREAT_TASKS_SUCCESS"
+export const ADD_RETREAT_TASKS_FAILURE = "ADD_RETREAT_TASKS_FAILURE"
+
+export function addRetreatTasks(
+  retreat_id: number,
+  version: number,
+  overwrite: boolean
+) {
+  let endpoint = `/v1.0/admin/retreats/${retreat_id}/tasks`
+  return createApiAction({
+    endpoint,
+    method: "POST",
+    body: JSON.stringify({version, overwrite}),
+    types: [
+      {type: ADD_RETREAT_TASKS_REQUEST, meta: {retreatId: retreat_id}},
+      {type: ADD_RETREAT_TASKS_SUCCESS, meta: {retreatId: retreat_id}},
+      {type: ADD_RETREAT_TASKS_FAILURE, meta: {retreatId: retreat_id}},
+    ],
+  })
+}

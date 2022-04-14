@@ -15,6 +15,7 @@ import {
   User,
 } from "../../models"
 import {
+  ADD_RETREAT_TASKS_SUCCESS,
   DELETE_RETREAT_ATTENDEES_SUCCESS,
   DELETE_RETREAT_HOTEL_PROPOSAL_SUCCESS,
   DELETE_SELECTED_HOTEL_SUCCESS,
@@ -309,6 +310,7 @@ export default function AdminReducer(
           [meta.retreatId]: payload.notes,
         },
       }
+    case ADD_RETREAT_TASKS_SUCCESS:
     case GET_RETREAT_TASKS_SUCCESS:
     case PATCH_RETREAT_TASK_SUCCESS:
       meta = (action as unknown as {meta: {retreatId: number}}).meta
