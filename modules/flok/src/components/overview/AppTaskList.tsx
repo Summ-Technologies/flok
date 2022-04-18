@@ -12,6 +12,7 @@ import {useState} from "react"
 import ReactMarkdown from "react-markdown"
 import {RetreatToTask} from "../../models/retreat"
 import {parseRetreatTask} from "../../utils/retreatUtils"
+import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppTypography from "../base/AppTypography"
 
 const dateFormatShort = (date: Date) =>
@@ -50,6 +51,9 @@ let useItemStyles = makeStyles((theme) => ({
     maxWidth: 200,
     marginBottom: 12,
   },
+  chip: {
+    marginLeft: theme.spacing(1),
+  },
 }))
 
 function TodoListItem(props: {
@@ -77,6 +81,16 @@ function TodoListItem(props: {
         <AppTypography className={classes.title}>
           {task.link ? <Link href={task.link}>{task.title}</Link> : task.title}
         </AppTypography>
+        {task.is_flok_task && (
+          <Chip
+            className={classes.chip}
+            label={
+              <>
+                Flok Task{" "}
+                <AppMoreInfoIcon tooltipText="Don't worry about completing this task. We'll handle it for you, and mark the item as completed when we're finished" />
+              </>
+            }></Chip>
+        )}
         <div style={{flexGrow: 1}}></div>
         {task.due_date ? (
           <Chip
