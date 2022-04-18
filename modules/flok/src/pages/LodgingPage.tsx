@@ -28,11 +28,7 @@ function LodgingPage(props: LodgingPageProps) {
 
   return (
     <PageContainer>
-      <PageSidenav
-        activeItem="lodging"
-        retreatIdx={retreatIdx}
-        companyName={retreat.company_name}
-      />
+      <PageSidenav activeItem="lodging" retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.root}>
           {retreat.lodging_state === "CONTRACT" ||

@@ -182,11 +182,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
 
   return (
     <PageContainer>
-      <PageSidenav
-        activeItem="attendees"
-        retreatIdx={retreatIdx}
-        companyName={retreat?.company_name}
-      />
+      <PageSidenav activeItem="attendees" retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.section}>
           {retreat.attendees_state !== "REGISTRATION_OPEN" && (

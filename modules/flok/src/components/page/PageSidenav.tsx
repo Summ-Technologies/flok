@@ -7,6 +7,8 @@ import {
   ListItemIcon,
   ListItemText,
   makeStyles,
+  MenuItem,
+  TextField,
   useMediaQuery,
 } from "@material-ui/core"
 import {
@@ -22,10 +24,12 @@ import React, {
   createContext,
   PropsWithChildren,
   useContext,
+  useEffect,
   useState,
 } from "react"
 import {useDispatch, useSelector} from "react-redux"
 import AppImage from "../../components/base/AppImage"
+import {RetreatModel} from "../../models/retreat"
 import {AppRoutes, FlokPageName} from "../../Stack"
 import {RootState} from "../../store"
 import {deleteUserSignin} from "../../store/actions/user"
@@ -50,6 +54,12 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
   footer: {
     marginTop: "auto",
     marginBottom: theme.spacing(2),
+  },
+  companySelector: {
+    color: theme.palette.common.white,
+    "& .MuiSelect-select:focus": {
+      backgroundColor: "inherit",
+    },
   },
 }))
 
@@ -96,11 +106,11 @@ type SidenavItemType = keyof typeof navItems
 type PageSidenavProps = {
   retreatIdx: number
   activeItem?: SidenavItemType
-  companyName?: string
 }
 export default function PageSidenav(props: PageSidenavProps) {
   let dispatch = useDispatch()
   const classes = useStyles()
+  let user = useSelector((state: RootState) => state.user.user)
   let {sidebarOpen, closeSidebar} = useSidebar()
   const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
     theme.breakpoints.down("sm")
@@ -109,6 +119,15 @@ export default function PageSidenav(props: PageSidenavProps) {
   let isLoggedIn = useSelector(
     (state: RootState) => state.user.loginStatus === "LOGGED_IN"
   )
+
+  let [retreat, setRetreat] = useState<
+    Pick<RetreatModel, "company_name" | "id"> | undefined
+  >(undefined)
+  useEffect(() => {
+    if (user && user.retreats.length > props.retreatIdx) {
+      setRetreat(user.retreats[props.retreatIdx])
+    }
+  }, [props.retreatIdx, user])
 
   return (
     <Drawer
@@ -161,11 +180,34 @@ export default function PageSidenav(props: PageSidenavProps) {
         })}
       </List>
       <List className={classes.footer}>
-        {props.companyName && (
-          <ListItem>
-            <ListItemText>{props.companyName}</ListItemText>
+        {retreat && user && user.retreats.length > 1 ? (
+          <ListItem button>
+            <TextField
+              onChange={(e) =>
+                (window.location.href = AppRoutes.getPath("RetreatHomePage", {
+                  retreatIdx: e.target.value,
+                }))
+              }
+              fullWidth
+              select
+              SelectProps={{native: false, IconComponent: Box}}
+              value={props.retreatIdx}
+              InputProps={{
+                disableUnderline: true,
+                className: classes.companySelector,
+              }}>
+              {user?.retreats?.map((retreat, i) => (
+                <MenuItem value={i} key={i}>
+                  {retreat.company_name}
+                </MenuItem>
+              ))}
+            </TextField>
           </ListItem>
-        )}
+        ) : retreat ? (
+          <ListItem>
+            <ListItemText>{retreat.company_name}</ListItemText>
+          </ListItem>
+        ) : undefined}
         {isLoggedIn && (
           <Link
             component={ListItem}
