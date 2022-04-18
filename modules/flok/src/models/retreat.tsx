@@ -93,6 +93,7 @@ export type RetreatFlightsState = typeof OrderedRetreatFlightsState[number]
 export const OrderedRetreatItineraryState = [
   "NOT_STARTED",
   "IN_PROGRESS",
+  "REGISTRATION_COMPLETE",
 ] as const
 export type RetreatItineraryState = typeof OrderedRetreatItineraryState[number]
 /****************** End retreat states types ******************/

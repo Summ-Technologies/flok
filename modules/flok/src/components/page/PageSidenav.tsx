@@ -198,7 +198,8 @@ export default function PageSidenav(props: PageSidenavProps) {
           )
         })}
         <ListItem
-          {...(retreatModel.itinerary_state === "IN_PROGRESS"
+          {...(retreatModel.itinerary_state === "IN_PROGRESS" ||
+          retreatModel.itinerary_state === "REGISTRATION_COMPLETE"
             ? getLinkSidenavProps(retreatModel.itinerary_final_draft_link)
             : getLinkSidenavProps())}>
           <ListItemIcon>
