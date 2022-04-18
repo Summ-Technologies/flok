@@ -15,6 +15,7 @@ import {
   ApartmentRounded,
   FlightRounded,
   HomeRounded,
+  LocalAtm,
   MapRounded,
   PeopleAlt,
   SvgIconComponent,
@@ -30,6 +31,7 @@ import React, {
 import {useDispatch, useSelector} from "react-redux"
 import AppImage from "../../components/base/AppImage"
 import {RetreatModel} from "../../models/retreat"
+import {useRetreat} from "../../pages/misc/RetreatProvider"
 import {AppRoutes, FlokPageName} from "../../Stack"
 import {RootState} from "../../store"
 import {deleteUserSignin} from "../../store/actions/user"
@@ -71,7 +73,7 @@ let navItems = {
   lodging: navItem("Lodging", ApartmentRounded, "LodgingPage"),
   attendees: navItem("Attendees", PeopleAlt, "RetreatAttendeesPage"),
   flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
-  itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
+  // itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
 }
 
 const SidebarContext = createContext<{
@@ -115,6 +117,7 @@ export default function PageSidenav(props: PageSidenavProps) {
   const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
     theme.breakpoints.down("sm")
   )
+  let retreatModel = useRetreat()
 
   let isLoggedIn = useSelector(
     (state: RootState) => state.user.loginStatus === "LOGGED_IN"
@@ -128,6 +131,22 @@ export default function PageSidenav(props: PageSidenavProps) {
       setRetreat(user.retreats[props.retreatIdx])
     }
   }, [props.retreatIdx, user])
+
+  function getLinkSidenavProps(link?: string): any {
+    if (link) {
+      return {
+        button: true,
+        href: link,
+        component: "a",
+        target: "_blank",
+      }
+    } else {
+      return {
+        button: true,
+        disabled: true,
+      }
+    }
+  }
 
   return (
     <Drawer
@@ -178,6 +197,21 @@ export default function PageSidenav(props: PageSidenavProps) {
             </ListItem>
           )
         })}
+        <ListItem
+          {...(retreatModel.itinerary_state === "IN_PROGRESS"
+            ? getLinkSidenavProps(retreatModel.itinerary_final_draft_link)
+            : getLinkSidenavProps())}>
+          <ListItemIcon>
+            <MapRounded fontSize="large" />
+          </ListItemIcon>
+          <ListItemText>Itinerary</ListItemText>
+        </ListItem>
+        <ListItem {...getLinkSidenavProps(retreatModel.faq_link)}>
+          <ListItemIcon>
+            <LocalAtm fontSize="large" />
+          </ListItemIcon>
+          <ListItemText>Budget</ListItemText>
+        </ListItem>
       </List>
       <List className={classes.footer}>
         {retreat && user && user.retreats.length > 1 ? (

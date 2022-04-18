@@ -74,7 +74,8 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
 
   return (
     <PageContainer>
-      <PageSidenav activeItem="itinerary" retreatIdx={retreatIdx} />
+      {/* <PageSidenav activeItem="itinerary" retreatIdx={retreatIdx} /> */}
+      <PageSidenav retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.root}>
           <Typography variant="h1">Itinerary</Typography>

@@ -79,10 +79,12 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
     initialValues: {
       // itinerary_first_draft_link: retreat?.itinerary_first_draft_link ?? "",
       itinerary_final_draft_link: retreat?.itinerary_final_draft_link ?? "",
+      budget_link: retreat?.budget_link ?? "",
     },
     validationSchema: yup.object({
       // itinerary_first_draft_link: yup.string().url("Please enter a valid URL"),
       itinerary_final_draft_link: yup.string().url("Please enter a valid URL"),
+      budget_link: yup.string().url("Please enter a valid URL"),
     }),
     onSubmit: (values) => {
       retreat && dispatch(patchRetreatDetails(retreat.id, values))
@@ -133,6 +135,13 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
             id="itinerary_final_draft_link"
             value={formik.values.itinerary_final_draft_link}
             label="Itinerary document link"
+          />
+          <TextField
+            {...commonTextFieldProps}
+            {...getTextFieldErrorProps(formik, "budget_link")}
+            id="budget_link"
+            value={formik.values.budget_link}
+            label="Budget link"
           />
 
           <div className={classes.footer}>

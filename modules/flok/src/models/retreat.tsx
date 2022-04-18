@@ -144,6 +144,10 @@ export type RetreatModel = {
   // Retreat data related to itinerary
   itinerary_state?: RetreatItineraryState
 
+  // Other documents
+  faq_link: string
+  budget_link: string
+
   tasks_todo: RetreatToTask[]
   tasks_completed: RetreatToTask[]
 
