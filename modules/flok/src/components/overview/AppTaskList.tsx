@@ -69,6 +69,16 @@ function TodoListItem(props: {
     setExpanded(!expanded)
   }
 
+  function getExtraLinkProps(url: string) {
+    if (url.startsWith("http")) {
+      return {
+        target: "_blank",
+      }
+    } else {
+      return {}
+    }
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.summary}>
@@ -78,8 +88,16 @@ function TodoListItem(props: {
           onClick={() => props.handleCheckboxClick(task)}
           color="default"
         />
-        <AppTypography className={classes.title}>
-          {task.link ? <Link href={task.link}>{task.title}</Link> : task.title}
+        <AppTypography
+          className={classes.title}
+          fontWeight={expanded ? "bold" : "regular"}>
+          {task.link ? (
+            <Link href={task.link} {...getExtraLinkProps(task.link)}>
+              {task.title}
+            </Link>
+          ) : (
+            task.title
+          )}
         </AppTypography>
         {task.is_flok_task && (
           <Chip
@@ -129,10 +147,7 @@ function TodoListItem(props: {
           ) : (
             <></>
           )}
-          <AppTypography fontWeight="bold" style={{lineHeight: "2em"}}>
-            {task.title}
-          </AppTypography>
-          <ReactMarkdown>
+          <ReactMarkdown linkTarget="_blank">
             {task.description ? task.description : ""}
           </ReactMarkdown>
         </div>
