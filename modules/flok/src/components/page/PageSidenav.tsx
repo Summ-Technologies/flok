@@ -138,6 +138,7 @@ export default function PageSidenav(props: PageSidenavProps) {
         button: true,
         href: link,
         component: "a",
+        target: "_blank",
       }
     } else {
       return {

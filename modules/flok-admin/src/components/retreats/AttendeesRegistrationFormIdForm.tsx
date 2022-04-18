@@ -54,6 +54,7 @@ function AttendeesRegistrationFormIdForm(props: {retreatId: number}) {
     initialValues: {
       attendees_registration_form_id:
         retreat?.attendees_registration_form_id ?? "",
+      faq_link: retreat?.faq_link ?? "",
     },
     validationSchema: yup.object({
       attendees_registration_form_id: yup.string(),
@@ -71,7 +72,7 @@ function AttendeesRegistrationFormIdForm(props: {retreatId: number}) {
   return (
     <form className={classes.root} onSubmit={formik.handleSubmit}>
       <Typography className={classes.header} variant="h4">
-        Attendees Registration Google Form Id
+        Attendee Links
       </Typography>
       <TextField
         {...commonTextFieldProps}
@@ -92,6 +93,12 @@ function AttendeesRegistrationFormIdForm(props: {retreatId: number}) {
             </>
           ) : undefined
         }
+      />
+      <TextField
+        {...commonTextFieldProps}
+        id="faq_link"
+        value={formik.values.faq_link}
+        label="FAQ Link"
       />
       <div className={classes.footer}>
         <Button

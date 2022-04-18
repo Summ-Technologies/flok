@@ -56,6 +56,8 @@ export type AdminRetreatModel = {
 
   flights_travel_policies_link: string | null
   attendees_registration_form_id: string | null
+  faq_link?: string
+  budget_link?: string
 }
 
 export type AdminRetreatUpdateModel = Pick<
