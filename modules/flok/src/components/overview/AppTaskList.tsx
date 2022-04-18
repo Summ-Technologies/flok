@@ -78,7 +78,9 @@ function TodoListItem(props: {
           onClick={() => props.handleCheckboxClick(task)}
           color="default"
         />
-        <AppTypography className={classes.title}>
+        <AppTypography
+          className={classes.title}
+          fontWeight={expanded ? "bold" : "regular"}>
           {task.link ? <Link href={task.link}>{task.title}</Link> : task.title}
         </AppTypography>
         {task.is_flok_task && (
@@ -129,9 +131,6 @@ function TodoListItem(props: {
           ) : (
             <></>
           )}
-          <AppTypography fontWeight="bold" style={{lineHeight: "2em"}}>
-            {task.title}
-          </AppTypography>
           <ReactMarkdown>
             {task.description ? task.description : ""}
           </ReactMarkdown>
