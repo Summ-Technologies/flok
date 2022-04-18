@@ -108,15 +108,10 @@ function TodoListItem(props: {
           ) : (
             <>{task.title}</>
           )}
-
           {task.is_flok_task && (
             <Chip className={classes.chip} label="Flok Task"></Chip>
           )}
         </AppTypography>
-
-        {task.is_flok_task && (
-          <Chip className={classes.chip} label={<>Flok Task </>}></Chip>
-        )}
         <div style={{flexGrow: 1}}></div>
         {task.due_date ? (
           <Chip
