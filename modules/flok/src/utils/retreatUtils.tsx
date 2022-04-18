@@ -54,5 +54,11 @@ export function parseRetreatTask(task: RetreatToTask, baseUrl: string) {
   if (task.link) {
     parsedTask.link = task.link.replaceAll(Constants.retreatBaseUrlVar, baseUrl)
   }
+  if (task.description) {
+    parsedTask.description = task.description.replaceAll(
+      Constants.retreatBaseUrlVar,
+      baseUrl
+    )
+  }
   return parsedTask
 }

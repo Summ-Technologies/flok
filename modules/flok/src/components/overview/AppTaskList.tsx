@@ -69,6 +69,16 @@ function TodoListItem(props: {
     setExpanded(!expanded)
   }
 
+  function getExtraLinkProps(url: string) {
+    if (url.startsWith("http")) {
+      return {
+        target: "_blank",
+      }
+    } else {
+      return {}
+    }
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.summary}>
@@ -81,7 +91,13 @@ function TodoListItem(props: {
         <AppTypography
           className={classes.title}
           fontWeight={expanded ? "bold" : "regular"}>
-          {task.link ? <Link href={task.link}>{task.title}</Link> : task.title}
+          {task.link ? (
+            <Link href={task.link} {...getExtraLinkProps(task.link)}>
+              {task.title}
+            </Link>
+          ) : (
+            task.title
+          )}
         </AppTypography>
         {task.is_flok_task && (
           <Chip
@@ -131,7 +147,7 @@ function TodoListItem(props: {
           ) : (
             <></>
           )}
-          <ReactMarkdown>
+          <ReactMarkdown linkTarget="_blank">
             {task.description ? task.description : ""}
           </ReactMarkdown>
         </div>
