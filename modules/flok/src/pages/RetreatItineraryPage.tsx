@@ -1,7 +1,6 @@
-import {Box, Button, makeStyles, Tooltip, Typography} from "@material-ui/core"
-import LockIcon from "@material-ui/icons/Lock"
+import {makeStyles, Typography} from "@material-ui/core"
+import {useEffect} from "react"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import AppMoreInfoIcon from "../components/base/AppMoreInfoIcon"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageLockedModal from "../components/page/PageLockedModal"
@@ -63,17 +62,28 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
 
+  useEffect(() => {
+    if (
+      retreat.itinerary_state === "IN_PROGRESS" &&
+      retreat.itinerary_final_draft_link
+    ) {
+      // using replace and not href=link to avoid back button issues
+      window.location.replace(retreat.itinerary_final_draft_link)
+    }
+  })
+
   return (
     <PageContainer>
       <PageSidenav activeItem="itinerary" retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.root}>
           <Typography variant="h1">Itinerary</Typography>
-          {retreat.itinerary_state !== "BOOKING" && (
+          {(retreat.itinerary_state !== "IN_PROGRESS" ||
+            !retreat.itinerary_final_draft_link) && (
             <PageLockedModal pageDesc="This page will be unlocked when we begin booking your itinerary" />
           )}
-
-          <div className={classes.linksDiv}>
+          {/* Commenting out itinerary page body because now will be using link directly to itinerary document */}
+          {/* <div className={classes.linksDiv}>
             <Box className={classes.draftBox}>
               <Typography variant="h4" className={classes.draftHeading}>
                 Working Draft
@@ -117,7 +127,7 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
                 </Button>
               </Tooltip>
             </Box>
-          </div>
+          </div> */}
         </div>
       </PageBody>
     </PageContainer>

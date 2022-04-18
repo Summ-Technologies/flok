@@ -94,7 +94,7 @@ export const OrderedRetreatItineraryState = [
   "NOT_STARTED",
   "IN_PROGRESS",
 ] as const
-export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
+export type RetreatItineraryState = typeof OrderedRetreatItineraryState[number]
 /****************** End retreat states types ******************/
 
 export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
