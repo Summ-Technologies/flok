@@ -61,11 +61,6 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
       backgroundColor: "inherit",
     },
   },
-  noSelectorNeeded: {
-    "& .MuiSelect-select": {
-      cursor: "text",
-    },
-  },
 }))
 
 let navItem = (title: string, Icon: SvgIconComponent, pageName: FlokPageName) =>
