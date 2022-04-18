@@ -219,11 +219,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
 
   return (
     <PageContainer>
-      <PageSidenav
-        activeItem="overview"
-        retreatIdx={retreatIdx}
-        companyName={retreat?.company_name}
-      />
+      <PageSidenav activeItem="overview" retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.section}>
           <div className={classes.overviewHeader}>

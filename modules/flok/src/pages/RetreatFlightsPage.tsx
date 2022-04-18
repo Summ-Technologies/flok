@@ -86,11 +86,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
 
   return (
     <PageContainer>
-      <PageSidenav
-        activeItem="flights"
-        retreatIdx={retreatIdx}
-        companyName={retreat?.company_name}
-      />
+      <PageSidenav activeItem="flights" retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.section}>
           <Box

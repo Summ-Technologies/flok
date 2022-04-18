@@ -6,6 +6,7 @@ export type UserModel = {
   first_name?: string
   last_name?: string
   retreat_ids: number[]
+  retreats: {company_name: string; id: number}[]
 }
 
 export type FlokInternalAdminModel = {
