@@ -188,7 +188,8 @@ export type RetreatTravelModel = {
 export type RetreatAttendeeModel = {
   id: number
   email_address: string
-  name: string
+  first_name: string
+  last_name: string
   travel?: RetreatTravelModel
   city?: string
   dietary_prefs: string
@@ -356,7 +357,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Kosher",
     info_status: "CREATED",
-    name: "Plaxico Burress",
+    first_name: "Plaxico",
+    last_name: "Burress",
     id: 1,
     travel: undefined,
     notes: "",
@@ -367,7 +369,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Paleo",
     info_status: "INFO_ADDED",
-    name: "Amani Toomer",
+    first_name: "Amani",
+    last_name: "Toomer",
     id: 1,
     travel: undefined,
     notes: "",
@@ -378,7 +381,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Vegan",
     info_status: "INFO_ENTERED",
-    name: "Ahmad Bradshaw",
+    first_name: "Ahmad",
+    last_name: "Bradshaw",
     id: 1,
     travel: undefined,
     notes: "Says they are vegan but not really",
@@ -389,7 +393,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Vegetarian",
     info_status: "CREATED",
-    name: "Brandon Jacobs",
+    first_name: "Brandon",
+    last_name: "Jacobs",
     id: 1,
     travel: undefined,
     notes: "",
@@ -400,7 +405,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Paleo",
     info_status: "INFO_ADDED",
-    name: "Mario Manningham",
+    first_name: "Mario",
+    last_name: "Manning",
     id: 1,
     travel: undefined,
     notes: "",

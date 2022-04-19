@@ -129,7 +129,8 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
                     ? retreatAttendees.map((a) =>
                         _.pick(a, [
                           "id",
-                          "name",
+                          "first_name",
+                          "last_name",
                           "email_address",
                           "info_status",
                         ])

@@ -71,7 +71,8 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
   let formik = useFormik({
     initialValues: {
       email_address: props.attendee.email_address,
-      name: props.attendee.name,
+      first_name: props.attendee.first_name,
+      last_name: props.attendee.last_name,
       city: props.attendee.city,
       notes: props.attendee.notes,
       dietary_prefs: props.attendee.dietary_prefs,
@@ -119,8 +120,14 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
         <TextField
           {...textFieldProps}
           id="name"
-          value={formik.values.name ?? ""}
-          label="Name"
+          value={formik.values.first_name ?? ""}
+          label="First Name"
+        />
+        <TextField
+          {...textFieldProps}
+          id="name"
+          value={formik.values.last_name ?? ""}
+          label="Last Name"
         />
         <TextField
           {...textFieldProps}

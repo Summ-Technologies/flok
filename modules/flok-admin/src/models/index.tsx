@@ -230,7 +230,8 @@ export type AdminRetreatTravelModel = {
 export type AdminRetreatAttendeeModel = {
   id: number
   email_address: string
-  name: string | null
+  first_name: string | null
+  last_name: string | null
   travel: AdminRetreatTravelModel | null
   city: string | null
   dietary_prefs: string | null

@@ -135,10 +135,12 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
-  let [newAttendeeName, setNewAttendeeName] = useState("")
+  let [newAttendeeFirstName, setNewAttendeeFirstName] = useState("")
+  let [newAttendeeLastName, setNewAttendeeLastName] = useState("")
   let [newAttendeeEmail, setNewAttendeeEmail] = useState("")
   let [newAttendeeErrorState, setNewAttendeeErrorState] = useState({
-    name: false,
+    firstName: false,
+    lastName: false,
     email: false,
   })
 
@@ -153,10 +155,14 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   }
 
   const handleNewAttendeeSubmit = () => {
-    const errorState = {name: false, email: false}
-    if (newAttendeeName === "") {
-      errorState.name = true
-      setNewAttendeeName("")
+    const errorState = {firstName: false, lastName: false, email: false}
+    if (newAttendeeFirstName === "") {
+      errorState.firstName = true
+      setNewAttendeeFirstName("")
+    }
+    if (newAttendeeLastName === "") {
+      errorState.lastName = true
+      setNewAttendeeLastName("")
     }
     if (
       newAttendeeEmail === "" ||
@@ -168,12 +174,18 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
       setNewAttendeeEmail("")
     }
 
-    if (!errorState.name && !errorState.email) {
+    if (!errorState.firstName && !errorState.lastName && !errorState.email) {
       dispatch(
-        postRetreatAttendees(retreat.id, newAttendeeName, newAttendeeEmail)
+        postRetreatAttendees(
+          retreat.id,
+          newAttendeeFirstName,
+          newAttendeeLastName,
+          newAttendeeEmail
+        )
       )
       setNewAttendeeEmail("")
-      setNewAttendeeName("")
+      setNewAttendeeFirstName("")
+      setNewAttendeeLastName("")
       setAddDialogOpen(false)
     }
 
@@ -213,18 +225,21 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
           <AppExpandableTable
             headers={[
               {
-                name: "Employee",
-                colId: "name",
+                name: "Last Name",
+                colId: "last_name",
                 comparator: (r1, r2) => {
-                  if (!r1.item.name) {
-                    return -1
-                  }
-                  if (!r2.item.name) {
-                    return 1
-                  }
-                  return r1.item.name
-                    .toString()
-                    .localeCompare(r2.item.name.toString())
+                  if (!r1.item.last_name) return 1
+                  if (!r2.item.last_name) return -1
+                  return r1.item.last_name.localeCompare(r2.item.last_name)
+                },
+              },
+              {
+                name: "First Name",
+                colId: "first_name",
+                comparator: (r1, r2) => {
+                  if (!r1.item.first_name) return 1
+                  if (!r2.item.first_name) return -1
+                  return r1.item.first_name.localeCompare(r2.item.first_name)
                 },
               },
               {name: "Email", colId: "email_address"},
@@ -329,11 +344,22 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
             <TextField
               autoFocus
               margin="dense"
-              id="name"
-              label="Full Name"
-              value={newAttendeeName}
-              error={newAttendeeErrorState.name}
-              onChange={(e) => setNewAttendeeName(e.target.value)}
+              id="first_name"
+              label="First Name"
+              value={newAttendeeFirstName}
+              error={newAttendeeErrorState.firstName}
+              onChange={(e) => setNewAttendeeFirstName(e.target.value)}
+              fullWidth
+              variant="standard"
+              required
+            />
+            <TextField
+              margin="dense"
+              id="last_name"
+              label="Last Name"
+              value={newAttendeeLastName}
+              error={newAttendeeErrorState.lastName}
+              onChange={(e) => setNewAttendeeLastName(e.target.value)}
               fullWidth
               variant="standard"
               required
@@ -394,7 +420,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                           .map((attendee) => (
                             <TableRow key={attendee.id}>
                               <TableCell component="th" scope="row">
-                                {attendee.name}
+                                {attendee.first_name + " " + attendee.last_name}
                               </TableCell>
                               <TableCell align="right">
                                 {attendee.email_address}
