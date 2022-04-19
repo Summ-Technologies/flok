@@ -138,7 +138,6 @@ export default function PageSidenav(props: PageSidenavProps) {
         button: true,
         href: link,
         component: "a",
-        target: "_blank",
       }
     } else {
       return {
@@ -206,7 +205,7 @@ export default function PageSidenav(props: PageSidenavProps) {
           </ListItemIcon>
           <ListItemText>Itinerary</ListItemText>
         </ListItem>
-        <ListItem {...getLinkSidenavProps(retreatModel.faq_link)}>
+        <ListItem {...getLinkSidenavProps(retreatModel.budget_link)}>
           <ListItemIcon>
             <LocalAtm fontSize="large" />
           </ListItemIcon>
