@@ -1,6 +1,11 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
-import {RetreatAttendeeModel, RetreatToTaskState} from "../../models/retreat"
+import {
+  RetreatAttendeeModel,
+  RetreatToTaskState,
+  RetreatTravelModel,
+  RetreatTripModel,
+} from "../../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
 import {ApiAction, createApiAction} from "./api"
@@ -153,6 +158,23 @@ export function getRetreatAttendees(retreatId: number) {
   })
 }
 
+export const GET_TRIPS_REQUEST = "GET_TRIPS_REQUEST"
+export const GET_TRIPS_SUCCESS = "GET_TRIPS_SUCCESS"
+export const GET_TRIPS_FAILURE = "GET_TRIPS_FAILURE"
+
+export function getTrips() {
+  let endpoint = "/v1.0/trips"
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_TRIPS_REQUEST},
+      {type: GET_TRIPS_SUCCESS},
+      {type: GET_TRIPS_FAILURE},
+    ],
+  })
+}
+
 export const GET_ATTENDEE_REQUEST = "GET_ATTENDEE_REQUEST"
 export const GET_ATTENDEE_SUCCESS = "GET_ATTENDEE_SUCCESS"
 export const GET_ATTENDEE_FAILURE = "GET_ATTENDEE_FAILURE"
@@ -185,6 +207,43 @@ export function patchAttendee(
       {type: PATCH_ATTENDEE_REQUEST},
       {type: PATCH_ATTENDEE_SUCCESS, meta: {attendeeIdx}},
       {type: PATCH_ATTENDEE_FAILURE, meta: {attendeeIdx}},
+    ],
+  })
+}
+
+export const PATCH_TRIP_REQUEST = "PATCH_TRIP_REQUEST"
+export const PATCH_TRIP_SUCCESS = "PATCH_TRIP_SUCCESS"
+export const PATCH_TRIP_FAILURE = "PATCH_TRIP_FAILURE"
+export function patchTrip(tripIdx: number, values: Partial<RetreatTripModel>) {
+  let endpoint = `/v1.0/trips/${tripIdx}`
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify(values),
+    types: [
+      {type: PATCH_TRIP_REQUEST},
+      {type: PATCH_TRIP_SUCCESS, meta: {tripIdx}},
+      {type: PATCH_TRIP_FAILURE, meta: {tripIdx}},
+    ],
+  })
+}
+
+export const PATCH_ATTENDEE_TRAVEL_REQUEST = "PATCH_ATTENDEE_TRAVEL_REQUEST"
+export const PATCH_ATTENDEE_TRAVEL_SUCCESS = "PATCH_ATTENDEE_TRAVEL_SUCCESS"
+export const PATCH_ATTENDEE_TRAVEL_FAILURE = "PATCH_ATTENDEE_TRAVEL_FAILURE"
+export function patchAttendeeTravel(
+  attendeeIdx: number,
+  values: Partial<RetreatTravelModel>
+) {
+  let endpoint = `/v1.0/attendees/${attendeeIdx}/travel`
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify(values),
+    types: [
+      {type: PATCH_ATTENDEE_TRAVEL_REQUEST},
+      {type: PATCH_ATTENDEE_TRAVEL_SUCCESS, meta: {attendeeIdx}},
+      {type: PATCH_ATTENDEE_TRAVEL_FAILURE, meta: {attendeeIdx}},
     ],
   })
 }

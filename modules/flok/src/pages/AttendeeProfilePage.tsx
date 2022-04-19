@@ -18,13 +18,14 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Prompt, RouteComponentProps} from "react-router-dom"
 import * as yup from "yup"
+import AttendeeFlightTab from "../components/flights/AttendeeFlightTab"
 import AppTabPanel from "../components/page/AppTabPanel"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
-import {getAttendee, patchAttendee} from "../store/actions/retreat"
+import {getAttendee, getTrips, patchAttendee} from "../store/actions/retreat"
 import {FlokTheme} from "../theme"
 import {useQuery} from "../utils"
 import {useRetreat} from "./misc/RetreatProvider"
@@ -91,6 +92,7 @@ let useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     marginRight: theme.spacing(1.5),
+    cursor: "pointer",
   },
   fullPageTab: {
     flex: "1 1 auto",
@@ -126,6 +128,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
   const RetreatAttendeeInfoStatusOptions = [
     {value: "CREATED", text: "Pending"},
     {value: "INFO_ENTERED", text: "Registered"},
+    {value: "NOT_ATTENDING", text: "Not Attending"},
   ]
 
   let classes = useStyles()
@@ -137,6 +140,9 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       return state.retreat.attendees[attendeeIdx]
     }
   })
+  useEffect(() => {
+    dispatch(getTrips())
+  }, [dispatch])
 
   useEffect(() => {
     !attendee && dispatch(getAttendee(attendeeIdx))
@@ -163,7 +169,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
     },
     enableReinitialize: true,
   })
-  console.log(formik.initialValues)
+
   useEffect(() => {
     if (!_.isEqual(formik.values, formik.initialValues)) {
       window.addEventListener("beforeunload", alertUser)
@@ -191,7 +197,10 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
 
       <PageBody appBar>
         <Prompt
-          when={!_.isEqual(formik.values, formik.initialValues)}
+          when={
+            !_.isEqual(formik.values, formik.initialValues) &&
+            tabQuery !== "flights"
+          }
           message={() =>
             "Are you sure you want to leave without saving your changes?"
           }
@@ -206,23 +215,20 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
             }
             variant="fullWidth"
             indicatorColor="primary">
-            <Tab
+            <div
               className={classes.tab}
-              label={
-                <div>
-                  <Icon>
-                    <ArrowBackIos />
-                  </Icon>
-                  All Attendees
-                </div>
-              }
               onClick={() => {
                 dispatch(
                   push(
                     AppRoutes.getPath("RetreatAttendeesPage", {retreatIdx: "0"})
                   )
                 )
-              }}></Tab>
+              }}>
+              <Icon>
+                <ArrowBackIos />
+              </Icon>
+              All Attendees
+            </div>
             <Tab
               className={classes.tab}
               value="profile"
@@ -266,6 +272,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
                     </option>
                   ))}
                 </TextField>
+
                 <TextField
                   {...textFieldProps}
                   className={classes.textField}
@@ -395,7 +402,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
             show={tabValue === "flights"}
             className={`${classes.tab} ${classes.fullPageTab}`}
             renderDom="on-shown">
-            Flights page
+            <AttendeeFlightTab flights={attendee?.travel} attendee={attendee} />
           </AppTabPanel>
         </div>
       </PageBody>

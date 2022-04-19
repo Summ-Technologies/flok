@@ -12,8 +12,7 @@ import {
   Tooltip,
 } from "@material-ui/core"
 import Table from "@material-ui/core/Table"
-import {Delete, Person, SwapVert} from "@material-ui/icons"
-import MenuIcon from "@material-ui/icons/Menu"
+import {Delete, MoreVert, Person, SwapVert} from "@material-ui/icons"
 import {push} from "connected-react-router"
 import React, {useState} from "react"
 import {useDispatch} from "react-redux"
@@ -143,7 +142,7 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
                     )
                   }>
                   <div className={classes.menuItem}>
-                    Profile <Person />
+                    Edit <Person />
                   </div>
                 </MenuItem>
                 <MenuItem onClick={props.onDelete}>
@@ -153,10 +152,11 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
                 </MenuItem>
               </Menu>
               <IconButton
+                size="small"
                 aria-controls="fade-menu"
                 aria-haspopup="true"
                 onClick={handleClick}>
-                <MenuIcon />
+                <MoreVert />
               </IconButton>
             </TableCell>
           )}

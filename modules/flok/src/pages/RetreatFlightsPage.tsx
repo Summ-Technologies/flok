@@ -1,6 +1,7 @@
 import {Box, Chip, Link, makeStyles, Typography} from "@material-ui/core"
 import {sortBy} from "lodash"
-import {useSelector} from "react-redux"
+import {useEffect} from "react"
+import {useDispatch, useSelector} from "react-redux"
 import {
   Link as RouterLink,
   RouteComponentProps,
@@ -16,6 +17,7 @@ import PageSidenav from "../components/page/PageSidenav"
 import {SampleLockedAttendees} from "../models/retreat"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
+import {getTrips} from "../store/actions/retreat"
 import {useRetreatAttendees} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -80,15 +82,21 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
 
-  let [attendeeIdList] = useRetreatAttendees(retreat.id)
-  let attendeesObject = useSelector((state: RootState) => {
-    return state.retreat.attendees
-  })
-  let attendeeTravelInfo = attendeeIdList?.map((id) => attendeesObject[id])
+  let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
   if (retreat.flights_state !== "BOOKING") {
     attendeeTravelInfo = SampleLockedAttendees
   }
+
+  let dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(getTrips())
+  }, [dispatch])
+
+  let trips = useSelector((state: RootState) => {
+    return state.retreat.trips
+  })
+  console.log(trips)
 
   return (
     <PageContainer>
@@ -233,15 +241,17 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                         attendee.travel &&
                         attendee.travel.arr_trip &&
                         attendee.travel.arr_trip.trip_legs.length
-                          ? attendee.travel.arr_trip.trip_legs[
-                              attendee.travel.arr_trip.trip_legs.length - 1
+                          ? trips[attendee.travel.arr_trip.id].trip_legs[
+                              trips[attendee.travel.arr_trip.id].trip_legs
+                                .length - 1
                             ].arr_datetime
                           : undefined,
                       departure:
                         attendee.travel &&
                         attendee.travel.dep_trip &&
-                        attendee.travel.dep_trip.trip_legs.length
-                          ? attendee.travel.dep_trip.trip_legs[0].dep_datetime
+                        trips[attendee.travel.dep_trip.id].trip_legs.length
+                          ? trips[attendee.travel.dep_trip.id].trip_legs[0]
+                              .dep_datetime
                           : undefined,
                       cost: attendee.travel ? attendee.travel.cost : undefined,
                       status: attendee.flight_status

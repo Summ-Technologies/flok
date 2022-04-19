@@ -3,8 +3,14 @@ import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {
   AttendeeApiResponse,
   RetreatAttendeesApiResponse,
+  TripApiResponse,
+  TripsApiResponse,
 } from "../../models/api"
-import {RetreatAttendeeModel, RetreatModel} from "../../models/retreat"
+import {
+  RetreatAttendeeModel,
+  RetreatModel,
+  RetreatTripModel,
+} from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
   DELETE_RETREAT_ATTENDEES_SUCCESS,
@@ -14,7 +20,10 @@ import {
   GET_RETREAT_BY_GUID_SUCCESS,
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
+  GET_TRIPS_SUCCESS,
   PATCH_ATTENDEE_SUCCESS,
+  PATCH_ATTENDEE_TRAVEL_SUCCESS,
+  PATCH_TRIP_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
@@ -31,6 +40,9 @@ export type RetreatState = {
   attendees: {
     [id: number]: RetreatAttendeeModel
   }
+  trips: {
+    [id: number]: RetreatTripModel
+  }
 }
 
 const initialState: RetreatState = {
@@ -38,6 +50,7 @@ const initialState: RetreatState = {
   retreatsByGuid: {},
   retreatAttendees: {},
   attendees: {},
+  trips: {},
 }
 
 export default function retreatReducer(
@@ -99,11 +112,33 @@ export default function retreatReducer(
       return state
     case GET_ATTENDEE_SUCCESS:
     case PATCH_ATTENDEE_SUCCESS:
+    case PATCH_ATTENDEE_TRAVEL_SUCCESS:
       payload = (action as ApiAction).payload as AttendeeApiResponse
       if (payload) {
         state.attendees = {
           ...state.attendees,
           [payload.attendee.id]: payload.attendee,
+        }
+      }
+      return state
+
+    case GET_TRIPS_SUCCESS:
+      payload = (action as ApiAction).payload as TripsApiResponse
+      if (payload) {
+        state.trips = payload.trips.reduce(
+          (last: any, curr: RetreatTripModel) => {
+            return {...last, [curr.id]: curr}
+          },
+          {}
+        )
+      }
+      return state
+    case PATCH_TRIP_SUCCESS:
+      payload = (action as ApiAction).payload as TripApiResponse
+      if (payload) {
+        state.trips = {
+          ...state.trips,
+          [payload.trip.id]: payload.trip,
         }
       }
       return state

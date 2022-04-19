@@ -350,7 +350,7 @@ export const SampleLockedAttendees = [
   },
   {
     dietary_prefs: "Kosher",
-    info_status: "CREATED",
+    info_status: "NOT_ATTENDING",
     name: "Plaxico Burress",
     id: 1,
     travel: undefined,

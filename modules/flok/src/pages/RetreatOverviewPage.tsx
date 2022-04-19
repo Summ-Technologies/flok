@@ -71,11 +71,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
   let dispatch = useDispatch()
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
-  let [attendeeIdList] = useRetreatAttendees(retreat.id)
-  let attendeesObject = useSelector((state: RootState) => {
-    return state.retreat.attendees
-  })
-  let attendees = attendeeIdList?.map((id) => attendeesObject[id])
+  let [attendees] = useRetreatAttendees(retreat.id)
   let retreatBaseUrl = `/r/${retreatIdx}`
 
   let [datesOverview, setDatesOverview] = useState<string | undefined>(

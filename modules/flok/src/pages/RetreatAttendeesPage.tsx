@@ -21,9 +21,11 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core"
+import {Person} from "@material-ui/icons"
 import CloseIcon from "@material-ui/icons/Close"
+import {push} from "connected-react-router"
 import {useState} from "react"
-import {useDispatch, useSelector} from "react-redux"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
@@ -32,7 +34,7 @@ import PageContainer from "../components/page/PageContainer"
 import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {RetreatAttendeeModel, SampleLockedAttendees} from "../models/retreat"
-import {RootState} from "../store"
+import {AppRoutes} from "../Stack"
 import {
   deleteRetreatAttendees,
   postRetreatAttendees,
@@ -132,11 +134,8 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
 
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let retreat = useRetreat()
-  let [attendeeIdList] = useRetreatAttendees(retreat.id)
-  let attendeesObject = useSelector((state: RootState) => {
-    return state.retreat.attendees
-  })
-  let attendeeTravelInfo = attendeeIdList?.map((id) => attendeesObject[id])
+
+  let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
   let [newAttendeeName, setNewAttendeeName] = useState("")
@@ -150,10 +149,10 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     attendeeTravelInfo = SampleLockedAttendees
   }
 
-  const [openNotAttendingModel, setOpenNotAttendingModel] = useState(false)
+  const [openNotAttendingModal, setOpenNotAttendingModal] = useState(false)
 
   const handleClose = () => {
-    setOpenNotAttendingModel(false)
+    setOpenNotAttendingModal(false)
   }
 
   const handleNewAttendeeSubmit = () => {
@@ -208,7 +207,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
               underline="always"
               className={classes.notAttendingButton}
               onClick={() => {
-                setOpenNotAttendingModel(true)
+                setOpenNotAttendingModal(true)
               }}>
               View invitees not coming (
               {attendeeTravelInfo &&
@@ -375,14 +374,14 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
           <Dialog
             onClose={handleClose}
             aria-labelledby="customized-dialog-title"
-            open={openNotAttendingModel}>
+            open={openNotAttendingModal}>
             <DialogTitle id="customized-dialog-title">
               Invitees not attending
               <IconButton
                 aria-label="close"
                 className={classes.closeButton}
                 onClick={() => {
-                  setOpenNotAttendingModel(false)
+                  setOpenNotAttendingModal(false)
                 }}>
                 <CloseIcon />
               </IconButton>
@@ -408,6 +407,27 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                               <TableCell align="right">
                                 {attendee.email_address}
                               </TableCell>
+                              <TableCell>
+                                {" "}
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={() =>
+                                    dispatch(
+                                      push(
+                                        AppRoutes.getPath(
+                                          "AttendeeProfilePage",
+                                          {
+                                            retreatIdx: "0",
+                                            attendeeIdx: attendee.id.toString(),
+                                          }
+                                        )
+                                      )
+                                    )
+                                  }>
+                                  Edit <Person />
+                                </Button>
+                              </TableCell>{" "}
                             </TableRow>
                           ))}
                     </TableBody>
