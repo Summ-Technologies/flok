@@ -5,16 +5,14 @@ import {
   DialogContent,
   DialogTitle,
   makeStyles,
-  TextField,
   Typography,
 } from "@material-ui/core"
-import {ArrowForward} from "@material-ui/icons"
 import {useFormik} from "formik"
-import _ from "lodash"
-import {useEffect, useRef, useState} from "react"
+import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RetreatTripLeg} from "../../models/retreat"
 import {patchTrip} from "../../store/actions/retreat"
+import EditFlightForm from "./EditFlightForm"
 import FlightCard from "./FlightCard"
 
 function EditFlightModal(props: any) {
@@ -62,37 +60,12 @@ function EditFlightModal(props: any) {
   let classes = useStyles()
   let dispatch = useDispatch()
   const [selectedFlight, setSelectedFlight] = useState(100)
-  const [flightsState, setFlightsState] = useState(flights?.trip_legs)
-  let initialFlightsState = flights?.trip_legs
-
-  useEffect(() => {
-    flights && setFlightsState(flights.trip_legs)
-  }, [flights])
-
-  useEffect(() => {
-    initialFlightsState = flights?.trip_legs
-  }, [flights?.trip_legs])
 
   function handleCancel() {
-    setFlightsState(initialFlightsState)
     setSelectedFlight(100)
     handleClose()
   }
   function handleAdd() {
-    setFlightsState((flightsState: any) => {
-      return [
-        ...flightsState,
-        {
-          airline: "",
-          dep_airport: "",
-          arr_airport: "",
-          flight_num: "",
-          dep_datetime: "",
-          arr_datetime: "",
-          duration: "",
-        },
-      ]
-    })
     formik.setFieldValue(`trip_legs`, [
       ...formik.values.trip_legs,
       {
@@ -105,33 +78,21 @@ function EditFlightModal(props: any) {
         duration: "",
       },
     ])
-    setSelectedFlight(flightsState.length)
+    setSelectedFlight(formik.values.trip_legs.length)
   }
-  const formRef = useRef()
-  const anchorEl = useRef<HTMLFormElement>(null)
-  // useLayoutEffect(() => {
-  //   console.log(anchorEl)
-  // })
 
   let formik = useFormik({
     initialValues: {
-      trip_legs: flightsState,
+      trip_legs: flights?.trip_legs,
     },
     onSubmit: (values: any) => {
-      dispatch(patchTrip(flights.id, formik.values))
-      setFlightsState((flightsState: any) =>
-        flightsState.filter(
-          (leg: any) =>
-            !_.isEqual(leg, {
-              dep_airport: "",
-              arr_airport: "",
-              dep_datetime: "",
-              arr_datetime: "",
-              flight_num: "",
-              airline: "",
-            })
-        )
-      )
+      let updatedValues = formik.values.trip_legs.map((leg: any) => {
+        delete leg.duration
+        return leg
+      })
+      console.log({trip_legs: updatedValues})
+      dispatch(patchTrip(flights.id, {trip_legs: updatedValues}))
+      setOpen(false)
     },
     enableReinitialize: true,
   })
@@ -143,134 +104,61 @@ function EditFlightModal(props: any) {
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle>Edit {type} Flights </DialogTitle>
-      <DialogContent>
-        {flightsState?.map((leg: RetreatTripLeg, i: number) => {
-          if (i === selectedFlight) {
-            return (
-              <>
-                <hr className={classes.line}></hr>
-                {/* Bug must be fixed below */}
-                {/* {flightsState && (
+      <form onSubmit={formik.handleSubmit}>
+        <DialogTitle>Edit {type} Flights </DialogTitle>
+        <DialogContent>
+          {formik.values.trip_legs?.map((leg: RetreatTripLeg, i: number) => {
+            if (i === selectedFlight) {
+              return (
+                <>
+                  <hr className={classes.line}></hr>
+                  {/* Bug must be fixed below */}
+
                   <EditFlightForm
-                    flightsState={flightsState}
-                    setFlightsState={setFlightsState}
-                    flightIdx={selectedFlight}
-                    setSelectedFlight={setSelectedFlight}
+                    idPrefix={`trip_legs[${i}]`}
+                    flightLegValues={leg}
+                    formik={formik}
+                    index={i}
                   />
-                )} */}
 
-                <form ref={anchorEl} onSubmit={formik.handleSubmit}>
-                  <div className={classes.tripLegRow}>
-                    <TextField
-                      {...textFieldProps}
-                      id={`trip_legs.${i}.dep_airport`}
-                      value={formik.values.trip_legs[i].dep_airport}
-                      label="Departing Airport"
-                    />
-                    <ArrowForward />
-                    <TextField
-                      {...textFieldProps}
-                      id={`trip_legs.${i}.arr_airport`}
-                      value={formik.values.trip_legs[i].arr_airport}
-                      label="Arriving Airport"
-                    />
-                  </div>
-                  <div className={classes.tripLegRow}>
-                    <TextField
-                      {...textFieldProps}
-                      type="datetime-local"
-                      id={`trip_legs.${i}.dep_datetime`}
-                      value={formik.values.trip_legs[i].dep_datetime}
-                      helperText="Departing airport timezone"
-                      label="Departing Date & Time"
-                    />
-                    <TextField
-                      {...textFieldProps}
-                      type="datetime-local"
-                      id={`trip_legs.${i}.arr_datetime`}
-                      value={formik.values.trip_legs[i].arr_datetime}
-                      helperText="Arriving airport timezone"
-                      label="Arriving Date & Time"
-                    />
-                  </div>
-                  <div className={classes.tripLegRow}>
-                    <TextField
-                      {...textFieldProps}
-                      id={`trip_legs.${i}.flight_num`}
-                      value={formik.values.trip_legs[i].flight_num}
-                      label="Flight #"
-                    />
-                    <TextField
-                      {...textFieldProps}
-                      id={`trip_legs.${i}.airline`}
-                      value={formik.values.trip_legs[i].airline}
-                      label="Airline"
-                    />
-                  </div>
-                  {/* <div className={classes.trashDiv}>
-                    <IconButton onClick={handleDelete}>
-                      <Delete />
-                    </IconButton>
-                  </div> */}
-                  <Button type="submit">Submit</Button>
-                </form>
-
-                <hr className={classes.line}></hr>
-              </>
+                  <hr className={classes.line}></hr>
+                </>
+              )
+            }
+            return (
+              <div className={classes.cardLine}>
+                <FlightCard flight={leg} />
+                <Button
+                  variant="contained"
+                  size="small"
+                  color="primary"
+                  className={classes.editButton}
+                  onClick={() => setSelectedFlight(i)}>
+                  Edit
+                </Button>
+              </div>
             )
-          }
-          return (
-            <div className={classes.cardLine}>
-              <FlightCard flight={leg} />
-              <Button
-                variant="contained"
-                size="small"
-                color="primary"
-                className={classes.editButton}
-                onClick={() => setSelectedFlight(i)}>
-                Edit
-              </Button>
-            </div>
-          )
-        })}
+          })}
 
-        {!flightsState?.length && <Typography>No Flights Currently</Typography>}
-      </DialogContent>
-      <DialogActions className={classes.actions}>
-        <Button color="primary" onClick={handleAdd}>
-          Add Flight
-        </Button>
-        <div>
-          {" "}
-          <Button onClick={handleCancel} color="primary">
-            Cancel
+          {!formik.values.trip_legs?.length && (
+            <Typography>No Flights Currently</Typography>
+          )}
+        </DialogContent>
+        <DialogActions className={classes.actions}>
+          <Button color="primary" onClick={handleAdd}>
+            Add Flight
           </Button>
-          <Button
-            onClick={() => {
-              // dispatch(patchTrip(flights.id, {trip_legs: flightsState}))
-              // setFlightsState((flightsState: any) =>
-              //   flightsState.filter(
-              //     (leg: any) =>
-              //       !_.isEqual(leg, {
-              //         dep_airport: "",
-              //         arr_airport: "",
-              //         dep_datetime: "",
-              //         arr_datetime: "",
-              //         flight_num: "",
-              //         airline: "",
-              //       })
-              //   )
-              // )
-
-              setSelectedFlight(100)
-              handleClose()
-            }}
-            color="primary">
-            Save
-          </Button>
-        </div>
-      </DialogActions>
+          <div>
+            {" "}
+            <Button onClick={handleCancel} color="primary">
+              Cancel
+            </Button>
+            <Button type="submit" color="primary">
+              Save
+            </Button>
+          </div>
+        </DialogActions>
+      </form>
     </Dialog>
   )
 }
