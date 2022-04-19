@@ -240,8 +240,7 @@ export function putRetreatTask(
     },
     {
       errorMessage: "Oops, something went wrong.",
-      successMessage: "Success!",
-      disableSnackbar: new_state === "COMPLETED",
+      successMessage: new_state !== "COMPLETED" ? "Success!" : undefined,
     }
   )
 }

@@ -63,7 +63,6 @@ export function createApiAction(
     onSuccess?: (dispatch: ThunkDispatch<any, any, Action<any>>) => void
     errorMessage?: string
     onError?: (dispatch: ThunkDispatch<any, any, Action<any>>) => void
-    disableSnackbar?: boolean
   } = {}
 ) {
   return async (
@@ -77,7 +76,7 @@ export function createApiAction(
       if (apiOptions.onError) {
         apiOptions.onError(dispatch)
       }
-      if (apiOptions.errorMessage && !apiOptions.disableSnackbar) {
+      if (apiOptions.errorMessage) {
         dispatch(
           enqueueSnackbar({
             message: apiOptions.errorMessage,
@@ -99,7 +98,7 @@ export function createApiAction(
       if (apiOptions.onSuccess) {
         apiOptions.onSuccess(dispatch)
       }
-      if (apiOptions.successMessage && !apiOptions.disableSnackbar) {
+      if (apiOptions.successMessage) {
         dispatch(
           enqueueSnackbar({
             message: apiOptions.successMessage,
