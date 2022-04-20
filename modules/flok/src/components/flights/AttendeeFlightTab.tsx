@@ -1,12 +1,49 @@
 import {Button, makeStyles, Typography} from "@material-ui/core"
-import {useState} from "react"
-import {useSelector} from "react-redux"
+import {useEffect, useState} from "react"
+import {useDispatch, useSelector} from "react-redux"
+import {RetreatAttendeeModel, RetreatTravelModel} from "../../models/retreat"
 import {RootState} from "../../store"
+import {getTrip, instantiateAttendeeTrips} from "../../store/actions/retreat"
 import EditFlightModal from "./EditFlightModal"
 import FlightCardContainer from "./FlightCardContainer"
 
-function AttendeeFlightTab(props: any) {
+type AttendeeFlightTabProps = {
+  flights: RetreatTravelModel | undefined
+  attendee: RetreatAttendeeModel
+}
+
+function AttendeeFlightTab(props: AttendeeFlightTabProps) {
   let {flights, attendee} = props
+  let dispatch = useDispatch()
+
+  let arrivalFlights = useSelector((state: RootState) => {
+    if (flights?.arr_trip && flights?.arr_trip.id) {
+      return state.retreat.trips[flights?.arr_trip.id]
+    }
+  })
+  let departureFlights = useSelector((state: RootState) => {
+    if (flights?.dep_trip && flights?.dep_trip.id) {
+      return state.retreat.trips[flights?.dep_trip.id]
+    }
+  })
+
+  useEffect(() => {
+    flights?.arr_trip &&
+      flights?.arr_trip.id &&
+      !arrivalFlights &&
+      dispatch(getTrip(flights?.arr_trip.id))
+    flights?.dep_trip &&
+      flights?.dep_trip.id &&
+      !departureFlights &&
+      dispatch(getTrip(flights?.dep_trip.id))
+  }, [
+    dispatch,
+
+    flights?.arr_trip,
+    flights?.dep_trip,
+    arrivalFlights,
+    departureFlights,
+  ])
   let useStyles = makeStyles((theme) => ({
     flightCardContainer: {
       marginLeft: theme.spacing(2),
@@ -28,85 +65,98 @@ function AttendeeFlightTab(props: any) {
       height: "40px",
     },
     noFlightsWords: {
-      paddingLeft: theme.spacing(300),
+      paddingLeft: theme.spacing(3),
+    },
+    noFlightsButton: {
+      marginLeft: theme.spacing(3),
+    },
+    instantiateButton: {
+      margin: theme.spacing(2),
     },
   }))
-
-  let arrivalFlights = useSelector((state: RootState) => {
-    if (flights?.arr_trip.id) {
-      return state.retreat.trips[flights?.arr_trip.id]
-    }
-  })
-  let departureFlights = useSelector((state: RootState) => {
-    if (flights?.dep_trip.id) {
-      return state.retreat.trips[flights?.dep_trip.id]
-    }
-  })
 
   let classes = useStyles()
   const [openEditArrival, setOpenEditArrival] = useState(false)
   const [openEditDeparture, setOpenEditDeparture] = useState(false)
   return (
     <div>
-      <EditFlightModal
-        open={openEditArrival}
-        setOpen={setOpenEditArrival}
-        type="Arrival"
-        flights={arrivalFlights}
-      />
-      <EditFlightModal
-        open={openEditDeparture}
-        setOpen={setOpenEditDeparture}
-        type="Departure"
-        flights={departureFlights}
-      />
+      {attendee && arrivalFlights && (
+        <EditFlightModal
+          open={openEditArrival}
+          setOpen={setOpenEditArrival}
+          type="Arrival"
+          flights={arrivalFlights}
+        />
+      )}
+      {attendee && departureFlights && (
+        <EditFlightModal
+          open={openEditDeparture}
+          setOpen={setOpenEditDeparture}
+          type="Departure"
+          flights={departureFlights}
+        />
+      )}
       {attendee && (
         <Typography variant="h3" className={classes.header}>
           {attendee.name}'s Flights
         </Typography>
       )}
-      <div className={classes.headerLine}>
-        {" "}
-        <Typography variant="h4" className={classes.tripHeader}>
-          Arrival Trip
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          className={classes.editButton}
-          onClick={() => setOpenEditArrival(true)}>
-          Edit
-        </Button>
-      </div>
+      {arrivalFlights ? (
+        <div>
+          <div className={classes.headerLine}>
+            {" "}
+            <Typography variant="h4" className={classes.tripHeader}>
+              Arrival Trip
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              className={classes.editButton}
+              onClick={() => setOpenEditArrival(true)}>
+              Edit
+            </Button>
+          </div>
 
-      {flights?.arr_trip.trip_legs.length ? (
-        <div className={classes.flightCardContainer}>
-          <FlightCardContainer flights={arrivalFlights} />
+          {arrivalFlights?.trip_legs.length ? (
+            <div className={classes.flightCardContainer}>
+              <FlightCardContainer flights={arrivalFlights} />
+            </div>
+          ) : (
+            <div className={classes.noFlightsWords}>No Scheduled Flights</div>
+          )}
+          <div className={classes.headerLine}>
+            {" "}
+            <Typography variant="h4" className={classes.tripHeader}>
+              Departure Trip
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              className={classes.editButton}
+              onClick={() => setOpenEditDeparture(true)}>
+              Edit
+            </Button>
+          </div>
+          {departureFlights?.trip_legs.length ? (
+            <div className={classes.flightCardContainer}>
+              <FlightCardContainer flights={departureFlights} />
+            </div>
+          ) : (
+            <div className={classes.noFlightsWords}> No Scheduled flights</div>
+          )}
         </div>
       ) : (
-        <div className={classes.noFlightsWords}>No Scheduled Flights</div>
-      )}
-      <div className={classes.headerLine}>
-        {" "}
-        <Typography variant="h4" className={classes.tripHeader}>
-          Departure Trip
-        </Typography>
         <Button
           variant="contained"
           color="primary"
-          size="small"
-          className={classes.editButton}
-          onClick={() => setOpenEditDeparture(true)}>
-          Edit
+          className={classes.instantiateButton}
+          onClick={() => {
+            dispatch(instantiateAttendeeTrips(attendee.id))
+          }}>
+          No Flights Yet, Create Flights?
         </Button>
-      </div>
-      {departureFlights?.trip_legs.length ? (
-        <div className={classes.flightCardContainer}>
-          <FlightCardContainer flights={departureFlights} />
-        </div>
-      ) : (
-        <div> No Scheduled flights</div>
       )}
     </div>
   )

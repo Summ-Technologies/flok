@@ -10,12 +10,18 @@ import {
 import {useFormik} from "formik"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
-import {RetreatTripLeg} from "../../models/retreat"
+import {RetreatTripLeg, RetreatTripModel} from "../../models/retreat"
 import {patchTrip} from "../../store/actions/retreat"
 import EditFlightForm from "./EditFlightForm"
 import FlightCard from "./FlightCard"
 
-function EditFlightModal(props: any) {
+type EditFlightModalProps = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  type: string
+  flights: RetreatTripModel
+}
+function EditFlightModal(props: EditFlightModalProps) {
   let {open, setOpen, type, flights} = props
   function handleClose() {
     setOpen(false)
@@ -61,8 +67,9 @@ function EditFlightModal(props: any) {
   let dispatch = useDispatch()
   const [selectedFlight, setSelectedFlight] = useState(100)
 
-  function handleCancel() {
+  function handleCancel(e: any) {
     setSelectedFlight(100)
+    formik.handleReset(e)
     handleClose()
   }
   function handleAdd() {
@@ -83,24 +90,20 @@ function EditFlightModal(props: any) {
 
   let formik = useFormik({
     initialValues: {
-      trip_legs: flights?.trip_legs,
+      trip_legs: flights?.trip_legs ?? [],
     },
-    onSubmit: (values: any) => {
-      let updatedValues = formik.values.trip_legs.map((leg: any) => {
+    onSubmit: (values: {trip_legs: RetreatTripLeg[]}) => {
+      let updatedValues = formik.values.trip_legs.map((leg: RetreatTripLeg) => {
         delete leg.duration
         return leg
       })
-      console.log({trip_legs: updatedValues})
-      dispatch(patchTrip(flights.id, {trip_legs: updatedValues}))
       setOpen(false)
+      //Here we should check if flights exist and if not instantiate it, unless we are going to always start a person with an empty travel object
+      dispatch(patchTrip(flights.id, {trip_legs: updatedValues}))
+      setSelectedFlight(100)
     },
     enableReinitialize: true,
   })
-  const textFieldProps = {
-    fullWidth: true,
-    InputLabelProps: {shrink: true},
-    onChange: formik.handleChange,
-  }
 
   return (
     <Dialog open={open} onClose={handleClose}>
@@ -112,7 +115,6 @@ function EditFlightModal(props: any) {
               return (
                 <>
                   <hr className={classes.line}></hr>
-                  {/* Bug must be fixed below */}
 
                   <EditFlightForm
                     idPrefix={`trip_legs[${i}]`}

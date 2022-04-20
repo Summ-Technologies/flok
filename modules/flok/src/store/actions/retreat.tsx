@@ -175,6 +175,22 @@ export function getTrips() {
   })
 }
 
+export const GET_TRIP_REQUEST = "GET_TRIP_REQUEST"
+export const GET_TRIP_SUCCESS = "GET_TRIP_SUCCESS"
+export const GET_TRIP_FAILURE = "GET_TRIP_FAILURE"
+export function getTrip(tripIdx: number) {
+  let endpoint = `/v1.0/trips/${tripIdx}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_TRIP_REQUEST},
+      {type: GET_TRIP_SUCCESS, meta: {tripIdx}},
+      {type: GET_TRIP_FAILURE, meta: {tripIdx}},
+    ],
+  })
+}
+
 export const GET_ATTENDEE_REQUEST = "GET_ATTENDEE_REQUEST"
 export const GET_ATTENDEE_SUCCESS = "GET_ATTENDEE_SUCCESS"
 export const GET_ATTENDEE_FAILURE = "GET_ATTENDEE_FAILURE"
@@ -187,6 +203,25 @@ export function getAttendee(attendeeIdx: number) {
       {type: GET_ATTENDEE_REQUEST},
       {type: GET_ATTENDEE_SUCCESS, meta: {attendeeIdx}},
       {type: GET_ATTENDEE_FAILURE, meta: {attendeeIdx}},
+    ],
+  })
+}
+
+export const INSTANTIATE_ATTENDEE_TRIPS_REQUEST =
+  "INSTANTIATE_ATTENDEE_TRIPS_REQUEST"
+export const INSTANTIATE_ATTENDEE_TRIPS_SUCCESS =
+  "INSTANTIATE_ATTENDEE_TRIPS_SUCCESS"
+export const INSTANTIATE_ATTENDEE_TRIPS_FAILURE =
+  "INSTANTIATE_ATTENDEE_TRIPS_FAILURE"
+export function instantiateAttendeeTrips(attendeeIdx: number) {
+  let endpoint = `/v1.0/attendees/${attendeeIdx}/travel/instantiate`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    types: [
+      {type: INSTANTIATE_ATTENDEE_TRIPS_REQUEST},
+      {type: INSTANTIATE_ATTENDEE_TRIPS_SUCCESS, meta: {attendeeIdx}},
+      {type: INSTANTIATE_ATTENDEE_TRIPS_FAILURE, meta: {attendeeIdx}},
     ],
   })
 }

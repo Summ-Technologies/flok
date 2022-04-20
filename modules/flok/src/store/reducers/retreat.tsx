@@ -21,6 +21,8 @@ import {
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
   GET_TRIPS_SUCCESS,
+  GET_TRIP_SUCCESS,
+  INSTANTIATE_ATTENDEE_TRIPS_SUCCESS,
   PATCH_ATTENDEE_SUCCESS,
   PATCH_ATTENDEE_TRAVEL_SUCCESS,
   PATCH_TRIP_SUCCESS,
@@ -134,11 +136,34 @@ export default function retreatReducer(
       }
       return state
     case PATCH_TRIP_SUCCESS:
+    case GET_TRIP_SUCCESS:
       payload = (action as ApiAction).payload as TripApiResponse
       if (payload) {
         state.trips = {
           ...state.trips,
           [payload.trip.id]: payload.trip,
+        }
+      }
+      return state
+    case INSTANTIATE_ATTENDEE_TRIPS_SUCCESS:
+      payload = (action as ApiAction).payload as AttendeeApiResponse
+      if (payload) {
+        state.attendees = {
+          ...state.attendees,
+          [payload.attendee.id]: payload.attendee,
+        }
+        if (
+          payload &&
+          payload.attendee.travel?.arr_trip?.id &&
+          payload.attendee.travel?.dep_trip?.id
+        ) {
+          state.trips = {
+            ...state.trips,
+            [payload.attendee.travel?.arr_trip.id]:
+              payload.attendee.travel?.arr_trip,
+            [payload.attendee.travel?.dep_trip.id]:
+              payload.attendee.travel?.dep_trip,
+          }
         }
       }
       return state

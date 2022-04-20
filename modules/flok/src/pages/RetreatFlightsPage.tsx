@@ -17,7 +17,7 @@ import PageSidenav from "../components/page/PageSidenav"
 import {SampleLockedAttendees} from "../models/retreat"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
-import {getTrips} from "../store/actions/retreat"
+import {getTrip} from "../store/actions/retreat"
 import {useRetreatAttendees} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -89,14 +89,23 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   }
 
   let dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(getTrips())
-  }, [dispatch])
-
   let trips = useSelector((state: RootState) => {
     return state.retreat.trips
   })
-  console.log(trips)
+  useEffect(() => {
+    attendeeTravelInfo?.forEach((attendee) => {
+      if (
+        attendee.travel &&
+        attendee.travel.arr_trip?.id &&
+        attendee.travel.dep_trip?.id
+      ) {
+        !trips[attendee.travel.arr_trip?.id] &&
+          dispatch(getTrip(attendee.travel.arr_trip?.id))
+        !trips[attendee.travel.dep_trip?.id] &&
+          dispatch(getTrip(attendee.travel.dep_trip?.id))
+      }
+    })
+  }, [dispatch, attendeeTravelInfo, trips])
 
   return (
     <PageContainer>
@@ -240,7 +249,8 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                       arrival:
                         attendee.travel &&
                         attendee.travel.arr_trip &&
-                        attendee.travel.arr_trip.trip_legs.length
+                        attendee.travel.arr_trip.trip_legs.length &&
+                        trips[attendee.travel.arr_trip.id]
                           ? trips[attendee.travel.arr_trip.id].trip_legs[
                               trips[attendee.travel.arr_trip.id].trip_legs
                                 .length - 1
@@ -249,6 +259,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                       departure:
                         attendee.travel &&
                         attendee.travel.dep_trip &&
+                        trips[attendee.travel.dep_trip.id] &&
                         trips[attendee.travel.dep_trip.id].trip_legs.length
                           ? trips[attendee.travel.dep_trip.id].trip_legs[0]
                               .dep_datetime

@@ -25,7 +25,7 @@ import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
-import {getAttendee, getTrips, patchAttendee} from "../store/actions/retreat"
+import {getAttendee, patchAttendee} from "../store/actions/retreat"
 import {FlokTheme} from "../theme"
 import {useQuery} from "../utils"
 import {useRetreat} from "./misc/RetreatProvider"
@@ -86,7 +86,7 @@ let useStyles = makeStyles((theme) => ({
   tabs: {
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
-    minWidth: "100px",
+    minWidth: "175px",
   },
   tab: {
     paddingLeft: theme.spacing(2),
@@ -140,9 +140,6 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       return state.retreat.attendees[attendeeIdx]
     }
   })
-  useEffect(() => {
-    dispatch(getTrips())
-  }, [dispatch])
 
   useEffect(() => {
     !attendee && dispatch(getAttendee(attendeeIdx))
@@ -402,7 +399,12 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
             show={tabValue === "flights"}
             className={`${classes.tab} ${classes.fullPageTab}`}
             renderDom="on-shown">
-            <AttendeeFlightTab flights={attendee?.travel} attendee={attendee} />
+            {attendee && (
+              <AttendeeFlightTab
+                flights={attendee?.travel}
+                attendee={attendee}
+              />
+            )}
           </AppTabPanel>
         </div>
       </PageBody>

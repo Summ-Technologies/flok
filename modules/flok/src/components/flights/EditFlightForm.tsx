@@ -1,7 +1,15 @@
 import {IconButton, makeStyles, TextField} from "@material-ui/core"
 import {ArrowForward, Delete} from "@material-ui/icons"
+import {RetreatTripLeg} from "../../models/retreat"
 
-function EditFlightForm(props: any) {
+type EditFlightFormProps = {
+  idPrefix: string
+  formik: any
+  flightLegValues: RetreatTripLeg
+  index: number
+}
+
+function EditFlightForm(props: EditFlightFormProps) {
   let {idPrefix, formik, flightLegValues, index} = props
 
   let useTripStyles = makeStyles((theme) => ({
@@ -34,7 +42,9 @@ function EditFlightForm(props: any) {
   let classes = useTripStyles(props)
   function handleDelete() {
     formik.setFieldValue("trip_legs", [
-      ...formik.values.trip_legs.filter((leg: any, i: number) => i !== index),
+      ...formik.values.trip_legs.filter(
+        (leg: RetreatTripLeg, i: number) => i !== index
+      ),
     ])
   }
   return (
@@ -42,6 +52,7 @@ function EditFlightForm(props: any) {
       <div className={classes.tripLegRow}>
         <TextField
           {...textFieldProps}
+          required
           id={`${idPrefix}.dep_airport`}
           value={flightLegValues.dep_airport}
           label="Departing Airport"
@@ -49,6 +60,7 @@ function EditFlightForm(props: any) {
         <ArrowForward />
         <TextField
           {...textFieldProps}
+          required
           id={`${idPrefix}.arr_airport`}
           value={flightLegValues.arr_airport}
           label="Arriving Airport"
@@ -57,6 +69,7 @@ function EditFlightForm(props: any) {
       <div className={classes.tripLegRow}>
         <TextField
           {...textFieldProps}
+          required
           type="datetime-local"
           id={`${idPrefix}.dep_datetime`}
           value={flightLegValues.dep_datetime}
@@ -65,6 +78,7 @@ function EditFlightForm(props: any) {
         />
         <TextField
           {...textFieldProps}
+          required
           type="datetime-local"
           id={`${idPrefix}.arr_datetime`}
           value={flightLegValues.arr_datetime}
