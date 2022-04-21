@@ -51,7 +51,6 @@ type RetreatsTableProps = {
   rows: RetreatsTableRow[]
   onSelect: (id: number) => void
 }
-
 export default function RetreatsTable(props: RetreatsTableProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
