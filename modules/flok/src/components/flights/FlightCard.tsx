@@ -51,7 +51,6 @@ function FlightCard(props: FlightCardProps) {
             marginRight: "0",
             width: "fit-content",
           },
-          // whiteSpace: "nowrap",
         },
         rightColumn: {
           flexDirection: "column",
@@ -86,7 +85,6 @@ function FlightCard(props: FlightCardProps) {
           width: "2wv",
           [theme.breakpoints.down("sm")]: {
             marginLeft: theme.spacing(3),
-            // marginTop: theme.spacing(1),
           },
         },
         hidden: {
@@ -94,7 +92,6 @@ function FlightCard(props: FlightCardProps) {
         },
         twoColumns: {
           display: "flex",
-          // margin: "auto",
           [theme.breakpoints.down("sm")]: {
             flexDirection: "column",
             whiteSpace: "nowrap",
@@ -105,7 +102,7 @@ function FlightCard(props: FlightCardProps) {
           fontWeight: "bold",
         },
       }))
-    : //not overall below
+    : //not overall flight card styling below
       makeStyles((theme) => ({
         divCard: {
           display: "flex",
@@ -186,7 +183,6 @@ function FlightCard(props: FlightCardProps) {
         },
         twoColumns: {
           display: "flex",
-          // margin: "auto",
           [theme.breakpoints.down("sm")]: {
             flexDirection: "column",
             whiteSpace: "nowrap",
@@ -256,7 +252,6 @@ function FlightCard(props: FlightCardProps) {
         return "th"
     }
   }
-  //fix when fixed flight info
   let dep_datetime = new Date(flight.dep_datetime ?? 0)
   let arr_datetime = new Date(flight.arr_datetime ?? 0)
 
@@ -268,12 +263,8 @@ function FlightCard(props: FlightCardProps) {
           setShowFlights((showFlights: boolean) => !showFlights)
         }
       }}>
-      {/* <div className={classes.column}>
-        <Flight />
-      </div> */}
       {overall && (
         <div className={classes.totalFlightsColumn}>
-          {/* <Avatar className={classes.totalFlights}>{overall}</Avatar> */}
           <Flight />
         </div>
       )}
