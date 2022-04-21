@@ -195,6 +195,8 @@ export type RetreatAttendeeModel = {
   notes: string
   info_status: string
   flight_status: "PENDING" | "OPT_OUT" | "BOOKED"
+  hotel_check_in?: Date
+  hotel_check_out?: Date
 }
 
 export const SampleLockedAttendees = [
@@ -206,6 +208,7 @@ export const SampleLockedAttendees = [
     notes: "Says they are vegan but not really",
     city: "New York",
     flight_status: "BOOKED",
+    hotel_check_in: new Date(),
     travel: {
       id: 1,
       cost: 450,

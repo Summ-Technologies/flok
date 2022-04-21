@@ -125,7 +125,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 },
               },
               {
-                name: "Retreat Arrival",
+                name: "Flight Arrival",
                 colId: "arrival",
                 renderCell: (val) => (
                   <AppTypography>
@@ -136,7 +136,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 ),
               },
               {
-                name: "Retreat Departure",
+                name: "Flight Departure",
                 colId: "departure",
                 renderCell: (val) => (
                   <AppTypography>
