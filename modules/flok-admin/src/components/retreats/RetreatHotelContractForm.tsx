@@ -19,6 +19,12 @@ import {getHotelDetails, patchRetreatDetails} from "../../store/actions/admin"
 import AppWysiwygEditor from "../base/AppWysiwygEditor"
 import HotelSelectModal from "../lodging/HotelSelectModal"
 
+let WYSIWYG_SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
+  transformTags: {
+    a: sanitizeHtml.simpleTransform("a", {target: "_blank"}, true),
+  },
+}
+
 let useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.common.white,
@@ -124,7 +130,10 @@ export default function RetreatHotelContractForm(
         ? form.lodging_final_contract_url
         : undefined,
       lodging_final_contract_notes: form.lodging_final_contract_notes
-        ? sanitizeHtml(form.lodging_final_contract_notes)
+        ? sanitizeHtml(
+            form.lodging_final_contract_notes,
+            WYSIWYG_SANITIZE_OPTIONS
+          )
         : undefined,
     }
   }

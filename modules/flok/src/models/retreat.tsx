@@ -94,7 +94,7 @@ export const OrderedRetreatItineraryState = [
   "NOT_STARTED",
   "IN_PROGRESS",
 ] as const
-export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
+export type RetreatItineraryState = typeof OrderedRetreatItineraryState[number]
 /****************** End retreat states types ******************/
 
 export type RetreatToTaskState = "TODO" | "COMPLETED" | "HIDDEN"
@@ -107,6 +107,7 @@ export type RetreatToTask = {
   title: string
   description?: string
   link?: string
+  is_flok_task?: boolean
 }
 export type RetreatModel = {
   id: number
@@ -142,6 +143,10 @@ export type RetreatModel = {
 
   // Retreat data related to itinerary
   itinerary_state?: RetreatItineraryState
+
+  // Other documents
+  faq_link: string
+  budget_link: string
 
   tasks_todo: RetreatToTask[]
   tasks_completed: RetreatToTask[]

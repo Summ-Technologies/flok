@@ -77,12 +77,14 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
   let formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      itinerary_first_draft_link: retreat?.itinerary_first_draft_link ?? "",
+      // itinerary_first_draft_link: retreat?.itinerary_first_draft_link ?? "",
       itinerary_final_draft_link: retreat?.itinerary_final_draft_link ?? "",
+      budget_link: retreat?.budget_link ?? "",
     },
     validationSchema: yup.object({
-      itinerary_first_draft_link: yup.string().url("Please enter a valid URL"),
+      // itinerary_first_draft_link: yup.string().url("Please enter a valid URL"),
       itinerary_final_draft_link: yup.string().url("Please enter a valid URL"),
+      budget_link: yup.string().url("Please enter a valid URL"),
     }),
     onSubmit: (values) => {
       retreat && dispatch(patchRetreatDetails(retreat.id, values))
@@ -118,21 +120,28 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
         {retreat && <RetreatStateTitle retreat={retreat} type="itinerary" />}
         <form className={classes.root} onSubmit={formik.handleSubmit}>
           <Typography className={classes.header} variant="h4">
-            Retreat Itinerary Draft Links
+            Retreat Itinerary Link
           </Typography>
-          <TextField
+          {/* <TextField
             {...commonTextFieldProps}
             id="itinerary_first_draft_link"
             {...getTextFieldErrorProps(formik, "itinerary_first_draft_link")}
             value={formik.values.itinerary_first_draft_link}
             label="Itinerary first draft link"
-          />
+          /> */}
           <TextField
             {...commonTextFieldProps}
             {...getTextFieldErrorProps(formik, "itinerary_final_draft_link")}
             id="itinerary_final_draft_link"
             value={formik.values.itinerary_final_draft_link}
-            label="Itinerary final draft link"
+            label="Itinerary document link"
+          />
+          <TextField
+            {...commonTextFieldProps}
+            {...getTextFieldErrorProps(formik, "budget_link")}
+            id="budget_link"
+            value={formik.values.budget_link}
+            label="Budget link"
           />
 
           <div className={classes.footer}>

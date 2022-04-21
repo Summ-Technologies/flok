@@ -12,6 +12,7 @@ import {useState} from "react"
 import ReactMarkdown from "react-markdown"
 import {RetreatToTask} from "../../models/retreat"
 import {parseRetreatTask} from "../../utils/retreatUtils"
+import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppTypography from "../base/AppTypography"
 
 const dateFormatShort = (date: Date) =>
@@ -50,6 +51,9 @@ let useItemStyles = makeStyles((theme) => ({
     maxWidth: 200,
     marginBottom: 12,
   },
+  chip: {
+    marginLeft: theme.spacing(1),
+  },
 }))
 
 function TodoListItem(props: {
@@ -65,6 +69,16 @@ function TodoListItem(props: {
     setExpanded(!expanded)
   }
 
+  function getExtraLinkProps(url: string) {
+    if (url.startsWith("http")) {
+      return {
+        target: "_blank",
+      }
+    } else {
+      return {}
+    }
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.summary}>
@@ -74,9 +88,27 @@ function TodoListItem(props: {
           onClick={() => props.handleCheckboxClick(task)}
           color="default"
         />
-        <AppTypography className={classes.title}>
-          {task.link ? <Link href={task.link}>{task.title}</Link> : task.title}
+        <AppTypography
+          className={classes.title}
+          fontWeight={expanded ? "bold" : "regular"}>
+          {task.link ? (
+            <Link href={task.link} {...getExtraLinkProps(task.link)}>
+              {task.title}
+            </Link>
+          ) : (
+            task.title
+          )}
         </AppTypography>
+        {task.is_flok_task && (
+          <Chip
+            className={classes.chip}
+            label={
+              <>
+                Flok Task{" "}
+                <AppMoreInfoIcon tooltipText="Don't worry about completing this task. We'll handle it for you, and mark the item as completed when we're finished" />
+              </>
+            }></Chip>
+        )}
         <div style={{flexGrow: 1}}></div>
         {task.due_date ? (
           <Chip
@@ -115,10 +147,7 @@ function TodoListItem(props: {
           ) : (
             <></>
           )}
-          <AppTypography fontWeight="bold" style={{lineHeight: "2em"}}>
-            {task.title}
-          </AppTypography>
-          <ReactMarkdown>
+          <ReactMarkdown linkTarget="_blank">
             {task.description ? task.description : ""}
           </ReactMarkdown>
         </div>

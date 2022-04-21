@@ -185,14 +185,9 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
 
   return (
     <PageContainer>
-      <PageSidenav
-        activeItem="attendees"
-        retreatIdx={retreatIdx}
-        companyName={retreat?.company_name}
-      />
+      <PageSidenav activeItem="attendees" retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.section}>
-          <Typography variant="h1">Attendees</Typography>
           {retreat.attendees_state !== "REGISTRATION_OPEN" && (
             <PageLockedModal pageDesc="This page will be unlocked when attendee registration opens" />
           )}
