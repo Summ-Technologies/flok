@@ -158,23 +158,6 @@ export function getRetreatAttendees(retreatId: number) {
   })
 }
 
-export const GET_TRIPS_REQUEST = "GET_TRIPS_REQUEST"
-export const GET_TRIPS_SUCCESS = "GET_TRIPS_SUCCESS"
-export const GET_TRIPS_FAILURE = "GET_TRIPS_FAILURE"
-
-export function getTrips() {
-  let endpoint = "/v1.0/trips"
-  return createApiAction({
-    method: "GET",
-    endpoint,
-    types: [
-      {type: GET_TRIPS_REQUEST},
-      {type: GET_TRIPS_SUCCESS},
-      {type: GET_TRIPS_FAILURE},
-    ],
-  })
-}
-
 export const GET_TRIP_REQUEST = "GET_TRIP_REQUEST"
 export const GET_TRIP_SUCCESS = "GET_TRIP_SUCCESS"
 export const GET_TRIP_FAILURE = "GET_TRIP_FAILURE"

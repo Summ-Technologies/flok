@@ -19,9 +19,7 @@ export type RetreatAttendeesApiResponse = {
 export type AttendeeApiResponse = {
   attendee: RetreatAttendeeModel
 }
-export type TripsApiResponse = {
-  trips: RetreatTripModel[]
-}
+
 export type TripApiResponse = {
   trip: RetreatTripModel
 }
