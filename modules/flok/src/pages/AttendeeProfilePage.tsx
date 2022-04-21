@@ -185,11 +185,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
   }
   return (
     <PageContainer>
-      <PageSidenav
-        activeItem="attendees"
-        retreatIdx={retreatIdx}
-        companyName={retreat?.company_name}
-      />
+      <PageSidenav activeItem="attendees" retreatIdx={retreatIdx} />
 
       <PageBody appBar>
         <Prompt

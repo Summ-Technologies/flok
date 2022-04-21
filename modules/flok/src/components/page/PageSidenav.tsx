@@ -127,7 +127,7 @@ export default function PageSidenav(props: PageSidenavProps) {
     Pick<RetreatModel, "company_name" | "id"> | undefined
   >(undefined)
   useEffect(() => {
-    if (user && user.retreats.length > props.retreatIdx) {
+    if (user && user.retreats && user.retreats.length > props.retreatIdx) {
       setRetreat(user.retreats[props.retreatIdx])
     }
   }, [props.retreatIdx, user])
