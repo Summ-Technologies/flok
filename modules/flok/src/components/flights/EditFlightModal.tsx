@@ -98,7 +98,6 @@ function EditFlightModal(props: EditFlightModalProps) {
         return leg
       })
       setOpen(false)
-      //Here we should check if flights exist and if not instantiate it, unless we are going to always start a person with an empty travel object
       dispatch(patchTrip(flights.id, {trip_legs: updatedValues}))
       setSelectedFlight(100)
     },
@@ -113,7 +112,7 @@ function EditFlightModal(props: EditFlightModalProps) {
           {formik.values.trip_legs?.map((leg: RetreatTripLeg, i: number) => {
             if (i === selectedFlight) {
               return (
-                <>
+                <div key={i}>
                   <hr className={classes.line}></hr>
 
                   <EditFlightForm
@@ -124,11 +123,11 @@ function EditFlightModal(props: EditFlightModalProps) {
                   />
 
                   <hr className={classes.line}></hr>
-                </>
+                </div>
               )
             }
             return (
-              <div className={classes.cardLine}>
+              <div className={classes.cardLine} key={i}>
                 <FlightCard flight={leg} />
                 <Button
                   variant="contained"

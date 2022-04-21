@@ -251,16 +251,22 @@ export const PATCH_TRIP_SUCCESS = "PATCH_TRIP_SUCCESS"
 export const PATCH_TRIP_FAILURE = "PATCH_TRIP_FAILURE"
 export function patchTrip(tripIdx: number, values: Partial<RetreatTripModel>) {
   let endpoint = `/v1.0/trips/${tripIdx}`
-  return createApiAction({
-    method: "PATCH",
-    endpoint,
-    body: JSON.stringify(values),
-    types: [
-      {type: PATCH_TRIP_REQUEST},
-      {type: PATCH_TRIP_SUCCESS, meta: {tripIdx}},
-      {type: PATCH_TRIP_FAILURE, meta: {tripIdx}},
-    ],
-  })
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: PATCH_TRIP_REQUEST},
+        {type: PATCH_TRIP_SUCCESS, meta: {tripIdx}},
+        {type: PATCH_TRIP_FAILURE, meta: {tripIdx}},
+      ],
+    },
+    {
+      successMessage: "Successfully updated",
+      errorMessage: "Something went wrong",
+    }
+  )
 }
 
 export const PATCH_ATTENDEE_TRAVEL_REQUEST = "PATCH_ATTENDEE_TRAVEL_REQUEST"

@@ -230,7 +230,6 @@ export default function AppExpandableTable<T>(
   props: AppExpandableTableProps<T>
 ) {
   let classes = useTableStyles()
-  let dispatch = useDispatch()
 
   let [order, setOrder] = useState<"asc" | "desc">("desc")
   let [orderBy, setOrderBy] = useState<String>("")

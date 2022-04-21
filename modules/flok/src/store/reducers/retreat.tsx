@@ -4,7 +4,6 @@ import {
   AttendeeApiResponse,
   RetreatAttendeesApiResponse,
   TripApiResponse,
-  TripsApiResponse,
 } from "../../models/api"
 import {
   RetreatAttendeeModel,
@@ -20,7 +19,6 @@ import {
   GET_RETREAT_BY_GUID_SUCCESS,
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
-  GET_TRIPS_SUCCESS,
   GET_TRIP_SUCCESS,
   INSTANTIATE_ATTENDEE_TRIPS_SUCCESS,
   PATCH_ATTENDEE_SUCCESS,
@@ -60,7 +58,7 @@ export default function retreatReducer(
   action: Action
 ): RetreatState {
   var payload
-  var retreatId: number, retreat: RetreatModel, attendeeId: number
+  var retreatId: number, retreat: RetreatModel
   switch (action.type) {
     case GET_RETREAT_BY_GUID_SUCCESS: // TODO, remove once dashboard release
     case GET_RETREAT_SUCCESS:
@@ -124,17 +122,6 @@ export default function retreatReducer(
       }
       return state
 
-    case GET_TRIPS_SUCCESS:
-      payload = (action as ApiAction).payload as TripsApiResponse
-      if (payload) {
-        state.trips = payload.trips.reduce(
-          (last: any, curr: RetreatTripModel) => {
-            return {...last, [curr.id]: curr}
-          },
-          {}
-        )
-      }
-      return state
     case PATCH_TRIP_SUCCESS:
     case GET_TRIP_SUCCESS:
       payload = (action as ApiAction).payload as TripApiResponse

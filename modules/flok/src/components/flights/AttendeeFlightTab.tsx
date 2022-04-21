@@ -59,11 +59,10 @@ function AttendeeFlightTab(props: AttendeeFlightTabProps) {
     headerLine: {
       display: "flex",
       justifyContent: "space-between",
-      marginRight: "15vw",
+      alignItems: "center",
+      // marginRight: "15vw",
     },
-    editButton: {
-      height: "40px",
-    },
+    editButton: {},
     noFlightsWords: {
       paddingLeft: theme.spacing(3),
     },

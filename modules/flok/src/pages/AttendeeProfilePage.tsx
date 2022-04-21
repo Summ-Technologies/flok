@@ -45,10 +45,9 @@ let useStyles = makeStyles((theme) => ({
     backgroundColor: "orange",
     height: "12vh",
     width: "12vh",
-    minHeight: "65px",
-    minWidth: "65px",
+    minHeight: "50px",
+    minWidth: "50px",
     textAlign: "center",
-    paddingLeft: "0 !important",
   },
   avatarDiv: {
     display: "flex",
@@ -63,7 +62,7 @@ let useStyles = makeStyles((theme) => ({
     alignItems: "center",
     backgroundColor: "white",
     padding: theme.spacing(2),
-    borderRadius: "5px",
+    borderRadius: theme.shape.borderRadius,
     marginLeft: theme.spacing(2),
     [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(2),
@@ -108,7 +107,7 @@ type AttendeesProfileProps = RouteComponentProps<{
 function AttendeeProfilePage(props: AttendeesProfileProps) {
   let dispatch = useDispatch()
   let [tabQuery, setTabQuery] = useQuery("tab")
-  let [tabValue, setTabValue] = useState<string | undefined>(undefined)
+  let [tabValue, setTabValue] = useState<string | undefined | number>(0)
   useEffect(() => {
     const TABS = ["profile", "flights"]
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "profile")

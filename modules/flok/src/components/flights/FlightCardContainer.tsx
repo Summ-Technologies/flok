@@ -1,11 +1,15 @@
 import {makeStyles} from "@material-ui/core"
 import {useState} from "react"
+import {RetreatTripLeg, RetreatTripModel} from "../../models/retreat"
 import FlightCard from "./FlightCard"
 
-function FlightCardContainer(props: any) {
+type FlightCardContainerProps = {
+  flights: RetreatTripModel
+}
+function FlightCardContainer(props: FlightCardContainerProps) {
   let {flights} = props
 
-  let totalFlights = flights?.trip_legs.length
+  let totalFlights: number | undefined = flights?.trip_legs.length
 
   let useStyles = makeStyles((theme) => ({
     subFlights: {
@@ -19,29 +23,29 @@ function FlightCardContainer(props: any) {
   let classes = useStyles()
   const [showFlights, setShowFlights] = useState(false)
 
-  let earliestFlight = {
+  let earliestFlight: Partial<RetreatTripLeg> = {
     airline: "Jet Blue",
     arr_airport: "JFK",
     arr_datetime: "2222-04-15T16:45:00",
     dep_airport: "LAX",
     dep_datetime: "2222-04-15T10:45:00",
-    duration: null,
+    duration: undefined,
     flight_num: "12345",
   }
-  let latestFlight = {
+  let latestFlight: Partial<RetreatTripLeg> = {
     airline: "Jet Blue",
     arr_airport: "JFK",
     arr_datetime: "2000-04-15T16:45:00",
     dep_airport: "LAX",
     dep_datetime: "2000-04-15T10:45:00",
-    duration: null,
+    duration: undefined,
     flight_num: "12345",
   }
 
   for (let i = 0; i < flights.trip_legs.length; i++) {
-    let testEarliest = new Date(earliestFlight.dep_datetime)
-    let testCurrent = new Date(flights.trip_legs[i].dep_datetime)
-    let testLatest = new Date(latestFlight.dep_datetime)
+    let testEarliest = new Date(earliestFlight.dep_datetime ?? 0)
+    let testCurrent = new Date(flights.trip_legs[i].dep_datetime ?? 0)
+    let testLatest = new Date(latestFlight.dep_datetime ?? 0)
     if (testCurrent < testEarliest) {
       earliestFlight = flights.trip_legs[i]
     }
@@ -55,8 +59,8 @@ function FlightCardContainer(props: any) {
     arr_datetime: latestFlight.arr_datetime,
     dep_airport: earliestFlight.dep_airport,
     arr_airport: latestFlight.arr_airport,
-    duration: null,
-    flight_num: null,
+    duration: undefined,
+    flight_num: undefined,
   }
 
   return (
@@ -67,13 +71,12 @@ function FlightCardContainer(props: any) {
           <FlightCard
             flight={overallFlight}
             overall={totalFlights}
-            showFlights={showFlights}
             setShowFlights={setShowFlights}
           />
         )}
       </div>
 
-      {totalFlights > 1 && showFlights && (
+      {totalFlights && totalFlights > 1 && showFlights && (
         <div className={classes.subFlights}>
           {flights &&
             totalFlights > 1 &&
