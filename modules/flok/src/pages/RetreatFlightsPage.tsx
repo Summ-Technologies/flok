@@ -6,6 +6,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core"
+import _, {sortBy} from "lodash"
 import {useState} from "react"
 import {
   Link as RouterLink,
@@ -15,6 +16,7 @@ import {
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppMoreInfoIcon from "../components/base/AppMoreInfoIcon"
 import AppTypography from "../components/base/AppTypography"
+import ExportButton from "../components/base/ExportButton"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageLockedModal from "../components/page/PageLockedModal"
@@ -63,6 +65,16 @@ let useStyles = makeStyles((theme) => ({
   },
   searchBar: {
     margin: theme.spacing(1),
+    marginBottom: "0",
+  },
+  downloadButtonLink: {
+    textDecoration: "none",
+  },
+  downloadButton: {
+    marginLeft: theme.spacing(2),
+  },
+  titleDiv: {
+    display: "flex",
   },
 }))
 
@@ -93,6 +105,66 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   if (retreat.flights_state !== "BOOKING") {
     attendeeTravelInfo = SampleLockedAttendees
   }
+  let rows =
+    attendeeTravelInfo !== undefined
+      ? sortBy(attendeeTravelInfo, (attendee) => {
+          if (attendee.flight_status === "BOOKED") {
+            return 0
+          } else if (attendee.flight_status === "OPT_OUT") {
+            return 1
+          } else {
+            return 2
+          }
+        }).map((attendee) => ({
+          id: attendee.travel?.id ?? -1,
+          item: {
+            id: attendee.id ?? -1,
+            name: attendee.name,
+            arrival:
+              attendee.travel &&
+              attendee.travel.arr_trip &&
+              attendee.travel.arr_trip.trip_legs.length
+                ? attendee.travel.arr_trip.trip_legs[
+                    attendee.travel.arr_trip.trip_legs.length - 1
+                  ].arr_datetime
+                : undefined,
+            departure:
+              attendee.travel &&
+              attendee.travel.dep_trip &&
+              attendee.travel.dep_trip.trip_legs.length
+                ? attendee.travel.dep_trip.trip_legs[0].dep_datetime
+                : undefined,
+            cost: attendee.travel ? attendee.travel.cost : undefined,
+            status: attendee.flight_status ? attendee.flight_status : "PENDING",
+          },
+        }))
+      : []
+
+  function dateToRead(date: Date) {
+    let dateArray = date.toString().split(" ")
+    dateArray.splice(5)
+    dateArray[dateArray.length - 1] = dateArray[dateArray.length - 1].substring(
+      0,
+      5
+    )
+    return dateArray.join(" ")
+  }
+  let exportRows = rows.map((row) => {
+    let newDep = new Date(row.item.departure ?? 0)
+    let newArr = new Date(row.item.arrival ?? 0)
+    return {
+      ...row,
+      item: {
+        ...row.item,
+        departure: _.isEqual(newDep, new Date(0))
+          ? undefined
+          : dateToRead(newDep),
+        arrival: _.isEqual(newArr, new Date(0))
+          ? undefined
+          : dateToRead(newArr),
+      },
+    }
+  })
 
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -105,7 +177,16 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
             display="flex"
             justifyContent="space-between"
             alignItems="flex-end">
-            <Typography variant="h1">Flights</Typography>
+            <div className={classes.titleDiv}>
+              <Typography variant="h1">Flights</Typography>
+              {rows[0] && (
+                <ExportButton
+                  rows={exportRows}
+                  fileName="Retreat-Attendee-Flights"
+                />
+              )}
+            </div>
+
             {retreat.flights_state !== "BOOKING" && (
               <PageLockedModal pageDesc="This page will be unlocked when flight booking begins" />
             )}
@@ -130,6 +211,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
               setSearchTerm(e.target.value)
             }}
           />
+
           <AppExpandableTable
             headers={[
               {
@@ -259,7 +341,20 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 },
               },
             ]}
-            rows={}
+            rows={rows.filter((row) => {
+              for (let field in row.item) {
+                let fieldData = row.item[field as keyof typeof row.item]
+                if (
+                  row &&
+                  fieldData
+                    ?.toString()
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+                ) {
+                  return row
+                }
+              }
+            })}
           />
         </div>
       </PageBody>
