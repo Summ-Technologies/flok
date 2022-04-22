@@ -140,7 +140,6 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   let exportRows = rows.map((row) => {
     let newDep = new Date(row.item.departure ?? 0)
     let newArr = new Date(row.item.arrival ?? 0)
-    console.log(dateToRead(newDep))
     return {
       ...row,
       item: {
