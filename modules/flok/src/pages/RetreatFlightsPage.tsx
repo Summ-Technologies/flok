@@ -1,5 +1,12 @@
-import {Box, Chip, Link, makeStyles, Typography} from "@material-ui/core"
-import {sortBy} from "lodash"
+import {
+  Box,
+  Chip,
+  Link,
+  makeStyles,
+  TextField,
+  Typography,
+} from "@material-ui/core"
+import {useState} from "react"
 import {
   Link as RouterLink,
   RouteComponentProps,
@@ -54,6 +61,9 @@ let useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.error.main,
     color: theme.palette.error.main,
   },
+  searchBar: {
+    margin: theme.spacing(1),
+  },
 }))
 
 function currencyFormat(num: Number) {
@@ -84,6 +94,8 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
     attendeeTravelInfo = SampleLockedAttendees
   }
 
+  const [searchTerm, setSearchTerm] = useState("")
+
   return (
     <PageContainer>
       <PageSidenav activeItem="flights" retreatIdx={retreatIdx} />
@@ -107,6 +119,17 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
               Need to add an attendee?
             </Link>
           </Box>
+          <TextField
+            name="search"
+            label="Search Flights"
+            variant="outlined"
+            value={searchTerm}
+            className={classes.searchBar}
+            size="small"
+            onChange={(e) => {
+              setSearchTerm(e.target.value)
+            }}
+          />
           <AppExpandableTable
             headers={[
               {
@@ -236,43 +259,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 },
               },
             ]}
-            rows={
-              attendeeTravelInfo !== undefined
-                ? sortBy(attendeeTravelInfo, (attendee) => {
-                    if (attendee.flight_status === "BOOKED") {
-                      return 0
-                    } else if (attendee.flight_status === "OPT_OUT") {
-                      return 1
-                    } else {
-                      return 2
-                    }
-                  }).map((attendee) => ({
-                    id: attendee.travel?.id ?? -1,
-                    item: {
-                      id: attendee.travel?.id ?? -1,
-                      name: attendee.name,
-                      arrival:
-                        attendee.travel &&
-                        attendee.travel.arr_trip &&
-                        attendee.travel.arr_trip.trip_legs.length
-                          ? attendee.travel.arr_trip.trip_legs[
-                              attendee.travel.arr_trip.trip_legs.length - 1
-                            ].arr_datetime
-                          : undefined,
-                      departure:
-                        attendee.travel &&
-                        attendee.travel.dep_trip &&
-                        attendee.travel.dep_trip.trip_legs.length
-                          ? attendee.travel.dep_trip.trip_legs[0].dep_datetime
-                          : undefined,
-                      cost: attendee.travel ? attendee.travel.cost : undefined,
-                      status: attendee.flight_status
-                        ? attendee.flight_status
-                        : "PENDING",
-                    },
-                  }))
-                : []
-            }
+            rows={}
           />
         </div>
       </PageBody>
