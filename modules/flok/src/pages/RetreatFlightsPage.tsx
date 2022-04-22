@@ -127,6 +127,17 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
               {
                 name: "Retreat Arrival",
                 colId: "arrival",
+                comparator: (r1, r2) => {
+                  if (!r1.item.arrival) {
+                    return 1
+                  }
+                  if (!r2.item.arrival) {
+                    return -1
+                  }
+                  return new Date(r1.item.arrival) > new Date(r2.item.arrival)
+                    ? -1
+                    : 1
+                },
                 renderCell: (val) => (
                   <AppTypography>
                     {!isNaN(new Date(val as string).getTime())
@@ -138,6 +149,18 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
               {
                 name: "Retreat Departure",
                 colId: "departure",
+                comparator: (r1, r2) => {
+                  if (!r1.item.departure) {
+                    return 1
+                  }
+                  if (!r2.item.departure) {
+                    return -1
+                  }
+                  return new Date(r1.item.departure) >
+                    new Date(r2.item.departure)
+                    ? -1
+                    : 1
+                },
                 renderCell: (val) => (
                   <AppTypography>
                     {!isNaN(new Date(val as string).getTime())
@@ -149,6 +172,15 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
               {
                 name: "Cost",
                 colId: "cost",
+                comparator: (r1, r2) => {
+                  if (!r1.item.cost) {
+                    return 1
+                  }
+                  if (!r2.item.cost) {
+                    return -1
+                  }
+                  return r1.item.cost > r2.item.cost ? -1 : 1
+                },
                 renderCell: (val) => (
                   <AppTypography>
                     {val ? currencyFormat(val as number) : undefined}
