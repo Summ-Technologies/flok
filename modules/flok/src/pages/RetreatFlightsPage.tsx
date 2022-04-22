@@ -200,17 +200,19 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
               Need to add an attendee?
             </Link>
           </Box>
-          <TextField
-            name="search"
-            label="Search Flights"
-            variant="outlined"
-            value={searchTerm}
-            className={classes.searchBar}
-            size="small"
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-            }}
-          />
+          <Box>
+            <TextField
+              name="search"
+              label="Search Flights"
+              variant="outlined"
+              value={searchTerm}
+              className={classes.searchBar}
+              size="small"
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+              }}
+            />
+          </Box>
 
           <AppExpandableTable
             headers={[

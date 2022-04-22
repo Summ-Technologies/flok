@@ -268,17 +268,19 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
               )
             </Link>
           </Box>
-          <TextField
-            name="search"
-            label="Search Attendees"
-            variant="outlined"
-            value={searchTerm}
-            className={classes.searchBar}
-            size="small"
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-            }}
-          />
+          <Box>
+            <TextField
+              name="search"
+              label="Search Attendees"
+              variant="outlined"
+              value={searchTerm}
+              className={classes.searchBar}
+              size="small"
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+              }}
+            />
+          </Box>
 
           <AppExpandableTable
             headers={[
