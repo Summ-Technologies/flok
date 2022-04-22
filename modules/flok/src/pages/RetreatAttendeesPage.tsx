@@ -27,6 +27,7 @@ import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
+import ExportButton from "../components/base/ExportButton"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageLockedModal from "../components/page/PageLockedModal"
@@ -122,6 +123,9 @@ let useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
   },
+  titleDiv: {
+    display: "flex",
+  },
 }))
 
 type RetreatAttendeesProps = RouteComponentProps<{retreatIdx: string}>
@@ -142,9 +146,56 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     email: false,
   })
 
+  let rows =
+    attendeeTravelInfo !== undefined
+      ? attendeeTravelInfo
+          .filter((attendee) => attendee.info_status !== "NOT_ATTENDING")
+          .sort((a, b) => {
+            let getVal = (val: RetreatAttendeeModel) => {
+              switch (val.info_status) {
+                case "INFO_ENTERED":
+                  return 1
+                default:
+                  return 0
+              }
+            }
+            return getVal(b) - getVal(a)
+          })
+          .map((info: RetreatAttendeeModel) => ({
+            id: info.id,
+            disabled: !info.info_status.endsWith("INFO_ENTERED"),
+            tooltip: !info.info_status.endsWith("INFO_ENTERED")
+              ? "Once the attendee fills out the registration form you will be able to view more of their information here."
+              : "",
+            item: info,
+          }))
+      : []
+  let exportRows = rows.map((row) => {
+    let newRow = {
+      ...row,
+      item: {
+        ...row.item,
+        dietary_prefs: row.item.dietary_prefs?.replaceAll(",", " | "),
+        id: row.id,
+      },
+    }
+    delete newRow.item.travel
+    return newRow
+  })
   if (retreat.attendees_state !== "REGISTRATION_OPEN") {
     attendeeTravelInfo = SampleLockedAttendees
   }
+
+  exportRows = exportRows.map((row) => {
+    let rowsOrder = {
+      id: null,
+      name: null,
+    }
+    return {
+      ...row,
+      item: Object.assign(rowsOrder, row.item),
+    }
+  })
 
   const [openNotAttendingModel, setOpenNotAttendingModel] = useState(false)
 
@@ -193,7 +244,10 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
             display="flex"
             justifyContent="space-between"
             alignItems="flex-end">
-            <Typography variant="h1">Attendees</Typography>
+            <div className={classes.titleDiv}>
+              <Typography variant="h1">Attendees</Typography>
+              <ExportButton rows={exportRows} fileName="Retreat-Attendees" />
+            </div>
             <Link
               variant="body1"
               underline="always"
@@ -276,33 +330,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                 },
               },
             ]}
-            rows={
-              attendeeTravelInfo !== undefined
-                ? attendeeTravelInfo
-                    .filter(
-                      (attendee) => attendee.info_status !== "NOT_ATTENDING"
-                    )
-                    .sort((a, b) => {
-                      let getVal = (val: RetreatAttendeeModel) => {
-                        switch (val.info_status) {
-                          case "INFO_ENTERED":
-                            return 1
-                          default:
-                            return 0
-                        }
-                      }
-                      return getVal(b) - getVal(a)
-                    })
-                    .map((info: RetreatAttendeeModel) => ({
-                      id: info.id,
-                      disabled: !info.info_status.endsWith("INFO_ENTERED"),
-                      tooltip: !info.info_status.endsWith("INFO_ENTERED")
-                        ? "Once the attendee fills out the registration form you will be able to view more of their information here."
-                        : "",
-                      item: info,
-                    }))
-                : []
-            }
+            rows={rows}
             rowDeleteCallback={(row) => {
               dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
             }}
