@@ -238,6 +238,8 @@ export function putRetreatTask(
         },
       ],
     },
-    {errorMessage: "Oops, something went wrong.", successMessage: "Success!"}
+    {
+      errorMessage: "Oops, something went wrong.",
+    }
   )
 }
