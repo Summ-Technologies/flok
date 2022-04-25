@@ -10,6 +10,13 @@ import _ from "lodash"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import * as yup from "yup"
+import {
+  OrderedRetreatAttendeesState,
+  OrderedRetreatFlightsState,
+  OrderedRetreatIntakeState,
+  OrderedRetreatItineraryState,
+  OrderedRetreatLodgingState,
+} from "../../models"
 import {RootState} from "../../store"
 import {getTask, patchTask} from "../../store/actions/admin"
 import {getTextFieldErrorProps} from "../../utils"
@@ -55,6 +62,11 @@ let useStyles = makeStyles((theme) => ({
   dropDown: {
     minWidth: "140px",
     marginBottom: theme.spacing(1.25),
+    marginRight: theme.spacing(1.25),
+  },
+  stateFields: {
+    display: "flex",
+    width: "100%",
   },
 }))
 
@@ -78,6 +90,13 @@ function TaskForm(props: TaskTableProps) {
       description: task?.description ?? "",
       link: task?.link ?? "",
       is_flok_task: task?.is_flok_task ?? false,
+      state_updates: {
+        intake_state: task?.state_updates?.intake_state,
+        lodging_state: task?.state_updates?.lodging_state,
+        attendees_state: task?.state_updates?.attendees_state,
+        flights_state: task?.state_updates?.flights_state,
+        itinerary_state: task?.state_updates?.itinerary_state,
+      },
     },
     validationSchema: yup.object({
       title: yup.string(),
@@ -139,7 +158,101 @@ function TaskForm(props: TaskTableProps) {
           value={formik.values.description}
           label="Description"
         />
-
+        <Typography className={classes.header} variant="h4">
+          Retreat Updates upon Completion
+        </Typography>
+        <div className={classes.stateFields}>
+          <TextField
+            className={classes.dropDown}
+            id="state_updates.intake_state"
+            label="Intake State"
+            select
+            SelectProps={{native: true}}
+            onChange={(e) =>
+              formik.setFieldValue(
+                "state_updates.intake_state",
+                e.target.value === "NO_UPDATE" ? undefined : e.target.value
+              )
+            }
+            value={formik.values.state_updates.intake_state ?? "NO_UPDATE"}>
+            <option value={"NO_UPDATE"}>NO_UPDATE</option>
+            {OrderedRetreatIntakeState.map((v) => (
+              <option value={v}>{v}</option>
+            ))}
+          </TextField>
+          <TextField
+            className={classes.dropDown}
+            id="state_updates.lodging_state"
+            label="Lodging State"
+            select
+            SelectProps={{native: true}}
+            onChange={(e) =>
+              formik.setFieldValue(
+                "state_updates.lodging_state",
+                e.target.value === "NO_UPDATE" ? undefined : e.target.value
+              )
+            }
+            value={formik.values.state_updates.lodging_state ?? "NO_UPDATE"}>
+            <option value={"NO_UPDATE"}>NO_UPDATE</option>
+            {OrderedRetreatLodgingState.map((v) => (
+              <option value={v}>{v}</option>
+            ))}
+          </TextField>
+          <TextField
+            className={classes.dropDown}
+            id="state_updates.attendees_state"
+            label="Attendees State"
+            select
+            SelectProps={{native: true}}
+            onChange={(e) =>
+              formik.setFieldValue(
+                "state_updates.attendees_state",
+                e.target.value === "NO_UPDATE" ? undefined : e.target.value
+              )
+            }
+            value={formik.values.state_updates.attendees_state ?? "NO_UPDATE"}>
+            <option value={"NO_UPDATE"}>NO_UPDATE</option>
+            {OrderedRetreatAttendeesState.map((v) => (
+              <option value={v}>{v}</option>
+            ))}
+          </TextField>
+          <TextField
+            className={classes.dropDown}
+            id="state_updates.flights_state"
+            label="Flights State"
+            select
+            SelectProps={{native: true}}
+            onChange={(e) =>
+              formik.setFieldValue(
+                "state_updates.flights_state",
+                e.target.value === "NO_UPDATE" ? undefined : e.target.value
+              )
+            }
+            value={formik.values.state_updates.flights_state ?? "NO_UPDATE"}>
+            <option value={"NO_UPDATE"}>NO_UPDATE</option>
+            {OrderedRetreatFlightsState.map((v) => (
+              <option value={v}>{v}</option>
+            ))}
+          </TextField>
+          <TextField
+            className={classes.dropDown}
+            id="state_updates.itinerary_state"
+            label="Itinerary State"
+            select
+            SelectProps={{native: true}}
+            onChange={(e) =>
+              formik.setFieldValue(
+                "state_updates.itinerary_state",
+                e.target.value === "NO_UPDATE" ? undefined : e.target.value
+              )
+            }
+            value={formik.values.state_updates.itinerary_state ?? "NO_UPDATE"}>
+            <option value={"NO_UPDATE"}>NO_UPDATE</option>
+            {OrderedRetreatItineraryState.map((v) => (
+              <option value={v}>{v}</option>
+            ))}
+          </TextField>
+        </div>
         <div className={classes.footer}>
           <Button
             variant="contained"

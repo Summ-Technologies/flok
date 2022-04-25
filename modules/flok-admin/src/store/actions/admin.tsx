@@ -675,7 +675,7 @@ export function patchTask(task_id: string, taskDetails: Partial<RetreatTask>) {
     endpoint,
     method: "PATCH",
     body: JSON.stringify(taskDetails, (key, value) =>
-      typeof value === "undefined" ? null : value
+      typeof value === "undefined" && !key.endsWith("_state") ? null : value
     ),
     types: [
       {type: PATCH_TASK_REQUEST, meta: {task_id}},
