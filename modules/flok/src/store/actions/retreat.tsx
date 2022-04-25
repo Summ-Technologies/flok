@@ -240,7 +240,6 @@ export function putRetreatTask(
     },
     {
       errorMessage: "Oops, something went wrong.",
-      successMessage: new_state !== "COMPLETED" ? "Success!" : undefined,
     }
   )
 }
