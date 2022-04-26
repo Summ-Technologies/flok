@@ -8,6 +8,7 @@ import DeprecatedProposalPage from "./pages/deprecated/DeprecatedProposalPage"
 import DeprecatedProposalsListPage from "./pages/deprecated/DeprecatedProposalsListPage"
 import DeprecatedRetreatPreferencesFormPage from "./pages/deprecated/DeprecatedRetreatPreferencesFormPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
+import LandingPageGenerator from "./pages/LandingPageGenerator"
 import LodgingPage from "./pages/LodgingPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import ProtectedRoute from "./pages/misc/ProtectedRoute"
@@ -44,6 +45,7 @@ export class AppRoutes {
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
+    LandingPageGenerator: "/r/:retreatIdx/landing",
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -69,7 +71,7 @@ export class AppRoutes {
 
 export default function Stack() {
   // TODO, remove once released dashboard
-  const DASHBOARD_RELEASE = false
+  const DASHBOARD_RELEASE = true
   if (!DASHBOARD_RELEASE) {
     return (
       <Switch>
@@ -140,6 +142,11 @@ export default function Stack() {
               path={AppRoutes.getPath("RetreatItineraryPage")}
               exact
               component={RetreatItineraryPage}
+            />
+            <ProtectedRoute
+              path={AppRoutes.getPath("LandingPageGenerator")}
+              exact
+              component={LandingPageGenerator}
             />
             <ProtectedRoute
               path={AppRoutes.getPath("LodgingPage")}
