@@ -270,6 +270,13 @@ export type RetreatTask = {
   description?: string
   link?: string
   is_flok_task: Boolean
+  state_updates?: {
+    intake_state?: RetreatIntakeState
+    lodging_state?: RetreatLodgingState
+    attendees_state?: RetreatAttendeesState
+    flights_state?: RetreatFlightsState
+    itinerary_state?: RetreatItineraryState
+  }
 }
 
 export type RetreatToTask = {
