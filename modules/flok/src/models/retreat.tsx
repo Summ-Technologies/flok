@@ -195,8 +195,8 @@ export type RetreatAttendeeModel = {
   notes: string
   info_status: string
   flight_status: "PENDING" | "OPT_OUT" | "BOOKED"
-  hotel_check_in?: Date
-  hotel_check_out?: Date
+  hotel_check_in?: string // iso date string
+  hotel_check_out?: string // iso date string
 }
 
 export const SampleLockedAttendees = [
