@@ -39,7 +39,8 @@ export class AppRoutes {
     SigninPage: "/login",
     PasswordResetPage: "/reset-password",
     NewRetreatFormPage: "/getting-started",
-    RetreatWebsite: "/retreats/:retreatName",
+    RetreatWebsiteHome: "/retreats/:retreatName",
+    RetreatWebsitePage: "/retreats/:retreatName/:pageName",
     RetreatHomePage: "/r/:retreatIdx",
     RetreatFlightsPage: "/r/:retreatIdx/flights",
     RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
@@ -186,11 +187,15 @@ export default function Stack() {
         component={NewRetreatFormPage}
       />
       <Route
-        path={AppRoutes.getPath("RetreatWebsite")}
+        path={AppRoutes.getPath("RetreatWebsiteHome")}
         exact
         component={RetreatWebsite}
       />
-
+      <Route
+        path={AppRoutes.getPath("RetreatWebsitePage")}
+        exact
+        component={RetreatWebsite}
+      />
       <Route path={"*"} component={NotFound404Page} />
     </Switch>
   )
