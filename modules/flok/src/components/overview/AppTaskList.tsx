@@ -178,6 +178,7 @@ export default function AppTodoList(props: {
   handleCheckboxClick: (task: RetreatToTask) => void
   orderBadge: boolean
   collapsed?: boolean
+  noComplete?: boolean
 }) {
   let classes = useListStyles(props)
   return (
@@ -194,7 +195,7 @@ export default function AppTodoList(props: {
             color="primary">
             <TodoListItem
               task={task}
-              disabled={i !== 0}
+              disabled={i !== 0 || !!props.noComplete}
               handleCheckboxClick={props.handleCheckboxClick}
             />
           </Badge>
