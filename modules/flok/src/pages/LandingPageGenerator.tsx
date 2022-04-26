@@ -106,7 +106,10 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
             //   },
             // }}
             editorState={editorState}
-            onEditorStateChange={setEditorState}
+            onEditorStateChange={(e) => {
+              setEditorState(e)
+              formik.handleChange(e)
+            }}
             wrapperStyle={wrapperStyle}
             editorStyle={editorStyle}
             toolbarStyle={toolbarStyle}
