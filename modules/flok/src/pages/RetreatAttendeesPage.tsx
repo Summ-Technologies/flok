@@ -77,14 +77,15 @@ function DietList(props: {prefString: string | undefined}) {
   return prefs[0]
 }
 
-function dateFormat(date: Date | undefined) {
+function dateFormat(date?: string) {
   if (date === undefined) {
     return ""
   }
   let dateFormatter = Intl.DateTimeFormat("en-US", {
     dateStyle: "short",
+    timeZone: "UTC",
   })
-  return dateFormatter.format(date)
+  return dateFormatter.format(new Date(date))
 }
 
 let useStyles = makeStyles((theme) => ({
@@ -243,9 +244,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                 colId: "hotel_check_in",
                 renderCell: (val) => (
                   <AppTypography>
-                    {!isNaN(new Date(val as string).getTime()) && val !== null
-                      ? dateFormat(new Date(val as string))
-                      : undefined}
+                    {val != null ? dateFormat(val as string) : undefined}
                   </AppTypography>
                 ),
               },
@@ -254,9 +253,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                 colId: "hotel_check_out",
                 renderCell: (val) => (
                   <AppTypography>
-                    {!isNaN(new Date(val as string).getTime()) && val !== null
-                      ? dateFormat(new Date(val as string))
-                      : undefined}
+                    {val != null ? dateFormat(val as string) : undefined}
                   </AppTypography>
                 ),
               },
