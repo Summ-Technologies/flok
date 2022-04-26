@@ -1,5 +1,6 @@
 import {
   Box,
+  Collapse,
   Drawer,
   Link,
   List,
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
   },
   paper: {
     width: DRAWER_WIDTH,
-    paddingTop: theme.spacing(4),
+    paddingTop: theme.spacing(3),
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
 
@@ -65,16 +66,36 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
   },
 }))
 
-let navItem = (title: string, Icon: SvgIconComponent, pageName: FlokPageName) =>
-  [title, <Icon fontSize="large" />, pageName] as const
-
-let navItems = {
-  overview: navItem("Overview", HomeRounded, "RetreatHomePage"),
-  lodging: navItem("Lodging", ApartmentRounded, "LodgingPage"),
-  attendees: navItem("Attendees", PeopleAlt, "RetreatAttendeesPage"),
-  flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
-  // itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
+type NavItem = {
+  title: string
+  icon: SvgIconComponent
+  pageName?: FlokPageName
+  subTabs?: {title: string; pageName: FlokPageName}[]
 }
+
+const navItems = {
+  overview: {
+    title: "Overview",
+    icon: HomeRounded,
+    pageName: "RetreatHomePage",
+  },
+  lodging: {
+    title: "Lodging",
+    icon: ApartmentRounded,
+    pageName: "RetreatHomePage",
+  },
+  attendees: {
+    title: "Attendees",
+    icon: PeopleAlt,
+    pageName: "RetreatAttendeesPage",
+  },
+  flights: {
+    title: "Flights",
+    icon: FlightRounded,
+    pageName: "RetreatFlightsPage",
+  },
+  // itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
+} as {[key: string]: NavItem}
 
 const SidebarContext = createContext<{
   sidebarOpen: boolean
@@ -108,6 +129,7 @@ type SidenavItemType = keyof typeof navItems
 type PageSidenavProps = {
   retreatIdx: number
   activeItem?: SidenavItemType
+  activeSubTabIndex?: number
 }
 export default function PageSidenav(props: PageSidenavProps) {
   let dispatch = useDispatch()
@@ -168,33 +190,76 @@ export default function PageSidenav(props: PageSidenavProps) {
         />
       </Box>
       <List>
-        {Object.keys(navItems).map((item, index) => {
-          let sidenavItem = item as SidenavItemType
-          const itemTup = navItems[sidenavItem]
+        {Object.keys(navItems).map((itemName, index) => {
+          let sidenavItemName = itemName as SidenavItemType
+          const item = navItems[sidenavItemName]
           return (
-            <ListItem
-              key={index}
-              button
-              selected={props.activeItem === sidenavItem}
-              onClick={() => {
-                let redirect = () =>
-                  dispatch(
-                    push(
-                      AppRoutes.getPath(itemTup[2], {
-                        retreatIdx: props.retreatIdx.toString(),
-                      })
-                    )
-                  )
-                if (sidebarOpen) {
-                  closeSidebar()
-                  setTimeout(redirect, TRANSITION_DURATION)
-                } else {
-                  redirect()
+            <>
+              <ListItem
+                key={index}
+                button
+                selected={
+                  props.activeItem === sidenavItemName && !!!item.subTabs
                 }
-              }}>
-              <ListItemIcon>{itemTup[1]}</ListItemIcon>
-              <ListItemText>{itemTup[0]}</ListItemText>
-            </ListItem>
+                onClick={() => {
+                  let redirect = () =>
+                    item.pageName &&
+                    dispatch(
+                      push(
+                        AppRoutes.getPath(item.pageName, {
+                          retreatIdx: props.retreatIdx.toString(),
+                        })
+                      )
+                    )
+                  if (sidebarOpen) {
+                    closeSidebar()
+                    setTimeout(redirect, TRANSITION_DURATION)
+                  } else {
+                    redirect()
+                  }
+                }}>
+                <ListItemIcon>{<item.icon fontSize="large" />}</ListItemIcon>
+                <ListItemText>{item.title}</ListItemText>
+              </ListItem>
+              {item.subTabs && item.subTabs.length > 0 && (
+                <Collapse
+                  in={props.activeItem === sidenavItemName}
+                  timeout="auto"
+                  unmountOnExit>
+                  <List component="div" disablePadding>
+                    {item.subTabs.map((subItem, subIdx) => (
+                      <ListItem
+                        key={subIdx}
+                        button
+                        selected={
+                          props.activeItem === sidenavItemName &&
+                          (props.activeSubTabIndex ?? 0) === subIdx
+                        }
+                        onClick={() => {
+                          let redirect = () =>
+                            subItem.pageName &&
+                            dispatch(
+                              push(
+                                AppRoutes.getPath(subItem.pageName, {
+                                  retreatIdx: props.retreatIdx.toString(),
+                                })
+                              )
+                            )
+                          if (sidebarOpen) {
+                            closeSidebar()
+                            setTimeout(redirect, TRANSITION_DURATION)
+                          } else {
+                            redirect()
+                          }
+                        }}>
+                        <ListItemIcon></ListItemIcon>
+                        <ListItemText>{subItem.title}</ListItemText>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Collapse>
+              )}
+            </>
           )
         })}
         <ListItem
