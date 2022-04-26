@@ -18,6 +18,7 @@ import AppTodoList from "../components/overview/AppTaskList"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+import config, {MAX_TASKS} from "../config"
 import {
   OrderedRetreatAttendeesState,
   OrderedRetreatFlightsState,
@@ -191,10 +192,10 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
 
   let [todoTasksCollapsed, setTodoTasksCollapsed] = useState(true)
   let [completedTasksCollapsed, setCompletedTasksCollapsed] = useState(true)
-  const MAX_TASKS_SHOWN = 0
-  // parseInt(config.get(MAX_TASKS)) > 0
-  //   ? parseInt(config.get(MAX_TASKS))
-  //   : undefined
+  const MAX_TASKS_SHOWN =
+    parseInt(config.get(MAX_TASKS)) > 0
+      ? parseInt(config.get(MAX_TASKS))
+      : undefined
   let [todoTasks, setTodoTasks] = useState<RetreatToTask[]>([])
   let [todoTasksExtra, setTodoTasksExtra] = useState<RetreatToTask[]>([])
 
