@@ -277,14 +277,15 @@ export const POST_RETREAT_ATTENDEES_SUCCESS = "POST_RETREAT_ATTENDEES_SUCCESS"
 export const POST_RETREAT_ATTENDEES_FAILURE = "POST_RETREAT_ATTENDEES_FAILURE"
 export function postRetreatAttendees(
   retreatId: number,
-  name: string,
+  first_name: string,
+  last_name: string,
   email_address: string
 ) {
   let endpoint = `/v1.0/retreats/${retreatId}/attendees`
   return createApiAction({
     method: "POST",
     endpoint,
-    body: JSON.stringify({name, email_address}),
+    body: JSON.stringify({first_name, last_name, email_address}),
     types: [
       {
         type: POST_RETREAT_ATTENDEES_REQUEST,
@@ -357,6 +358,8 @@ export function putRetreatTask(
         },
       ],
     },
-    {errorMessage: "Oops, something went wrong.", successMessage: "Success!"}
+    {
+      errorMessage: "Oops, something went wrong.",
+    }
   )
 }

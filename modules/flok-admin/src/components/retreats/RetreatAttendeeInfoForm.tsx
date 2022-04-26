@@ -71,11 +71,14 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
   let formik = useFormik({
     initialValues: {
       email_address: props.attendee.email_address,
-      name: props.attendee.name,
+      first_name: props.attendee.first_name,
+      last_name: props.attendee.last_name,
       city: props.attendee.city,
       notes: props.attendee.notes,
       dietary_prefs: props.attendee.dietary_prefs,
       info_status: props.attendee.info_status,
+      hotel_check_in: props.attendee.hotel_check_in,
+      hotel_check_out: props.attendee.hotel_check_out,
     },
     onSubmit: (values) => {
       dispatch(
@@ -119,8 +122,14 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
         <TextField
           {...textFieldProps}
           id="name"
-          value={formik.values.name ?? ""}
-          label="Name"
+          value={formik.values.first_name ?? ""}
+          label="First Name"
+        />
+        <TextField
+          {...textFieldProps}
+          id="name"
+          value={formik.values.last_name ?? ""}
+          label="Last Name"
         />
         <TextField
           {...textFieldProps}
@@ -137,14 +146,6 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
           value={formik.values.city ?? ""}
           label="City"
         />
-      </Paper>
-      <Paper elevation={0} className={classes.formGroup}>
-        <AppTypography variant="h4">
-          Attendee info{" "}
-          <Typography variant="body2" component="span">
-            (cont.)
-          </Typography>
-        </AppTypography>
         <Autocomplete
           multiple
           id="preferences_dates_flexible_months"
@@ -213,16 +214,14 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
             )
           }}
         />
-        <TextField
-          {...textFieldProps}
-          id="notes"
-          value={formik.values.notes ?? ""}
-          label="Other Notes"
-          placeholder="Enter other notes on the attendee"
-          multiline
-          minRows={2}
-          maxRows={4}
-        />
+      </Paper>
+      <Paper elevation={0} className={classes.formGroup}>
+        <AppTypography variant="h4">
+          Attendee info{" "}
+          <Typography variant="body2" component="span">
+            (cont.)
+          </Typography>
+        </AppTypography>
         <TextField
           {...textFieldProps}
           id="info_status"
@@ -236,6 +235,30 @@ export function RetreatAttendeeInfoForm(props: RetreatAttendeeInfoFormProps) {
             </option>
           ))}
         </TextField>
+        <TextField
+          {...textFieldProps}
+          id="hotel_check_in"
+          value={formik.values.hotel_check_in ?? ""}
+          type="date"
+          label="Hotel Check In"
+        />
+        <TextField
+          {...textFieldProps}
+          id="hotel_check_out"
+          value={formik.values.hotel_check_out ?? ""}
+          type="date"
+          label="Hotel Check Out"
+        />
+        <TextField
+          {...textFieldProps}
+          id="notes"
+          value={formik.values.notes ?? ""}
+          label="Other Notes"
+          placeholder="Enter other notes on the attendee"
+          multiline
+          minRows={2}
+          maxRows={4}
+        />
       </Paper>
       <Box display="flex" justifyContent="flex-end" width="100%">
         <Button

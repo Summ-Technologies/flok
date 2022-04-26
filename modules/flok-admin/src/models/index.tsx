@@ -230,13 +230,16 @@ export type AdminRetreatTravelModel = {
 export type AdminRetreatAttendeeModel = {
   id: number
   email_address: string
-  name: string | null
+  first_name: string | null
+  last_name: string | null
   travel: AdminRetreatTravelModel | null
   city: string | null
   dietary_prefs: string | null
   notes: string | null
   info_status: RetreatAttendeeInfoStatusType
   flight_status: RetreatAttendeeFlightStatusType
+  hotel_check_in?: string // iso date string
+  hotel_check_out?: string // iso date string
 }
 
 export type AdminRetreatAttendeeUpdateModel = Partial<AdminRetreatAttendeeModel>
@@ -267,6 +270,13 @@ export type RetreatTask = {
   description?: string
   link?: string
   is_flok_task: Boolean
+  state_updates?: {
+    intake_state?: RetreatIntakeState
+    lodging_state?: RetreatLodgingState
+    attendees_state?: RetreatAttendeesState
+    flights_state?: RetreatFlightsState
+    itinerary_state?: RetreatItineraryState
+  }
 }
 
 export type RetreatToTask = {

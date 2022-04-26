@@ -133,22 +133,37 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
           <AppExpandableTable
             headers={[
               {
-                name: "Employee",
-                colId: "name",
+                name: "Last Name",
+                colId: "last_name",
                 comparator: (r1, r2) => {
-                  if (!r1.item.name) {
+                  if (r1.item.last_name === "") {
                     return -1
                   }
-                  if (!r2.item.name) {
+                  if (r2.item.last_name === "") {
                     return 1
                   }
-                  return r1.item.name
+                  return r1.item.last_name
                     .toString()
-                    .localeCompare(r2.item.name.toString())
+                    .localeCompare(r2.item.last_name.toString())
                 },
               },
               {
-                name: "Retreat Arrival",
+                name: "First Name",
+                colId: "first_name",
+                comparator: (r1, r2) => {
+                  if (r1.item.first_name === "") {
+                    return -1
+                  }
+                  if (r2.item.first_name === "") {
+                    return 1
+                  }
+                  return r1.item.first_name
+                    .toString()
+                    .localeCompare(r2.item.first_name.toString())
+                },
+              },
+              {
+                name: "Flight Arrival",
                 colId: "arrival",
                 renderCell: (val) => (
                   <AppTypography>
@@ -159,7 +174,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 ),
               },
               {
-                name: "Retreat Departure",
+                name: "Flight Departure",
                 colId: "departure",
                 renderCell: (val) => (
                   <AppTypography>
@@ -241,7 +256,8 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                     id: attendee.travel?.id ?? -1,
                     item: {
                       id: attendee.travel?.id ?? -1,
-                      name: attendee.name,
+                      first_name: attendee.first_name ?? "",
+                      last_name: attendee.last_name ?? "",
                       arrival:
                         attendee.travel &&
                         attendee.travel.arr_trip &&

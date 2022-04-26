@@ -188,13 +188,16 @@ export type RetreatTravelModel = {
 export type RetreatAttendeeModel = {
   id: number
   email_address: string
-  name: string
+  first_name: string
+  last_name: string
   travel?: RetreatTravelModel
   city?: string
   dietary_prefs: string
   notes: string
   info_status: string
   flight_status: "PENDING" | "OPT_OUT" | "BOOKED"
+  hotel_check_in?: string // iso date string
+  hotel_check_out?: string // iso date string
 }
 
 export const SampleLockedAttendees = [
@@ -206,6 +209,8 @@ export const SampleLockedAttendees = [
     notes: "Says they are vegan but not really",
     city: "New York",
     flight_status: "BOOKED",
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
     travel: {
       id: 1,
       cost: 450,
@@ -256,12 +261,16 @@ export const SampleLockedAttendees = [
     city: "New York",
     flight_status: "OPT_OUT",
     email_address: "tp@123.com",
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
   },
   {
     dietary_prefs: "Paleo",
     info_status: "INFO_ADDED",
     name: "Jeremy Shockey",
     id: 1,
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
     travel: {
       id: 1,
       cost: 400,
@@ -355,8 +364,9 @@ export const SampleLockedAttendees = [
   },
   {
     dietary_prefs: "Kosher",
-    info_status: "NOT_ATTENDING",
-    name: "Plaxico Burress",
+    info_status: "CREATED",
+    first_name: "Plaxico",
+    last_name: "Burress",
     id: 1,
     travel: undefined,
     notes: "",
@@ -367,7 +377,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Paleo",
     info_status: "INFO_ADDED",
-    name: "Amani Toomer",
+    first_name: "Amani",
+    last_name: "Toomer",
     id: 1,
     travel: undefined,
     notes: "",
@@ -378,7 +389,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Vegan",
     info_status: "INFO_ENTERED",
-    name: "Ahmad Bradshaw",
+    first_name: "Ahmad",
+    last_name: "Bradshaw",
     id: 1,
     travel: undefined,
     notes: "Says they are vegan but not really",
@@ -389,7 +401,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Vegetarian",
     info_status: "CREATED",
-    name: "Brandon Jacobs",
+    first_name: "Brandon",
+    last_name: "Jacobs",
     id: 1,
     travel: undefined,
     notes: "",
@@ -400,7 +413,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Paleo",
     info_status: "INFO_ADDED",
-    name: "Mario Manningham",
+    first_name: "Mario",
+    last_name: "Manning",
     id: 1,
     travel: undefined,
     notes: "",
