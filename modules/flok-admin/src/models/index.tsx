@@ -238,6 +238,8 @@ export type AdminRetreatAttendeeModel = {
   notes: string | null
   info_status: RetreatAttendeeInfoStatusType
   flight_status: RetreatAttendeeFlightStatusType
+  hotel_check_in?: string // iso date string
+  hotel_check_out?: string // iso date string
 }
 
 export type AdminRetreatAttendeeUpdateModel = Partial<AdminRetreatAttendeeModel>

@@ -77,6 +77,17 @@ function DietList(props: {prefString: string | undefined}) {
   return prefs[0]
 }
 
+function dateFormat(date?: string) {
+  if (date === undefined) {
+    return ""
+  }
+  let dateFormatter = Intl.DateTimeFormat("en-US", {
+    dateStyle: "short",
+    timeZone: "UTC",
+  })
+  return dateFormatter.format(new Date(date))
+}
+
 let useStyles = makeStyles((theme) => ({
   section: {
     margin: theme.spacing(2),
@@ -244,25 +255,21 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
               },
               {name: "Email", colId: "email_address"},
               {
-                name: "Employee City",
-                colId: "city",
-                comparator: (r1, r2) => {
-                  if (r1.item.city == null) {
-                    return -1
-                  } else if (r2.item.city == null) {
-                    return 1
-                  } else {
-                    return r1.item.city.localeCompare(r2.item.city)
-                  }
-                },
+                name: "Retreat Arrival",
+                colId: "hotel_check_in",
+                renderCell: (val) => (
+                  <AppTypography>
+                    {val != null ? dateFormat(val as string) : undefined}
+                  </AppTypography>
+                ),
               },
               {
-                name: "Dietary Preferences",
-                colId: "dietary_prefs",
+                name: "Retreat Departure",
+                colId: "hotel_check_out",
                 renderCell: (val) => (
-                  <DietList
-                    prefString={val as RetreatAttendeeModel["dietary_prefs"]}
-                  />
+                  <AppTypography>
+                    {val != null ? dateFormat(val as string) : undefined}
+                  </AppTypography>
                 ),
               },
               {

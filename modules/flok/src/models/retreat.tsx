@@ -196,6 +196,8 @@ export type RetreatAttendeeModel = {
   notes: string
   info_status: string
   flight_status: "PENDING" | "OPT_OUT" | "BOOKED"
+  hotel_check_in?: string // iso date string
+  hotel_check_out?: string // iso date string
 }
 
 export const SampleLockedAttendees = [
@@ -207,6 +209,8 @@ export const SampleLockedAttendees = [
     notes: "Says they are vegan but not really",
     city: "New York",
     flight_status: "BOOKED",
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
     travel: {
       id: 1,
       cost: 450,
@@ -257,12 +261,16 @@ export const SampleLockedAttendees = [
     city: "New York",
     flight_status: "OPT_OUT",
     email_address: "tp@123.com",
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
   },
   {
     dietary_prefs: "Paleo",
     info_status: "INFO_ADDED",
     name: "Jeremy Shockey",
     id: 1,
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
     travel: {
       id: 1,
       cost: 400,
