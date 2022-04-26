@@ -103,9 +103,13 @@ function RetreatAttendeePage(props: RetreatAttendeePageProps) {
               Attendees
             </Link>
           )}
-          <AppTypography color="textPrimary">{attendee?.name}</AppTypography>
+          <AppTypography color="textPrimary">
+            {attendee?.first_name + " " + attendee?.last_name}
+          </AppTypography>
         </Breadcrumbs>
-        <Typography variant="h1">{attendee?.name}</Typography>
+        <Typography variant="h1">
+          {attendee?.first_name + " " + attendee?.last_name}
+        </Typography>
         {attendee && (
           <>
             <Tabs

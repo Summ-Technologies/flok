@@ -50,7 +50,8 @@ export default function NewRetreatAttendeeForm(
   let formik = useFormik({
     initialValues: {
       email_address: "",
-      name: "",
+      first_name: "",
+      last_name: "",
     },
     onSubmit: (values) => {
       async function postAttendee() {
@@ -85,9 +86,16 @@ export default function NewRetreatAttendeeForm(
         <AppTypography variant="h4">Create new attendee</AppTypography>
         <TextField
           {...textFieldProps}
-          id="name"
-          value={formik.values.name ?? ""}
-          label="Name"
+          id="first_name"
+          value={formik.values.first_name ?? ""}
+          label="First Name"
+          required
+        />
+        <TextField
+          {...textFieldProps}
+          id="last_name"
+          value={formik.values.last_name ?? ""}
+          label="Last Name"
           required
         />
         <TextField

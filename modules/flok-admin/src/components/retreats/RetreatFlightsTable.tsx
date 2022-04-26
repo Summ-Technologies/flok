@@ -58,8 +58,13 @@ function RetreatFlightsTable(props: {
     },
     {field: "id", headerName: "ID", width: 100},
     {
-      field: "name",
-      headerName: "Name",
+      field: "last_name",
+      headerName: "Last Name",
+      width: 200,
+    },
+    {
+      field: "first_name",
+      headerName: "First Name",
       width: 200,
     },
     {
@@ -121,7 +126,8 @@ function RetreatFlightsTable(props: {
   const rows = retreatAttendees.map((attendee) => {
     return {
       id: attendee.id,
-      name: attendee.name,
+      last_name: attendee.last_name,
+      first_name: attendee.first_name,
       email_address: attendee.email_address,
       flight_status: attendee.flight_status,
     }
