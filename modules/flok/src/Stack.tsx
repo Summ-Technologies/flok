@@ -21,6 +21,7 @@ import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatItineraryPage from "./pages/RetreatItineraryPage"
 import RetreatOverviewPage from "./pages/RetreatOverviewPage"
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
+import RetreatWebsite from "./pages/RetreatWebsite"
 
 export type FlokPageName = keyof typeof AppRoutes.pages
 
@@ -38,6 +39,7 @@ export class AppRoutes {
     SigninPage: "/login",
     PasswordResetPage: "/reset-password",
     NewRetreatFormPage: "/getting-started",
+    RetreatWebsite: "/retreats/:retreatName",
     RetreatHomePage: "/r/:retreatIdx",
     RetreatFlightsPage: "/r/:retreatIdx/flights",
     RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
@@ -182,6 +184,11 @@ export default function Stack() {
         path={AppRoutes.getPath("NewRetreatFormPage")}
         exact
         component={NewRetreatFormPage}
+      />
+      <Route
+        path={AppRoutes.getPath("RetreatWebsite")}
+        exact
+        component={RetreatWebsite}
       />
 
       <Route path={"*"} component={NotFound404Page} />
