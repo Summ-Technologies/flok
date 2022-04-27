@@ -23,6 +23,7 @@ import AppTabPanel from "../components/page/AppTabPanel"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+import {AttendeeInfoStatus} from "../models/retreat"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getAttendee, patchAttendee} from "../store/actions/retreat"
@@ -101,7 +102,7 @@ let useStyles = makeStyles((theme) => ({
 
 type AttendeesProfileProps = RouteComponentProps<{
   retreatIdx: string
-  attendeeIdx: string
+  attendeeId: string
 }>
 
 function AttendeeProfilePage(props: AttendeesProfileProps) {
@@ -124,7 +125,10 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
     "Vegan",
     "Kosher",
   ])
-  const RetreatAttendeeInfoStatusOptions = [
+  const RetreatAttendeeInfoStatusOptions: {
+    value: AttendeeInfoStatus
+    text: string
+  }[] = [
     {value: "CREATED", text: "Pending"},
     {value: "INFO_ENTERED", text: "Registered"},
     {value: "NOT_ATTENDING", text: "Not Attending"},
@@ -132,17 +136,17 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
 
   let classes = useStyles()
   let retreatIdx = parseInt(props.match.params.retreatIdx)
-  let attendeeIdx = parseInt(props.match.params.attendeeIdx)
+  let attendeeId = parseInt(props.match.params.attendeeId)
   let retreat = useRetreat()
   let attendee = useSelector((state: RootState) => {
-    if (attendeeIdx != null) {
-      return state.retreat.attendees[attendeeIdx]
+    if (attendeeId != null) {
+      return state.retreat.attendees[attendeeId]
     }
   })
 
   useEffect(() => {
-    !attendee && dispatch(getAttendee(attendeeIdx))
-  }, [attendeeIdx, attendee, dispatch])
+    !attendee && dispatch(getAttendee(attendeeId))
+  }, [attendeeId, attendee, dispatch])
   let formik = useFormik({
     initialValues: {
       email_address:
@@ -152,14 +156,15 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       notes: attendee && attendee.notes ? attendee.notes : "",
       dietary_prefs:
         attendee && attendee.dietary_prefs ? attendee.dietary_prefs : "",
-      info_status: attendee && attendee.info_status ? attendee.info_status : "",
+      info_status:
+        attendee && attendee.info_status ? attendee.info_status : "CREATED",
       hotel_check_in:
         attendee && attendee.hotel_check_in ? attendee.hotel_check_in : "",
       hotel_check_out:
         attendee && attendee.hotel_check_out ? attendee.hotel_check_out : "",
     },
     onSubmit: (values) => {
-      dispatch(patchAttendee(attendeeIdx, values))
+      dispatch(patchAttendee(attendeeId, values))
     },
     validate: (values) => {
       try {
@@ -171,6 +176,10 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
     },
     enableReinitialize: true,
   })
+  const alertUser = (e: any) => {
+    e.preventDefault()
+    e.returnValue = ""
+  }
 
   useEffect(() => {
     if (!_.isEqual(formik.values, formik.initialValues)) {
@@ -180,10 +189,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       }
     }
   }, [formik.values, formik.initialValues])
-  const alertUser = (e: any) => {
-    e.preventDefault()
-    e.returnValue = ""
-  }
+
   const textFieldProps: TextFieldProps = {
     fullWidth: true,
     InputLabelProps: {shrink: true},
@@ -415,12 +421,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
             show={tabValue === "flights"}
             className={`${classes.tab} ${classes.fullPageTab}`}
             renderDom="on-shown">
-            {attendee && (
-              <AttendeeFlightTab
-                flights={attendee?.travel}
-                attendee={attendee}
-              />
-            )}
+            {attendee && <AttendeeFlightTab attendee={attendee} />}
           </AppTabPanel>
         </div>
       </PageBody>

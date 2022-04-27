@@ -38,7 +38,8 @@ function FlightCard(props: FlightCardProps) {
             borderBottomRightRadius: theme.shape.borderRadius,
           },
           "&:not(:last-child)": {
-            borderBottom: "1.5px solid #BDBDBD",
+            borderBottomStyle: "2px solid",
+            borderBottomColor: theme.palette.grey[100],
           },
         },
         column: {
@@ -127,7 +128,9 @@ function FlightCard(props: FlightCardProps) {
             borderBottomRightRadius: theme.shape.borderRadius,
           },
           "&:not(:last-child)": {
-            borderBottom: "1.5px solid #BDBDBD",
+            borderBottomStyle: "solid",
+            borderBottomColor: theme.palette.grey[100],
+            borderBottomWidth: "2px",
           },
         },
         column: {

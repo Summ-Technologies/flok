@@ -45,7 +45,7 @@ export class AppRoutes {
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
-    AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeIdx",
+    AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",

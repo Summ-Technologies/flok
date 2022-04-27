@@ -182,7 +182,7 @@ export type RetreatTravelModel = {
   dep_trip?: RetreatTripModel
   arr_trip?: RetreatTripModel
 }
-
+export type AttendeeInfoStatus = "CREATED" | "INFO_ENTERED" | "NOT_ATTENDING"
 export type RetreatAttendeeModel = {
   id: number
   email_address: string
@@ -192,7 +192,7 @@ export type RetreatAttendeeModel = {
   city?: string
   dietary_prefs: string
   notes: string
-  info_status: string
+  info_status: AttendeeInfoStatus
   flight_status: "PENDING" | "OPT_OUT" | "BOOKED"
   hotel_check_in?: string | null // iso date string
   hotel_check_out?: string | null // iso date string
@@ -262,7 +262,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
   },
   {
     dietary_prefs: "Paleo",
-    info_status: "INFO_ADDED",
+    info_status: "INFO_ENTERED",
     first_name: "Jeremy",
     last_name: "Shockey",
     id: 1,
@@ -366,7 +366,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
   },
   {
     dietary_prefs: "Paleo",
-    info_status: "INFO_ADDED",
+    info_status: "INFO_ENTERED",
     first_name: "Amani",
     last_name: "Toomer",
     id: 1,
@@ -402,7 +402,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
   },
   {
     dietary_prefs: "Paleo",
-    info_status: "INFO_ADDED",
+    info_status: "INFO_ENTERED",
     first_name: "Mario",
     last_name: "Manning",
     id: 1,

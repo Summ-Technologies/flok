@@ -4,49 +4,43 @@ import {RetreatTripLeg} from "../../models/retreat"
 
 type EditFlightFormProps = {
   idPrefix: string
-  formik: any
   flightLegValues: RetreatTripLeg
   index: number
+  onFlightDelete: (idx: number) => void
+  textFieldProps: {
+    fullWidth: boolean
+    InputLabelProps: {shrink: boolean}
+    onChange: (ChangeEvent: any) => void
+  }
 }
 
-function EditFlightForm(props: EditFlightFormProps) {
-  let {idPrefix, formik, flightLegValues, index} = props
+let useTripStyles = makeStyles((theme) => ({
+  tripLegRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    "& > *": {
+      marginTop: theme.spacing(2),
+      marginLeft: theme.spacing(2),
+    },
+  },
+  tripLeg: {
+    borderBottomWidth: "2px",
+    borderBottomStyle: "solid",
+    borderBottomColor: theme.palette.primary.light,
+    paddingBottom: theme.spacing(2),
+  },
+  trashDiv: {
+    textAlign: "right",
+  },
+}))
 
-  let useTripStyles = makeStyles((theme) => ({
-    tripLegRow: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      width: "100%",
-      "& > *": {
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(2),
-      },
-    },
-    tripLeg: {
-      borderBottomWidth: "2px",
-      borderBottomStyle: "solid",
-      borderBottomColor: theme.palette.primary.light,
-      paddingBottom: theme.spacing(2),
-    },
-    trashDiv: {
-      textAlign: "right",
-    },
-  }))
-  const textFieldProps = {
-    fullWidth: true,
-    InputLabelProps: {shrink: true},
-    onChange: formik.handleChange,
-  }
+function EditFlightForm(props: EditFlightFormProps) {
+  let {idPrefix, flightLegValues, index, onFlightDelete, textFieldProps} = props
 
   let classes = useTripStyles(props)
-  function handleDelete() {
-    formik.setFieldValue("trip_legs", [
-      ...formik.values.trip_legs.filter(
-        (leg: RetreatTripLeg, i: number) => i !== index
-      ),
-    ])
-  }
+
   return (
     <div>
       <div className={classes.tripLegRow}>
@@ -101,7 +95,7 @@ function EditFlightForm(props: EditFlightFormProps) {
         />
       </div>
       <div className={classes.trashDiv}>
-        <IconButton onClick={handleDelete}>
+        <IconButton onClick={() => onFlightDelete(index)}>
           <Delete />
         </IconButton>
       </div>

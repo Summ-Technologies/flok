@@ -85,13 +85,8 @@ const useExpandableRowStyles = makeStyles({
 function ExpandableRow<T>(props: ExpandableRowProps<T>) {
   let classes = useExpandableRowStyles()
   let dispatch = useDispatch()
-  // let [open, setOpen] = useState(false)
-  const [anchorEl, setAnchorEl] = useState(null)
-  const open = Boolean(anchorEl)
-
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget)
-  }
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+  const menuOpen = Boolean(anchorEl)
 
   const handleClose = () => {
     setAnchorEl(null)
@@ -127,7 +122,7 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
                 id="fade-menu"
                 anchorEl={anchorEl}
                 keepMounted
-                open={open}
+                open={menuOpen}
                 onClose={handleClose}
                 TransitionComponent={Fade}>
                 <MenuItem
@@ -136,7 +131,7 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
                       push(
                         AppRoutes.getPath("AttendeeProfilePage", {
                           retreatIdx: "0",
-                          attendeeIdx: props.item.id.toString(),
+                          attendeeId: props.item.id.toString(),
                         })
                       )
                     )
@@ -155,7 +150,9 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
                 size="small"
                 aria-controls="fade-menu"
                 aria-haspopup="true"
-                onClick={handleClick}>
+                onClick={(event) => {
+                  setAnchorEl(event.currentTarget)
+                }}>
                 <MoreVert />
               </IconButton>
             </TableCell>
@@ -264,7 +261,6 @@ export default function AppExpandableTable<T>(
               <TableCell key={i}>
                 <div className={classes.headerCell}>
                   <AppTypography variant="h3">{h.name}</AppTypography>
-
                   {h.comparator ? (
                     <IconButton
                       size="small"

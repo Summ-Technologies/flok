@@ -146,10 +146,10 @@ export default function retreatReducer(
         ) {
           state.trips = {
             ...state.trips,
-            [payload.attendee.travel?.arr_trip.id]:
-              payload.attendee.travel?.arr_trip,
-            [payload.attendee.travel?.dep_trip.id]:
-              payload.attendee.travel?.dep_trip,
+            [payload.attendee.travel.arr_trip.id]:
+              payload.attendee.travel.arr_trip,
+            [payload.attendee.travel.dep_trip.id]:
+              payload.attendee.travel.dep_trip,
           }
         }
       }

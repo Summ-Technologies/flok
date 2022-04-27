@@ -1,46 +1,46 @@
 import {Button, makeStyles, Typography} from "@material-ui/core"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RetreatAttendeeModel, RetreatTravelModel} from "../../models/retreat"
+import {RetreatAttendeeModel} from "../../models/retreat"
 import {RootState} from "../../store"
 import {getTrip, instantiateAttendeeTrips} from "../../store/actions/retreat"
 import EditFlightModal from "./EditFlightModal"
 import FlightCardContainer from "./FlightCardContainer"
 
 type AttendeeFlightTabProps = {
-  flights: RetreatTravelModel | undefined
   attendee: RetreatAttendeeModel
 }
 
 function AttendeeFlightTab(props: AttendeeFlightTabProps) {
-  let {flights, attendee} = props
+  let {attendee} = props
+  let travel = attendee.travel
   let dispatch = useDispatch()
 
   let arrivalFlights = useSelector((state: RootState) => {
-    if (flights?.arr_trip && flights?.arr_trip.id) {
-      return state.retreat.trips[flights?.arr_trip.id]
+    if (travel?.arr_trip && travel?.arr_trip.id) {
+      return state.retreat.trips[travel?.arr_trip.id]
     }
   })
   let departureFlights = useSelector((state: RootState) => {
-    if (flights?.dep_trip && flights?.dep_trip.id) {
-      return state.retreat.trips[flights?.dep_trip.id]
+    if (travel?.dep_trip && travel?.dep_trip.id) {
+      return state.retreat.trips[travel?.dep_trip.id]
     }
   })
 
   useEffect(() => {
-    flights?.arr_trip &&
-      flights?.arr_trip.id &&
+    travel?.arr_trip &&
+      travel?.arr_trip.id &&
       !arrivalFlights &&
-      dispatch(getTrip(flights?.arr_trip.id))
-    flights?.dep_trip &&
-      flights?.dep_trip.id &&
+      dispatch(getTrip(travel?.arr_trip.id))
+    travel?.dep_trip &&
+      travel?.dep_trip.id &&
       !departureFlights &&
-      dispatch(getTrip(flights?.dep_trip.id))
+      dispatch(getTrip(travel?.dep_trip.id))
   }, [
     dispatch,
 
-    flights?.arr_trip,
-    flights?.dep_trip,
+    travel?.arr_trip,
+    travel?.dep_trip,
     arrivalFlights,
     departureFlights,
   ])

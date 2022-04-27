@@ -157,7 +157,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
     lastName: false,
     email: false,
   })
-
+  console.log(attendeeTravelInfo)
   if (retreat.attendees_state !== "REGISTRATION_OPEN") {
     attendeeTravelInfo = SampleLockedAttendees
   }
@@ -447,7 +447,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                                           "AttendeeProfilePage",
                                           {
                                             retreatIdx: "0",
-                                            attendeeIdx: attendee.id.toString(),
+                                            attendeeId: attendee.id.toString(),
                                           }
                                         )
                                       )

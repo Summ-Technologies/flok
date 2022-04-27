@@ -93,7 +93,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
     return state.retreat.trips
   })
   useEffect(() => {
-    attendeeTravelInfo?.forEach((attendee) => {
+    attendeeTravelInfo.forEach((attendee) => {
       if (
         attendee.travel &&
         attendee.travel.arr_trip?.id &&
@@ -136,11 +136,11 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 name: "Last Name",
                 colId: "last_name",
                 comparator: (r1, r2) => {
-                  if (r1.item.last_name === "") {
-                    return -1
-                  }
-                  if (r2.item.last_name === "") {
+                  if (r1.item.last_name === "" || !r1.item.last_name) {
                     return 1
+                  }
+                  if (r2.item.last_name === "" || !r2.item.last_name) {
+                    return -1
                   }
                   return r1.item.last_name
                     .toString()
@@ -151,11 +151,11 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 name: "First Name",
                 colId: "first_name",
                 comparator: (r1, r2) => {
-                  if (r1.item.first_name === "") {
-                    return -1
-                  }
-                  if (r2.item.first_name === "") {
+                  if (r1.item.first_name === "" || !r1.item.first_name) {
                     return 1
+                  }
+                  if (r2.item.first_name === "" || !r2.item.first_name) {
+                    return -1
                   }
                   return r1.item.first_name
                     .toString()
@@ -256,7 +256,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                     id: attendee.travel?.id ?? -1,
                     item: {
                       id: attendee.travel?.id ?? -1,
-                      first_name: attendee.first_name ?? "",
+                      first_name: attendee.first_name,
                       last_name: attendee.last_name ?? "",
                       arrival:
                         attendee.travel &&

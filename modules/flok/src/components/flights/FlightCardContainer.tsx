@@ -66,7 +66,6 @@ function FlightCardContainer(props: FlightCardContainerProps) {
   return (
     <div>
       <div className={classes.overall}>
-        {" "}
         {flights && (
           <FlightCard
             flight={overallFlight}
