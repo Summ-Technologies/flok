@@ -217,6 +217,12 @@ export function patchAttendee(
   values: Partial<RetreatAttendeeModel>
 ) {
   let endpoint = `/v1.0/attendees/${attendeeIdx}`
+  if (values.hotel_check_in === "") {
+    values.hotel_check_in = null
+  }
+  if (values.hotel_check_out === "") {
+    values.hotel_check_out = null
+  }
   return createApiAction({
     method: "PATCH",
     endpoint,

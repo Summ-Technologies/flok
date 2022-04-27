@@ -96,7 +96,7 @@ function AttendeeFlightTab(props: AttendeeFlightTabProps) {
       )}
       {attendee && (
         <Typography variant="h3" className={classes.header}>
-          {attendee.name}'s Flights
+          {attendee.first_name + " " + attendee.last_name}'s Flights
         </Typography>
       )}
       {arrivalFlights ? (

@@ -13,7 +13,9 @@ export function useRetreatAttendees(retreatId: number) {
   let attendeesObject = useSelector((state: RootState) => {
     return state.retreat.attendees
   })
-  let attendees = attendeesList?.map((id) => attendeesObject[id])
+  let attendees = (attendeesList ? attendeesList : []).map(
+    (id) => attendeesObject[id]
+  )
   let [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -22,10 +24,10 @@ export function useRetreatAttendees(retreatId: number) {
       dispatch(getRetreatAttendees(retreatId))
       setLoading(false)
     }
-    if (!attendees) {
+    if (!attendeesList) {
       loadAttendees()
     }
-  }, [attendees, dispatch, retreatId])
+  }, [attendeesList, dispatch, retreatId])
   return [attendees, loading] as const
 }
 

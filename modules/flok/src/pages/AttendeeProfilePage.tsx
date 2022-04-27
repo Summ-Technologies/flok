@@ -145,12 +145,18 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
   }, [attendeeIdx, attendee, dispatch])
   let formik = useFormik({
     initialValues: {
-      email_address: attendee ? attendee.email_address : "",
-      name: attendee ? attendee.name : "",
-      city: attendee ? attendee.city : "",
-      notes: attendee ? attendee.notes : "",
-      dietary_prefs: attendee ? attendee.dietary_prefs : "",
-      info_status: attendee ? attendee.info_status : "",
+      email_address:
+        attendee && attendee.email_address ? attendee.email_address : "",
+      first_name: attendee && attendee.first_name ? attendee.first_name : "",
+      last_name: attendee && attendee.last_name ? attendee.last_name : "",
+      notes: attendee && attendee.notes ? attendee.notes : "",
+      dietary_prefs:
+        attendee && attendee.dietary_prefs ? attendee.dietary_prefs : "",
+      info_status: attendee && attendee.info_status ? attendee.info_status : "",
+      hotel_check_in:
+        attendee && attendee.hotel_check_in ? attendee.hotel_check_in : "",
+      hotel_check_out:
+        attendee && attendee.hotel_check_out ? attendee.hotel_check_out : "",
     },
     onSubmit: (values) => {
       dispatch(patchAttendee(attendeeIdx, values))
@@ -242,11 +248,10 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
               <form className={classes.form} onSubmit={formik.handleSubmit}>
                 <Avatar className={classes.avatar}>
                   <div className={classes.avatarDiv}>
-                    {attendee
-                      ? attendee?.name.split(" ")[0][0] +
-                        attendee?.name.split(" ")[
-                          attendee?.name.split(" ").length - 1
-                        ][0]
+                    {attendee?.first_name
+                      ? `${attendee.first_name[0]}${
+                          attendee.last_name ? attendee.last_name[0] : ""
+                        }`
                       : null}
                   </div>
                 </Avatar>
@@ -264,14 +269,21 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
                     </option>
                   ))}
                 </TextField>
-
                 <TextField
                   {...textFieldProps}
                   className={classes.textField}
                   variant="outlined"
-                  label="Name"
-                  value={formik.values.name ?? ""}
-                  id="name"
+                  label="First Name"
+                  value={formik.values.first_name ?? ""}
+                  id="first_name"
+                />
+                <TextField
+                  {...textFieldProps}
+                  className={classes.textField}
+                  variant="outlined"
+                  label="Last Name"
+                  value={formik.values.last_name ?? ""}
+                  id="last_name"
                 />
                 <TextField
                   {...textFieldProps}
@@ -280,14 +292,23 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
                   label="Email"
                   value={formik.values.email_address ?? ""}
                 />
-
                 <TextField
                   {...textFieldProps}
+                  type="date"
                   className={classes.textField}
                   variant="outlined"
-                  label="City"
-                  id="city"
-                  value={formik.values.city ?? ""}
+                  label="Hotel check out"
+                  id="hotel_check_in"
+                  value={formik.values.hotel_check_in ?? ""}
+                />
+                <TextField
+                  {...textFieldProps}
+                  type="date"
+                  className={classes.textField}
+                  variant="outlined"
+                  label="Hotel check in"
+                  id="hotel_check_out"
+                  value={formik.values.hotel_check_out ?? ""}
                 />
                 <Autocomplete
                   fullWidth
