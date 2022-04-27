@@ -1,5 +1,6 @@
 import {makeStyles, Typography, useMediaQuery} from "@material-ui/core"
 import {ExpandMore, Flight} from "@material-ui/icons"
+import clsx from "clsx"
 import {RetreatTripLeg} from "../../models/retreat"
 import {FlokTheme} from "../../theme"
 
@@ -16,6 +17,7 @@ function FlightCard(props: FlightCardProps) {
     ? makeStyles((theme) => ({
         divCard: {
           display: "flex",
+          cursor: "pointer",
           paddingTop: theme.spacing(2.5),
           paddingBottom: theme.spacing(1.5),
           backgroundColor: "white",
@@ -324,11 +326,10 @@ function FlightCard(props: FlightCardProps) {
 
       <div className={classes.expandColumn}>
         {" "}
-        {overall && overall > 1 ? (
-          <ExpandMore fontSize="large" />
-        ) : (
-          <ExpandMore className={classes.hidden} fontSize="large" />
-        )}
+        <ExpandMore
+          className={clsx(overall && overall > 1 ? undefined : classes.hidden)}
+          fontSize="large"
+        />
       </div>
     </div>
   )

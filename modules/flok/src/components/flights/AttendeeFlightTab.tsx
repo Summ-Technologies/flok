@@ -47,6 +47,7 @@ function AttendeeFlightTab(props: AttendeeFlightTabProps) {
   let useStyles = makeStyles((theme) => ({
     flightCardContainer: {
       marginLeft: theme.spacing(2),
+      cursor: "auto",
     },
     tripHeader: {
       marginLeft: theme.spacing(1),
