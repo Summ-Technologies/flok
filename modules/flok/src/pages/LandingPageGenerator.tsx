@@ -29,7 +29,6 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
 
   let [tabQuery, setTabQuery] = useQuery("tab")
   let [tabValue, setTabValue] = useState<string | undefined | number>("Home")
-  const TABS = ["profile", "flights"]
 
   const [newPageTitle, setNewPageTitle] = useState("")
 
@@ -67,7 +66,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   useEffect(() => {
     let TABS = formik.values.pages.map((page) => page.title)
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "Home")
-  }, [tabQuery, setTabValue])
+  }, [tabQuery, setTabValue, formik.values.pages])
 
   // let testHTML = draftToHtml(convertToRaw(editorState.getCurrentContent()))
   let useStyles = makeStyles((theme) => ({
@@ -105,14 +104,16 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   const classes = useStyles()
 
   function handleAdd() {
-    formik.setFieldValue("pages", [
-      ...formik.values.pages,
-      {
-        title: newPageTitle,
-        chunks: [EditorState.createEmpty()],
-      },
-    ])
-    setNewPageTitle("")
+    if (!formik.values.pages.map((page) => page.title).includes(newPageTitle)) {
+      formik.setFieldValue("pages", [
+        ...formik.values.pages,
+        {
+          title: newPageTitle,
+          chunks: [EditorState.createEmpty()],
+        },
+      ])
+      setNewPageTitle("")
+    }
   }
   return (
     <PageContainer>
