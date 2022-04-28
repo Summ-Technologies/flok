@@ -1,6 +1,7 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
 import AuthResetPage from "./pages/auth/AuthResetPage"
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
 import DeprecatedHomeRoutingPage from "./pages/deprecated/DeprecatedHomeRoutingPage"
 import DeprecatedNewRetreatFormPage from "./pages/deprecated/DeprecatedNewRetreatFormPage"
@@ -35,6 +36,7 @@ export class AppRoutes {
     ...AppRoutes.deprecatedPages,
     HomeRoutingPage: "/",
     SigninPage: "/login",
+    ForgotPasswordPage: "/forgot-password",
     PasswordResetPage: "/reset-password",
     NewRetreatFormPage: "/getting-started",
     RetreatHomePage: "/r/:retreatIdx",
@@ -165,6 +167,11 @@ export default function Stack() {
         path={AppRoutes.getPath("PasswordResetPage")}
         exact
         component={AuthResetPage}
+      />
+      <Route
+        path={AppRoutes.getPath("ForgotPasswordPage")}
+        exact
+        component={ForgotPasswordPage}
       />
       <ProtectedRoute
         path={AppRoutes.getPath("RetreatPreferencesFormPage")}
