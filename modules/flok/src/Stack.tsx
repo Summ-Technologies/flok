@@ -14,6 +14,7 @@ import ProtectedRoute from "./pages/misc/ProtectedRoute"
 import RedirectPage from "./pages/misc/RedirectPage"
 import RetreatProvider from "./pages/misc/RetreatProvider"
 import NewRetreatFormPage from "./pages/NewRetreatFormPage"
+import PretripPage from "./pages/PretripPage"
 import ProposalPage from "./pages/ProposalPage"
 import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatFlightsPage from "./pages/RetreatFlightsPage"
@@ -44,6 +45,7 @@ export class AppRoutes {
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
+    PretripPage: "/r/:retreatIdx/pretrip",
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -69,7 +71,7 @@ export class AppRoutes {
 
 export default function Stack() {
   // TODO, remove once released dashboard
-  const DASHBOARD_RELEASE = false
+  const DASHBOARD_RELEASE = true
   if (!DASHBOARD_RELEASE) {
     return (
       <Switch>
@@ -150,6 +152,11 @@ export default function Stack() {
               path={AppRoutes.getPath("ProposalPage")}
               exact
               component={ProposalPage}
+            />
+            <ProtectedRoute
+              path={AppRoutes.getPath("PretripPage")}
+              exact
+              component={PretripPage}
             />
           </RetreatProvider>
         )}
