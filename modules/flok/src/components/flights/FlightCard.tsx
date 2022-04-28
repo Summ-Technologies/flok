@@ -7,256 +7,134 @@ import {FlokTheme} from "../../theme"
 type FlightCardProps = {
   flight: Partial<RetreatTripLeg>
   showFlights?: boolean
-  setShowFlights?: React.Dispatch<React.SetStateAction<boolean>>
+  setShowFlights?: (value: boolean) => void
   overall?: number
 }
-function FlightCard(props: FlightCardProps) {
-  let {flight, setShowFlights, overall} = props
 
-  let useStyles = overall
-    ? makeStyles((theme) => ({
-        divCard: {
-          display: "flex",
-          cursor: "pointer",
-          paddingTop: theme.spacing(2.5),
-          paddingBottom: theme.spacing(1.5),
-          backgroundColor: "white",
-          minWidth: "220px",
-          [theme.breakpoints.down("sm")]: {
-            width: "100%",
-            gap: theme.spacing(2),
-          },
-          justifyContent: "space-around",
-          width: "fit-content",
-          overflow: "scroll",
-          paddingLeft: theme.spacing(1),
-          paddingRight: theme.spacing(1),
-          "&:first-child": {
-            borderTopLeftRadius: theme.shape.borderRadius,
-            borderTopRightRadius: theme.shape.borderRadius,
-          },
-          "&:last-child": {
-            borderBottomLeftRadius: theme.shape.borderRadius,
-            borderBottomRightRadius: theme.shape.borderRadius,
-          },
-          "&:not(:last-child)": {
-            borderBottomStyle: "2px solid",
-            borderBottomColor: theme.palette.grey[100],
-          },
-        },
-        column: {
-          flexDirection: "column",
-          marginLeft: theme.spacing(1),
-          marginRight: theme.spacing(1),
-          width: "8vw",
-          [theme.breakpoints.down("sm")]: {
-            marginLeft: "0",
-            marginRight: "0",
-            width: "fit-content",
-          },
-        },
-        rightColumn: {
-          flexDirection: "column",
-          marginLeft: theme.spacing(3),
-          [theme.breakpoints.down("sm")]: {
-            marginLeft: "0",
-          },
-          width: "8vw",
-        },
-        line: {
-          width: "100%",
-          border: "3.5px solid",
-          borderColor: theme.palette.primary.main,
-          backgroundColor: theme.palette.primary.main,
-          borderRadius: "3px",
-          [theme.breakpoints.down("sm")]: {
-            marginTop: theme.spacing(2),
-          },
-        },
-        totalFlights: {
-          width: "30px",
-          height: "30px",
-        },
-        totalFlightsColumn: {
-          width: "4vw",
-          [theme.breakpoints.down("sm")]: {
-            marginTop: theme.spacing(1),
-            marginRight: theme.spacing(3),
-          },
-        },
-        expandColumn: {
-          width: "2wv",
-          [theme.breakpoints.down("sm")]: {
-            marginLeft: theme.spacing(3),
-          },
-        },
-        hidden: {
-          opacity: "0",
-        },
-        twoColumns: {
-          display: "flex",
-          [theme.breakpoints.down("sm")]: {
-            flexDirection: "column",
-            whiteSpace: "nowrap",
-          },
-          gap: theme.spacing(1),
-        },
-        bold: {
-          fontWeight: "bold",
-        },
-      }))
-    : //not overall flight card styling below
-      makeStyles((theme) => ({
-        divCard: {
-          display: "flex",
-          paddingTop: theme.spacing(2.5),
-          paddingBottom: theme.spacing(1.5),
-          backgroundColor: "white",
-          minWidth: "220px",
-          [theme.breakpoints.down("sm")]: {
-            width: "100%",
-          },
-          justifyContent: "space-around",
-          width: "fit-content",
-          overflow: "scroll",
-          paddingLeft: theme.spacing(1),
-          paddingRight: theme.spacing(1),
-          "&:first-child": {
-            borderTopLeftRadius: theme.shape.borderRadius,
-            borderTopRightRadius: theme.shape.borderRadius,
-          },
-          "&:last-child": {
-            borderBottomLeftRadius: theme.shape.borderRadius,
-            borderBottomRightRadius: theme.shape.borderRadius,
-          },
-          "&:not(:last-child)": {
-            borderBottomStyle: "solid",
-            borderBottomColor: theme.palette.grey[100],
-            borderBottomWidth: "2px",
-          },
-        },
-        column: {
-          flexDirection: "column",
-          marginLeft: theme.spacing(1),
-          marginRight: theme.spacing(1),
-          width: "8vw",
-          gap: theme.spacing(1),
-          [theme.breakpoints.down("sm")]: {
-            marginLeft: "0",
-            marginRight: "0",
-            width: "fit-content",
-          },
-        },
-        rightColumn: {
-          flexDirection: "column",
-          marginLeft: theme.spacing(3),
-          [theme.breakpoints.down("sm")]: {
-            marginLeft: "0",
-          },
-          width: "8vw",
-        },
-        line: {
-          width: "100%",
-          border: "3.5px solid",
-          borderColor: theme.palette.primary.main,
-          backgroundColor: theme.palette.primary.main,
-          borderRadius: "3px",
-          [theme.breakpoints.down("sm")]: {
-            marginTop: theme.spacing(2),
-          },
-        },
-        totalFlights: {
-          width: "30px",
-          height: "30px",
-        },
-        totalFlightsColumn: {
-          width: "4vw",
-          [theme.breakpoints.down("sm")]: {
-            marginTop: theme.spacing(1),
-            marginRight: theme.spacing(3),
-          },
-        },
-        expandColumn: {
-          width: "2wv",
-          [theme.breakpoints.down("sm")]: {
-            marginLeft: theme.spacing(3),
-            display: "none",
-          },
-        },
-        hidden: {
-          opacity: "0",
-        },
-        twoColumns: {
-          display: "flex",
-          [theme.breakpoints.down("sm")]: {
-            flexDirection: "column",
-            whiteSpace: "nowrap",
-            gap: theme.spacing(1),
-          },
-        },
-        bold: {
-          fontWeight: "bold",
-        },
-      }))
+let useStyles = makeStyles((theme) => ({
+  divCard: {
+    display: "flex",
+    width: "65%",
+    cursor: (props: FlightCardProps) =>
+      props.overall && props.overall > 1 ? "pointer" : "auto",
+    paddingTop: theme.spacing(2.5),
+    paddingBottom: theme.spacing(1.5),
+    backgroundColor: "white",
+    minWidth: "220px",
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+      gap: (props: FlightCardProps) => (props.overall ? theme.spacing(2) : "0"),
+    },
+    justifyContent: "space-around",
+    overflow: "scroll",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    "&:first-child": {
+      borderTopLeftRadius: theme.shape.borderRadius,
+      borderTopRightRadius: theme.shape.borderRadius,
+    },
+    "&:last-child": {
+      borderBottomLeftRadius: theme.shape.borderRadius,
+      borderBottomRightRadius: theme.shape.borderRadius,
+    },
+    "&:not(:last-child)": {
+      borderBottomStyle: "solid",
+      borderBottomColor: theme.palette.grey[100],
+      borderBottomWidth: "2px",
+    },
+  },
+  column: {
+    flexDirection: "column",
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: "0",
+      marginRight: "0",
+      width: "fit-content",
+    },
+    gap: (props: FlightCardProps) => (props.overall ? "0" : theme.spacing(1)),
+  },
+  rightColumn: {
+    flexDirection: "column",
+    marginLeft: theme.spacing(3),
+    width: "50%",
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: "0",
+    },
+  },
+  line: {
+    width: "100%",
+    border: "3.5px solid",
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: "3px",
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(2),
+    },
+  },
+  totalFlights: {
+    width: "30px",
+    height: "30px",
+  },
+  totalFlightsColumn: {
+    width: "10%",
+    [theme.breakpoints.down("sm")]: {
+      marginTop: theme.spacing(1),
+      marginRight: theme.spacing(3),
+      width: "8%",
+    },
+  },
+  expandColumn: {
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: theme.spacing(3),
+      display: (props: FlightCardProps) => (props.overall ? "" : "none"),
+    },
+  },
+  hidden: {
+    opacity: "0",
+  },
+  twoColumns: {
+    display: "flex",
+    [theme.breakpoints.down("sm")]: {
+      flexDirection: "column",
+      whiteSpace: "nowrap",
+    },
+    gap: theme.spacing(1),
+  },
+  bold: {
+    fontWeight: theme.typography.fontWeightBold,
+  },
+  doubleColumnContainer: {
+    width: "50%",
+  },
+  singleColumnContainer: {
+    width: "30%",
+  },
+  columnInSingle: {
+    width: "fit-content",
+    whiteSpace: "nowrap",
+  },
+  columnInDouble: {
+    width: "60%",
+    [theme.breakpoints.down("sm")]: {
+      width: "35%",
+    },
+  },
+}))
+function FlightCard(props: FlightCardProps) {
+  let {flight, setShowFlights, showFlights, overall} = props
+
   const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
     theme.breakpoints.down("sm")
   )
 
-  let classes = useStyles()
-  const daysMap: any = {
-    0: "Sunday",
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday",
+  let classes = useStyles(props)
+
+  function chop(string: string) {
+    //removes the last character from a string
+    return string.substring(0, string.length - 1)
   }
-  const monthsMap: any = {
-    0: "Jan",
-    1: "Feb",
-    2: "Mar",
-    3: "Apr",
-    4: "May",
-    5: "June",
-    6: "July",
-    7: "Aug",
-    8: "Sept",
-    9: "Oct",
-    10: "Nov",
-    11: "Dec",
-  }
-  function suffixMap(date: number) {
-    if (date >= 20) {
-      date = parseInt(date.toString()[1])
-    }
-    switch (date) {
-      case 1:
-        return "st"
-      case 2:
-        return "nd"
-      case 3:
-        return "rd"
-      case 0:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 8:
-      case 9:
-      case 10:
-      case 11:
-      case 12:
-      case 13:
-      case 14:
-      case 15:
-      case 16:
-      case 17:
-      case 18:
-      case 19:
-        return "th"
-    }
-  }
+
   let dep_datetime = new Date(flight.dep_datetime ?? 0)
   let arr_datetime = new Date(flight.arr_datetime ?? 0)
 
@@ -265,7 +143,7 @@ function FlightCard(props: FlightCardProps) {
       className={classes.divCard}
       onClick={() => {
         if (overall && setShowFlights) {
-          setShowFlights((showFlights: boolean) => !showFlights)
+          setShowFlights(!showFlights)
         }
       }}>
       {overall && (
@@ -273,19 +151,30 @@ function FlightCard(props: FlightCardProps) {
           <Flight />
         </div>
       )}
-      <div className={classes.twoColumns}>
-        <div className={classes.column}>
+      <div className={`${classes.twoColumns} ${classes.singleColumnContainer}`}>
+        <div className={`${classes.column} ${classes.columnInSingle}`}>
           {flight?.dep_datetime ? (
             <Typography className={classes.bold}>
-              {dep_datetime.getDay() > -1 &&
-                (!isSmallScreen
-                  ? daysMap[dep_datetime.getDay()]?.substring(0, 3)
-                  : "") +
-                  " " +
-                  dep_datetime.getDate() +
-                  suffixMap(dep_datetime.getDate()) +
-                  "  " +
-                  monthsMap[dep_datetime.getMonth()]}
+              {(!isSmallScreen
+                ? new Intl.DateTimeFormat("en-US", {
+                    dateStyle: "full",
+                    timeStyle: undefined,
+                  })
+                    .format(dep_datetime)
+                    .split(" ")[0]
+                    .substring(0, 3)
+                : "") +
+                " " +
+                chop(
+                  new Intl.DateTimeFormat("en-US", {
+                    dateStyle: "full",
+                    timeStyle: undefined,
+                  })
+                    .format(dep_datetime)
+                    .split(" ")
+                    .slice(1, 3)
+                    .join(" ")
+                )}
             </Typography>
           ) : (
             "N/A"
@@ -294,8 +183,8 @@ function FlightCard(props: FlightCardProps) {
         </div>
       </div>
 
-      <div className={classes.twoColumns}>
-        <div className={classes.column}>
+      <div className={`${classes.twoColumns} ${classes.columnInDouble}`}>
+        <div className={`${classes.column} ${classes.columnInDouble}`}>
           {flight?.dep_datetime ? (
             <Typography>
               {dep_datetime.getUTCHours() +
@@ -303,14 +192,24 @@ function FlightCard(props: FlightCardProps) {
                 (dep_datetime.getUTCMinutes() < 10 ? "0" : "") +
                 dep_datetime.getUTCMinutes()}{" "}
               {dep_datetime.getDay() !== arr_datetime.getDay() &&
-                "(" + daysMap[dep_datetime.getDay()]?.substring(0, 3) + ")"}
+                "(" +
+                  new Intl.DateTimeFormat("en-US", {dateStyle: "full"})
+                    .format(dep_datetime)
+                    .split(" ")[0]
+                    .substring(0, 3) +
+                  ")"}
               {" - "}
               {arr_datetime.getUTCHours() +
                 ":" +
                 (dep_datetime.getUTCMinutes() < 10 ? "0" : "") +
                 arr_datetime.getUTCMinutes()}{" "}
               {dep_datetime.getDay() !== arr_datetime.getDay() &&
-                "(" + daysMap[arr_datetime.getDay()]?.substring(0, 3) + ")"}
+                "(" +
+                  new Intl.DateTimeFormat("en-US", {dateStyle: "full"})
+                    .format(arr_datetime)
+                    .split(" ")[0]
+                    .substring(0, 3) +
+                  ")"}
             </Typography>
           ) : (
             "N/A"

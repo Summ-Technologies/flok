@@ -13,7 +13,7 @@ function FlightCardContainer(props: FlightCardContainerProps) {
 
   let useStyles = makeStyles((theme) => ({
     subFlights: {
-      marginLeft: "4vw",
+      marginLeft: "4%",
     },
     overall: {
       marginBottom: theme.spacing(1),
@@ -41,6 +41,7 @@ function FlightCardContainer(props: FlightCardContainerProps) {
             flight={overallFlight}
             overall={totalFlights}
             setShowFlights={setShowFlights}
+            showFlights={showFlights}
           />
         )}
       </div>

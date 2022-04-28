@@ -16,8 +16,9 @@ import {useFormik} from "formik"
 import _ from "lodash"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {Prompt, RouteComponentProps} from "react-router-dom"
+import {RouteComponentProps} from "react-router-dom"
 import * as yup from "yup"
+import BeforeUnload from "../components/base/BeforeUnload"
 import AttendeeFlightTab from "../components/flights/AttendeeFlightTab"
 import AppTabPanel from "../components/page/AppTabPanel"
 import PageBody from "../components/page/PageBody"
@@ -176,19 +177,6 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
     },
     enableReinitialize: true,
   })
-  const alertUser = (e: any) => {
-    e.preventDefault()
-    e.returnValue = ""
-  }
-
-  useEffect(() => {
-    if (!_.isEqual(formik.values, formik.initialValues)) {
-      window.addEventListener("beforeunload", alertUser)
-      return () => {
-        window.removeEventListener("beforeunload", alertUser)
-      }
-    }
-  }, [formik.values, formik.initialValues])
 
   const textFieldProps: TextFieldProps = {
     fullWidth: true,
@@ -200,14 +188,12 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       <PageSidenav activeItem="attendees" retreatIdx={retreatIdx} />
 
       <PageBody appBar>
-        <Prompt
+        <BeforeUnload
           when={
             !_.isEqual(formik.values, formik.initialValues) &&
             tabQuery !== "flights"
           }
-          message={() =>
-            "Are you sure you want to leave without saving your changes?"
-          }
+          message="Are you sure you want to leave without saving your changes?"
         />
         <div className={classes.section}>
           <Tabs
@@ -248,7 +234,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
           </Tabs>
           <AppTabPanel
             show={tabValue === "profile"}
-            className={`${classes.tab} ${classes.fullPageTab}`}
+            className={classes.fullPageTab}
             renderDom="on-shown">
             <div className={classes.body}>
               <form className={classes.form} onSubmit={formik.handleSubmit}>
@@ -419,7 +405,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
           </AppTabPanel>
           <AppTabPanel
             show={tabValue === "flights"}
-            className={`${classes.tab} ${classes.fullPageTab}`}
+            className={classes.fullPageTab}
             renderDom="on-shown">
             {attendee && <AttendeeFlightTab attendee={attendee} />}
           </AppTabPanel>
