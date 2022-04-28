@@ -9,12 +9,13 @@ type FlightCardProps = {
   showFlights?: boolean
   setShowFlights?: (value: boolean) => void
   overall?: number
+  isEditing?: boolean
 }
 
 let useStyles = makeStyles((theme) => ({
   divCard: {
     display: "flex",
-    width: "65%",
+
     cursor: (props: FlightCardProps) =>
       props.overall && props.overall > 1 ? "pointer" : "auto",
     paddingTop: theme.spacing(2.5),
@@ -22,9 +23,10 @@ let useStyles = makeStyles((theme) => ({
     backgroundColor: "white",
     minWidth: "220px",
     [theme.breakpoints.down("sm")]: {
-      width: "100%",
+      width: (props: FlightCardProps) => (props.isEditing ? "80%" : "100%"),
       gap: (props: FlightCardProps) => (props.overall ? theme.spacing(2) : "0"),
     },
+    width: (props: FlightCardProps) => (props.isEditing ? "100%" : "65%"),
     justifyContent: "space-around",
     overflow: "scroll",
     paddingLeft: theme.spacing(1),

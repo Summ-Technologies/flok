@@ -45,10 +45,8 @@ let useStyles = makeStyles((theme) => ({
   },
   avatar: {
     backgroundColor: "orange",
-    height: "12vh",
-    width: "12vh",
-    minHeight: "50px",
-    minWidth: "50px",
+    height: "95px",
+    width: "95px",
     textAlign: "center",
   },
   avatarDiv: {
@@ -71,11 +69,11 @@ let useStyles = makeStyles((theme) => ({
     },
   },
   textField: {
-    maxWidth: "25vw",
-    minWidth: "320px",
+    maxWidth: "320px",
+    minWidth: "300px",
   },
   submitButton: {
-    maxWidth: "25vw",
+    maxWidth: "320pxp",
   },
   body: {
     width: "100%",

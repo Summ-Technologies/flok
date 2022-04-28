@@ -141,7 +141,7 @@ function EditFlightModal(props: EditFlightModalProps) {
             }
             return (
               <div className={classes.cardLine} key={i}>
-                <FlightCard flight={leg} />
+                <FlightCard flight={leg} isEditing={true} />
                 <Button
                   variant="contained"
                   size="small"
