@@ -1,4 +1,4 @@
-version=latest
+version=1.0-budget
 # version=$$(cat ./package.json | jq -r .version)
 docker-user=jaredhanson11
 name=${docker-user}/flok
