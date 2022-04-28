@@ -40,6 +40,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let formik = useFormik({
     initialValues: {
       header_image_link: "",
+      company_logo_link: "",
       pages: [
         {
           title: "Home",
@@ -103,17 +104,19 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   }
   const classes = useStyles()
 
-  function handleAdd() {
-    if (!formik.values.pages.map((page) => page.title).includes(newPageTitle)) {
-      formik.setFieldValue("pages", [
-        ...formik.values.pages,
-        {
-          title: newPageTitle,
-          chunks: [EditorState.createEmpty()],
-        },
-      ])
-      setNewPageTitle("")
-    }
+  let disabled =
+    formik.values.pages.map((page) => page.title).includes(newPageTitle) ||
+    newPageTitle === ""
+
+  function handleAddPage() {
+    formik.setFieldValue("pages", [
+      ...formik.values.pages,
+      {
+        title: newPageTitle,
+        chunks: [EditorState.createEmpty()],
+      },
+    ])
+    setNewPageTitle("")
   }
   return (
     <PageContainer>
@@ -149,7 +152,14 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
             variant="outlined"
             label="Banner Image Link"
           />
-          <div style={{display: "flex", alignItems: "center", margin: "20px"}}>
+          <TextField
+            value={formik.values.company_logo_link}
+            id={`company_logo_link`}
+            onChange={formik.handleChange}
+            variant="outlined"
+            label="Logo Image"
+          />
+          <div style={{display: "flex", alignItems: "center"}}>
             <TextField
               variant="outlined"
               value={newPageTitle}
@@ -162,7 +172,8 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
             <Button
               variant="contained"
               color="primary"
-              onClick={handleAdd}
+              onClick={handleAddPage}
+              disabled={disabled}
               size="small">
               Add New Page
             </Button>
