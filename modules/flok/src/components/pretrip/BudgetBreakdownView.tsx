@@ -147,7 +147,7 @@ export default function BudgetBreakdownView(props: {
                 <AppTypography fontWeight="bold">Flights</AppTypography>
               </TableCell>
               <TableCell>{`$${props.breakdown.flight} per flight`}</TableCell>
-              <TableCell>{`$${props.breakdown.flight * 2}`}</TableCell>
+              <TableCell>{`$${props.breakdown.flight}`}</TableCell>
             </TableRow>
             {props.breakdown.activities && (
               <TableRow>

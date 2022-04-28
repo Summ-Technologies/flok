@@ -221,7 +221,7 @@ export function useBudgetBreakdown(userInput: BudgetBreakdownInputType) {
     meals.map((o) => o.cost * o.num).reduce((p, v) => p + v) +
     ground_transport.map((o) => o.cost).reduce((p, v) => p + v) +
     misc.map((o) => o.cost).reduce((p, v) => p + v) +
-    userInput.avg_flight_cost * 2 +
+    userInput.avg_flight_cost +
     hotelPerNight * (userInput.trip_length - 1)
 
   let totalCost = attendeeCost * userInput.num_attendees
