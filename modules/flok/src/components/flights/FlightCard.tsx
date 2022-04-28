@@ -137,8 +137,12 @@ function FlightCard(props: FlightCardProps) {
     return string.substring(0, string.length - 1)
   }
 
-  let dep_datetime = new Date(flight.dep_datetime ?? 0)
-  let arr_datetime = new Date(flight.arr_datetime ?? 0)
+  let dep_datetime = flight.dep_datetime
+    ? new Date(flight.dep_datetime)
+    : undefined
+  let arr_datetime = flight.arr_datetime
+    ? new Date(flight.arr_datetime)
+    : undefined
 
   return (
     <div
@@ -184,49 +188,29 @@ function FlightCard(props: FlightCardProps) {
           <hr className={classes.line}></hr>
         </div>
       </div>
-
       <div className={`${classes.twoColumns} ${classes.columnInDouble}`}>
         <div className={`${classes.column} ${classes.columnInDouble}`}>
-          {flight?.dep_datetime ? (
+          {dep_datetime && arr_datetime ? (
             <Typography>
-              {dep_datetime.getUTCHours() +
-                ":" +
-                (dep_datetime.getUTCMinutes() < 10 ? "0" : "") +
-                dep_datetime.getUTCMinutes()}{" "}
-              {dep_datetime.getDay() !== arr_datetime.getDay() &&
-                "(" +
-                  new Intl.DateTimeFormat("en-US", {dateStyle: "full"})
-                    .format(dep_datetime)
-                    .split(" ")[0]
-                    .substring(0, 3) +
-                  ")"}
+              {new Intl.DateTimeFormat("en-GB", {
+                timeStyle: "short",
+              }).format(dep_datetime)}
               {" - "}
-              {arr_datetime.getUTCHours() +
-                ":" +
-                (dep_datetime.getUTCMinutes() < 10 ? "0" : "") +
-                arr_datetime.getUTCMinutes()}{" "}
-              {dep_datetime.getDay() !== arr_datetime.getDay() &&
-                "(" +
-                  new Intl.DateTimeFormat("en-US", {dateStyle: "full"})
-                    .format(arr_datetime)
-                    .split(" ")[0]
-                    .substring(0, 3) +
-                  ")"}
+              {new Intl.DateTimeFormat("en-GB", {
+                timeStyle: "short",
+              }).format(arr_datetime)}
             </Typography>
           ) : (
             "N/A"
           )}
         </div>
-
         <div className={classes.rightColumn}>
           <Typography>
             {flight?.dep_airport} to {flight?.arr_airport}
           </Typography>
         </div>
       </div>
-
       <div className={classes.expandColumn}>
-        {" "}
         <ExpandMore
           className={clsx(overall && overall > 1 ? undefined : classes.hidden)}
           fontSize="large"

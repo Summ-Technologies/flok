@@ -161,15 +161,15 @@ export function getRetreatAttendees(retreatId: number) {
 export const GET_TRIP_REQUEST = "GET_TRIP_REQUEST"
 export const GET_TRIP_SUCCESS = "GET_TRIP_SUCCESS"
 export const GET_TRIP_FAILURE = "GET_TRIP_FAILURE"
-export function getTrip(tripIdx: number) {
-  let endpoint = `/v1.0/trips/${tripIdx}`
+export function getTrip(tripId: number) {
+  let endpoint = `/v1.0/trips/${tripId}`
   return createApiAction({
     method: "GET",
     endpoint,
     types: [
       {type: GET_TRIP_REQUEST},
-      {type: GET_TRIP_SUCCESS, meta: {tripIdx}},
-      {type: GET_TRIP_FAILURE, meta: {tripIdx}},
+      {type: GET_TRIP_SUCCESS, meta: {tripId}},
+      {type: GET_TRIP_FAILURE, meta: {tripId}},
     ],
   })
 }
@@ -238,8 +238,8 @@ export function patchAttendee(
 export const PATCH_TRIP_REQUEST = "PATCH_TRIP_REQUEST"
 export const PATCH_TRIP_SUCCESS = "PATCH_TRIP_SUCCESS"
 export const PATCH_TRIP_FAILURE = "PATCH_TRIP_FAILURE"
-export function patchTrip(tripIdx: number, values: Partial<RetreatTripModel>) {
-  let endpoint = `/v1.0/trips/${tripIdx}`
+export function patchTrip(tripId: number, values: Partial<RetreatTripModel>) {
+  let endpoint = `/v1.0/trips/${tripId}`
   return createApiAction(
     {
       method: "PATCH",
@@ -247,8 +247,8 @@ export function patchTrip(tripIdx: number, values: Partial<RetreatTripModel>) {
       body: JSON.stringify(values),
       types: [
         {type: PATCH_TRIP_REQUEST},
-        {type: PATCH_TRIP_SUCCESS, meta: {tripIdx}},
-        {type: PATCH_TRIP_FAILURE, meta: {tripIdx}},
+        {type: PATCH_TRIP_SUCCESS, meta: {tripId}},
+        {type: PATCH_TRIP_FAILURE, meta: {tripId}},
       ],
     },
     {

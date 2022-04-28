@@ -1,4 +1,4 @@
-import {useEffect} from "react"
+import React, {useEffect} from "react"
 import {Prompt} from "react-router-dom"
 
 type BeforeUnloadProps = {
@@ -6,7 +6,7 @@ type BeforeUnloadProps = {
   message: string
 }
 function BeforeUnload(props: BeforeUnloadProps) {
-  const alertUser = (e: any) => {
+  const alertUser = (e: BeforeUnloadEvent) => {
     e.preventDefault()
     e.returnValue = ""
   }
