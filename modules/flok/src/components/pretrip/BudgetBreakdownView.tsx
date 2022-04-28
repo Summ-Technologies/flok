@@ -20,8 +20,13 @@ import {
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
-  tableRow: {
+  expandableRow: {
     "& > *": {borderBottom: "unset"},
+  },
+  tableRow: {
+    "& > :first-child": {
+      width: 6,
+    },
   },
   breakdownHeaderRow: {
     display: "flex",
@@ -40,6 +45,9 @@ let useStyles = makeStyles((theme) => ({
     borderRadius: 5,
     backgroundColor: theme.palette.background.default,
   },
+  overview: {
+    marginBottom: theme.spacing(2),
+  },
 }))
 
 function BudgetRow(props: {
@@ -52,7 +60,7 @@ function BudgetRow(props: {
 
   return (
     <Fragment>
-      <TableRow className={classes.tableRow}>
+      <TableRow className={classes.expandableRow}>
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -69,7 +77,7 @@ function BudgetRow(props: {
           <AppTypography>${props.cost}</AppTypography>
         </TableCell>
       </TableRow>
-      <TableRow>
+      <TableRow className={classes.tableRow}>
         <TableCell style={{padding: 0}} colSpan={4}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box className={classes.subBreakdown}>
@@ -96,27 +104,29 @@ export default function BudgetBreakdownView(props: {
   let classes = useStyles(props)
   return (
     <div>
-      <div className={classes.breakdownHeaderRow}>
-        <AppTypography fontWeight="bold" variant="h2">
-          Per Attendee Cost:
-        </AppTypography>{" "}
-        <AppTypography variant="h2" color="primary">
-          ${props.breakdown.attendeeCost}
-        </AppTypography>
+      <div className={classes.overview}>
+        <div className={classes.breakdownHeaderRow}>
+          <AppTypography fontWeight="bold" variant="h3">
+            Per Attendee Cost:
+          </AppTypography>{" "}
+          <AppTypography variant="h3" color="primary">
+            &nbsp;${props.breakdown.attendeeCost}
+          </AppTypography>
+        </div>
+        <div className={classes.breakdownHeaderRow}>
+          <AppTypography fontWeight="bold" variant="h3">
+            Total Cost:{" "}
+          </AppTypography>
+          <AppTypography variant="h3" color="primary">
+            &nbsp;${props.breakdown.totalCost}
+          </AppTypography>
+        </div>
       </div>
-      <div className={classes.breakdownHeaderRow}>
-        <AppTypography fontWeight="bold" variant="h2">
-          Total Cost:{" "}
-        </AppTypography>
-        <AppTypography variant="h2" color="primary">
-          ${props.breakdown.totalCost}
-        </AppTypography>
-      </div>
-      <AppTypography variant="h2">Per Attendee Breakdown</AppTypography>
+      <AppTypography variant="h3">Per Attendee Breakdown</AppTypography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell></TableCell>
               <TableCell>Category</TableCell>
               <TableCell></TableCell>
@@ -124,7 +134,7 @@ export default function BudgetBreakdownView(props: {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell></TableCell>
               <TableCell>
                 <AppTypography fontWeight="bold">Accomodation</AppTypography>
@@ -141,7 +151,7 @@ export default function BudgetBreakdownView(props: {
                 }`}
               </TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow className={classes.tableRow}>
               <TableCell></TableCell>
               <TableCell>
                 <AppTypography fontWeight="bold">Flights</AppTypography>
@@ -150,7 +160,7 @@ export default function BudgetBreakdownView(props: {
               <TableCell>{`$${props.breakdown.flight}`}</TableCell>
             </TableRow>
             {props.breakdown.activities && (
-              <TableRow>
+              <TableRow className={classes.tableRow}>
                 <TableCell></TableCell>
                 <TableCell>
                   <AppTypography fontWeight="bold">Activities</AppTypography>

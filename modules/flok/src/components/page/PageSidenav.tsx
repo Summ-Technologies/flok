@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core"
 import {
   ApartmentRounded,
+  Build,
   FlightRounded,
   HomeRounded,
   LocalAtm,
@@ -73,6 +74,7 @@ let navItems = {
   lodging: navItem("Lodging", ApartmentRounded, "LodgingPage"),
   attendees: navItem("Attendees", PeopleAlt, "RetreatAttendeesPage"),
   flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
+  pretrip: navItem("Pretrip Tools", Build, "PretripPage"),
   // itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
 }
 

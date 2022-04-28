@@ -71,7 +71,7 @@ export const TestBudgetBreakdown = {
   activities: {cost: 100, num: 3},
 } as BudgetBreakdownType
 
-export function useBudgetBreakdown(userInput: BudgetBreakdownInputType) {
+export function getBudgetBreakdown(userInput: BudgetBreakdownInputType) {
   let meals = [
     {
       name: "Breakfast",
@@ -125,13 +125,12 @@ export function useBudgetBreakdown(userInput: BudgetBreakdownInputType) {
           ? 60
           : 75,
       num: Math.ceil(
-        userInput.trip_length -
-          1 *
-            (userInput.alcohol === "Most nights"
-              ? 0.7
-              : userInput.alcohol === "All nights"
-              ? 1
-              : 0.4)
+        (userInput.trip_length - 1) *
+          (userInput.alcohol === "Most nights"
+            ? 0.7
+            : userInput.alcohol === "All nights"
+            ? 1
+            : 0.4)
       ),
     })
   }

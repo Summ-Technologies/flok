@@ -1,4 +1,5 @@
 import {makeStyles} from "@material-ui/core"
+import {useState} from "react"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
@@ -8,7 +9,7 @@ import BudgetBreakdownView from "../components/pretrip/BudgetBreakdownView"
 import BudgetCalculator from "../components/pretrip/BudgetCalculator"
 import {
   BUDGET_TOOL_FLOK_RECOMENDATIONS,
-  useBudgetBreakdown,
+  getBudgetBreakdown,
 } from "../utils/pretripUtils"
 
 let useStyles = makeStyles((theme) => ({
@@ -17,10 +18,11 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       paddingLeft: theme.spacing(1),
     },
+    "& > *": {
+      marginBottom: theme.spacing(2),
+    },
   },
-  overviewHeader: {
-    marginBottom: theme.spacing(1),
-  },
+  overviewHeader: {},
 }))
 
 type PretripPageProps = RouteComponentProps<{retreatIdx: string}>
@@ -28,19 +30,25 @@ type PretripPageProps = RouteComponentProps<{retreatIdx: string}>
 function PretripPage(props: PretripPageProps) {
   let classes = useStyles()
   let retreatIdx = parseInt(props.match.params.retreatIdx)
-  console.log("hi")
+  let [userInput, setUserInput] = useState(BUDGET_TOOL_FLOK_RECOMENDATIONS)
+  let [breakdown, setBreakdown] = useState(getBudgetBreakdown(userInput))
   return (
     <PageContainer>
-      <PageSidenav activeItem="overview" retreatIdx={retreatIdx} />
+      <PageSidenav activeItem="pretrip" retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.section}>
           <div className={classes.overviewHeader}>
-            <AppTypography variant="h1">Budget Estimation Tool</AppTypography>
+            <AppTypography variant="h1">Sample Budget Breakdown</AppTypography>
           </div>
-          <BudgetCalculator onSubmit={(vals) => {}} />
           <BudgetBreakdownView
-            breakdown={useBudgetBreakdown(BUDGET_TOOL_FLOK_RECOMENDATIONS)}
-            breakdownInput={BUDGET_TOOL_FLOK_RECOMENDATIONS}
+            breakdown={breakdown}
+            breakdownInput={userInput}
+          />
+          <BudgetCalculator
+            onSubmit={(vals) => {
+              setUserInput(vals)
+              setBreakdown(getBudgetBreakdown(vals))
+            }}
           />
         </div>
       </PageBody>
