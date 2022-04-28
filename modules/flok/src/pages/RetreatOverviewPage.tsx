@@ -281,6 +281,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
                 handleCheckboxClick={handleTaskClick}
                 orderBadge={true}
                 collapsed={todoTasksCollapsed}
+                noComplete
               />
               <Box marginTop={2}>
                 <Typography
