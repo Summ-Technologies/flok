@@ -10,6 +10,7 @@ import {
   IconButton,
   Link,
   makeStyles,
+  MenuItem,
   Paper,
   styled,
   Table,
@@ -21,7 +22,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core"
-import {Person} from "@material-ui/icons"
+import {Delete, Person} from "@material-ui/icons"
 import CloseIcon from "@material-ui/icons/Close"
 import {push} from "connected-react-router"
 import {useState} from "react"
@@ -327,8 +328,34 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                     }))
                 : []
             }
-            rowDeleteCallback={(row) => {
-              dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
+            menuItems={(row) => {
+              let editMenuItem = (
+                <MenuItem
+                  onClick={() =>
+                    dispatch(
+                      push(
+                        AppRoutes.getPath("AttendeeProfilePage", {
+                          retreatIdx: retreatIdx.toString(),
+                          attendeeId: row.item.id.toString(),
+                        })
+                      )
+                    )
+                  }>
+                  <Person />
+                  Edit
+                </MenuItem>
+              )
+              let deleteMenuItem = (
+                <MenuItem
+                  onClick={() => {
+                    dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
+                  }}>
+                  <Delete />
+                  Delete
+                </MenuItem>
+              )
+
+              return [editMenuItem, deleteMenuItem]
             }}
           />
           <div className={classes.addBtn}>
@@ -445,7 +472,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                                         AppRoutes.getPath(
                                           "AttendeeProfilePage",
                                           {
-                                            retreatIdx: "0",
+                                            retreatIdx: retreatIdx.toString(),
                                             attendeeId: attendee.id.toString(),
                                           }
                                         )

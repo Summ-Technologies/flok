@@ -208,7 +208,9 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
               onClick={() => {
                 dispatch(
                   push(
-                    AppRoutes.getPath("RetreatAttendeesPage", {retreatIdx: "0"})
+                    AppRoutes.getPath("RetreatAttendeesPage", {
+                      retreatIdx: retreatIdx.toString(),
+                    })
                   )
                 )
               }}>

@@ -3,7 +3,7 @@ import {
   IconButton,
   makeStyles,
   Menu,
-  MenuItem,
+  MenuItemProps,
   TableBody,
   TableCell,
   TableContainer,
@@ -12,12 +12,8 @@ import {
   Tooltip,
 } from "@material-ui/core"
 import Table from "@material-ui/core/Table"
-import {Delete, MoreVert, Person, SwapVert} from "@material-ui/icons"
-import {push} from "connected-react-router"
-import React, {useState} from "react"
-import {useDispatch} from "react-redux"
-import {AppRoutes} from "../../Stack"
-import {theme} from "../../theme"
+import {MoreVert, SwapVert} from "@material-ui/icons"
+import React, {ReactElement, useState} from "react"
 import AppTypography from "./AppTypography"
 type ExpandableRowProps<T> = {
   item: {id: number} & T
@@ -25,7 +21,7 @@ type ExpandableRowProps<T> = {
   body?: JSX.Element
   disabled?: boolean
   tooltip?: string
-  onDelete?: () => void
+  menuItems?: ReactElement<MenuItemProps>[]
 }
 
 const useExpandableRowStyles = makeStyles({
@@ -77,14 +73,10 @@ const useExpandableRowStyles = makeStyles({
     // backgroundColor: "transparent",
     margin: "auto",
   },
-  menuItem: {
-    padding: theme.spacing(0.5),
-  },
 })
 
 function ExpandableRow<T>(props: ExpandableRowProps<T>) {
   let classes = useExpandableRowStyles()
-  let dispatch = useDispatch()
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
   const menuOpen = Boolean(anchorEl)
 
@@ -115,7 +107,7 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
             {open ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </TableCell> */}
-          {props.onDelete && (
+          {props.menuItems && props.menuItems.length && (
             <TableCell
               className={props.disabled ? classes.cellDisabled : classes.cell}>
               <Menu
@@ -125,26 +117,7 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
                 open={menuOpen}
                 onClose={handleClose}
                 TransitionComponent={Fade}>
-                <MenuItem
-                  onClick={() =>
-                    dispatch(
-                      push(
-                        AppRoutes.getPath("AttendeeProfilePage", {
-                          retreatIdx: "0",
-                          attendeeId: props.item.id.toString(),
-                        })
-                      )
-                    )
-                  }>
-                  <div className={classes.menuItem}>
-                    Edit <Person />
-                  </div>
-                </MenuItem>
-                <MenuItem onClick={props.onDelete}>
-                  <div className={classes.menuItem}>
-                    Delete <Delete />
-                  </div>
-                </MenuItem>
+                {props.menuItems}
               </Menu>
               <IconButton
                 size="small"
@@ -220,7 +193,7 @@ type AppTableHeaderType<T> = {
 type AppExpandableTableProps<T> = {
   headers: AppTableHeaderType<T>[]
   rows: AppTableRowType<T>[]
-  rowDeleteCallback?: (row: AppTableRowType<T>) => void
+  menuItems?: (row: AppTableRowType<T>) => ReactElement<MenuItemProps>[]
 }
 
 export default function AppExpandableTable<T>(
@@ -287,14 +260,7 @@ export default function AppExpandableTable<T>(
                 headers={props.headers}
                 disabled={data.disabled}
                 tooltip={data.tooltip}
-                onDelete={
-                  props.rowDeleteCallback
-                    ? () =>
-                        props.rowDeleteCallback
-                          ? props.rowDeleteCallback(data)
-                          : undefined
-                    : undefined
-                }
+                menuItems={props.menuItems ? props.menuItems(data) : undefined}
               />
             ))}
         </TableBody>
