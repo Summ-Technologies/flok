@@ -100,6 +100,7 @@ export default function BudgetCalculator(props: {
                 </div>
               }
               select
+              InputLabelProps={{style: {pointerEvents: "auto"}}}
               SelectProps={{
                 native: false,
                 onChange: (e) =>
@@ -132,6 +133,7 @@ export default function BudgetCalculator(props: {
               {...textFieldProps}
               id="avg_flight_cost"
               value={formik.values.avg_flight_cost}
+              InputLabelProps={{style: {pointerEvents: "auto"}}}
               label={
                 <div className={classes.textfieldTitle}>
                   Average Flight Cost{" "}
@@ -169,6 +171,7 @@ export default function BudgetCalculator(props: {
               {...textFieldProps}
               id="work_play_mix"
               value={formik.values.work_play_mix}
+              InputLabelProps={{style: {pointerEvents: "auto"}}}
               label={
                 <div className={classes.textfieldTitle}>
                   All work, all play, or a mix?{" "}

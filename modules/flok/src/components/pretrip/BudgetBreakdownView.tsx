@@ -27,6 +27,9 @@ let useStyles = makeStyles((theme) => ({
     "& > :first-child": {
       width: 6,
     },
+    "& > *": {
+      whiteSpace: "nowrap",
+    },
   },
   breakdownHeaderRow: {
     display: "flex",
@@ -36,6 +39,9 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
+    "& > *": {
+      whiteSpace: "nowrap",
+    },
   },
   subBreakdown: {
     marginLeft: theme.spacing(20),
@@ -70,7 +76,9 @@ function BudgetRow(props: {
           </IconButton>
         </TableCell>
         <TableCell>
-          <AppTypography fontWeight="bold">{props.name}</AppTypography>
+          <AppTypography fontWeight="bold" noWrap>
+            {props.name}
+          </AppTypography>
         </TableCell>
         <TableCell></TableCell>
         <TableCell>
@@ -79,7 +87,7 @@ function BudgetRow(props: {
       </TableRow>
       <TableRow className={classes.tableRow}>
         <TableCell style={{padding: 0}} colSpan={4}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
+          <Collapse in={open} timeout="auto">
             <Box className={classes.subBreakdown}>
               {props.subRows.map((obj) => (
                 <div style={{display: "flex"}}>
