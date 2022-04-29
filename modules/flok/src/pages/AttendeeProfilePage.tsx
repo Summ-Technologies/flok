@@ -289,7 +289,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
                   type="date"
                   className={classes.textField}
                   variant="outlined"
-                  label="Hotel check out"
+                  label="Hotel check in"
                   id="hotel_check_in"
                   value={formik.values.hotel_check_in ?? ""}
                 />
@@ -298,7 +298,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
                   type="date"
                   className={classes.textField}
                   variant="outlined"
-                  label="Hotel check in"
+                  label="Hotel check out"
                   id="hotel_check_out"
                   value={formik.values.hotel_check_out ?? ""}
                 />
