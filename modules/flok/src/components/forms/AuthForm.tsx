@@ -143,7 +143,6 @@ export default function AuthForm(props: AuthCardProps) {
           {props.forgotPassword ? (
             <Link
               variant="body1"
-              underline="always"
               component={RouterLink}
               to={AppRoutes.getPath("ForgotPasswordPage")}>
               Forgot password?
