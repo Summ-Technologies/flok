@@ -1,5 +1,7 @@
 import {Box, Chip, Link, makeStyles, Typography} from "@material-ui/core"
 import {sortBy} from "lodash"
+import {useEffect} from "react"
+import {useDispatch, useSelector} from "react-redux"
 import {
   Link as RouterLink,
   RouteComponentProps,
@@ -14,6 +16,8 @@ import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {SampleLockedAttendees} from "../models/retreat"
 import {AppRoutes} from "../Stack"
+import {RootState} from "../store"
+import {getTrip} from "../store/actions/retreat"
 import {useRetreatAttendees} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -84,6 +88,25 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
     attendeeTravelInfo = SampleLockedAttendees
   }
 
+  let dispatch = useDispatch()
+  let trips = useSelector((state: RootState) => {
+    return state.retreat.trips
+  })
+  useEffect(() => {
+    attendeeTravelInfo.forEach((attendee) => {
+      if (
+        attendee.travel &&
+        attendee.travel.arr_trip?.id &&
+        attendee.travel.dep_trip?.id
+      ) {
+        !trips[attendee.travel.arr_trip?.id] &&
+          dispatch(getTrip(attendee.travel.arr_trip?.id))
+        !trips[attendee.travel.dep_trip?.id] &&
+          dispatch(getTrip(attendee.travel.dep_trip?.id))
+      }
+    })
+  }, [dispatch, attendeeTravelInfo, trips])
+
   return (
     <PageContainer>
       <PageSidenav activeItem="flights" retreatIdx={retreatIdx} />
@@ -113,11 +136,11 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 name: "Last Name",
                 colId: "last_name",
                 comparator: (r1, r2) => {
-                  if (r1.item.last_name === "") {
-                    return -1
-                  }
-                  if (r2.item.last_name === "") {
+                  if (r1.item.last_name === "" || !r1.item.last_name) {
                     return 1
+                  }
+                  if (r2.item.last_name === "" || !r2.item.last_name) {
+                    return -1
                   }
                   return r1.item.last_name
                     .toString()
@@ -128,11 +151,11 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 name: "First Name",
                 colId: "first_name",
                 comparator: (r1, r2) => {
-                  if (r1.item.first_name === "") {
-                    return -1
-                  }
-                  if (r2.item.first_name === "") {
+                  if (r1.item.first_name === "" || !r1.item.first_name) {
                     return 1
+                  }
+                  if (r2.item.first_name === "" || !r2.item.first_name) {
+                    return -1
                   }
                   return r1.item.first_name
                     .toString()
@@ -233,21 +256,25 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                     id: attendee.travel?.id ?? -1,
                     item: {
                       id: attendee.travel?.id ?? -1,
-                      first_name: attendee.first_name ?? "",
+                      first_name: attendee.first_name,
                       last_name: attendee.last_name ?? "",
                       arrival:
                         attendee.travel &&
                         attendee.travel.arr_trip &&
-                        attendee.travel.arr_trip.trip_legs.length
-                          ? attendee.travel.arr_trip.trip_legs[
-                              attendee.travel.arr_trip.trip_legs.length - 1
+                        attendee.travel.arr_trip.trip_legs.length &&
+                        trips[attendee.travel.arr_trip.id]
+                          ? trips[attendee.travel.arr_trip.id].trip_legs[
+                              trips[attendee.travel.arr_trip.id].trip_legs
+                                .length - 1
                             ].arr_datetime
                           : undefined,
                       departure:
                         attendee.travel &&
                         attendee.travel.dep_trip &&
-                        attendee.travel.dep_trip.trip_legs.length
-                          ? attendee.travel.dep_trip.trip_legs[0].dep_datetime
+                        trips[attendee.travel.dep_trip.id] &&
+                        trips[attendee.travel.dep_trip.id].trip_legs.length
+                          ? trips[attendee.travel.dep_trip.id].trip_legs[0]
+                              .dep_datetime
                           : undefined,
                       cost: attendee.travel ? attendee.travel.cost : undefined,
                       status: attendee.flight_status

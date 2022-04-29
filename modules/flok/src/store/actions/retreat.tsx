@@ -1,6 +1,11 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
-import {RetreatToTaskState} from "../../models/retreat"
+import {
+  RetreatAttendeeModel,
+  RetreatToTaskState,
+  RetreatTravelModel,
+  RetreatTripModel,
+} from "../../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
 import {ApiAction, createApiAction} from "./api"
@@ -149,6 +154,126 @@ export function getRetreatAttendees(retreatId: number) {
       {type: GET_RETREAT_ATTENDEES_REQUEST},
       {type: GET_RETREAT_ATTENDEES_SUCCESS, meta: {retreatId}},
       {type: GET_RETREAT_ATTENDEES_FAILURE, meta: {retreatId}},
+    ],
+  })
+}
+
+export const GET_TRIP_REQUEST = "GET_TRIP_REQUEST"
+export const GET_TRIP_SUCCESS = "GET_TRIP_SUCCESS"
+export const GET_TRIP_FAILURE = "GET_TRIP_FAILURE"
+export function getTrip(tripId: number) {
+  let endpoint = `/v1.0/trips/${tripId}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_TRIP_REQUEST},
+      {type: GET_TRIP_SUCCESS, meta: {tripId}},
+      {type: GET_TRIP_FAILURE, meta: {tripId}},
+    ],
+  })
+}
+
+export const GET_ATTENDEE_REQUEST = "GET_ATTENDEE_REQUEST"
+export const GET_ATTENDEE_SUCCESS = "GET_ATTENDEE_SUCCESS"
+export const GET_ATTENDEE_FAILURE = "GET_ATTENDEE_FAILURE"
+export function getAttendee(attendeeId: number) {
+  let endpoint = `/v1.0/attendees/${attendeeId}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_ATTENDEE_REQUEST},
+      {type: GET_ATTENDEE_SUCCESS, meta: {attendeeId}},
+      {type: GET_ATTENDEE_FAILURE, meta: {attendeeId}},
+    ],
+  })
+}
+
+export const INSTANTIATE_ATTENDEE_TRIPS_REQUEST =
+  "INSTANTIATE_ATTENDEE_TRIPS_REQUEST"
+export const INSTANTIATE_ATTENDEE_TRIPS_SUCCESS =
+  "INSTANTIATE_ATTENDEE_TRIPS_SUCCESS"
+export const INSTANTIATE_ATTENDEE_TRIPS_FAILURE =
+  "INSTANTIATE_ATTENDEE_TRIPS_FAILURE"
+export function instantiateAttendeeTrips(attendeeId: number) {
+  let endpoint = `/v1.0/attendees/${attendeeId}/travel/instantiate`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    types: [
+      {type: INSTANTIATE_ATTENDEE_TRIPS_REQUEST},
+      {type: INSTANTIATE_ATTENDEE_TRIPS_SUCCESS, meta: {attendeeId}},
+      {type: INSTANTIATE_ATTENDEE_TRIPS_FAILURE, meta: {attendeeId}},
+    ],
+  })
+}
+
+export const PATCH_ATTENDEE_REQUEST = "PATCH_ATTENDEE_REQUEST"
+export const PATCH_ATTENDEE_SUCCESS = "PATCH_ATTENDEE_SUCCESS"
+export const PATCH_ATTENDEE_FAILURE = "PATCH_ATTENDEE_FAILURE"
+export function patchAttendee(
+  attendeeId: number,
+  values: Partial<RetreatAttendeeModel>
+) {
+  let endpoint = `/v1.0/attendees/${attendeeId}`
+  if (values.hotel_check_in === "") {
+    values.hotel_check_in = null
+  }
+  if (values.hotel_check_out === "") {
+    values.hotel_check_out = null
+  }
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify(values),
+    types: [
+      {type: PATCH_ATTENDEE_REQUEST},
+      {type: PATCH_ATTENDEE_SUCCESS, meta: {attendeeId}},
+      {type: PATCH_ATTENDEE_FAILURE, meta: {attendeeId}},
+    ],
+  })
+}
+
+export const PATCH_TRIP_REQUEST = "PATCH_TRIP_REQUEST"
+export const PATCH_TRIP_SUCCESS = "PATCH_TRIP_SUCCESS"
+export const PATCH_TRIP_FAILURE = "PATCH_TRIP_FAILURE"
+export function patchTrip(tripId: number, values: Partial<RetreatTripModel>) {
+  let endpoint = `/v1.0/trips/${tripId}`
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: PATCH_TRIP_REQUEST},
+        {type: PATCH_TRIP_SUCCESS, meta: {tripId}},
+        {type: PATCH_TRIP_FAILURE, meta: {tripId}},
+      ],
+    },
+    {
+      successMessage: "Successfully updated",
+      errorMessage: "Something went wrong",
+    }
+  )
+}
+
+export const PATCH_ATTENDEE_TRAVEL_REQUEST = "PATCH_ATTENDEE_TRAVEL_REQUEST"
+export const PATCH_ATTENDEE_TRAVEL_SUCCESS = "PATCH_ATTENDEE_TRAVEL_SUCCESS"
+export const PATCH_ATTENDEE_TRAVEL_FAILURE = "PATCH_ATTENDEE_TRAVEL_FAILURE"
+export function patchAttendeeTravel(
+  attendeeId: number,
+  values: Partial<RetreatTravelModel>
+) {
+  let endpoint = `/v1.0/attendees/${attendeeId}/travel`
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify(values),
+    types: [
+      {type: PATCH_ATTENDEE_TRAVEL_REQUEST},
+      {type: PATCH_ATTENDEE_TRAVEL_SUCCESS, meta: {attendeeId}},
+      {type: PATCH_ATTENDEE_TRAVEL_FAILURE, meta: {attendeeId}},
     ],
   })
 }

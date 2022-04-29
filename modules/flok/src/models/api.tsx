@@ -1,5 +1,5 @@
 // API endpoints
-import {RetreatAttendeeModel} from "./retreat"
+import {RetreatAttendeeModel, RetreatTripModel} from "./retreat"
 import {UserModel} from "./user"
 
 // GET v1.0/user/home, GET_USER_HOME_SUCCESS
@@ -15,4 +15,11 @@ export type UserAuthResponse = {
 export type RetreatAttendeesApiResponse = {
   message: string
   attendees: RetreatAttendeeModel[]
+}
+export type AttendeeApiResponse = {
+  attendee: RetreatAttendeeModel
+}
+
+export type TripApiResponse = {
+  trip: RetreatTripModel
 }

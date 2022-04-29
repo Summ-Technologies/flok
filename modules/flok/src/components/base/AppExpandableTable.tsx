@@ -1,6 +1,9 @@
 import {
+  Fade,
   IconButton,
   makeStyles,
+  Menu,
+  MenuItem,
   TableBody,
   TableCell,
   TableContainer,
@@ -9,10 +12,13 @@ import {
   Tooltip,
 } from "@material-ui/core"
 import Table from "@material-ui/core/Table"
-import {Delete, SwapVert} from "@material-ui/icons"
+import {Delete, MoreVert, Person, SwapVert} from "@material-ui/icons"
+import {push} from "connected-react-router"
 import React, {useState} from "react"
+import {useDispatch} from "react-redux"
+import {AppRoutes} from "../../Stack"
+import {theme} from "../../theme"
 import AppTypography from "./AppTypography"
-
 type ExpandableRowProps<T> = {
   item: {id: number} & T
   headers: AppTableHeaderType<T>[]
@@ -71,11 +77,21 @@ const useExpandableRowStyles = makeStyles({
     // backgroundColor: "transparent",
     margin: "auto",
   },
+  menuItem: {
+    padding: theme.spacing(0.5),
+  },
 })
 
 function ExpandableRow<T>(props: ExpandableRowProps<T>) {
   let classes = useExpandableRowStyles()
-  // let [open, setOpen] = useState(false)
+  let dispatch = useDispatch()
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+  const menuOpen = Boolean(anchorEl)
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
   return (
     <React.Fragment>
       <Tooltip title={props.tooltip ? props.tooltip : ""}>
@@ -102,11 +118,42 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
           {props.onDelete && (
             <TableCell
               className={props.disabled ? classes.cellDisabled : classes.cell}>
+              <Menu
+                id="fade-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={menuOpen}
+                onClose={handleClose}
+                TransitionComponent={Fade}>
+                <MenuItem
+                  onClick={() =>
+                    dispatch(
+                      push(
+                        AppRoutes.getPath("AttendeeProfilePage", {
+                          retreatIdx: "0",
+                          attendeeId: props.item.id.toString(),
+                        })
+                      )
+                    )
+                  }>
+                  <div className={classes.menuItem}>
+                    Edit <Person />
+                  </div>
+                </MenuItem>
+                <MenuItem onClick={props.onDelete}>
+                  <div className={classes.menuItem}>
+                    Delete <Delete />
+                  </div>
+                </MenuItem>
+              </Menu>
               <IconButton
                 size="small"
-                onClick={props.onDelete}
-                className={classes.deleteBtn}>
-                <Delete />
+                aria-controls="fade-menu"
+                aria-haspopup="true"
+                onClick={(event) => {
+                  setAnchorEl(event.currentTarget)
+                }}>
+                <MoreVert />
               </IconButton>
             </TableCell>
           )}
