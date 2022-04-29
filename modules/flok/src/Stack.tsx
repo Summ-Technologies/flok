@@ -2,6 +2,7 @@ import React from "react"
 import {Route, Switch} from "react-router-dom"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import SigninPage from "./pages/auth/SigninPage"
+import CreateRetreatWebsite from "./pages/CreateRetreatWebsite"
 import DeprecatedHomeRoutingPage from "./pages/deprecated/DeprecatedHomeRoutingPage"
 import DeprecatedNewRetreatFormPage from "./pages/deprecated/DeprecatedNewRetreatFormPage"
 import DeprecatedProposalPage from "./pages/deprecated/DeprecatedProposalPage"
@@ -49,6 +50,7 @@ export class AppRoutes {
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
     LandingPageGenerator: "/r/:retreatIdx/landing",
+    CreateRetreatWebsite: "/r/:retreatIdx/create-website",
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -150,6 +152,11 @@ export default function Stack() {
               path={AppRoutes.getPath("LandingPageGenerator")}
               exact
               component={LandingPageGenerator}
+            />
+            <ProtectedRoute
+              path={AppRoutes.getPath("CreateRetreatWebsite")}
+              exact
+              component={CreateRetreatWebsite}
             />
             <ProtectedRoute
               path={AppRoutes.getPath("LodgingPage")}
