@@ -10,6 +10,7 @@ import {
   IconButton,
   Link,
   makeStyles,
+  MenuItem,
   Paper,
   styled,
   Table,
@@ -21,7 +22,9 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core"
+import {Delete, Person} from "@material-ui/icons"
 import CloseIcon from "@material-ui/icons/Close"
+import {push} from "connected-react-router"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
@@ -32,6 +35,7 @@ import PageContainer from "../components/page/PageContainer"
 import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {RetreatAttendeeModel, SampleLockedAttendees} from "../models/retreat"
+import {AppRoutes} from "../Stack"
 import {
   deleteRetreatAttendees,
   postRetreatAttendees,
@@ -75,6 +79,17 @@ function DietList(props: {prefString: string | undefined}) {
     )
   }
   return prefs[0]
+}
+
+function dateFormat(date?: string) {
+  if (date === undefined) {
+    return ""
+  }
+  let dateFormatter = Intl.DateTimeFormat("en-US", {
+    dateStyle: "short",
+    timeZone: "UTC",
+  })
+  return dateFormatter.format(new Date(date))
 }
 
 let useStyles = makeStyles((theme) => ({
@@ -135,28 +150,33 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
   let [addDialogOpen, setAddDialogOpen] = useState(false)
-  let [newAttendeeName, setNewAttendeeName] = useState("")
+  let [newAttendeeFirstName, setNewAttendeeFirstName] = useState("")
+  let [newAttendeeLastName, setNewAttendeeLastName] = useState("")
   let [newAttendeeEmail, setNewAttendeeEmail] = useState("")
   let [newAttendeeErrorState, setNewAttendeeErrorState] = useState({
-    name: false,
+    firstName: false,
+    lastName: false,
     email: false,
   })
-
   if (retreat.attendees_state !== "REGISTRATION_OPEN") {
     attendeeTravelInfo = SampleLockedAttendees
   }
 
-  const [openNotAttendingModel, setOpenNotAttendingModel] = useState(false)
+  const [openNotAttendingModal, setOpenNotAttendingModal] = useState(false)
 
   const handleClose = () => {
-    setOpenNotAttendingModel(false)
+    setOpenNotAttendingModal(false)
   }
 
   const handleNewAttendeeSubmit = () => {
-    const errorState = {name: false, email: false}
-    if (newAttendeeName === "") {
-      errorState.name = true
-      setNewAttendeeName("")
+    const errorState = {firstName: false, lastName: false, email: false}
+    if (newAttendeeFirstName === "") {
+      errorState.firstName = true
+      setNewAttendeeFirstName("")
+    }
+    if (newAttendeeLastName === "") {
+      errorState.lastName = true
+      setNewAttendeeLastName("")
     }
     if (
       newAttendeeEmail === "" ||
@@ -168,12 +188,18 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
       setNewAttendeeEmail("")
     }
 
-    if (!errorState.name && !errorState.email) {
+    if (!errorState.firstName && !errorState.lastName && !errorState.email) {
       dispatch(
-        postRetreatAttendees(retreat.id, newAttendeeName, newAttendeeEmail)
+        postRetreatAttendees(
+          retreat.id,
+          newAttendeeFirstName,
+          newAttendeeLastName,
+          newAttendeeEmail
+        )
       )
       setNewAttendeeEmail("")
-      setNewAttendeeName("")
+      setNewAttendeeFirstName("")
+      setNewAttendeeLastName("")
       setAddDialogOpen(false)
     }
 
@@ -199,7 +225,7 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
               underline="always"
               className={classes.notAttendingButton}
               onClick={() => {
-                setOpenNotAttendingModel(true)
+                setOpenNotAttendingModal(true)
               }}>
               View invitees not coming (
               {attendeeTravelInfo &&
@@ -213,41 +239,40 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
           <AppExpandableTable
             headers={[
               {
-                name: "Employee",
-                colId: "name",
+                name: "Last Name",
+                colId: "last_name",
                 comparator: (r1, r2) => {
-                  if (!r1.item.name) {
-                    return -1
-                  }
-                  if (!r2.item.name) {
-                    return 1
-                  }
-                  return r1.item.name
-                    .toString()
-                    .localeCompare(r2.item.name.toString())
+                  if (!r1.item.last_name) return 1
+                  if (!r2.item.last_name) return -1
+                  return r1.item.last_name.localeCompare(r2.item.last_name)
+                },
+              },
+              {
+                name: "First Name",
+                colId: "first_name",
+                comparator: (r1, r2) => {
+                  if (!r1.item.first_name) return 1
+                  if (!r2.item.first_name) return -1
+                  return r1.item.first_name.localeCompare(r2.item.first_name)
                 },
               },
               {name: "Email", colId: "email_address"},
               {
-                name: "Employee City",
-                colId: "city",
-                comparator: (r1, r2) => {
-                  if (r1.item.city == null) {
-                    return -1
-                  } else if (r2.item.city == null) {
-                    return 1
-                  } else {
-                    return r1.item.city.localeCompare(r2.item.city)
-                  }
-                },
+                name: "Retreat Arrival",
+                colId: "hotel_check_in",
+                renderCell: (val) => (
+                  <AppTypography>
+                    {val != null ? dateFormat(val as string) : undefined}
+                  </AppTypography>
+                ),
               },
               {
-                name: "Dietary Preferences",
-                colId: "dietary_prefs",
+                name: "Retreat Departure",
+                colId: "hotel_check_out",
                 renderCell: (val) => (
-                  <DietList
-                    prefString={val as RetreatAttendeeModel["dietary_prefs"]}
-                  />
+                  <AppTypography>
+                    {val != null ? dateFormat(val as string) : undefined}
+                  </AppTypography>
                 ),
               },
               {
@@ -303,8 +328,34 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                     }))
                 : []
             }
-            rowDeleteCallback={(row) => {
-              dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
+            menuItems={(row) => {
+              let editMenuItem = (
+                <MenuItem
+                  onClick={() =>
+                    dispatch(
+                      push(
+                        AppRoutes.getPath("AttendeeProfilePage", {
+                          retreatIdx: retreatIdx.toString(),
+                          attendeeId: row.item.id.toString(),
+                        })
+                      )
+                    )
+                  }>
+                  <Person />
+                  Edit
+                </MenuItem>
+              )
+              let deleteMenuItem = (
+                <MenuItem
+                  onClick={() => {
+                    dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
+                  }}>
+                  <Delete />
+                  Delete
+                </MenuItem>
+              )
+
+              return [editMenuItem, deleteMenuItem]
             }}
           />
           <div className={classes.addBtn}>
@@ -329,11 +380,22 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
             <TextField
               autoFocus
               margin="dense"
-              id="name"
-              label="Full Name"
-              value={newAttendeeName}
-              error={newAttendeeErrorState.name}
-              onChange={(e) => setNewAttendeeName(e.target.value)}
+              id="first_name"
+              label="First Name"
+              value={newAttendeeFirstName}
+              error={newAttendeeErrorState.firstName}
+              onChange={(e) => setNewAttendeeFirstName(e.target.value)}
+              fullWidth
+              variant="standard"
+              required
+            />
+            <TextField
+              margin="dense"
+              id="last_name"
+              label="Last Name"
+              value={newAttendeeLastName}
+              error={newAttendeeErrorState.lastName}
+              onChange={(e) => setNewAttendeeLastName(e.target.value)}
               fullWidth
               variant="standard"
               required
@@ -366,14 +428,14 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
           <Dialog
             onClose={handleClose}
             aria-labelledby="customized-dialog-title"
-            open={openNotAttendingModel}>
+            open={openNotAttendingModal}>
             <DialogTitle id="customized-dialog-title">
               Invitees not attending
               <IconButton
                 aria-label="close"
                 className={classes.closeButton}
                 onClick={() => {
-                  setOpenNotAttendingModel(false)
+                  setOpenNotAttendingModal(false)
                 }}>
                 <CloseIcon />
               </IconButton>
@@ -394,11 +456,32 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
                           .map((attendee) => (
                             <TableRow key={attendee.id}>
                               <TableCell component="th" scope="row">
-                                {attendee.name}
+                                {attendee.first_name + " " + attendee.last_name}
                               </TableCell>
                               <TableCell align="right">
                                 {attendee.email_address}
                               </TableCell>
+                              <TableCell>
+                                {" "}
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={() =>
+                                    dispatch(
+                                      push(
+                                        AppRoutes.getPath(
+                                          "AttendeeProfilePage",
+                                          {
+                                            retreatIdx: retreatIdx.toString(),
+                                            attendeeId: attendee.id.toString(),
+                                          }
+                                        )
+                                      )
+                                    )
+                                  }>
+                                  Edit <Person />
+                                </Button>
+                              </TableCell>{" "}
                             </TableRow>
                           ))}
                     </TableBody>

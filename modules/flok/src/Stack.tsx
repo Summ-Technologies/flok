@@ -1,6 +1,8 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
+import AttendeeProfilePage from "./pages/AttendeeProfilePage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
 import DeprecatedHomeRoutingPage from "./pages/deprecated/DeprecatedHomeRoutingPage"
 import DeprecatedNewRetreatFormPage from "./pages/deprecated/DeprecatedNewRetreatFormPage"
@@ -13,14 +15,12 @@ import NotFound404Page from "./pages/misc/NotFound404Page"
 import ProtectedRoute from "./pages/misc/ProtectedRoute"
 import RedirectPage from "./pages/misc/RedirectPage"
 import RetreatProvider from "./pages/misc/RetreatProvider"
-import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import PretripPage from "./pages/PretripPage"
 import ProposalPage from "./pages/ProposalPage"
 import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatItineraryPage from "./pages/RetreatItineraryPage"
 import RetreatOverviewPage from "./pages/RetreatOverviewPage"
-import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 
 export type FlokPageName = keyof typeof AppRoutes.pages
 
@@ -36,16 +36,18 @@ export class AppRoutes {
     ...AppRoutes.deprecatedPages,
     HomeRoutingPage: "/",
     SigninPage: "/login",
+    ForgotPasswordPage: "/forgot-password",
     PasswordResetPage: "/reset-password",
-    NewRetreatFormPage: "/getting-started",
+    // NewRetreatFormPage: "/getting-started",
     RetreatHomePage: "/r/:retreatIdx",
     RetreatFlightsPage: "/r/:retreatIdx/flights",
-    RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
+    // RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
     PretripPage: "/r/:retreatIdx/pretrip",
+    AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -114,6 +116,16 @@ export default function Stack() {
         exact
         component={HomeRoutingPage}
       />
+      <Route
+        path={AppRoutes.getPath("DeprecatedNewRetreatFormPage")}
+        exact
+        component={DeprecatedNewRetreatFormPage}
+      />
+      <Route
+        path={AppRoutes.getPath("DeprecatedRetreatPreferencesFormPage")}
+        exact
+        component={DeprecatedRetreatPreferencesFormPage}
+      />
       <ProtectedRoute
         path="/r/:retreatIdx"
         render={(props) => (
@@ -158,6 +170,11 @@ export default function Stack() {
               exact
               component={PretripPage}
             />
+            <ProtectedRoute
+              path={AppRoutes.getPath("AttendeeProfilePage")}
+              exact
+              component={AttendeeProfilePage}
+            />
           </RetreatProvider>
         )}
       />
@@ -173,7 +190,12 @@ export default function Stack() {
         exact
         component={AuthResetPage}
       />
-      <ProtectedRoute
+      <Route
+        path={AppRoutes.getPath("ForgotPasswordPage")}
+        exact
+        component={ForgotPasswordPage}
+      />
+      {/* <ProtectedRoute
         path={AppRoutes.getPath("RetreatPreferencesFormPage")}
         exact
         component={RetreatPreferencesFormPage}
@@ -182,7 +204,7 @@ export default function Stack() {
         path={AppRoutes.getPath("NewRetreatFormPage")}
         exact
         component={NewRetreatFormPage}
-      />
+      /> */}
 
       <Route path={"*"} component={NotFound404Page} />
     </Switch>

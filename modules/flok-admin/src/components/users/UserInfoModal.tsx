@@ -1,6 +1,7 @@
 import {
   Button,
   Dialog,
+  Link,
   makeStyles,
   Paper,
   TextField,
@@ -11,6 +12,7 @@ import {useFormik} from "formik"
 import _ from "lodash"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
+import config, {FLOK_BASE_URL_KEY} from "../../config"
 import {AdminRetreatListModel, User} from "../../models"
 import {RootState} from "../../store"
 import {getUserLoginToken, patchUser} from "../../store/actions/admin"
@@ -98,6 +100,9 @@ export default function UserInfoModal(props: UserInfoModalProps) {
   let loginToken = useSelector(
     (state: RootState) => state.admin.userLoginTokens[props.user.id]
   )
+  let resetPwUrl = loginToken
+    ? `${config.get(FLOK_BASE_URL_KEY)}/reset-password?loginToken=${loginToken}`
+    : undefined
 
   const commonTextFieldProps: TextFieldProps = {
     onChange: formik.handleChange,
@@ -181,6 +186,13 @@ export default function UserInfoModal(props: UserInfoModalProps) {
               value={loginToken || ""}
               disabled
               label="Active login token"
+              helperText={
+                resetPwUrl ? (
+                  <Link variant="inherit" href={resetPwUrl} target="_blank">
+                    {resetPwUrl}
+                  </Link>
+                ) : undefined
+              }
             />
             <div className={classes.buttonGroup}>
               <Button

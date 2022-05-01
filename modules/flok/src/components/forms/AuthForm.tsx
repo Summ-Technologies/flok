@@ -2,6 +2,7 @@ import {
   Button,
   IconButton,
   InputAdornment,
+  Link,
   makeStyles,
   StandardProps,
   TextField,
@@ -10,12 +11,19 @@ import {
 import {VisibilityOffRounded, VisibilityRounded} from "@material-ui/icons"
 import {useFormik} from "formik"
 import {useState} from "react"
+import {Link as RouterLink} from "react-router-dom"
 import * as yup from "yup"
+import {AppRoutes} from "../../Stack"
 import AppTypography from "../base/AppTypography"
 
 const useStyles = makeStyles((theme) => ({
   title: {
     marginBottom: theme.spacing(0.5),
+  },
+  submitRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 }))
 
@@ -41,6 +49,7 @@ interface AuthCardProps
   prefilledEmail?: string
   submitText: string
   title: string
+  forgotPassword?: boolean
 }
 export default function AuthForm(props: AuthCardProps) {
   const classes = useStyles()
@@ -119,17 +128,27 @@ export default function AuthForm(props: AuthCardProps) {
             ),
           }}
         />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={
-            formik.errors.email !== undefined ||
-            formik.errors.password !== undefined
-          }
-          style={{marginTop: 12}}>
-          {props.submitText}
-        </Button>
+        <div className={classes.submitRow}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={
+              formik.errors.email !== undefined ||
+              formik.errors.password !== undefined
+            }
+            style={{marginTop: 12}}>
+            {props.submitText}
+          </Button>
+          {props.forgotPassword ? (
+            <Link
+              variant="body1"
+              component={RouterLink}
+              to={AppRoutes.getPath("ForgotPasswordPage")}>
+              Forgot password?
+            </Link>
+          ) : undefined}
+        </div>
       </form>
     </>
   )

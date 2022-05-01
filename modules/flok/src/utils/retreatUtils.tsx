@@ -7,8 +7,14 @@ import {getRetreatAttendees, getRetreatByGuid} from "../store/actions/retreat"
 
 export function useRetreatAttendees(retreatId: number) {
   let dispatch = useDispatch()
-  let attendees = useSelector(
+  let attendeesList = useSelector(
     (state: RootState) => state.retreat.retreatAttendees[retreatId]
+  )
+  let attendeesObject = useSelector((state: RootState) => {
+    return state.retreat.attendees
+  })
+  let attendees = (attendeesList ? attendeesList : []).map(
+    (id) => attendeesObject[id]
   )
   let [loading, setLoading] = useState(false)
 
@@ -18,10 +24,10 @@ export function useRetreatAttendees(retreatId: number) {
       dispatch(getRetreatAttendees(retreatId))
       setLoading(false)
     }
-    if (!attendees) {
+    if (!attendeesList) {
       loadAttendees()
     }
-  }, [attendees, dispatch, retreatId])
+  }, [attendeesList, dispatch, retreatId])
   return [attendees, loading] as const
 }
 
