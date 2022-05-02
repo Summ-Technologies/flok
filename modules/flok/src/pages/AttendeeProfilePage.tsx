@@ -102,6 +102,7 @@ let useStyles = makeStyles((theme) => ({
 type AttendeesProfileProps = RouteComponentProps<{
   retreatIdx: string
   attendeeId: string
+  flights: string | undefined
 }>
 
 function AttendeeProfilePage(props: AttendeesProfileProps) {

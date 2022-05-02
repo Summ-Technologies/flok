@@ -48,6 +48,7 @@ export class AppRoutes {
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
     AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
+    AttendeeProfileFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -73,7 +74,7 @@ export class AppRoutes {
 
 export default function Stack() {
   // TODO, remove once released dashboard
-  const DASHBOARD_RELEASE = false
+  const DASHBOARD_RELEASE = true
   if (!DASHBOARD_RELEASE) {
     return (
       <Switch>
@@ -157,6 +158,11 @@ export default function Stack() {
             />
             <ProtectedRoute
               path={AppRoutes.getPath("AttendeeProfilePage")}
+              exact
+              component={AttendeeProfilePage}
+            />
+            <ProtectedRoute
+              path={AppRoutes.getPath("AttendeeProfileFlightsPage")}
               exact
               component={AttendeeProfilePage}
             />
