@@ -157,12 +157,10 @@ export default function Stack() {
               component={ProposalPage}
             />
             <ProtectedRoute
-              path={AppRoutes.getPath("AttendeeProfilePage")}
-              exact
-              component={AttendeeProfilePage}
-            />
-            <ProtectedRoute
-              path={AppRoutes.getPath("AttendeeProfileFlightsPage")}
+              path={[
+                AppRoutes.getPath("AttendeeProfilePage"),
+                AppRoutes.getPath("AttendeeProfileFlightsPage"),
+              ]}
               exact
               component={AttendeeProfilePage}
             />
