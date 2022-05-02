@@ -2,6 +2,7 @@ import {
   Avatar,
   Button,
   Icon,
+  Link,
   makeStyles,
   Tab,
   Tabs,
@@ -16,11 +17,16 @@ import {useFormik} from "formik"
 import _ from "lodash"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RouteComponentProps} from "react-router-dom"
+import {
+  Link as ReactRouterLink,
+  Route,
+  RouteComponentProps,
+  Switch,
+  useRouteMatch,
+} from "react-router-dom"
 import * as yup from "yup"
 import BeforeUnload from "../components/base/BeforeUnload"
 import AttendeeFlightTab from "../components/flights/AttendeeFlightTab"
-import AppTabPanel from "../components/page/AppTabPanel"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
@@ -29,8 +35,6 @@ import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getAttendee, patchAttendee} from "../store/actions/retreat"
 import {FlokTheme} from "../theme"
-import {useQuery} from "../utils"
-import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
   section: {
@@ -106,12 +110,9 @@ type AttendeesProfileProps = RouteComponentProps<{
 
 function AttendeeProfilePage(props: AttendeesProfileProps) {
   let dispatch = useDispatch()
-  let [tabQuery, setTabQuery] = useQuery("tab")
-  let [tabValue, setTabValue] = useState<string | undefined | number>(0)
-  useEffect(() => {
-    const TABS = ["profile", "flights"]
-    setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "profile")
-  }, [tabQuery, setTabValue])
+  let {url, path} = useRouteMatch()
+  const isFlights = path === AppRoutes.getPath("AttendeeProfileFlightsPage")
+
   let [newOption, setNewOption] = useState("")
   const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
     theme.breakpoints.down("sm")
@@ -136,13 +137,11 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
   let classes = useStyles()
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let attendeeId = parseInt(props.match.params.attendeeId)
-  let retreat = useRetreat()
   let attendee = useSelector((state: RootState) => {
     if (attendeeId != null) {
       return state.retreat.attendees[attendeeId]
     }
   })
-
   useEffect(() => {
     !attendee && dispatch(getAttendee(attendeeId))
   }, [attendeeId, attendee, dispatch])
@@ -186,229 +185,249 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       <PageSidenav activeItem="attendees" retreatIdx={retreatIdx} />
 
       <PageBody appBar>
-        <BeforeUnload
-          when={
-            !_.isEqual(formik.values, formik.initialValues) &&
-            tabQuery !== "flights"
-          }
-          message="Are you sure you want to leave without saving your changes?"
-        />
         <div className={classes.section}>
           <Tabs
             orientation={isSmallScreen ? "horizontal" : "vertical"}
             className={classes.tabs}
-            value={tabValue}
-            onChange={(e, newVal) =>
-              setTabQuery(newVal === "profile" ? null : newVal)
-            }
+            value={url}
             variant="fullWidth"
-            indicatorColor="primary">
-            <div
+            indicatorColor="primary"
+            onChange={(e, value) => dispatch(push(value))}>
+            <Link
+              component={ReactRouterLink}
+              variant="inherit"
+              underline="none"
+              color="inherit"
               className={classes.tab}
-              onClick={() => {
-                dispatch(
-                  push(
-                    AppRoutes.getPath("RetreatAttendeesPage", {
+              to={
+                isFlights
+                  ? AppRoutes.getPath("RetreatFlightsPage", {
                       retreatIdx: retreatIdx.toString(),
                     })
-                  )
-                )
-              }}>
+                  : AppRoutes.getPath("RetreatAttendeesPage", {
+                      retreatIdx: retreatIdx.toString(),
+                    })
+              }>
               <Icon>
                 <ArrowBackIos />
               </Icon>
-              All Attendees
-            </div>
+              {isFlights ? "All Flights" : "All Attendees"}
+            </Link>
             <Tab
               className={classes.tab}
-              value="profile"
+              value={AppRoutes.getPath("AttendeeProfilePage", {
+                retreatIdx: retreatIdx.toString(),
+                attendeeId: attendeeId.toString(),
+              })}
               icon={<AccountBox />}
               label={isSmallScreen ? "" : "Attendee Profile"}
             />
             <Tab
               className={classes.tab}
-              value="flights"
               icon={<FlightTakeoff />}
               label={isSmallScreen ? "" : "Attendee Flights"}
+              value={AppRoutes.getPath("AttendeeProfileFlightsPage", {
+                retreatIdx: retreatIdx.toString(),
+                attendeeId: attendeeId.toString(),
+              })}
             />
           </Tabs>
-          <AppTabPanel
-            show={tabValue === "profile"}
-            className={classes.fullPageTab}
-            renderDom="on-shown">
-            <div className={classes.body}>
-              <form className={classes.form} onSubmit={formik.handleSubmit}>
-                <Avatar className={classes.avatar}>
-                  <div className={classes.avatarDiv}>
-                    {attendee?.first_name
-                      ? `${attendee.first_name[0]}${
-                          attendee.last_name ? attendee.last_name[0] : ""
-                        }`
-                      : null}
-                  </div>
-                </Avatar>
-                <TextField
-                  {...textFieldProps}
-                  id="info_status"
-                  variant="outlined"
-                  value={formik.values.info_status}
-                  select
-                  SelectProps={{native: true}}
-                  label="Attendee Registration Status">
-                  {RetreatAttendeeInfoStatusOptions.map((o, i) => (
-                    <option key={i} value={o.value}>
-                      {o.text}
-                    </option>
-                  ))}
-                </TextField>
-                <TextField
-                  {...textFieldProps}
-                  className={classes.textField}
-                  variant="outlined"
-                  label="First Name"
-                  value={formik.values.first_name ?? ""}
-                  id="first_name"
-                />
-                <TextField
-                  {...textFieldProps}
-                  className={classes.textField}
-                  variant="outlined"
-                  label="Last Name"
-                  value={formik.values.last_name ?? ""}
-                  id="last_name"
-                />
-                <TextField
-                  {...textFieldProps}
-                  className={classes.textField}
-                  variant="outlined"
-                  label="Email"
-                  value={formik.values.email_address ?? ""}
-                />
-                <TextField
-                  {...textFieldProps}
-                  type="date"
-                  className={classes.textField}
-                  variant="outlined"
-                  label="Hotel check in"
-                  id="hotel_check_in"
-                  value={formik.values.hotel_check_in ?? ""}
-                />
-                <TextField
-                  {...textFieldProps}
-                  type="date"
-                  className={classes.textField}
-                  variant="outlined"
-                  label="Hotel check out"
-                  id="hotel_check_out"
-                  value={formik.values.hotel_check_out ?? ""}
-                />
-                <Autocomplete
-                  fullWidth
-                  multiple
-                  id="preferences_dates_flexible_months"
-                  options={Array.from(
-                    new Set([
-                      ...Array.from(DIETARY_OPTIONS).map((a) =>
-                        a.toLocaleLowerCase()
-                      ),
-                      ...(formik.values.dietary_prefs
-                        ? formik.values.dietary_prefs.split(",")
-                        : []
-                      ).map((a) => a.toLocaleLowerCase()),
-                      ...(newOption && newOption.length > 1
-                        ? [`Add \`${newOption.toLocaleLowerCase()}\``]
-                        : []),
-                    ])
-                  )}
-                  getOptionLabel={(option) => {
-                    return (
-                      option && option[0].toLocaleUpperCase() + option.slice(1)
-                    )
-                  }}
-                  filterSelectedOptions
-                  selectOnFocus
-                  clearOnBlur
-                  handleHomeEndKeys
-                  onInputChange={(e, value, reason) => {
-                    if (reason !== "reset" || e != null) setNewOption(value)
-                  }}
-                  inputValue={newOption}
-                  value={
-                    formik.values.dietary_prefs
-                      ?.split(",")
-                      .filter((a) => !!a)
-                      .map((a) => a.toLocaleLowerCase()) || []
-                  }
-                  onChange={(e, newVals) => {
-                    newVals = newVals.map((val) => {
-                      val = val.toLocaleLowerCase()
-                      if (val.startsWith("add `")) {
-                        val = val.slice(5, -1)
-                      }
-                      return val
-                    })
-                    formik.setFieldValue(
-                      "dietary_prefs",
-                      Array.from(
-                        new Set(
-                          newVals.sort().map((a) => a.toLocaleLowerCase())
-                        )
-                      ).join(",")
-                    )
-                  }}
-                  renderInput={(params) => {
-                    return (
+          <Switch>
+            <Route
+              path={AppRoutes.getPath("AttendeeProfilePage")}
+              exact
+              render={() => (
+                <div className={classes.fullPageTab}>
+                  <BeforeUnload
+                    when={!_.isEqual(formik.values, formik.initialValues)}
+                    message="Are you sure you want to leave without saving your changes?"
+                  />
+                  <div className={classes.body}>
+                    <form
+                      className={classes.form}
+                      onSubmit={formik.handleSubmit}>
+                      <Avatar className={classes.avatar}>
+                        <div className={classes.avatarDiv}>
+                          {attendee?.first_name
+                            ? `${attendee.first_name[0]}${
+                                attendee.last_name ? attendee.last_name[0] : ""
+                              }`
+                            : null}
+                        </div>
+                      </Avatar>
                       <TextField
-                        variant="outlined"
-                        className={classes.textField}
-                        {...params}
                         {...textFieldProps}
-                        inputProps={{
-                          ...params.inputProps,
-                          onKeyPress: (e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault()
-                              return false
-                            }
-                          },
-                        }}
-                        onChange={undefined}
-                        label="Dietary Preferences"
-                        placeholder="Select a dietary restriction"
+                        id="info_status"
+                        variant="outlined"
+                        value={formik.values.info_status}
+                        select
+                        SelectProps={{native: true}}
+                        label="Attendee Registration Status">
+                        {RetreatAttendeeInfoStatusOptions.map((o, i) => (
+                          <option key={i} value={o.value}>
+                            {o.text}
+                          </option>
+                        ))}
+                      </TextField>
+                      <TextField
+                        {...textFieldProps}
+                        className={classes.textField}
+                        variant="outlined"
+                        label="First Name"
+                        value={formik.values.first_name ?? ""}
+                        id="first_name"
                       />
-                    )
-                  }}
-                />
-                <TextField
-                  multiline
-                  {...textFieldProps}
-                  id="notes"
-                  value={formik.values.notes ?? ""}
-                  label="Other Notes"
-                  placeholder="Enter other notes on the attendee"
-                  className={classes.textField}
-                  variant="outlined"
-                  rows={2}
-                  rowsMax={4}
-                />
+                      <TextField
+                        {...textFieldProps}
+                        className={classes.textField}
+                        variant="outlined"
+                        label="Last Name"
+                        value={formik.values.last_name ?? ""}
+                        id="last_name"
+                      />
+                      <TextField
+                        {...textFieldProps}
+                        className={classes.textField}
+                        variant="outlined"
+                        label="Email"
+                        value={formik.values.email_address ?? ""}
+                      />
+                      <TextField
+                        {...textFieldProps}
+                        type="date"
+                        className={classes.textField}
+                        variant="outlined"
+                        label="Hotel check out"
+                        id="hotel_check_in"
+                        value={formik.values.hotel_check_in ?? ""}
+                      />
+                      <TextField
+                        {...textFieldProps}
+                        type="date"
+                        className={classes.textField}
+                        variant="outlined"
+                        label="Hotel check in"
+                        id="hotel_check_out"
+                        value={formik.values.hotel_check_out ?? ""}
+                      />
+                      <Autocomplete
+                        fullWidth
+                        multiple
+                        id="preferences_dates_flexible_months"
+                        options={Array.from(
+                          new Set([
+                            ...Array.from(DIETARY_OPTIONS).map((a) =>
+                              a.toLocaleLowerCase()
+                            ),
+                            ...(formik.values.dietary_prefs
+                              ? formik.values.dietary_prefs.split(",")
+                              : []
+                            ).map((a) => a.toLocaleLowerCase()),
+                            ...(newOption && newOption.length > 1
+                              ? [`Add \`${newOption.toLocaleLowerCase()}\``]
+                              : []),
+                          ])
+                        )}
+                        getOptionLabel={(option) => {
+                          return (
+                            option &&
+                            option[0].toLocaleUpperCase() + option.slice(1)
+                          )
+                        }}
+                        filterSelectedOptions
+                        selectOnFocus
+                        clearOnBlur
+                        handleHomeEndKeys
+                        onInputChange={(e, value, reason) => {
+                          if (reason !== "reset" || e != null)
+                            setNewOption(value)
+                        }}
+                        inputValue={newOption}
+                        value={
+                          formik.values.dietary_prefs
+                            ?.split(",")
+                            .filter((a) => !!a)
+                            .map((a) => a.toLocaleLowerCase()) || []
+                        }
+                        onChange={(e, newVals) => {
+                          newVals = newVals.map((val) => {
+                            val = val.toLocaleLowerCase()
+                            if (val.startsWith("add `")) {
+                              val = val.slice(5, -1)
+                            }
+                            return val
+                          })
+                          formik.setFieldValue(
+                            "dietary_prefs",
+                            Array.from(
+                              new Set(
+                                newVals.sort().map((a) => a.toLocaleLowerCase())
+                              )
+                            ).join(",")
+                          )
+                        }}
+                        renderInput={(params) => {
+                          return (
+                            <TextField
+                              variant="outlined"
+                              className={classes.textField}
+                              {...params}
+                              {...textFieldProps}
+                              inputProps={{
+                                ...params.inputProps,
+                                onKeyPress: (e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault()
+                                    return false
+                                  }
+                                },
+                              }}
+                              onChange={undefined}
+                              label="Dietary Preferences"
+                              placeholder="Select a dietary restriction"
+                            />
+                          )
+                        }}
+                      />
+                      <TextField
+                        multiline
+                        {...textFieldProps}
+                        id="notes"
+                        value={formik.values.notes ?? ""}
+                        label="Other Notes"
+                        placeholder="Enter other notes on the attendee"
+                        className={classes.textField}
+                        variant="outlined"
+                        rows={2}
+                        rowsMax={4}
+                      />
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  className={classes.submitButton}
-                  disabled={_.isEqual(formik.values, formik.initialValues)}>
-                  Save
-                </Button>
-              </form>
-            </div>
-          </AppTabPanel>
-          <AppTabPanel
-            show={tabValue === "flights"}
-            className={classes.fullPageTab}
-            renderDom="on-shown">
-            {attendee && <AttendeeFlightTab attendee={attendee} />}
-          </AppTabPanel>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        className={classes.submitButton}
+                        disabled={_.isEqual(
+                          formik.values,
+                          formik.initialValues
+                        )}>
+                        Save
+                      </Button>
+                    </form>
+                  </div>
+                </div>
+              )}
+            />
+            <Route
+              path={AppRoutes.getPath("AttendeeProfileFlightsPage")}
+              render={() => (
+                <div className={classes.fullPageTab}>
+                  {attendee && <AttendeeFlightTab attendee={attendee} />}
+                </div>
+              )}
+              exact
+            />
+          </Switch>
         </div>
       </PageBody>
     </PageContainer>

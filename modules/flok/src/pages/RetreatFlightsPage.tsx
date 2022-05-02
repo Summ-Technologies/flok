@@ -1,4 +1,13 @@
-import {Box, Chip, Link, makeStyles, Typography} from "@material-ui/core"
+import {
+  Box,
+  Chip,
+  Link,
+  makeStyles,
+  MenuItem,
+  Typography,
+} from "@material-ui/core"
+import {Flight} from "@material-ui/icons"
+import {push} from "connected-react-router"
 import {sortBy} from "lodash"
 import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
@@ -253,9 +262,9 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                       return 2
                     }
                   }).map((attendee) => ({
-                    id: attendee.travel?.id ?? -1,
+                    id: attendee.id ?? -1,
                     item: {
-                      id: attendee.travel?.id ?? -1,
+                      id: attendee.id ?? -1,
                       first_name: attendee.first_name,
                       last_name: attendee.last_name ?? "",
                       arrival:
@@ -284,6 +293,26 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                   }))
                 : []
             }
+            menuItems={(row) => {
+              let editMenuItem = (
+                <MenuItem
+                  onClick={() =>
+                    dispatch(
+                      push(
+                        AppRoutes.getPath("AttendeeProfileFlightsPage", {
+                          retreatIdx: retreatIdx.toString(),
+                          attendeeId: row.item.id.toString(),
+                        })
+                      )
+                    )
+                  }>
+                  <Flight />
+                  Edit
+                </MenuItem>
+              )
+
+              return [editMenuItem]
+            }}
           />
         </div>
       </PageBody>

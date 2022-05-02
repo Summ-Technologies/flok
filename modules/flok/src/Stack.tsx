@@ -46,6 +46,7 @@ export class AppRoutes {
     LodgingPage: "/r/:retreatIdx/lodging/proposals",
     ProposalPage: "/r/:retreatIdx/lodging/proposals/:hotelGuid",
     AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
+    AttendeeProfileFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -164,7 +165,10 @@ export default function Stack() {
               component={ProposalPage}
             />
             <ProtectedRoute
-              path={AppRoutes.getPath("AttendeeProfilePage")}
+              path={[
+                AppRoutes.getPath("AttendeeProfilePage"),
+                AppRoutes.getPath("AttendeeProfileFlightsPage"),
+              ]}
               exact
               component={AttendeeProfilePage}
             />
