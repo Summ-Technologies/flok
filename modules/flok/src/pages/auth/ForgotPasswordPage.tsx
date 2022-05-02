@@ -8,6 +8,7 @@ import {
   withRouter,
 } from "react-router-dom"
 import * as yup from "yup"
+import AppLogo from "../../components/base/AppLogo"
 import AppTypography from "../../components/base/AppTypography"
 import PageContainer from "../../components/page/PageContainer"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
@@ -18,43 +19,59 @@ import {postForgotPassword} from "../../store/actions/user"
 import {theme} from "../../theme"
 
 let useStyles = makeStyles((theme) => ({
+  title: {
+    marginBottom: theme.spacing(0.5),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: -theme.spacing(1),
+    "& > *": {
+      marginTop: theme.spacing(1),
+    },
+  },
+  footer: {
+    marginTop: theme.spacing(1),
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.primary.contrastText,
+    padding: theme.spacing(2),
+    border: "1px solid rgba(0, 0, 0, 0.1)",
+    borderRadius: 5,
+    boxShadow: theme.shadows[1],
+    textAlign: "center",
+  },
   modal: {
-    maxWidth: 500,
-    maxHeight: 250,
-    width: "90%",
-    height: "90%",
     padding: theme.spacing(2),
     backgroundColor: theme.palette.background.paper,
     border: "1px solid rgba(0, 0, 0, 0.1)",
     borderRadius: 5,
-    "-webkit-box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "-moz-box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "-webkit-background-clip": "padding-box",
-    "-moz-background-clip": "padding-box",
+    boxShadow: theme.shadows[1],
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    margin: "auto",
+    maxWidth: 500,
+    width: "90%",
+    textAlign: "center",
+  },
+  modalFooterContainer: {
+    margin: "auto",
+    maxWidth: 500,
+    width: "90%",
   },
   body: {
+    overflow: "auto",
     width: "100%",
     height: "100%",
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    alignContent: "baseline",
-    backgroundImage:
-      'url("https://flok-b32d43c.s3.amazonaws.com/misc/flok-page-construction-background.svg")',
-    backgroundSize: "cover",
-    backgroundPosition: "center",
+    flexDirection: "column",
   },
+
   buttons: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
   },
 }))
-
 let validationSchema = yup.object().shape({
   email: yup
     .string()
@@ -97,21 +114,22 @@ function AuthResetPage(props: AuthResetPageProps) {
     <PageContainer>
       <Box className={classes.body}>
         <Box className={classes.modal}>
-          <AppTypography
-            variant="h1"
-            style={{marginBottom: theme.spacing(0.5)}}>
-            Trouble Logging In?
-          </AppTypography>
+          <div className={classes.title}>
+            <AppLogo height={50} noBackground withText />
+            <AppTypography variant="h3">Trouble Logging In?</AppTypography>
+          </div>
           {submitted ? (
-            <AppTypography variant="body2" style={{flexGrow: 2}}>
-              If there is a user matching that email address you shuld receive
+            <AppTypography
+              variant="body2"
+              style={{flexGrow: 2, minHeight: 100}}>
+              If there is a user matching that email address you should receive
               an email shortly.
             </AppTypography>
           ) : (
             <>
-              <AppTypography variant="body1">
-                Enter your email below and we'll send a link to get back into
-                your account.
+              <AppTypography variant="body2">
+                Enter your email below and we'll send you a link to get back
+                into your account.
               </AppTypography>
               <form onSubmit={formik.handleSubmit}>
                 <TextField

@@ -17,19 +17,13 @@ import {apiToModel} from "../../utils/apiUtils"
 let useStyles = makeStyles((theme) => ({
   modal: {
     maxWidth: 500,
-    maxHeight: 250,
     width: "90%",
-    height: "90%",
     padding: theme.spacing(2),
     backgroundColor: theme.palette.background.paper,
     border: "1px solid rgba(0, 0, 0, 0.1)",
     borderRadius: 5,
-    "-webkit-box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "-moz-box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "box-shadow": "0 3px 7px rgba(0, 0, 0, 0.3)",
-    "-webkit-background-clip": "padding-box",
-    "-moz-background-clip": "padding-box",
     display: "flex",
+    boxShadow: theme.shadows[1],
     flexDirection: "column",
     justifyContent: "center",
   },
@@ -40,10 +34,6 @@ let useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     alignContent: "baseline",
-    backgroundImage:
-      'url("https://flok-b32d43c.s3.amazonaws.com/misc/flok-page-construction-background.svg")',
-    backgroundSize: "cover",
-    backgroundPosition: "center",
   },
 
   errorMessageText: {
