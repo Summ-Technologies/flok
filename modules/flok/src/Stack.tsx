@@ -91,16 +91,6 @@ export default function Stack() {
           component={DeprecatedRetreatPreferencesFormPage}
         />
         <Route
-          path={AppRoutes.getPath("DeprecatedProposalsListPage")}
-          exact
-          component={DeprecatedProposalsListPage}
-        />
-        <Route
-          path={AppRoutes.getPath("DeprecatedProposalPage")}
-          exact
-          component={DeprecatedProposalPage}
-        />
-        <Route
           path={"*"}
           render={() => <RedirectPage pageName="DeprecatedHomeRoutingPage" />}
         />
@@ -123,6 +113,16 @@ export default function Stack() {
         path={AppRoutes.getPath("DeprecatedRetreatPreferencesFormPage")}
         exact
         component={DeprecatedRetreatPreferencesFormPage}
+      />
+      <Route
+        path={AppRoutes.getPath("DeprecatedProposalsListPage")}
+        exact
+        component={DeprecatedProposalsListPage}
+      />
+      <Route
+        path={AppRoutes.getPath("DeprecatedProposalPage")}
+        exact
+        component={DeprecatedProposalPage}
       />
       <ProtectedRoute
         path="/r/:retreatIdx"
