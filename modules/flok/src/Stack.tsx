@@ -50,6 +50,7 @@ export class AppRoutes {
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
     LandingPageGenerator: "/r/:retreatIdx/landing",
+    LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:config",
     CreateRetreatWebsite: "/r/:retreatIdx/create-website",
 
     // TODO, remove once dashboard release
@@ -151,6 +152,10 @@ export default function Stack() {
             <ProtectedRoute
               path={AppRoutes.getPath("LandingPageGenerator")}
               exact
+              component={LandingPageGenerator}
+            />
+            <ProtectedRoute
+              path={AppRoutes.getPath("LandingPageGeneratorConfig")}
               component={LandingPageGenerator}
             />
             <ProtectedRoute

@@ -1,4 +1,4 @@
-import {Box, Button, TextField} from "@material-ui/core"
+import {Box, Button, makeStyles, TextField, Typography} from "@material-ui/core"
 import {useFormik} from "formik"
 import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
@@ -9,9 +9,33 @@ import {useRetreat} from "./misc/RetreatProvider"
 type CreateRetreatWebsiteProps = RouteComponentProps<{
   retreatIdx: string
 }>
+let useStyles = makeStyles((theme) => ({
+  root: {
+    padding: theme.spacing(2),
+    flex: 1,
+    overflow: "hidden",
+  },
+  body: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  textField: {
+    marginTop: theme.spacing(1),
+  },
+  form: {
+    backgroundColor: "white",
+    padding: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius,
+    marginTop: theme.spacing(2),
+  },
+  submitButton: {
+    marginTop: theme.spacing(1),
+  },
+}))
 function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
   let retreat = useRetreat()
   let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let classes = useStyles()
   let formik = useFormik({
     initialValues: {
       header_image_link: "",
@@ -30,10 +54,11 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
     <PageContainer>
       <PageSidenav retreatIdx={retreatIdx} />
       <PageBody appBar>
-        <div>
-          <form onSubmit={formik.handleSubmit}>
-            Create Website
-            <Box>
+        <div className={classes.root}>
+          <Typography variant="h1">Create a Website</Typography>
+
+          <form onSubmit={formik.handleSubmit} className={classes.form}>
+            <Box className={classes.body}>
               <TextField
                 required
                 value={formik.values.website_name}
@@ -41,6 +66,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                 onChange={formik.handleChange}
                 variant="outlined"
                 label="Website Name"
+                className={classes.textField}
               />
               <TextField
                 value={formik.values.header_image_link}
@@ -48,6 +74,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                 onChange={formik.handleChange}
                 variant="outlined"
                 label="Banner Image Link"
+                className={classes.textField}
               />
               <TextField
                 value={formik.values.company_logo_link}
@@ -55,9 +82,14 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                 onChange={formik.handleChange}
                 variant="outlined"
                 label="Logo Image"
+                className={classes.textField}
               />
             </Box>
-            <Button type="submit" color="primary">
+            <Button
+              type="submit"
+              color="primary"
+              variant="contained"
+              className={classes.submitButton}>
               Save
             </Button>
           </form>

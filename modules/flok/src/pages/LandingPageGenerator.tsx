@@ -1,15 +1,23 @@
 import {
   Box,
   Button,
+  Drawer,
+  IconButton,
   makeStyles,
   Tab,
   Tabs,
   TextField,
   Typography,
 } from "@material-ui/core"
+import {Settings} from "@material-ui/icons"
 import {useEffect, useState} from "react"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
-import {RouteComponentProps} from "react-router-dom"
+import {
+  Route,
+  RouteComponentProps,
+  Switch,
+  useRouteMatch,
+} from "react-router-dom"
 import AppTabPanel from "../components/page/AppTabPanel"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
@@ -21,10 +29,14 @@ import {useRetreat} from "./misc/RetreatProvider"
 
 type LandingPageGeneratorProps = RouteComponentProps<{
   retreatIdx: string
+  config: string | undefined
 }>
 function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let config = props.match.params.config
   let retreat = useRetreat()
+  let {path, url} = useRouteMatch()
+  console.log(config)
 
   let [tabQuery, setTabQuery] = useQuery("tab")
   let [tabValue, setTabValue] = useState<string | undefined | number>("Home")
@@ -33,17 +45,13 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
 
   const [pages, setPages] = useState([{title: "Home", blocks: [], id: 0}])
 
-  // let testcontent = `{"blocks":[{"key":"cs1j4","text":"asd;lfkmadsf","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"e1826","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"8bv1r","text":"adfs","type":"unstyled","depth":0,"inlineStyleRanges":[{"offset":0,"length":4,"style":"BOLD"}],"entityRanges":[],"data":{}},{"key":"aoqg5","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"bq87t","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}},{"key":"5iarr","text":" ","type":"atomic","depth":0,"inlineStyleRanges":[],"entityRanges":[{"offset":0,"length":1,"key":0}],"data":{}},{"key":"907or","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{"0":{"type":"IMAGE","mutability":"MUTABLE","data":{"src":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNe8mkQDAyfUrMt5hhqqmhYlEAs8MeiBC5grpnoICI3g&s","height":"auto","width":"auto"}}}}`
-  // const [editorState, setEditorState] = useState(() =>
-  //   EditorState.createWithContent(convertFromRaw(JSON.parse(testcontent)))
-  // )
-
   const [editWebsiteModalOpen, setEditWebsiteModalOpen] = useState(false)
   const [blocks, setBlocks] = useState([])
 
   useEffect(() => {
     let TABS = pages.map((page) => page.title)
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "Home")
+    console.log(tabValue, tabQuery)
   }, [tabQuery, setTabValue, pages])
 
   // let testHTML = draftToHtml(convertToRaw(editorState.getCurrentContent()))
@@ -63,6 +71,17 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
       paddingRight: theme.spacing(2),
       marginRight: theme.spacing(1.5),
       cursor: "pointer",
+    },
+    header: {
+      display: "flex",
+      justifyContent: "space-between",
+    },
+    addNew: {
+      display: "flex",
+      gap: theme.spacing(2),
+    },
+    drawer: {
+      width: "200px",
     },
   }))
 
@@ -84,77 +103,99 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
           open={editWebsiteModalOpen}
           handleClose={() => setEditWebsiteModalOpen(false)}
         />
+        <Drawer
+          anchor="right"
+          open={config !== undefined}
+          className={classes.drawer}
+          onClose={() => {
+            alert("hi")
+          }}>
+          asdf
+          <Switch>
+            <Route exact path={path}>
+              <h3>Please select a topic.</h3>
+            </Route>
+            <Route path={`${path}/page1`}>
+              <h3>No way</h3>
+            </Route>
+            <Route path={`${path}/page2`}>
+              <h3>Yes way</h3>
+            </Route>
+          </Switch>
+        </Drawer>
+
         <Box>
           <div className={classes.root}>
-            <Typography variant="h3">
-              {" "}
-              Create {retreat.company_name} Retreat Website
-            </Typography>
-          </div>
-        </Box>
-        <Button
-          onClick={() => {
-            setEditWebsiteModalOpen(true)
-          }}>
-          Open Edit Modal
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddPage}
-          disabled={disabled}
-          size="small">
-          Add New Page
-        </Button>
+            <div className={classes.header}>
+              <Typography variant="h1">
+                {retreat.company_name} Retreat Website
+              </Typography>
+              <IconButton
+                onClick={() => {
+                  setEditWebsiteModalOpen(true)
+                }}>
+                <Settings fontSize="large"></Settings>
+              </IconButton>
+            </div>
 
-        <div style={{display: "flex", alignItems: "center"}}>
-          <TextField
-            variant="outlined"
-            value={newPageTitle}
-            onChange={(e: any) => {
-              setNewPageTitle(e.target.value)
-            }}
-            label="New Page Title"
-            size="small"
-          />
-        </div>
+            <div className={classes.addNew}>
+              <TextField
+                variant="outlined"
+                value={newPageTitle}
+                onChange={(e: any) => {
+                  setNewPageTitle(e.target.value)
+                }}
+                label="New Page Title"
+                size="small"
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddPage}
+                disabled={disabled}
+                size="small">
+                Add New Page
+              </Button>
+            </div>
 
-        <Box>
-          <Tabs
-            orientation={"horizontal"}
-            className={classes.tabs}
-            value={tabValue}
-            onChange={(e, newVal) =>
-              setTabQuery(newVal === "profile" ? null : newVal)
-            }
-            variant="fullWidth"
-            indicatorColor="primary">
+            <Box>
+              <Tabs
+                orientation={"horizontal"}
+                className={classes.tabs}
+                value={tabValue}
+                onChange={(e, newVal) =>
+                  setTabQuery(newVal === "home" ? null : newVal)
+                }
+                variant="fullWidth"
+                indicatorColor="primary">
+                {pages.map((page, i) => {
+                  return (
+                    <Tab
+                      className={classes.tab}
+                      value={page.title}
+                      label={page.title}
+                      key={i}
+                    />
+                  )
+                })}
+              </Tabs>
+            </Box>
             {pages.map((page, i) => {
               return (
-                <Tab
-                  className={classes.tab}
-                  value={page.title}
-                  label={page.title}
-                  key={i}
-                />
+                <AppTabPanel
+                  show={tabValue === page.title}
+                  className={`${classes.tab}`}
+                  renderDom="on-shown">
+                  <LandingPageEditForm
+                    page={page}
+                    blocks={blocks}
+                    setBlocks={setBlocks}
+                  />
+                </AppTabPanel>
               )
             })}
-          </Tabs>
+          </div>
         </Box>
-        {pages.map((page, i) => {
-          return (
-            <AppTabPanel
-              show={tabValue === page.title}
-              className={`${classes.tab}`}
-              renderDom="on-shown">
-              <LandingPageEditForm
-                page={page}
-                blocks={blocks}
-                setBlocks={setBlocks}
-              />
-            </AppTabPanel>
-          )
-        })}
       </PageBody>
     </PageContainer>
   )

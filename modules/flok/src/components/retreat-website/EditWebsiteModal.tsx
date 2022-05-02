@@ -4,12 +4,25 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
+  makeStyles,
   TextField,
 } from "@material-ui/core"
 import {useFormik} from "formik"
 import {useRetreat} from "../../pages/misc/RetreatProvider"
+
+let useStyles = makeStyles((theme) => ({
+  body: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  textField: {
+    minWidth: "320px",
+    "&:not(:first-child)": {
+      marginTop: theme.spacing(2),
+    },
+  },
+}))
 
 type EditWebsiteModalProps = {
   open: boolean
@@ -24,40 +37,22 @@ function EditWebsiteModal(props: EditWebsiteModalProps) {
       website_name: "",
     },
     onSubmit: (values) => {
-      //convert from editor state to current content
       console.log({
         ...values,
         retreat_id: retreat.id,
       })
     },
   })
+  let classes = useStyles()
   return (
     <Dialog
       open={props.open}
       onClose={props.handleClose}
       aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title">Create Retreat Website</DialogTitle>
+      <DialogTitle id="form-dialog-title">Update Website</DialogTitle>
       <form onSubmit={formik.handleSubmit}>
-        <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
-          </DialogContentText>
-          <Box>
-            <TextField
-              value={formik.values.header_image_link}
-              id={`header_image_link`}
-              onChange={formik.handleChange}
-              variant="outlined"
-              label="Banner Image Link"
-            />
-            <TextField
-              value={formik.values.company_logo_link}
-              id={`company_logo_link`}
-              onChange={formik.handleChange}
-              variant="outlined"
-              label="Logo Image"
-            />
+        <DialogContent dividers>
+          <Box className={classes.body}>
             <TextField
               required
               value={formik.values.website_name}
@@ -65,6 +60,23 @@ function EditWebsiteModal(props: EditWebsiteModalProps) {
               onChange={formik.handleChange}
               variant="outlined"
               label="Website Name"
+              className={classes.textField}
+            />
+            <TextField
+              value={formik.values.header_image_link}
+              id={`header_image_link`}
+              onChange={formik.handleChange}
+              variant="outlined"
+              label="Banner Image Link"
+              className={classes.textField}
+            />
+            <TextField
+              value={formik.values.company_logo_link}
+              id={`company_logo_link`}
+              onChange={formik.handleChange}
+              variant="outlined"
+              label="Logo Image"
+              className={classes.textField}
             />
           </Box>
         </DialogContent>
