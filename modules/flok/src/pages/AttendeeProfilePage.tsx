@@ -16,7 +16,7 @@ import {useFormik} from "formik"
 import _ from "lodash"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RouteComponentProps} from "react-router-dom"
+import {RouteComponentProps, useRouteMatch} from "react-router-dom"
 import * as yup from "yup"
 import BeforeUnload from "../components/base/BeforeUnload"
 import AttendeeFlightTab from "../components/flights/AttendeeFlightTab"
@@ -29,7 +29,6 @@ import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getAttendee, patchAttendee} from "../store/actions/retreat"
 import {FlokTheme} from "../theme"
-import {useQuery} from "../utils"
 import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -102,17 +101,13 @@ let useStyles = makeStyles((theme) => ({
 type AttendeesProfileProps = RouteComponentProps<{
   retreatIdx: string
   attendeeId: string
-  flights: string | undefined
 }>
 
 function AttendeeProfilePage(props: AttendeesProfileProps) {
   let dispatch = useDispatch()
-  let [tabQuery, setTabQuery] = useQuery("tab")
-  let [tabValue, setTabValue] = useState<string | undefined | number>(0)
-  useEffect(() => {
-    const TABS = ["profile", "flights"]
-    setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "profile")
-  }, [tabQuery, setTabValue])
+  let {path} = useRouteMatch()
+  const isFlights = path.substring(path.length - 7, path.length) === "flights"
+
   let [newOption, setNewOption] = useState("")
   const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
     theme.breakpoints.down("sm")
@@ -143,7 +138,6 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
       return state.retreat.attendees[attendeeId]
     }
   })
-
   useEffect(() => {
     !attendee && dispatch(getAttendee(attendeeId))
   }, [attendeeId, attendee, dispatch])
@@ -188,20 +182,14 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
 
       <PageBody appBar>
         <BeforeUnload
-          when={
-            !_.isEqual(formik.values, formik.initialValues) &&
-            tabQuery !== "flights"
-          }
+          when={!_.isEqual(formik.values, formik.initialValues) && !isFlights}
           message="Are you sure you want to leave without saving your changes?"
         />
         <div className={classes.section}>
           <Tabs
             orientation={isSmallScreen ? "horizontal" : "vertical"}
             className={classes.tabs}
-            value={tabValue}
-            onChange={(e, newVal) =>
-              setTabQuery(newVal === "profile" ? null : newVal)
-            }
+            value={isFlights || "profile"}
             variant="fullWidth"
             indicatorColor="primary">
             <div
@@ -209,32 +197,56 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
               onClick={() => {
                 dispatch(
                   push(
-                    AppRoutes.getPath("RetreatAttendeesPage", {
-                      retreatIdx: retreatIdx.toString(),
-                    })
+                    isFlights
+                      ? AppRoutes.getPath("RetreatFlightsPage", {
+                          retreatIdx: retreatIdx.toString(),
+                        })
+                      : AppRoutes.getPath("RetreatAttendeesPage", {
+                          retreatIdx: retreatIdx.toString(),
+                        })
                   )
                 )
               }}>
               <Icon>
                 <ArrowBackIos />
               </Icon>
-              All Attendees
+              {isFlights ? "All Flights" : "All Attendees"}
             </div>
             <Tab
               className={classes.tab}
-              value="profile"
+              value={"profile"}
               icon={<AccountBox />}
               label={isSmallScreen ? "" : "Attendee Profile"}
+              onClick={() => {
+                dispatch(
+                  push(
+                    AppRoutes.getPath("AttendeeProfilePage", {
+                      retreatIdx: retreatIdx.toString(),
+                      attendeeId: attendeeId.toString(),
+                    })
+                  )
+                )
+              }}
             />
             <Tab
               className={classes.tab}
-              value="flights"
+              value={true}
               icon={<FlightTakeoff />}
               label={isSmallScreen ? "" : "Attendee Flights"}
+              onClick={() => {
+                dispatch(
+                  push(
+                    AppRoutes.getPath("AttendeeProfileFlightsPage", {
+                      retreatIdx: retreatIdx.toString(),
+                      attendeeId: attendeeId.toString(),
+                    })
+                  )
+                )
+              }}
             />
           </Tabs>
           <AppTabPanel
-            show={tabValue === "profile"}
+            show={!isFlights}
             className={classes.fullPageTab}
             renderDom="on-shown">
             <div className={classes.body}>
@@ -405,7 +417,7 @@ function AttendeeProfilePage(props: AttendeesProfileProps) {
             </div>
           </AppTabPanel>
           <AppTabPanel
-            show={tabValue === "flights"}
+            show={isFlights}
             className={classes.fullPageTab}
             renderDom="on-shown">
             {attendee && <AttendeeFlightTab attendee={attendee} />}
