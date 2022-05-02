@@ -25,6 +25,17 @@ export const BUDGET_TOOL_FLOK_RECOMENDATIONS = {
   addons: ["COVID test", "Swag", "Photographer", "Onsite Coordinator"],
 } as BudgetBreakdownInputType
 
+export const INITIAL_BUDGET_TOOL_VALUES = {
+  trip_length: 0,
+  experience_type: 0,
+  avg_flight_cost: 600,
+  num_attendees: null,
+  work_play_mix: "",
+  alcohol: "",
+  ground_transportation: [],
+  addons: [],
+}
+
 export type BudgetBreakdownType = {
   attendeeCost: number
   totalCost: number
@@ -218,7 +229,7 @@ export function getBudgetBreakdown(userInput: BudgetBreakdownInputType) {
   let attendeeCost =
     activities.cost +
     meals.map((o) => o.cost * o.num).reduce((p, v) => p + v) +
-    ground_transport.map((o) => o.cost).reduce((p, v) => p + v) +
+    (ground_transport.map((o) => o.cost) ?? [0]).reduce((p, v) => p + v) +
     misc.map((o) => o.cost).reduce((p, v) => p + v) +
     userInput.avg_flight_cost +
     hotelPerNight * (userInput.trip_length - 1)

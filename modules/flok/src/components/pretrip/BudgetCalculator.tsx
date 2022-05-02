@@ -12,6 +12,7 @@ import {
 import {Help} from "@material-ui/icons"
 import {useFormik} from "formik"
 import {useState} from "react"
+import * as Yup from "yup"
 import {
   BudgetBreakdownInputType,
   BUDGET_TOOL_FLOK_RECOMENDATIONS,
@@ -28,6 +29,10 @@ let useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
       marginLeft: theme.spacing(2),
       padding: theme.spacing(2),
+    },
+    "& .MuiFormLabel-asterisk.MuiInputLabel-asterisk": {
+      // these are the classes used from material-ui library for the asterisk element
+      display: "none",
     },
   },
   formGroup: {
@@ -50,12 +55,40 @@ let useStyles = makeStyles((theme) => ({
 export default function BudgetCalculator(props: {
   onSubmit: (budgetBreakdown: BudgetBreakdownInputType) => void
 }) {
-  let [open, setOpen] = useState(false)
+  let [open, setOpen] = useState(true)
+  let [submitted, setSubmitted] = useState(false)
   let classes = useStyles(props)
   let formik = useFormik({
     enableReinitialize: true,
-    initialValues: {...BUDGET_TOOL_FLOK_RECOMENDATIONS},
-    onSubmit: (values) => props.onSubmit(values),
+    initialValues: {
+      trip_length: "" as number | "",
+      experience_type: "" as number | "",
+      avg_flight_cost: 600,
+      num_attendees: undefined as number | undefined,
+      work_play_mix: "",
+      alcohol: "",
+      ground_transportation: [] as string[],
+      addons: [] as string[],
+    },
+    onSubmit: (values) => {
+      let budgetInput = {
+        ...values,
+        trip_length: values.trip_length ?? 0,
+        experience_type: values.experience_type ?? 0,
+        avg_flight_cost: values.avg_flight_cost,
+        num_attendees: values.num_attendees ?? 0,
+      } as BudgetBreakdownInputType
+
+      props.onSubmit(budgetInput)
+    },
+    validationSchema: Yup.object().shape({
+      trip_length: Yup.number().required("Required"),
+      experience_type: Yup.number().required("Required"),
+      avg_flight_cost: Yup.number().min(0).required("Required"),
+      num_attendees: Yup.number().min(0).required("Required"),
+      work_play_mix: Yup.string().required("Required"),
+      alcohol: Yup.string().required("Required"),
+    }),
   })
   const textFieldProps: TextFieldProps = {
     fullWidth: true,
@@ -69,17 +102,25 @@ export default function BudgetCalculator(props: {
           underline
           style={{cursor: "pointer"}}
           onClick={() => setOpen(true)}>
-          Show retreat settings
+          Show retreat cost inputs
         </AppTypography>
       )}
       <Collapse in={open}>
-        <AppTypography fontWeight="bold" variant="h3" style={{marginBottom: 6}}>
-          Retreat Settings
-        </AppTypography>
         <form className={classes.root} onSubmit={formik.handleSubmit}>
           <Paper elevation={0} className={classes.formGroup}>
             <TextField
               {...textFieldProps}
+              error={!!formik.errors.num_attendees && submitted}
+              helperText={submitted ? formik.errors.num_attendees : ""}
+              id="num_attendees"
+              value={formik.values.num_attendees}
+              label="Attendees"
+              type="number"
+            />
+            <TextField
+              {...textFieldProps}
+              error={!!formik.errors.trip_length && submitted}
+              helperText={submitted && formik.errors.trip_length}
               id="trip_length"
               value={formik.values.trip_length}
               label={
@@ -100,7 +141,10 @@ export default function BudgetCalculator(props: {
                 </div>
               }
               select
-              InputLabelProps={{style: {pointerEvents: "auto"}}}
+              InputLabelProps={{
+                style: {pointerEvents: "auto"},
+                shrink: true,
+              }}
               SelectProps={{
                 native: false,
                 onChange: (e) =>
@@ -115,9 +159,12 @@ export default function BudgetCalculator(props: {
             <TextField
               {...textFieldProps}
               id="experience_type"
+              error={!!formik.errors.experience_type && submitted}
+              helperText={submitted && formik.errors.experience_type}
               value={formik.values.experience_type}
               label="Experience Type"
               select
+              InputLabelProps={{shrink: true}}
               SelectProps={{
                 native: false,
                 onChange: (e) =>
@@ -132,8 +179,10 @@ export default function BudgetCalculator(props: {
             <TextField
               {...textFieldProps}
               id="avg_flight_cost"
+              error={!!formik.errors.avg_flight_cost && submitted}
+              helperText={submitted && formik.errors.avg_flight_cost}
               value={formik.values.avg_flight_cost}
-              InputLabelProps={{style: {pointerEvents: "auto"}}}
+              InputLabelProps={{style: {pointerEvents: "auto"}, required: true}}
               label={
                 <div className={classes.textfieldTitle}>
                   Average Flight Cost{" "}
@@ -158,20 +207,15 @@ export default function BudgetCalculator(props: {
                 ),
               }}
             />
-            <TextField
-              {...textFieldProps}
-              id="num_attendees"
-              value={formik.values.num_attendees}
-              label="Attendees"
-              type="number"
-            />
           </Paper>
           <Paper className={classes.formGroup}>
             <TextField
               {...textFieldProps}
               id="work_play_mix"
               value={formik.values.work_play_mix}
-              InputLabelProps={{style: {pointerEvents: "auto"}}}
+              error={!!formik.errors.work_play_mix && submitted}
+              helperText={submitted && formik.errors.work_play_mix}
+              InputLabelProps={{style: {pointerEvents: "auto"}, shrink: true}}
               label={
                 <div className={classes.textfieldTitle}>
                   All work, all play, or a mix?{" "}
@@ -209,6 +253,8 @@ export default function BudgetCalculator(props: {
               {...textFieldProps}
               id="alcohol"
               value={formik.values.alcohol}
+              error={!!formik.errors.alcohol && submitted}
+              helperText={submitted && formik.errors.alcohol}
               label="Will you provide alcohol?"
               select
               SelectProps={{
@@ -273,14 +319,27 @@ export default function BudgetCalculator(props: {
             </TextField>
           </Paper>
           <div className={classes.buttons}>
-            <Button type="submit" variant="contained" color="primary">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              onClick={() => setSubmitted(true)}>
               Calculate Retreat Cost
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              style={{marginLeft: 6}}
+              onClick={() =>
+                formik.setValues({...BUDGET_TOOL_FLOK_RECOMENDATIONS})
+              }>
+              Fill in Flok recomendations
             </Button>
             <AppTypography
               underline
               style={{marginLeft: 6, cursor: "pointer"}}
               onClick={() => setOpen(false)}>
-              Hide retreat settings
+              Hide retreat cost inputs
             </AppTypography>
           </div>
         </form>

@@ -1,6 +1,7 @@
 import {
   Box,
   Collapse,
+  Icon,
   IconButton,
   makeStyles,
   Paper,
@@ -11,7 +12,16 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core"
-import {ExpandLess, ExpandMore} from "@material-ui/icons"
+import {
+  AddOutlined,
+  DirectionsCarOutlined,
+  ExpandLess,
+  ExpandMore,
+  FlightOutlined,
+  KingBedOutlined,
+  LocalActivityOutlined,
+  LocalDiningOutlined,
+} from "@material-ui/icons"
 import {Fragment, useState} from "react"
 import {
   BudgetBreakdownInputType,
@@ -25,10 +35,14 @@ let useStyles = makeStyles((theme) => ({
   },
   tableRow: {
     "& > :first-child": {
-      width: 6,
+      "& > :first-child": {
+        height: 30,
+      },
+      width: 12,
     },
     "& > *": {
       whiteSpace: "nowrap",
+      fontSize: "1rem",
     },
   },
   breakdownHeaderRow: {
@@ -56,10 +70,16 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
+let currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+})
+
 function BudgetRow(props: {
-  name: string
+  name: string | JSX.Element
   cost: number
-  subRows: {name: string; cost: number; postCost: string}[]
+  subRows: {name: string; middle?: string; end?: string}[]
 }) {
   let classes = useStyles(props)
   let [open, setOpen] = useState(false)
@@ -82,21 +102,30 @@ function BudgetRow(props: {
         </TableCell>
         <TableCell></TableCell>
         <TableCell>
-          <AppTypography>${props.cost}</AppTypography>
+          <AppTypography>{currencyFormatter.format(props.cost)}</AppTypography>
         </TableCell>
       </TableRow>
-      <TableRow className={classes.tableRow}>
+      <TableRow>
         <TableCell style={{padding: 0}} colSpan={4}>
           <Collapse in={open} timeout="auto">
             <Box className={classes.subBreakdown}>
-              {props.subRows.map((obj) => (
-                <div style={{display: "flex"}}>
-                  <AppTypography fontWeight="bold">{obj.name}:</AppTypography>
-                  <AppTypography>
-                    &nbsp;{`$${obj.cost} ${obj.postCost}`}
-                  </AppTypography>
-                </div>
-              ))}
+              <Table>
+                {props.subRows.map((obj) => (
+                  <TableRow>
+                    <TableCell>
+                      <AppTypography fontWeight="bold">
+                        {obj.name}
+                      </AppTypography>
+                    </TableCell>
+                    <TableCell>
+                      <AppTypography>{obj.middle}</AppTypography>
+                    </TableCell>
+                    <TableCell>
+                      <AppTypography>{obj.end}</AppTypography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </Table>
             </Box>
           </Collapse>
         </TableCell>
@@ -114,107 +143,156 @@ export default function BudgetBreakdownView(props: {
     <div>
       <div className={classes.overview}>
         <div className={classes.breakdownHeaderRow}>
-          <AppTypography fontWeight="bold" variant="h3">
-            Per Attendee Cost:
-          </AppTypography>{" "}
-          <AppTypography variant="h3" color="primary">
-            &nbsp;${props.breakdown.attendeeCost}
+          <AppTypography variant="h3">Per Attendee Cost:</AppTypography>{" "}
+          <AppTypography variant="h3" color="primary" fontWeight="bold">
+            &nbsp;{currencyFormatter.format(props.breakdown.attendeeCost)}
           </AppTypography>
         </div>
         <div className={classes.breakdownHeaderRow}>
-          <AppTypography fontWeight="bold" variant="h3">
-            Total Cost:{" "}
-          </AppTypography>
-          <AppTypography variant="h3" color="primary">
-            &nbsp;${props.breakdown.totalCost}
+          <AppTypography variant="h3">Total Cost: </AppTypography>
+          <AppTypography variant="h3" color="primary" fontWeight="bold">
+            &nbsp;{currencyFormatter.format(props.breakdown.totalCost)}
           </AppTypography>
         </div>
       </div>
-      <AppTypography variant="h3">Per Attendee Breakdown</AppTypography>
+      <AppTypography variant="h3" fontWeight="bold">
+        Per Attendee Breakdown
+      </AppTypography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow className={classes.tableRow}>
+              <TableCell>
+                <div></div>
+              </TableCell>
+              <TableCell>
+                <AppTypography fontWeight="bold">Category</AppTypography>
+              </TableCell>
               <TableCell></TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell></TableCell>
-              <TableCell>Subtotal</TableCell>
+              <TableCell>
+                <AppTypography fontWeight="bold">Subtotal</AppTypography>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow className={classes.tableRow}>
-              <TableCell></TableCell>
               <TableCell>
-                <AppTypography fontWeight="bold">Accomodation</AppTypography>
+                <div></div>
               </TableCell>
               <TableCell>
-                {`$${props.breakdown.hotelPerNight} per night x ${
-                  props.breakdownInput.trip_length - 1
-                } nights`}
+                <AppTypography fontWeight="bold">
+                  <Icon fontSize="small">
+                    <KingBedOutlined />
+                  </Icon>{" "}
+                  Accomodation
+                </AppTypography>
               </TableCell>
               <TableCell>
-                {`$${
+                {`${currencyFormatter.format(
+                  props.breakdown.hotelPerNight
+                )} per night x ${props.breakdownInput.trip_length - 1} nights`}
+              </TableCell>
+              <TableCell>
+                {`${currencyFormatter.format(
                   props.breakdown.hotelPerNight *
-                  (props.breakdownInput.trip_length - 1)
-                }`}
+                    (props.breakdownInput.trip_length - 1)
+                )}`}
               </TableCell>
             </TableRow>
             <TableRow className={classes.tableRow}>
-              <TableCell></TableCell>
               <TableCell>
-                <AppTypography fontWeight="bold">Flights</AppTypography>
+                <div></div>
               </TableCell>
-              <TableCell>{`$${props.breakdown.flight} per flight`}</TableCell>
-              <TableCell>{`$${props.breakdown.flight}`}</TableCell>
+              <TableCell>
+                <AppTypography fontWeight="bold">
+                  <Icon>
+                    <FlightOutlined />
+                  </Icon>{" "}
+                  Flights
+                </AppTypography>
+              </TableCell>
+              <TableCell>{`${currencyFormatter.format(
+                props.breakdown.flight
+              )} per flight`}</TableCell>
+              <TableCell>{`${currencyFormatter.format(
+                props.breakdown.flight
+              )}`}</TableCell>
             </TableRow>
             {props.breakdown.activities && (
               <TableRow className={classes.tableRow}>
-                <TableCell></TableCell>
                 <TableCell>
-                  <AppTypography fontWeight="bold">Activities</AppTypography>
+                  <div></div>
                 </TableCell>
                 <TableCell>
-                  ${props.breakdown.activities.cost} x{" "}
-                  {props.breakdown.activities.num}
+                  <AppTypography fontWeight="bold">
+                    <Icon>
+                      <LocalActivityOutlined />
+                    </Icon>{" "}
+                    Activities
+                  </AppTypography>
                 </TableCell>
                 <TableCell>
-                  $
-                  {props.breakdown.activities.cost *
-                    props.breakdown.activities.num}
+                  {currencyFormatter.format(props.breakdown.activities.cost)} x{" "}
+                  {props.breakdown.activities.num} activities
+                </TableCell>
+                <TableCell>
+                  {currencyFormatter.format(
+                    props.breakdown.activities.cost *
+                      props.breakdown.activities.num
+                  )}
                 </TableCell>
               </TableRow>
             )}
             <BudgetRow
-              name="Ground Transport"
+              name={
+                <>
+                  <Icon>
+                    <DirectionsCarOutlined />
+                  </Icon>{" "}
+                  Ground Transport
+                </>
+              }
               cost={props.breakdown.ground_transport
                 .map((o) => o.cost)
                 .reduce((p, c) => p + c)}
               subRows={props.breakdown.ground_transport.map((obj) => ({
                 name: obj.name,
-                cost: obj.cost,
-                postCost: "per person",
+                end: currencyFormatter.format(obj.cost) + " per person",
               }))}
             />
             <BudgetRow
-              name="Meals"
+              name={
+                <>
+                  <Icon>
+                    <LocalDiningOutlined />
+                  </Icon>{" "}
+                  Meals
+                </>
+              }
               cost={props.breakdown.meals
                 .map((obj) => obj.cost * obj.num)
                 .reduce((p, v) => p + v)}
               subRows={props.breakdown.meals.map((obj) => ({
                 name: obj.name,
-                cost: obj.cost,
-                postCost: `x ${obj.num} = $${obj.cost * obj.num} total`,
+                middle: `${currencyFormatter.format(obj.cost)} x ${obj.num}`,
+                end: currencyFormatter.format(obj.cost * obj.num),
               }))}
             />
             <BudgetRow
-              name="Miscellaneous"
+              name={
+                <>
+                  <Icon>
+                    <AddOutlined />
+                  </Icon>{" "}
+                  Miscellaneous
+                </>
+              }
               cost={props.breakdown.misc
                 .map((obj) => obj.cost)
                 .reduce((p, v) => p + v)}
               subRows={props.breakdown.misc.map((obj) => ({
                 name: obj.name,
-                cost: obj.cost,
-                postCost: "per person",
+                end: currencyFormatter.format(obj.cost) + " per person",
               }))}
             />
           </TableBody>

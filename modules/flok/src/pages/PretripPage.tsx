@@ -38,17 +38,17 @@ function PretripPage(props: PretripPageProps) {
       <PageBody appBar>
         <div className={classes.section}>
           <div className={classes.overviewHeader}>
-            <AppTypography variant="h1">Sample Budget Breakdown</AppTypography>
+            <AppTypography variant="h1">Budget Breakdown Tool</AppTypography>
           </div>
-          <BudgetBreakdownView
-            breakdown={breakdown}
-            breakdownInput={userInput}
-          />
           <BudgetCalculator
             onSubmit={(vals) => {
               setUserInput(vals)
               setBreakdown(getBudgetBreakdown(vals))
             }}
+          />
+          <BudgetBreakdownView
+            breakdown={breakdown}
+            breakdownInput={userInput}
           />
         </div>
       </PageBody>
