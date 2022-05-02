@@ -223,16 +223,19 @@ export function patchAttendee(
   if (values.hotel_check_out === "") {
     values.hotel_check_out = null
   }
-  return createApiAction({
-    method: "PATCH",
-    endpoint,
-    body: JSON.stringify(values),
-    types: [
-      {type: PATCH_ATTENDEE_REQUEST},
-      {type: PATCH_ATTENDEE_SUCCESS, meta: {attendeeId}},
-      {type: PATCH_ATTENDEE_FAILURE, meta: {attendeeId}},
-    ],
-  })
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: PATCH_ATTENDEE_REQUEST},
+        {type: PATCH_ATTENDEE_SUCCESS, meta: {attendeeId}},
+        {type: PATCH_ATTENDEE_FAILURE, meta: {attendeeId}},
+      ],
+    },
+    {errorMessage: "Something went wrong"}
+  )
 }
 
 export const PATCH_TRIP_REQUEST = "PATCH_TRIP_REQUEST"
