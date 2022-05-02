@@ -43,8 +43,8 @@ export class AppRoutes {
     // RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
-    LodgingPage: "/r/:retreatIdx/lodging",
-    ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
+    LodgingPage: "/r/:retreatIdx/lodging/proposals",
+    ProposalPage: "/r/:retreatIdx/lodging/proposals/:hotelGuid",
     AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
 
     // TODO, remove once dashboard release
