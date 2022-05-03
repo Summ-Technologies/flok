@@ -1,5 +1,6 @@
-import {Box, makeStyles, Typography} from "@material-ui/core"
-import React, {useEffect, useState} from "react"
+import {Box, Dialog, makeStyles, Typography} from "@material-ui/core"
+import {KingBedOutlined} from "@material-ui/icons"
+import React, {useEffect, useRef, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {HotelModel} from "../../models/lodging"
 import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
@@ -20,6 +21,7 @@ let useStyles = makeStyles((theme) => ({
     width: "100%",
     flex: 1,
     height: "100%",
+    position: "relative",
   },
   header: {},
   proposalsList: {
@@ -31,6 +33,24 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       marginTop: theme.spacing(1),
     },
+  },
+  noHotelsModalBody: {
+    maxWidth: "40vw",
+    maxHeight: "40vh",
+    minWidth: 300,
+    minHeight: 300,
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    alignContent: "baseline",
+    justifyContent: "center",
+    padding: 24,
+    textAlign: "center",
+  },
+  modalHeader: {
+    marginBottom: theme.spacing(1),
   },
 }))
 
@@ -126,8 +146,10 @@ export default function ProposalsListPageBody(
     )
     newTab?.focus()
   }
+
+  let dialogContainerRef = useRef<HTMLDivElement>(null)
   return (
-    <div className={classes.root}>
+    <div className={classes.root} ref={dialogContainerRef}>
       <div className={classes.header}>
         <Typography variant="h1">
           Lodging
@@ -147,12 +169,34 @@ export default function ProposalsListPageBody(
         {groupedSelectedHotels.length + unavailableSelectedHotels.length ===
         0 ? (
           loadingHotels ? (
-            <AppTypography variant="body1">Loading...</AppTypography>
-          ) : (
-            <AppTypography variant="body1">
-              Check back soon. We're currently working on collecting hotel
-              proposals on your behalf!
+            <AppTypography variant="body1" fontWeight="bold">
+              Loading...
             </AppTypography>
+          ) : (
+            <Dialog
+              open={true}
+              maxWidth="sm"
+              hideBackdrop
+              style={{position: "absolute"}}
+              container={dialogContainerRef.current ?? document.body}>
+              <div className={classes.noHotelsModalBody}>
+                <AppTypography
+                  variant="h1"
+                  fontWeight="bold"
+                  uppercase
+                  className={classes.modalHeader}>
+                  <KingBedOutlined fontSize="large" /> Check Back Soon{" "}
+                  <KingBedOutlined fontSize="large" />
+                </AppTypography>
+                <AppTypography variant="body1">
+                  We're currently working on collecting hotel proposals on your
+                  behalf! We'll let you know when we've added proposals to the
+                  database.
+                </AppTypography>
+              </div>
+            </Dialog>
+            // <Paper elevation={0} className={classes.noHotelsMsg}>
+            // </Paper>
           )
         ) : undefined}
         {/* Available hotels render */}
