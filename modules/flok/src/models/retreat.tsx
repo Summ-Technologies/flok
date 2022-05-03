@@ -159,8 +159,8 @@ export type RetreatModel = {
 export type RetreatTripModel = {
   id: number
   cost: number
-  duration: number
-  confirmation_number: string
+  duration?: number
+  confirmation_number?: string
   trip_legs: RetreatTripLeg[]
 }
 
@@ -181,38 +181,41 @@ export type RetreatTravelModel = {
   cost: number
   dep_trip?: RetreatTripModel
   arr_trip?: RetreatTripModel
-  email_address: string
-  name: string
 }
-
+export type AttendeeInfoStatus = "CREATED" | "INFO_ENTERED" | "NOT_ATTENDING"
 export type RetreatAttendeeModel = {
   id: number
   email_address: string
-  name: string
+  first_name: string
+  last_name: string
   travel?: RetreatTravelModel
   city?: string
   dietary_prefs: string
   notes: string
-  info_status: string
+  info_status: AttendeeInfoStatus
   flight_status: "PENDING" | "OPT_OUT" | "BOOKED"
+  hotel_check_in?: string | null // iso date string
+  hotel_check_out?: string | null // iso date string
 }
 
-export const SampleLockedAttendees = [
+export const SampleLockedAttendees: RetreatAttendeeModel[] = [
   {
     dietary_prefs: "Vegan",
     info_status: "INFO_ENTERED",
-    name: "Eli Manning",
+    first_name: "Eli",
+    last_name: "Manning",
     id: 1,
     notes: "Says they are vegan but not really",
     city: "New York",
     flight_status: "BOOKED",
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
     travel: {
       id: 1,
       cost: 450,
       arr_trip: {
         id: 1,
         cost: 250,
-        confirmation_number: 12345,
         trip_legs: [
           {
             trip_id: 1,
@@ -222,14 +225,12 @@ export const SampleLockedAttendees = [
             arr_airport: "LAX",
             arr_datetime: "2022-04-06T13:33:14.195Z",
             flight_num: "967",
-            duration: "300",
           },
         ],
       },
       dep_trip: {
         id: 1,
         cost: 250,
-        confirmation_number: 12345,
         trip_legs: [
           {
             trip_id: 1,
@@ -239,7 +240,6 @@ export const SampleLockedAttendees = [
             arr_airport: "LAX",
             arr_datetime: "2022-04-06T13:33:14.195Z",
             flight_num: "967",
-            duration: "300",
           },
         ],
       },
@@ -249,26 +249,31 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Vegan",
     info_status: "CREATED",
-    name: "Tiki Barber",
+    first_name: "Tiki",
+    last_name: "Barber",
     id: 1,
     travel: undefined,
     notes: "",
     city: "New York",
     flight_status: "OPT_OUT",
     email_address: "tp@123.com",
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
   },
   {
     dietary_prefs: "Paleo",
-    info_status: "INFO_ADDED",
-    name: "Jeremy Shockey",
+    info_status: "INFO_ENTERED",
+    first_name: "Jeremy",
+    last_name: "Shockey",
     id: 1,
+    hotel_check_in: "2022-04-21",
+    hotel_check_out: "2022-04-25",
     travel: {
       id: 1,
       cost: 400,
       arr_trip: {
         id: 1,
         cost: 250,
-        confirmation_number: 12345,
         trip_legs: [
           {
             trip_id: 1,
@@ -278,14 +283,12 @@ export const SampleLockedAttendees = [
             arr_airport: "LAX",
             arr_datetime: "2022-04-06T15:25:14.195Z",
             flight_num: "967",
-            duration: "300",
           },
         ],
       },
       dep_trip: {
         id: 1,
         cost: 250,
-        confirmation_number: 12345,
         trip_legs: [
           {
             trip_id: 1,
@@ -295,7 +298,6 @@ export const SampleLockedAttendees = [
             arr_airport: "LAX",
             arr_datetime: "2022-04-06T13:33:14.195Z",
             flight_num: "967",
-            duration: "300",
           },
         ],
       },
@@ -308,7 +310,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Vegan",
     info_status: "INFO_ENTERED",
-    name: "Kevin Boss",
+    first_name: "Kevin",
+    last_name: "Boss",
     id: 1,
     travel: {
       id: 1,
@@ -316,7 +319,6 @@ export const SampleLockedAttendees = [
       arr_trip: {
         id: 1,
         cost: 250,
-        confirmation_number: 12345,
         trip_legs: [
           {
             trip_id: 1,
@@ -326,14 +328,12 @@ export const SampleLockedAttendees = [
             arr_airport: "LAX",
             arr_datetime: "2022-04-06T13:33:14.195Z",
             flight_num: "967",
-            duration: "300",
           },
         ],
       },
       dep_trip: {
         id: 1,
         cost: 250,
-        confirmation_number: 12345,
         trip_legs: [
           {
             trip_id: 1,
@@ -343,7 +343,6 @@ export const SampleLockedAttendees = [
             arr_airport: "LAX",
             arr_datetime: "2022-04-06T13:33:14.195Z",
             flight_num: "967",
-            duration: "300",
           },
         ],
       },
@@ -356,7 +355,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Kosher",
     info_status: "CREATED",
-    name: "Plaxico Burress",
+    first_name: "Plaxico",
+    last_name: "Burress",
     id: 1,
     travel: undefined,
     notes: "",
@@ -366,8 +366,9 @@ export const SampleLockedAttendees = [
   },
   {
     dietary_prefs: "Paleo",
-    info_status: "INFO_ADDED",
-    name: "Amani Toomer",
+    info_status: "INFO_ENTERED",
+    first_name: "Amani",
+    last_name: "Toomer",
     id: 1,
     travel: undefined,
     notes: "",
@@ -378,7 +379,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Vegan",
     info_status: "INFO_ENTERED",
-    name: "Ahmad Bradshaw",
+    first_name: "Ahmad",
+    last_name: "Bradshaw",
     id: 1,
     travel: undefined,
     notes: "Says they are vegan but not really",
@@ -389,7 +391,8 @@ export const SampleLockedAttendees = [
   {
     dietary_prefs: "Vegetarian",
     info_status: "CREATED",
-    name: "Brandon Jacobs",
+    first_name: "Brandon",
+    last_name: "Jacobs",
     id: 1,
     travel: undefined,
     notes: "",
@@ -399,8 +402,9 @@ export const SampleLockedAttendees = [
   },
   {
     dietary_prefs: "Paleo",
-    info_status: "INFO_ADDED",
-    name: "Mario Manningham",
+    info_status: "INFO_ENTERED",
+    first_name: "Mario",
+    last_name: "Manning",
     id: 1,
     travel: undefined,
     notes: "",
@@ -408,4 +412,4 @@ export const SampleLockedAttendees = [
     flight_status: "PENDING",
     email_address: "tp@123.com",
   },
-] as RetreatAttendeeModel[]
+]

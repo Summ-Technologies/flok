@@ -1,6 +1,8 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
+import AttendeeProfilePage from "./pages/AttendeeProfilePage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
 import CreateRetreatWebsite from "./pages/CreateRetreatWebsite"
 import DeprecatedHomeRoutingPage from "./pages/deprecated/DeprecatedHomeRoutingPage"
@@ -15,14 +17,16 @@ import NotFound404Page from "./pages/misc/NotFound404Page"
 import ProtectedRoute from "./pages/misc/ProtectedRoute"
 import RedirectPage from "./pages/misc/RedirectPage"
 import RetreatProvider from "./pages/misc/RetreatProvider"
-import NewRetreatFormPage from "./pages/NewRetreatFormPage"
 import ProposalPage from "./pages/ProposalPage"
 import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatItineraryPage from "./pages/RetreatItineraryPage"
 import RetreatOverviewPage from "./pages/RetreatOverviewPage"
+<<<<<<< HEAD
 import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
 import RetreatWebsite from "./pages/RetreatWebsite"
+=======
+>>>>>>> master
 
 export type FlokPageName = keyof typeof AppRoutes.pages
 
@@ -38,20 +42,32 @@ export class AppRoutes {
     ...AppRoutes.deprecatedPages,
     HomeRoutingPage: "/",
     SigninPage: "/login",
+    ForgotPasswordPage: "/forgot-password",
     PasswordResetPage: "/reset-password",
+<<<<<<< HEAD
     NewRetreatFormPage: "/getting-started",
     RetreatWebsiteHome: "/retreats/:retreatName",
     RetreatWebsitePage: "/retreats/:retreatName/:pageName",
+=======
+    // NewRetreatFormPage: "/getting-started",
+>>>>>>> master
     RetreatHomePage: "/r/:retreatIdx",
     RetreatFlightsPage: "/r/:retreatIdx/flights",
-    RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
+    // RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
+<<<<<<< HEAD
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
     LandingPageGenerator: "/r/:retreatIdx/landing",
     LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:config",
     CreateRetreatWebsite: "/r/:retreatIdx/create-website",
+=======
+    LodgingPage: "/r/:retreatIdx/lodging/proposals",
+    ProposalPage: "/r/:retreatIdx/lodging/proposals/:hotelGuid",
+    AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
+    AttendeeProfileFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
+>>>>>>> master
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -97,16 +113,6 @@ export default function Stack() {
           component={DeprecatedRetreatPreferencesFormPage}
         />
         <Route
-          path={AppRoutes.getPath("DeprecatedProposalsListPage")}
-          exact
-          component={DeprecatedProposalsListPage}
-        />
-        <Route
-          path={AppRoutes.getPath("DeprecatedProposalPage")}
-          exact
-          component={DeprecatedProposalPage}
-        />
-        <Route
           path={"*"}
           render={() => <RedirectPage pageName="DeprecatedHomeRoutingPage" />}
         />
@@ -119,6 +125,26 @@ export default function Stack() {
         path={AppRoutes.getPath("HomeRoutingPage")}
         exact
         component={HomeRoutingPage}
+      />
+      <Route
+        path={AppRoutes.getPath("DeprecatedNewRetreatFormPage")}
+        exact
+        component={DeprecatedNewRetreatFormPage}
+      />
+      <Route
+        path={AppRoutes.getPath("DeprecatedRetreatPreferencesFormPage")}
+        exact
+        component={DeprecatedRetreatPreferencesFormPage}
+      />
+      <Route
+        path={AppRoutes.getPath("DeprecatedProposalsListPage")}
+        exact
+        component={DeprecatedProposalsListPage}
+      />
+      <Route
+        path={AppRoutes.getPath("DeprecatedProposalPage")}
+        exact
+        component={DeprecatedProposalPage}
       />
       <ProtectedRoute
         path="/r/:retreatIdx"
@@ -173,6 +199,14 @@ export default function Stack() {
               exact
               component={ProposalPage}
             />
+            <ProtectedRoute
+              path={[
+                AppRoutes.getPath("AttendeeProfilePage"),
+                AppRoutes.getPath("AttendeeProfileFlightsPage"),
+              ]}
+              exact
+              component={AttendeeProfilePage}
+            />
           </RetreatProvider>
         )}
       />
@@ -188,7 +222,12 @@ export default function Stack() {
         exact
         component={AuthResetPage}
       />
-      <ProtectedRoute
+      <Route
+        path={AppRoutes.getPath("ForgotPasswordPage")}
+        exact
+        component={ForgotPasswordPage}
+      />
+      {/* <ProtectedRoute
         path={AppRoutes.getPath("RetreatPreferencesFormPage")}
         exact
         component={RetreatPreferencesFormPage}
@@ -197,6 +236,7 @@ export default function Stack() {
         path={AppRoutes.getPath("NewRetreatFormPage")}
         exact
         component={NewRetreatFormPage}
+<<<<<<< HEAD
       />
       <Route
         path={AppRoutes.getPath("RetreatWebsiteHome")}
@@ -208,6 +248,10 @@ export default function Stack() {
         exact
         component={RetreatWebsite}
       />
+=======
+      /> */}
+
+>>>>>>> master
       <Route path={"*"} component={NotFound404Page} />
     </Switch>
   )

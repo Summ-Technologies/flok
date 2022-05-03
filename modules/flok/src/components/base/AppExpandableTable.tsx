@@ -1,6 +1,9 @@
 import {
+  Fade,
   IconButton,
   makeStyles,
+  Menu,
+  MenuItemProps,
   TableBody,
   TableCell,
   TableContainer,
@@ -9,17 +12,16 @@ import {
   Tooltip,
 } from "@material-ui/core"
 import Table from "@material-ui/core/Table"
-import {Delete, SwapVert} from "@material-ui/icons"
-import React, {useState} from "react"
+import {MoreVert, SwapVert} from "@material-ui/icons"
+import React, {ReactElement, useState} from "react"
 import AppTypography from "./AppTypography"
-
 type ExpandableRowProps<T> = {
   item: {id: number} & T
   headers: AppTableHeaderType<T>[]
   body?: JSX.Element
   disabled?: boolean
   tooltip?: string
-  onDelete?: () => void
+  menuItems?: ReactElement<MenuItemProps>[]
 }
 
 const useExpandableRowStyles = makeStyles({
@@ -75,7 +77,13 @@ const useExpandableRowStyles = makeStyles({
 
 function ExpandableRow<T>(props: ExpandableRowProps<T>) {
   let classes = useExpandableRowStyles()
-  // let [open, setOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+  const menuOpen = Boolean(anchorEl)
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
   return (
     <React.Fragment>
       <Tooltip title={props.tooltip ? props.tooltip : ""}>
@@ -99,14 +107,26 @@ function ExpandableRow<T>(props: ExpandableRowProps<T>) {
             {open ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </TableCell> */}
-          {props.onDelete && (
+          {props.menuItems && props.menuItems.length && (
             <TableCell
               className={props.disabled ? classes.cellDisabled : classes.cell}>
+              <Menu
+                id="fade-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={menuOpen}
+                onClose={handleClose}
+                TransitionComponent={Fade}>
+                {props.menuItems}
+              </Menu>
               <IconButton
                 size="small"
-                onClick={props.onDelete}
-                className={classes.deleteBtn}>
-                <Delete />
+                aria-controls="fade-menu"
+                aria-haspopup="true"
+                onClick={(event) => {
+                  setAnchorEl(event.currentTarget)
+                }}>
+                <MoreVert />
               </IconButton>
             </TableCell>
           )}
@@ -173,7 +193,7 @@ type AppTableHeaderType<T> = {
 type AppExpandableTableProps<T> = {
   headers: AppTableHeaderType<T>[]
   rows: AppTableRowType<T>[]
-  rowDeleteCallback?: (row: AppTableRowType<T>) => void
+  menuItems?: (row: AppTableRowType<T>) => ReactElement<MenuItemProps>[]
 }
 
 export default function AppExpandableTable<T>(
@@ -240,14 +260,7 @@ export default function AppExpandableTable<T>(
                 headers={props.headers}
                 disabled={data.disabled}
                 tooltip={data.tooltip}
-                onDelete={
-                  props.rowDeleteCallback
-                    ? () =>
-                        props.rowDeleteCallback
-                          ? props.rowDeleteCallback(data)
-                          : undefined
-                    : undefined
-                }
+                menuItems={props.menuItems ? props.menuItems(data) : undefined}
               />
             ))}
         </TableBody>

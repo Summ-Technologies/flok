@@ -32,7 +32,7 @@ let useStyles = makeStyles((theme) => ({
 
 export type RetreatAttendeesTableRow = Pick<
   AdminRetreatAttendeeModel,
-  "id" | "name" | "email_address" | "info_status"
+  "id" | "first_name" | "last_name" | "email_address" | "info_status"
 >
 
 type RetreatAttendeesTableProps = {
@@ -83,8 +83,14 @@ export default function RetreatAttendeesTable(
     },
     {
       ...commonColDefs,
-      field: "name",
-      headerName: "Name",
+      field: "last_name",
+      headerName: "Last Name",
+      width: 200,
+    },
+    {
+      ...commonColDefs,
+      field: "first_name",
+      headerName: "First Name",
       width: 200,
     },
     {

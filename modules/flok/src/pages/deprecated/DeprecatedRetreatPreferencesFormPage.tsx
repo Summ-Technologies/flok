@@ -111,7 +111,7 @@ function DeprecatedRetreatPreferencesFormPage(
             event: "INTAKE_FORM_SUBMITTED",
           },
         })
-        window.location.href = `https://calendly.com/flok_sales/flok-intro-call?${q}`
+        window.location.href = `https://calendly.com/flok_sales/flok-intro-call-1?${q}`
       }
       dispatch(
         updateRetreatPreferences(

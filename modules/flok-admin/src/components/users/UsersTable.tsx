@@ -61,7 +61,6 @@ export default function UsersTable(props: UsersTableProps) {
     let rowId = rowIdAsString ? parseInt(rowIdAsString) : null
     if (rowId != null && !isNaN(rowId)) {
       setActiveUser((users ?? {})[rowId])
-      console.log(activeUser, users)
     } else {
       dispatch(enqueueSnackbar({message: "Something went wrong"}))
     }

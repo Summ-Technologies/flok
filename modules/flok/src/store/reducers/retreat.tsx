@@ -1,15 +1,29 @@
 import {Action} from "redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
-import {RetreatAttendeesApiResponse} from "../../models/api"
-import {RetreatAttendeeModel, RetreatModel} from "../../models/retreat"
+import {
+  AttendeeApiResponse,
+  RetreatAttendeesApiResponse,
+  TripApiResponse,
+} from "../../models/api"
+import {
+  RetreatAttendeeModel,
+  RetreatModel,
+  RetreatTripModel,
+} from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
   DELETE_RETREAT_ATTENDEES_SUCCESS,
+  GET_ATTENDEE_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_BY_GUID_FAILURE,
   GET_RETREAT_BY_GUID_SUCCESS,
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
+  GET_TRIP_SUCCESS,
+  INSTANTIATE_ATTENDEE_TRIPS_SUCCESS,
+  PATCH_ATTENDEE_SUCCESS,
+  PATCH_ATTENDEE_TRAVEL_SUCCESS,
+  PATCH_TRIP_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
@@ -22,13 +36,21 @@ export type RetreatState = {
   retreatsByGuid: {
     [guid: string]: RetreatModel | ResourceNotFoundType | undefined
   }
-  retreatAttendees: {[id: number]: RetreatAttendeeModel[] | undefined}
+  retreatAttendees: {[id: number]: number[] | undefined}
+  attendees: {
+    [id: number]: RetreatAttendeeModel
+  }
+  trips: {
+    [id: number]: RetreatTripModel
+  }
 }
 
 const initialState: RetreatState = {
   retreats: {},
   retreatsByGuid: {},
   retreatAttendees: {},
+  attendees: {},
+  trips: {},
 }
 
 export default function retreatReducer(
@@ -78,7 +100,57 @@ export default function retreatReducer(
       if (payload) {
         state.retreatAttendees = {
           ...state.retreatAttendees,
-          [retreatId]: payload.attendees,
+          [retreatId]: payload.attendees.map((attendee) => attendee.id),
+        }
+        state.attendees = payload.attendees.reduce(
+          (last: any, curr: RetreatAttendeeModel) => {
+            return {...last, [curr.id]: curr}
+          },
+          {}
+        )
+      }
+      return state
+    case GET_ATTENDEE_SUCCESS:
+    case PATCH_ATTENDEE_SUCCESS:
+    case PATCH_ATTENDEE_TRAVEL_SUCCESS:
+      payload = (action as ApiAction).payload as AttendeeApiResponse
+      if (payload) {
+        state.attendees = {
+          ...state.attendees,
+          [payload.attendee.id]: payload.attendee,
+        }
+      }
+      return state
+
+    case PATCH_TRIP_SUCCESS:
+    case GET_TRIP_SUCCESS:
+      payload = (action as ApiAction).payload as TripApiResponse
+      if (payload) {
+        state.trips = {
+          ...state.trips,
+          [payload.trip.id]: payload.trip,
+        }
+      }
+      return state
+    case INSTANTIATE_ATTENDEE_TRIPS_SUCCESS:
+      payload = (action as ApiAction).payload as AttendeeApiResponse
+      if (payload) {
+        state.attendees = {
+          ...state.attendees,
+          [payload.attendee.id]: payload.attendee,
+        }
+        if (
+          payload &&
+          payload.attendee.travel?.arr_trip?.id &&
+          payload.attendee.travel?.dep_trip?.id
+        ) {
+          state.trips = {
+            ...state.trips,
+            [payload.attendee.travel.arr_trip.id]:
+              payload.attendee.travel.arr_trip,
+            [payload.attendee.travel.dep_trip.id]:
+              payload.attendee.travel.dep_trip,
+          }
         }
       }
       return state
