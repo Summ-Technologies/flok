@@ -22,11 +22,6 @@ import RetreatAttendeesPage from "./pages/RetreatAttendeesPage"
 import RetreatFlightsPage from "./pages/RetreatFlightsPage"
 import RetreatItineraryPage from "./pages/RetreatItineraryPage"
 import RetreatOverviewPage from "./pages/RetreatOverviewPage"
-<<<<<<< HEAD
-import RetreatPreferencesFormPage from "./pages/RetreatPreferencesFormPage"
-import RetreatWebsite from "./pages/RetreatWebsite"
-=======
->>>>>>> master
 
 export type FlokPageName = keyof typeof AppRoutes.pages
 
@@ -44,30 +39,21 @@ export class AppRoutes {
     SigninPage: "/login",
     ForgotPasswordPage: "/forgot-password",
     PasswordResetPage: "/reset-password",
-<<<<<<< HEAD
-    NewRetreatFormPage: "/getting-started",
     RetreatWebsiteHome: "/retreats/:retreatName",
     RetreatWebsitePage: "/retreats/:retreatName/:pageName",
-=======
     // NewRetreatFormPage: "/getting-started",
->>>>>>> master
     RetreatHomePage: "/r/:retreatIdx",
     RetreatFlightsPage: "/r/:retreatIdx/flights",
     // RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
-<<<<<<< HEAD
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
     LandingPageGenerator: "/r/:retreatIdx/landing",
     LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:config",
     CreateRetreatWebsite: "/r/:retreatIdx/create-website",
-=======
-    LodgingPage: "/r/:retreatIdx/lodging/proposals",
-    ProposalPage: "/r/:retreatIdx/lodging/proposals/:hotelGuid",
     AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
     AttendeeProfileFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
->>>>>>> master
 
     // TODO, remove once dashboard release
     DeprecatedHomeRoutingPage: "/",
@@ -236,7 +222,6 @@ export default function Stack() {
         path={AppRoutes.getPath("NewRetreatFormPage")}
         exact
         component={NewRetreatFormPage}
-<<<<<<< HEAD
       />
       <Route
         path={AppRoutes.getPath("RetreatWebsiteHome")}
@@ -248,10 +233,8 @@ export default function Stack() {
         exact
         component={RetreatWebsite}
       />
-=======
       /> */}
 
->>>>>>> master
       <Route path={"*"} component={NotFound404Page} />
     </Switch>
   )

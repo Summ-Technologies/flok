@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core"
-import {Add, Settings} from "@material-ui/icons"
+import {Add, ArrowBack, Settings} from "@material-ui/icons"
 import {push, replace} from "connected-react-router"
 import {useEffect, useState} from "react"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -22,7 +22,8 @@ import AppTabPanel from "../components/page/AppTabPanel"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
-import EditWebsiteModal from "../components/retreat-website/EditWebsiteModal"
+import EditPageForm from "../components/retreat-website/EditPageForm"
+import EditWebsiteForm from "../components/retreat-website/EditWebsiteForm"
 import LandingPageEditForm from "../components/retreat-website/LandingPageEditForm"
 import {AppRoutes} from "../Stack"
 import {useQuery} from "../utils"
@@ -49,14 +50,13 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     {title: "faq", blocks: [], id: 1},
   ])
 
-  const [editWebsiteModalOpen, setEditWebsiteModalOpen] = useState(false)
   const [blocks, setBlocks] = useState([])
 
   useEffect(() => {
     let TABS = pages.map((page) => page.title)
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "Home")
     console.log(tabValue, tabQuery)
-  }, [tabQuery, setTabValue, pages])
+  }, [tabQuery, setTabValue, pages, tabValue])
   const [toolbarOpen, setToolbarOpen] = useState(false)
 
   useEffect(() => {
@@ -98,7 +98,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
       // width: "200px",
     },
     pageNav: {
-      marginLeft: theme.spacing(1),
+      marginLeft: theme.spacing(2),
       display: "flex",
     },
     pageTitleText: {
@@ -113,6 +113,20 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     },
     toolbarPage: {
       padding: theme.spacing(2),
+      minWidth: 200,
+    },
+    underline: {
+      "&:hover": {
+        textDecoration: "underline",
+        textDecorationColor: theme.palette.primary,
+      },
+    },
+    editWebsiteFormWrapper: {
+      marginTop: theme.spacing(2),
+      marginLeft: theme.spacing(2),
+    },
+    pageTitleContainer: {
+      display: "flex",
     },
   }))
 
@@ -131,10 +145,6 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     <PageContainer>
       <PageSidenav activeItem="lodging" retreatIdx={retreatIdx} />
       <PageBody appBar>
-        <EditWebsiteModal
-          open={editWebsiteModalOpen}
-          handleClose={() => setEditWebsiteModalOpen(false)}
-        />
         <Drawer
           anchor="right"
           open={toolbarOpen}
@@ -152,7 +162,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
           SlideProps={{direction: "left", in: true}}>
           <Switch>
             <Route exact path={path}>
-              <div style={{minWidth: 200, padding: 8}}>
+              <div className={classes.toolbarPage}>
                 <div style={{display: "flex"}}>
                   <Typography variant="h4" className={classes.pagesTitle}>
                     Pages
@@ -189,19 +199,65 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                         }}>
                         {page.title}
                       </Typography>
-                      <IconButton>
+                      <IconButton
+                        onClick={() => {
+                          dispatch(
+                            push(
+                              AppRoutes.getPath("LandingPageGeneratorConfig", {
+                                retreatIdx: retreatIdx.toString(),
+                                config: "config",
+                              }) +
+                                "/edit-page/" +
+                                page.id.toString() +
+                                (tabQuery ? `?tab=${tabQuery}` : "")
+                            )
+                          )
+                        }}>
                         <Settings fontSize="small" />
                       </IconButton>
                     </div>
                   )
                 })}
+                <Typography
+                  variant="h4"
+                  className={`${classes.pagesTitle} ${classes.underline}`}
+                  onClick={() => {
+                    dispatch(
+                      push(
+                        AppRoutes.getPath("LandingPageGeneratorConfig", {
+                          retreatIdx: retreatIdx.toString(),
+                          config: "config",
+                        }) +
+                          "/website-settings" +
+                          (tabQuery ? `?tab=${tabQuery}` : "")
+                      )
+                    )
+                  }}>
+                  Settings
+                </Typography>
               </div>
             </Route>
             <Route path={`${path}/add-page`}>
               <div className={classes.toolbarPage}>
-                <Typography variant="h4" className={classes.pagesTitle}>
-                  Add New Page
-                </Typography>
+                <div className={classes.pageTitleContainer}>
+                  <IconButton
+                    onClick={() => {
+                      dispatch(
+                        push(
+                          AppRoutes.getPath("LandingPageGeneratorConfig", {
+                            retreatIdx: retreatIdx.toString(),
+                            config: "config",
+                          }) + (tabQuery ? `?tab=${tabQuery}` : "")
+                        )
+                      )
+                    }}>
+                    <ArrowBack fontSize="small" />
+                  </IconButton>
+                  <Typography variant="h4" className={classes.pagesTitle}>
+                    Add New Page
+                  </Typography>
+                </div>
+
                 <div className={classes.addNew}>
                   <TextField
                     variant="outlined"
@@ -223,8 +279,57 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                 </div>
               </div>
             </Route>
-            <Route path={`${path}/page2`}>
-              <h3>Yes way</h3>
+            <Route path={`${path}/website-settings`}>
+              <div className={classes.toolbarPage}>
+                <div className={classes.pageTitleContainer}>
+                  <IconButton
+                    onClick={() => {
+                      dispatch(
+                        push(
+                          AppRoutes.getPath("LandingPageGeneratorConfig", {
+                            retreatIdx: retreatIdx.toString(),
+                            config: "config",
+                          }) + (tabQuery ? `?tab=${tabQuery}` : "")
+                        )
+                      )
+                    }}>
+                    <ArrowBack fontSize="small" />
+                  </IconButton>
+                  <Typography variant="h4" className={classes.pagesTitle}>
+                    Website Settings
+                  </Typography>
+                </div>
+
+                <div className={classes.editWebsiteFormWrapper}>
+                  <EditWebsiteForm />
+                </div>
+              </div>
+            </Route>
+            <Route path={`${path}/edit-page/:pageId`}>
+              <div className={classes.toolbarPage}>
+                <div className={classes.pageTitleContainer}>
+                  <IconButton
+                    onClick={() => {
+                      dispatch(
+                        push(
+                          AppRoutes.getPath("LandingPageGeneratorConfig", {
+                            retreatIdx: retreatIdx.toString(),
+                            config: "config",
+                          }) + (tabQuery ? `?tab=${tabQuery}` : "")
+                        )
+                      )
+                    }}>
+                    <ArrowBack fontSize="small" />
+                  </IconButton>
+                  <Typography variant="h4" className={classes.pagesTitle}>
+                    Page Settings
+                  </Typography>
+                </div>
+
+                <div className={classes.editWebsiteFormWrapper}>
+                  <EditPageForm />
+                </div>
+              </div>
             </Route>
           </Switch>
         </Drawer>
@@ -233,7 +338,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
           <div className={classes.root}>
             <div className={classes.header}>
               <Typography variant="h1">
-                {retreat.company_name} Retreat - {tabValue}
+                {retreat.company_name} Website - {tabValue}
               </Typography>
               <IconButton
                 onClick={() => {
