@@ -172,7 +172,7 @@ function LandingPageEditForm(props: LandingPageEditFormProps) {
 
   return (
     <div>
-      {!blocks.filter((block: any) => block.page_id == page.id).length && (
+      {!blocks.filter((block: any) => block.page_id === page.id).length && (
         <Button
           onClick={() =>
             setBlocks([
@@ -189,7 +189,7 @@ function LandingPageEditForm(props: LandingPageEditFormProps) {
         </Button>
       )}
       {blocks
-        .filter((block: any) => block.page_id == page.id)
+        .filter((block: any) => block.page_id === page.id)
         .map((block: any) => {
           return (
             <WYSIWYGBlockEditor
