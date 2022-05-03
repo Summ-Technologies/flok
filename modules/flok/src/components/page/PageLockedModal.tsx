@@ -1,8 +1,14 @@
-import {Dialog, makeStyles} from "@material-ui/core"
+import {Dialog, makeStyles, SvgIconTypeMap} from "@material-ui/core"
+import {OverridableComponent} from "@material-ui/core/OverridableComponent"
 import {FlokTheme} from "../../theme"
 import UnderConstructionView from "./UnderConstructionView"
 
-function PageLockedModal(props: {pageDesc?: string}) {
+function PageLockedModal(props: {
+  pageDesc?: string
+  header?: string
+  headerIcon?: OverridableComponent<SvgIconTypeMap<{}, "svg">>
+  noBackdrop?: boolean
+}) {
   let useStyles = makeStyles((theme: FlokTheme) => ({
     MuiBackdrop: {
       backdropFilter: "blur(2px)",
@@ -16,10 +22,15 @@ function PageLockedModal(props: {pageDesc?: string}) {
       open={true}
       disableBackdropClick={false}
       style={{zIndex: 1000}}
-      classes={{
-        root: classes.MuiBackdrop,
-      }}>
-      <UnderConstructionView pageDesc={props.pageDesc} />
+      hideBackdrop={props.noBackdrop}
+      classes={
+        !props.noBackdrop
+          ? {
+              root: classes.MuiBackdrop,
+            }
+          : {}
+      }>
+      <UnderConstructionView {...props} />
     </Dialog>
   )
 }

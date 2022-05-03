@@ -1,4 +1,4 @@
-import {Box, Dialog, makeStyles, Typography} from "@material-ui/core"
+import {Box, makeStyles, Typography} from "@material-ui/core"
 import {KingBedOutlined} from "@material-ui/icons"
 import React, {useEffect, useRef, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
@@ -11,6 +11,7 @@ import {theme} from "../../theme"
 import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppTypography from "../base/AppTypography"
+import PageLockedModal from "../page/PageLockedModal"
 import ProposalListRow from "./ProposalListRow"
 
 let useStyles = makeStyles((theme) => ({
@@ -173,30 +174,12 @@ export default function ProposalsListPageBody(
               Loading...
             </AppTypography>
           ) : (
-            <Dialog
-              open={true}
-              maxWidth="sm"
-              hideBackdrop
-              style={{position: "absolute"}}
-              container={dialogContainerRef.current ?? document.body}>
-              <div className={classes.noHotelsModalBody}>
-                <AppTypography
-                  variant="h1"
-                  fontWeight="bold"
-                  uppercase
-                  className={classes.modalHeader}>
-                  <KingBedOutlined fontSize="large" /> Check Back Soon{" "}
-                  <KingBedOutlined fontSize="large" />
-                </AppTypography>
-                <AppTypography variant="body1">
-                  We're currently working on collecting hotel proposals on your
-                  behalf! We'll let you know when we've added proposals to the
-                  database.
-                </AppTypography>
-              </div>
-            </Dialog>
-            // <Paper elevation={0} className={classes.noHotelsMsg}>
-            // </Paper>
+            <PageLockedModal
+              header="Check Back Soon"
+              pageDesc="We're currently working on collecting hotel proposals on your behalf! We'll let you know when we've added proposals to the database."
+              headerIcon={KingBedOutlined}
+              noBackdrop
+            />
           )
         ) : undefined}
         {/* Available hotels render */}

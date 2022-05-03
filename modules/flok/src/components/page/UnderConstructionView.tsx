@@ -1,9 +1,12 @@
-import {Icon, makeStyles} from "@material-ui/core"
+import {Icon, makeStyles, SvgIconTypeMap} from "@material-ui/core"
+import {OverridableComponent} from "@material-ui/core/OverridableComponent"
 import {LockRounded} from "@material-ui/icons"
 import AppTypography from "../base/AppTypography"
 
 type UnderConstructionViewProps = {
   pageDesc?: string
+  header?: string
+  headerIcon?: OverridableComponent<SvgIconTypeMap<{}, "svg">>
 }
 
 let useStyles = makeStyles((theme) => ({
@@ -62,18 +65,19 @@ export default function UnderConstructionView(
   props: UnderConstructionViewProps
 ) {
   let classes = useStyles(props)
+  const HeaderIcon = props.headerIcon ?? LockRounded
   return (
     <div className={classes.body}>
       <div className={classes.modal}>
         <div className={classes.header}>
           <Icon fontSize="large">
-            <LockRounded fontSize="large" style={{verticalAlign: "top"}} />
+            <HeaderIcon fontSize="large" style={{verticalAlign: "top"}} />
           </Icon>
           <AppTypography variant="h1" uppercase>
-            &nbsp;Coming Soon&nbsp;
+            &nbsp;{props.header ?? "Coming Soon"}&nbsp;
           </AppTypography>
           <Icon fontSize="large">
-            <LockRounded fontSize="large" style={{verticalAlign: "top"}} />
+            <HeaderIcon fontSize="large" style={{verticalAlign: "top"}} />
           </Icon>
         </div>
         <div className={classes.modalBody}>
