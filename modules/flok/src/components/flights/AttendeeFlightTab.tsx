@@ -200,42 +200,46 @@ function AttendeeFlightTab(props: AttendeeFlightTabProps) {
           <Typography variant="h3" className={classes.header}>
             {attendee.first_name + " " + attendee.last_name}'s Flights
           </Typography>
-          <div className={classes.headerLine}>
-            <Typography variant="h4" className={classes.tripHeader}>
-              Trip Details
-            </Typography>
-            <Button
-              variant="outlined"
-              color="primary"
-              size="small"
-              className={classes.editButton}
-              onClick={() => setOpenEditAttendeeTravelModal(true)}>
-              Edit
-            </Button>
-          </div>
-          <div className={classes.flightInfoDivWrapper}>
-            <div className={classes.flightInfoContainer}>
-              <div className={classes.flightInfoSection}>
-                <Typography className={classes.flightInfoHeader}>
-                  Flights Status
+          {attendee.travel && (
+            <>
+              <div className={classes.headerLine}>
+                <Typography variant="h4" className={classes.tripHeader}>
+                  Trip Details
                 </Typography>
-                {renderFlightStatusChip(attendee.flight_status)}
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  className={classes.editButton}
+                  onClick={() => setOpenEditAttendeeTravelModal(true)}>
+                  Edit
+                </Button>
               </div>
-              <div className={classes.flightInfoSection}>
-                <Typography className={classes.flightInfoHeader}>
-                  Flights Cost
-                </Typography>
-                <Typography className={classes.flightCost}>
-                  {attendee.travel?.cost
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      }).format(attendee.travel?.cost)
-                    : "N/A"}
-                </Typography>
+              <div className={classes.flightInfoDivWrapper}>
+                <div className={classes.flightInfoContainer}>
+                  <div className={classes.flightInfoSection}>
+                    <Typography className={classes.flightInfoHeader}>
+                      Flights Status
+                    </Typography>
+                    {renderFlightStatusChip(attendee.flight_status)}
+                  </div>
+                  <div className={classes.flightInfoSection}>
+                    <Typography className={classes.flightInfoHeader}>
+                      Flights Cost
+                    </Typography>
+                    <Typography className={classes.flightCost}>
+                      {attendee.travel?.cost
+                        ? new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                          }).format(attendee.travel?.cost)
+                        : "N/A"}
+                    </Typography>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
 
           {arrivalFlights ? (
             <div>
