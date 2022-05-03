@@ -4,14 +4,14 @@ import {
   Drawer,
   IconButton,
   makeStyles,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from "@material-ui/core"
-import {Settings} from "@material-ui/icons"
+import {Add, Settings} from "@material-ui/icons"
+import {push, replace} from "connected-react-router"
 import {useEffect, useState} from "react"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
+import {useDispatch} from "react-redux"
 import {
   Route,
   RouteComponentProps,
@@ -24,6 +24,7 @@ import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
 import EditWebsiteModal from "../components/retreat-website/EditWebsiteModal"
 import LandingPageEditForm from "../components/retreat-website/LandingPageEditForm"
+import {AppRoutes} from "../Stack"
 import {useQuery} from "../utils"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -43,7 +44,10 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
 
   const [newPageTitle, setNewPageTitle] = useState("")
 
-  const [pages, setPages] = useState([{title: "Home", blocks: [], id: 0}])
+  const [pages, setPages] = useState([
+    {title: "Home", blocks: [], id: 0},
+    {title: "faq", blocks: [], id: 1},
+  ])
 
   const [editWebsiteModalOpen, setEditWebsiteModalOpen] = useState(false)
   const [blocks, setBlocks] = useState([])
@@ -53,6 +57,13 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "Home")
     console.log(tabValue, tabQuery)
   }, [tabQuery, setTabValue, pages])
+  const [toolbarOpen, setToolbarOpen] = useState(false)
+
+  useEffect(() => {
+    if (config !== undefined && !toolbarOpen) {
+      setToolbarOpen(true)
+    }
+  }, [config, toolbarOpen])
 
   // let testHTML = draftToHtml(convertToRaw(editorState.getCurrentContent()))
   let useStyles = makeStyles((theme) => ({
@@ -78,14 +89,35 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     },
     addNew: {
       display: "flex",
-      gap: theme.spacing(2),
+      flexDirection: "column",
+      gap: theme.spacing(1),
+      marginTop: theme.spacing(2),
+      marginLeft: theme.spacing(1),
     },
     drawer: {
-      width: "200px",
+      // width: "200px",
+    },
+    pageNav: {
+      marginLeft: theme.spacing(1),
+      display: "flex",
+    },
+    pageTitleText: {
+      paddingTop: theme.spacing(1.5),
+      "&:hover": {
+        textDecoration: "underline",
+        textDecorationColor: theme.palette.primary,
+      },
+    },
+    pagesTitle: {
+      paddingTop: theme.spacing(1.3),
+    },
+    toolbarPage: {
+      padding: theme.spacing(2),
     },
   }))
 
   const classes = useStyles()
+  let dispatch = useDispatch()
 
   let disabled =
     pages.map((page) => page.title).includes(newPageTitle) ||
@@ -105,18 +137,91 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
         />
         <Drawer
           anchor="right"
-          open={config !== undefined}
+          open={toolbarOpen}
           className={classes.drawer}
           onClose={() => {
-            alert("hi")
-          }}>
-          asdf
+            setToolbarOpen(false)
+            dispatch(
+              replace(
+                AppRoutes.getPath("LandingPageGenerator", {
+                  retreatIdx: retreatIdx.toString(),
+                })
+              )
+            )
+          }}
+          SlideProps={{direction: "left", in: true}}>
           <Switch>
             <Route exact path={path}>
-              <h3>Please select a topic.</h3>
+              <div style={{minWidth: 200, padding: 8}}>
+                <div style={{display: "flex"}}>
+                  <Typography variant="h4" className={classes.pagesTitle}>
+                    Pages
+                  </Typography>
+                  <IconButton
+                    onClick={() => {
+                      dispatch(
+                        push(
+                          AppRoutes.getPath("LandingPageGeneratorConfig", {
+                            retreatIdx: retreatIdx.toString(),
+                            config: "config",
+                          }) +
+                            "/add-page" +
+                            (tabQuery ? `?tab=${tabQuery}` : "")
+                        )
+                      )
+                    }}>
+                    <Add fontSize="small" />
+                  </IconButton>
+                </div>
+                {pages.map((page) => {
+                  return (
+                    <div className={classes.pageNav}>
+                      <Typography
+                        className={classes.pageTitleText}
+                        onClick={() => {
+                          dispatch(
+                            push(
+                              AppRoutes.getPath("LandingPageGenerator", {
+                                retreatIdx: retreatIdx.toString(),
+                              }) + `?tab=${page.title}`
+                            )
+                          )
+                        }}>
+                        {page.title}
+                      </Typography>
+                      <IconButton>
+                        <Settings fontSize="small" />
+                      </IconButton>
+                    </div>
+                  )
+                })}
+              </div>
             </Route>
-            <Route path={`${path}/page1`}>
-              <h3>No way</h3>
+            <Route path={`${path}/add-page`}>
+              <div className={classes.toolbarPage}>
+                <Typography variant="h4" className={classes.pagesTitle}>
+                  Add New Page
+                </Typography>
+                <div className={classes.addNew}>
+                  <TextField
+                    variant="outlined"
+                    value={newPageTitle}
+                    onChange={(e: any) => {
+                      setNewPageTitle(e.target.value)
+                    }}
+                    label="New Page Title"
+                    size="small"
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddPage}
+                    disabled={disabled}
+                    size="small">
+                    Add New Page
+                  </Button>
+                </div>
+              </div>
             </Route>
             <Route path={`${path}/page2`}>
               <h3>Yes way</h3>
@@ -128,38 +233,25 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
           <div className={classes.root}>
             <div className={classes.header}>
               <Typography variant="h1">
-                {retreat.company_name} Retreat Website
+                {retreat.company_name} Retreat - {tabValue}
               </Typography>
               <IconButton
                 onClick={() => {
-                  setEditWebsiteModalOpen(true)
+                  dispatch(
+                    push(
+                      AppRoutes.getPath("LandingPageGeneratorConfig", {
+                        retreatIdx: retreatIdx.toString(),
+                        config: "config",
+                      }) + (tabQuery ? `?tab=${tabQuery}` : "")
+                    )
+                  )
                 }}>
                 <Settings fontSize="large"></Settings>
               </IconButton>
             </div>
 
-            <div className={classes.addNew}>
-              <TextField
-                variant="outlined"
-                value={newPageTitle}
-                onChange={(e: any) => {
-                  setNewPageTitle(e.target.value)
-                }}
-                label="New Page Title"
-                size="small"
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleAddPage}
-                disabled={disabled}
-                size="small">
-                Add New Page
-              </Button>
-            </div>
-
             <Box>
-              <Tabs
+              {/* <Tabs
                 orientation={"horizontal"}
                 className={classes.tabs}
                 value={tabValue}
@@ -178,7 +270,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                     />
                   )
                 })}
-              </Tabs>
+              </Tabs> */}
             </Box>
             {pages.map((page, i) => {
               return (
