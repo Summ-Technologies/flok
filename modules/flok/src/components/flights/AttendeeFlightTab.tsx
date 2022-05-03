@@ -226,11 +226,12 @@ function AttendeeFlightTab(props: AttendeeFlightTabProps) {
                   Flights Cost
                 </Typography>
                 <Typography className={classes.flightCost}>
-                  {attendee.travel?.cost &&
-                    new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(attendee.travel?.cost)}
+                  {attendee.travel?.cost
+                    ? new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(attendee.travel?.cost)
+                    : "N/A"}
                 </Typography>
               </div>
             </div>
