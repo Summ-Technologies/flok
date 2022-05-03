@@ -3,7 +3,6 @@ import {useEffect} from "react"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
-import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {useRetreat} from "./misc/RetreatProvider"
 
@@ -76,13 +75,15 @@ function RetreatItineraryPage(props: RetreatItineraryPageProps) {
     <PageContainer>
       {/* <PageSidenav activeItem="itinerary" retreatIdx={retreatIdx} /> */}
       <PageSidenav retreatIdx={retreatIdx} />
-      <PageBody appBar>
+      <PageBody
+        appBar
+        locked={
+          retreat.itinerary_state !== "IN_PROGRESS" ||
+          !retreat.itinerary_final_draft_link
+        }
+        lockedText="This page will be unlocked when we begin booking your itinerary">
         <div className={classes.root}>
           <Typography variant="h1">Itinerary</Typography>
-          {(retreat.itinerary_state !== "IN_PROGRESS" ||
-            !retreat.itinerary_final_draft_link) && (
-            <PageLockedModal pageDesc="This page will be unlocked when we begin booking your itinerary" />
-          )}
           {/* Commenting out itinerary page body because now will be using link directly to itinerary document */}
           {/* <div className={classes.linksDiv}>
             <Box className={classes.draftBox}>

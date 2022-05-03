@@ -2,10 +2,11 @@ import {Dialog, makeStyles} from "@material-ui/core"
 import {FlokTheme} from "../../theme"
 import UnderConstructionView from "./UnderConstructionView"
 
-function PageLockedModal(props: {pageDesc?: string}) {
+function PageLockedModal(props: {pageDesc?: string; container?: HTMLElement}) {
   let useStyles = makeStyles((theme: FlokTheme) => ({
     MuiBackdrop: {
       backdropFilter: "blur(2px)",
+      position: "absolute",
     },
   }))
   let classes = useStyles()
@@ -15,7 +16,10 @@ function PageLockedModal(props: {pageDesc?: string}) {
       aria-labelledby="simple-dialog-title"
       open={true}
       disableBackdropClick={false}
-      style={{zIndex: 1000}}
+      style={{zIndex: 1000, position: "absolute"}}
+      container={props.container ?? document.body}
+      BackdropProps={{style: {position: "absolute"}}}
+      disablePortal
       classes={{
         root: classes.MuiBackdrop,
       }}>

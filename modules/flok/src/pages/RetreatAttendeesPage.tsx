@@ -32,7 +32,6 @@ import AppExpandableTable from "../components/base/AppExpandableTable"
 import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
-import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {RetreatAttendeeModel, SampleLockedAttendees} from "../models/retreat"
 import {AppRoutes} from "../Stack"
@@ -209,12 +208,11 @@ function RetreatAttendeesPage(props: RetreatAttendeesProps) {
   return (
     <PageContainer>
       <PageSidenav activeItem="attendees" retreatIdx={retreatIdx} />
-      <PageBody appBar>
+      <PageBody
+        appBar
+        locked={retreat.attendees_state !== "REGISTRATION_OPEN"}
+        lockedText="This page will be unlocked when attendee registration opens">
         <div className={classes.section}>
-          {retreat.attendees_state !== "REGISTRATION_OPEN" && (
-            <PageLockedModal pageDesc="This page will be unlocked when attendee registration opens" />
-          )}
-
           <Box
             display="flex"
             justifyContent="space-between"

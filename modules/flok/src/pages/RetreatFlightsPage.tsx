@@ -21,7 +21,6 @@ import AppMoreInfoIcon from "../components/base/AppMoreInfoIcon"
 import AppTypography from "../components/base/AppTypography"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
-import PageLockedModal from "../components/page/PageLockedModal"
 import PageSidenav from "../components/page/PageSidenav"
 import {SampleLockedAttendees} from "../models/retreat"
 import {AppRoutes} from "../Stack"
@@ -119,16 +118,16 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
   return (
     <PageContainer>
       <PageSidenav activeItem="flights" retreatIdx={retreatIdx} />
-      <PageBody appBar>
+      <PageBody
+        appBar
+        locked={retreat.flights_state !== "BOOKING"}
+        lockedText="This page will be unlocked when flight booking begins">
         <div className={classes.section}>
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="flex-end">
             <Typography variant="h1">Flights</Typography>
-            {retreat.flights_state !== "BOOKING" && (
-              <PageLockedModal pageDesc="This page will be unlocked when flight booking begins" />
-            )}
             <Link
               variant="body1"
               underline="always"
