@@ -255,7 +255,6 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
       paddingTop: theme.spacing(1.5),
       "&:hover": {
         textDecoration: "underline",
-        textDecorationColor: theme.palette.primary,
       },
     },
     pagesTitle: {
@@ -263,7 +262,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     },
     toolbarPage: {
       padding: theme.spacing(2),
-      minWidth: 200,
+      minWidth: 300,
     },
     underline: {
       "&:hover": {
