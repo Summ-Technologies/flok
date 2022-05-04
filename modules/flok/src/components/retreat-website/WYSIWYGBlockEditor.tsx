@@ -52,16 +52,27 @@ function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
   const editorStyle = {
     // height: "20rem",
     padding: "1rem",
+    borderRadius: "8px",
+    border: "2px solid gray",
+    marginTop: 30,
+    minWidth: "90%",
+    minHeight: "200px",
+    backgroundColor: "white",
   }
   const wrapperStyle = {
-    borderRadius: "4px",
-    border: "2px solid black",
     margin: "10px",
     autofocus: "true",
+    display: "flex",
+    justifyContent: "center",
   }
   const toolbarStyle = {
     display: "flex",
-    justifyContent: "space-between",
+    position: "fixed",
+    zIndex: 10000,
+    paddingLeft: 15,
+    paddingRight: 15,
+    borderRadius: 20,
+    marginTop: -30,
   }
   return (
     <div>
@@ -72,6 +83,27 @@ function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
           wrapperStyle={wrapperStyle}
           editorStyle={editorStyle}
           toolbarStyle={toolbarStyle}
+          toolbarOnFocus
+          toolbar={{
+            options: [
+              "blockType",
+              "inline",
+              "list",
+              "textAlign",
+              "link",
+              "colorPicker",
+            ],
+            inline: {
+              inDropdown: true,
+              options: ["bold", "italic", "underline", "strikethrough"],
+            },
+            list: {inDropdown: true, options: ["unordered", "ordered"]},
+            textAlign: {
+              inDropdown: false,
+              options: ["left", "center", "right"],
+            },
+            link: {inDropdown: false, options: ["link"]},
+          }}
         />
         <Button type="submit">Save Block</Button>
       </form>

@@ -6,6 +6,7 @@ import {
   makeStyles,
   TextField,
   Typography,
+  Link,
 } from "@material-ui/core"
 import {Add, ArrowBack, Settings} from "@material-ui/icons"
 import {push, replace} from "connected-react-router"
@@ -40,7 +41,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let {path, url} = useRouteMatch()
   console.log(config)
 
-  let [tabQuery, setTabQuery] = useQuery("tab")
+  let [tabQuery, setTabQuery] = useQuery("page")
   let [tabValue, setTabValue] = useState<string | undefined | number>("Home")
 
   const [newPageTitle, setNewPageTitle] = useState("")
@@ -250,12 +251,11 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     pageNav: {
       marginLeft: theme.spacing(2),
       display: "flex",
+      flexDirection: "row",
     },
     pageTitleText: {
       paddingTop: theme.spacing(1.5),
-      "&:hover": {
-        textDecoration: "underline",
-      },
+      color: "black",
     },
     pagesTitle: {
       paddingTop: theme.spacing(1.3),
@@ -276,6 +276,9 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     },
     pageTitleContainer: {
       display: "flex",
+    },
+    headerLink: {
+      color: "black",
     },
   }))
 
@@ -325,7 +328,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                             config: "config",
                           }) +
                             "/add-page" +
-                            (tabQuery ? `?tab=${tabQuery}` : "")
+                            (tabQuery ? `?page=${tabQuery}` : "")
                         )
                       )
                     }}>
@@ -335,19 +338,15 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                 {pages.map((page) => {
                   return (
                     <div className={classes.pageNav}>
-                      <Typography
+                      <Link
                         className={classes.pageTitleText}
-                        onClick={() => {
-                          dispatch(
-                            push(
-                              AppRoutes.getPath("LandingPageGenerator", {
-                                retreatIdx: retreatIdx.toString(),
-                              }) + `?tab=${page.title}`
-                            )
-                          )
-                        }}>
-                        {page.title}
-                      </Typography>
+                        href={
+                          AppRoutes.getPath("LandingPageGenerator", {
+                            retreatIdx: retreatIdx.toString(),
+                          }) + `?page=${page.title}`
+                        }>
+                        <Typography>{page.title}</Typography>
+                      </Link>
                       <IconButton
                         onClick={() => {
                           dispatch(
@@ -358,7 +357,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                               }) +
                                 "/edit-page/" +
                                 page.id.toString() +
-                                (tabQuery ? `?tab=${tabQuery}` : "")
+                                (tabQuery ? `?page=${tabQuery}` : "")
                             )
                           )
                         }}>
@@ -367,23 +366,22 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                     </div>
                   )
                 })}
-                <Typography
-                  variant="h4"
-                  className={`${classes.pagesTitle} ${classes.underline}`}
-                  onClick={() => {
-                    dispatch(
-                      push(
-                        AppRoutes.getPath("LandingPageGeneratorConfig", {
-                          retreatIdx: retreatIdx.toString(),
-                          config: "config",
-                        }) +
-                          "/website-settings" +
-                          (tabQuery ? `?tab=${tabQuery}` : "")
-                      )
-                    )
-                  }}>
-                  Settings
-                </Typography>
+                <Link
+                  className={classes.headerLink}
+                  href={
+                    AppRoutes.getPath("LandingPageGeneratorConfig", {
+                      retreatIdx: retreatIdx.toString(),
+                      config: "config",
+                    }) +
+                    "/website-settings" +
+                    (tabQuery ? `?page=${tabQuery}` : "")
+                  }>
+                  <Typography
+                    variant="h4"
+                    className={`${classes.pagesTitle} ${classes.underline}`}>
+                    Website Settings
+                  </Typography>
+                </Link>
               </div>
             </Route>
             <Route path={`${path}/add-page`}>
@@ -396,7 +394,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                           AppRoutes.getPath("LandingPageGeneratorConfig", {
                             retreatIdx: retreatIdx.toString(),
                             config: "config",
-                          }) + (tabQuery ? `?tab=${tabQuery}` : "")
+                          }) + (tabQuery ? `?page=${tabQuery}` : "")
                         )
                       )
                     }}>
@@ -438,7 +436,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                           AppRoutes.getPath("LandingPageGeneratorConfig", {
                             retreatIdx: retreatIdx.toString(),
                             config: "config",
-                          }) + (tabQuery ? `?tab=${tabQuery}` : "")
+                          }) + (tabQuery ? `?page=${tabQuery}` : "")
                         )
                       )
                     }}>
@@ -464,7 +462,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                           AppRoutes.getPath("LandingPageGeneratorConfig", {
                             retreatIdx: retreatIdx.toString(),
                             config: "config",
-                          }) + (tabQuery ? `?tab=${tabQuery}` : "")
+                          }) + (tabQuery ? `?page=${tabQuery}` : "")
                         )
                       )
                     }}>
@@ -496,36 +494,13 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                       AppRoutes.getPath("LandingPageGeneratorConfig", {
                         retreatIdx: retreatIdx.toString(),
                         config: "config",
-                      }) + (tabQuery ? `?tab=${tabQuery}` : "")
+                      }) + (tabQuery ? `?page=${tabQuery}` : "")
                     )
                   )
                 }}>
                 <Settings fontSize="large"></Settings>
               </IconButton>
             </div>
-
-            <Box>
-              {/* <Tabs
-                orientation={"horizontal"}
-                className={classes.tabs}
-                value={tabValue}
-                onChange={(e, newVal) =>
-                  setTabQuery(newVal === "home" ? null : newVal)
-                }
-                variant="fullWidth"
-                indicatorColor="primary">
-                {pages.map((page, i) => {
-                  return (
-                    <Tab
-                      className={classes.tab}
-                      value={page.title}
-                      label={page.title}
-                      key={i}
-                    />
-                  )
-                })}
-              </Tabs> */}
-            </Box>
             {pages.map((page, i) => {
               return (
                 <AppTabPanel

@@ -8,7 +8,7 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   textField: {
-    minWidth: "320px",
+    minWidth: "200px",
     "&:not(:first-child)": {
       marginTop: theme.spacing(2),
     },

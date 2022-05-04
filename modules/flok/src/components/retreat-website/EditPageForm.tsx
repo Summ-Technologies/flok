@@ -25,6 +25,10 @@ function EditPageForm() {
   let classes = useStyles()
   return (
     <form onSubmit={formik.handleSubmit}>
+      {/* <BeforeUnload
+        when={formik.values !== formik.initialValues}
+        message="Are you sure you wish to leave without saving your changes"
+      /> */}
       <Box className={classes.body}>
         <TextField
           required
