@@ -50,8 +50,15 @@ export class AppRoutes {
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
-    LandingPageGenerator: "/r/:retreatIdx/landing",
-    LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:config",
+    LandingPageGeneratorHome: "/r/:retreatIdx/landing",
+    LandingPageGeneratorPage: "/r/:retreatIdx/landing/:pageName",
+    LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:pageName/config",
+    LandingPageGeneratorConfigWebsiteSettings:
+      "/r/:retreatIdx/landing/:pageName/config/website-settings",
+    LandingPageGeneratorConfigPageSettings:
+      "/r/:retreatIdx/landing/:pageName/config/page-settings/:pageId",
+    LandingPageGeneratorConfigAddPage:
+      "/r/:retreatIdx/landing/:pageName/config/add-page",
     CreateRetreatWebsite: "/r/:retreatIdx/create-website",
     AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
     AttendeeProfileFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
@@ -163,12 +170,15 @@ export default function Stack() {
               component={RetreatItineraryPage}
             />
             <ProtectedRoute
-              path={AppRoutes.getPath("LandingPageGenerator")}
+              path={AppRoutes.getPath("LandingPageGeneratorHome")}
               exact
-              component={LandingPageGenerator}
+              component={CreateRetreatWebsite}
             />
             <ProtectedRoute
-              path={AppRoutes.getPath("LandingPageGeneratorConfig")}
+              path={[
+                AppRoutes.getPath("LandingPageGeneratorConfig"),
+                AppRoutes.getPath("LandingPageGeneratorPage"),
+              ]}
               component={LandingPageGenerator}
             />
             <ProtectedRoute

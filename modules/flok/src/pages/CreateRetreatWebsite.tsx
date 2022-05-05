@@ -4,6 +4,7 @@ import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+import RedirectPage from "./misc/RedirectPage"
 import {useRetreat} from "./misc/RetreatProvider"
 
 type CreateRetreatWebsiteProps = RouteComponentProps<{
@@ -50,6 +51,15 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
       })
     },
   })
+  if (true) {
+    return (
+      <RedirectPage
+        pageName="LandingPageGeneratorPage"
+        pathParams={{retreatIdx: retreatIdx.toString(), pageName: "home"}}
+      />
+    )
+  }
+  console.log(retreat)
   return (
     <PageContainer>
       <PageSidenav retreatIdx={retreatIdx} />

@@ -20,14 +20,14 @@ let useStyles = makeStyles((theme) => ({
   },
   header: {
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "center",
     padding: "20px",
     alignItems: "normal",
     width: "90%",
   },
   navigationLink: {
-    padding: theme.spacing(2),
-    lineHeight: "48px",
+    paddingRight: theme.spacing(2),
+    lineHeight: "25px",
     color: theme.palette.grey[900],
     "&:hover": {
       textDecoration: "none",
@@ -39,7 +39,36 @@ let useStyles = makeStyles((theme) => ({
   drawer: {
     width: "100%",
   },
+  imgWrapper: {
+    width: "33%",
+  },
+  registerWrapper: {
+    width: "33%",
+    justifyContent: "center",
+    display: "flex",
+  },
+  navLinkContainer: {
+    width: "33%",
+    overflowWrap: "break-word",
+    justifyContent: "center",
+    display: "inline-flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+  },
+  registerButton: {
+    maxHeight: 40,
+  },
 }))
+
+let testPages = [
+  "Home",
+  "FAQ",
+  "Resort Info",
+  "Travel Info",
+  "Itinerary",
+  "Code of Conduct",
+  "Passport/Visa",
+]
 
 function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
   let classes = useStyles()
@@ -49,11 +78,14 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   return (
     <div className={classes.header}>
-      <img src={props.logo} className={classes.logo} alt="logo"></img>
+      <div className={classes.imgWrapper}>
+        <img src={props.logo} className={classes.logo} alt="logo"></img>
+      </div>
+
       {!isSmallScreen ? (
         <>
-          <div>
-            {props.pages.map((page) => {
+          <div className={classes.navLinkContainer}>
+            {testPages.map((page) => {
               return (
                 <Link
                   href={`/retreats/${props.retreatName}/${page}`}
@@ -61,9 +93,11 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
                   style={
                     page === props.selectedPage
                       ? {
-                          paddingBottom: "4px",
-                          borderBottomStyle: "solid",
-                          borderBottomWidth: "3.1px",
+                          textDecoration: "underline",
+                          // paddingBottom: "4px",
+                          // borderBottomStyle: "solid",
+                          // borderBottomWidth: "3.1px",
+                          // height: "1.2 rem",
                         }
                       : {}
                   }>
@@ -72,9 +106,15 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
               )
             })}
           </div>
-          <Button color="primary" variant="contained">
-            Register Now
-          </Button>
+          <div className={classes.registerWrapper}>
+            <Button
+              color="primary"
+              variant="contained"
+              size="small"
+              className={classes.registerButton}>
+              Register Now
+            </Button>
+          </div>
         </>
       ) : (
         <>
@@ -94,7 +134,8 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
                   style={
                     page === props.selectedPage
                       ? {
-                          paddingBottom: "4px",
+                          // paddingBottom: "4px",
+                          height: "1 rem",
                           borderBottomStyle: "solid",
                           borderBottomWidth: "3.1px",
                         }

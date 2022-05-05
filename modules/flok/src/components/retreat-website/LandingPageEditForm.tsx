@@ -9,6 +9,7 @@ type LandingPageEditFormProps = {
   }
   blocks: any
   setBlocks: any
+  config: boolean
 }
 
 function LandingPageEditForm(props: LandingPageEditFormProps) {
@@ -41,6 +42,7 @@ function LandingPageEditForm(props: LandingPageEditFormProps) {
               block={block}
               setBlocks={setBlocks}
               blocks={blocks}
+              config={props.config}
             />
           )
         })}
