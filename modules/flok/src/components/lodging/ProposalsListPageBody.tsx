@@ -183,13 +183,13 @@ export default function ProposalsListPageBody(
           }
         })}
         {/* Unavailable hotels render */}
-        {unavailableSelectedHotels.length ? (
-          <AppTypography variant="h2">
-            Unavailable Hotels{" "}
-            <AppMoreInfoIcon tooltipText="We reached out to the following hotels but they cannot support your group during the requested dates." />
-          </AppTypography>
-        ) : undefined}
         <div className={classes.proposalsList}>
+          {unavailableSelectedHotels.length ? (
+            <AppTypography variant="h2">
+              Unavailable Hotels{" "}
+              <AppMoreInfoIcon tooltipText="We reached out to the following hotels but they cannot support your group during the requested dates." />
+            </AppTypography>
+          ) : undefined}
           {unavailableSelectedHotels.map((selectedHotel) => {
             let hotel = hotelsById[selectedHotel.hotel_id]
             let destination = destinations[hotel.destination_id]
