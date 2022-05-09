@@ -1,6 +1,7 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
 import AttendeeProfilePage from "./pages/AttendeeProfilePage"
+import AttendeesRegFormBuilderPage from "./pages/AttendeesRegFormBuilderPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
@@ -42,6 +43,7 @@ export class AppRoutes {
     RetreatFlightsPage: "/r/:retreatIdx/flights",
     // RetreatPreferencesFormPage: "/r/:retreatIdx/preferences",
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
+    AttendeesRegFormBuilderPage: "/r/:retreatIdx/attendees/reg-form",
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
     LodgingPage: "/r/:retreatIdx/lodging/proposals",
     ProposalPage: "/r/:retreatIdx/lodging/proposals/:hotelGuid",
@@ -142,6 +144,11 @@ export default function Stack() {
               path={AppRoutes.getPath("RetreatAttendeesPage")}
               exact
               component={RetreatAttendeesPage}
+            />
+            <ProtectedRoute
+              path={AppRoutes.getPath("AttendeesRegFormBuilderPage")}
+              exact
+              component={AttendeesRegFormBuilderPage}
             />
             <ProtectedRoute
               path={AppRoutes.getPath("RetreatFlightsPage")}
