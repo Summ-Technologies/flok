@@ -41,7 +41,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
     initialValues: {
       header_image_link: "",
       company_logo_link: "",
-      website_name: "",
+      name: "",
     },
     onSubmit: (values) => {
       //convert from editor state to current content
@@ -51,6 +51,8 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
       })
     },
   })
+  // if retreat.website
+  // change pageName to first page?  are we going to allow changes made to home or no?
   if (true) {
     return (
       <RedirectPage
@@ -71,8 +73,8 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
             <Box className={classes.body}>
               <TextField
                 required
-                value={formik.values.website_name}
-                id={`website_name`}
+                value={formik.values.name}
+                id={`name`}
                 onChange={formik.handleChange}
                 variant="outlined"
                 label="Website Name"

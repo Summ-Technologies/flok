@@ -1,51 +1,43 @@
 import {Button} from "@material-ui/core"
+import {useDispatch} from "react-redux"
+import NotFound404Page from "../../pages/misc/NotFound404Page"
+import {postBlock} from "../../store/actions/retreat"
+import {useAttendeeLandingPage} from "../../utils/retreatUtils"
 import WYSIWYGBlockEditor from "./WYSIWYGBlockEditor"
 
 type LandingPageEditFormProps = {
-  page: {
-    title: string
-    id: number
-    blocks: {content: any; type: string; id: number}[]
-  }
-  blocks: any
-  setBlocks: any
+  pageId: number
   config: boolean
 }
 
 function LandingPageEditForm(props: LandingPageEditFormProps) {
-  let {page, setBlocks, blocks} = props
-  console.log(blocks)
+  let page = useAttendeeLandingPage(props.pageId)
+  let dispatch = useDispatch()
+
+  if (!page) {
+    return <NotFound404Page />
+  }
 
   return (
     <div>
-      {!blocks.filter((block: any) => block.page_id === page.id).length && (
+      {!page.block_ids.length && (
         <Button
+          variant="contained"
+          color="primary"
           onClick={() =>
-            setBlocks([
-              ...blocks,
-              {
-                content: undefined,
+            dispatch(
+              postBlock({
+                page_id: props.pageId,
                 type: "WYSIWYG",
-                id: 0,
-                page_id: page.id,
-              },
-            ])
+              })
+            )
           }>
           Add Block
         </Button>
       )}
-      {blocks
-        .filter((block: any) => block.page_id === page.id)
-        .map((block: any) => {
-          return (
-            <WYSIWYGBlockEditor
-              block={block}
-              setBlocks={setBlocks}
-              blocks={blocks}
-              config={props.config}
-            />
-          )
-        })}
+      {page.block_ids.map((blockId) => {
+        return <WYSIWYGBlockEditor blockId={blockId} config={props.config} />
+      })}
     </div>
   )
 }

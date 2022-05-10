@@ -3,7 +3,15 @@ import {useDispatch, useSelector} from "react-redux"
 import {Constants} from "../config"
 import {RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
-import {getRetreatAttendees, getRetreatByGuid} from "../store/actions/retreat"
+import {
+  getBlock,
+  getPage,
+  getPageByName,
+  getRetreatAttendees,
+  getRetreatByGuid,
+  getWebsite,
+  getWebsiteByName,
+} from "../store/actions/retreat"
 
 export function useRetreatAttendees(retreatId: number) {
   let dispatch = useDispatch()
@@ -67,4 +75,80 @@ export function parseRetreatTask(task: RetreatToTask, baseUrl: string) {
     )
   }
   return parsedTask
+}
+
+export function useAttendeeLandingWebsite(websiteId: number) {
+  let website = useSelector((state: RootState) => {
+    return state.retreat.websites[websiteId]
+  })
+  let dispatch = useDispatch()
+  useEffect(() => {
+    if (!website) {
+      dispatch(getWebsite(websiteId))
+    }
+  }, [website, dispatch, websiteId])
+
+  return website
+}
+
+export function useAttendeeLandingPage(pageId: number) {
+  let dispatch = useDispatch()
+  let page = useSelector((state: RootState) => {
+    return state.retreat.pages[pageId]
+  })
+  useEffect(() => {
+    if (!page) {
+      dispatch(getPage(pageId))
+    }
+  }, [page, dispatch, pageId])
+
+  return page
+}
+export function useAttendeeLandingPageBlock(blockId: number) {
+  let dispatch = useDispatch()
+  let block = useSelector((state: RootState) => {
+    return state.retreat.blocks[blockId]
+  })
+  useEffect(() => {
+    if (!block) {
+      dispatch(getBlock(blockId))
+    }
+  }, [block, dispatch, blockId])
+
+  return block
+}
+
+export function useAttendeeLandingPageName(
+  websiteName: string,
+  pageName: string
+) {
+  let dispatch = useDispatch()
+  let page = useSelector((state: RootState) => {
+    return Object.values(state.retreat.pages).find(
+      (page) => page?.title.toLowerCase() === pageName.toLowerCase()
+    )
+  })
+  useEffect(() => {
+    if (!page) {
+      dispatch(getPageByName(websiteName, pageName))
+    }
+  }, [page, dispatch, pageName, websiteName])
+
+  return page
+}
+
+export function useAttendeeLandingWebsiteName(websiteName: string) {
+  let website = useSelector((state: RootState) => {
+    return Object.values(state.retreat.websites).find(
+      (website) => website?.name.toLowerCase() === websiteName.toLowerCase()
+    )
+  })
+  let dispatch = useDispatch()
+  useEffect(() => {
+    if (!website) {
+      dispatch(getWebsiteByName(websiteName))
+    }
+  }, [website, dispatch, websiteName])
+
+  return website
 }

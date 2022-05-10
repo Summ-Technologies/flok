@@ -154,6 +154,9 @@ export type RetreatModel = {
   //Retreat itinerary links
   itinerary_first_draft_link?: string
   itinerary_final_draft_link?: string
+  websites: {
+    [id: number]: AttendeeLandingWebsiteModel
+  }
 }
 
 export type RetreatTripModel = {
@@ -162,6 +165,29 @@ export type RetreatTripModel = {
   duration?: number
   confirmation_number?: string
   trip_legs: RetreatTripLeg[]
+}
+
+export type AttendeeLandingWebsitePageModel = {
+  title: string
+  website_id: number
+  id: number
+  block_ids: number[]
+}
+
+export type AttendeeLandingWebsiteBlockModel = {
+  content: any
+  type: "WYSIWYG" | "img"
+  page_id: number
+  id: number
+}
+
+export type AttendeeLandingWebsiteModel = {
+  banner_img?: string
+  name: string
+  company_logo_img?: string
+  retreat_id: number
+  id: number
+  page_ids: number[]
 }
 
 // aka flight

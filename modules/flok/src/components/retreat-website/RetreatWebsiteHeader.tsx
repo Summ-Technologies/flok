@@ -1,22 +1,23 @@
 import {
   Button,
   Drawer,
+  IconButton,
   Link,
   makeStyles,
   useMediaQuery,
 } from "@material-ui/core"
+import {Menu} from "@material-ui/icons"
 import {useState} from "react"
 import {FlokTheme} from "../../theme"
+import {useAttendeeLandingPage} from "../../utils/retreatUtils"
 
-type RetreatWebsiteHeaderProps = {
-  logo: string
-  pages: string[]
-  retreatName: string
-  selectedPage: string
-}
 let useStyles = makeStyles((theme) => ({
   logo: {
     height: "50px",
+    [theme.breakpoints.down("sm")]: {
+      width: "120px",
+      height: "auto",
+    },
   },
   header: {
     display: "flex",
@@ -24,6 +25,10 @@ let useStyles = makeStyles((theme) => ({
     padding: "20px",
     alignItems: "normal",
     width: "90%",
+    [theme.breakpoints.down("sm")]: {
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
   },
   navigationLink: {
     paddingRight: theme.spacing(2),
@@ -34,6 +39,10 @@ let useStyles = makeStyles((theme) => ({
     },
     [theme.breakpoints.down("sm")]: {
       minWidth: 200,
+      height: "45px",
+      fontSize: "130%",
+      fontWeight: theme.typography.fontWeightBold,
+      marginLeft: theme.spacing(2),
     },
   },
   drawer: {
@@ -41,6 +50,9 @@ let useStyles = makeStyles((theme) => ({
   },
   imgWrapper: {
     width: "33%",
+    [theme.breakpoints.down("sm")]: {
+      width: "10",
+    },
   },
   registerWrapper: {
     width: "33%",
@@ -57,18 +69,24 @@ let useStyles = makeStyles((theme) => ({
   },
   registerButton: {
     maxHeight: 40,
+    [theme.breakpoints.down("sm")]: {
+      width: "70%",
+      marginLeft: "15%",
+    },
+  },
+  mobileNavLinkContainer: {
+    marginTop: theme.spacing(2),
+    display: "flex",
+    flexDirection: "column",
   },
 }))
-
-let testPages = [
-  "Home",
-  "FAQ",
-  "Resort Info",
-  "Travel Info",
-  "Itinerary",
-  "Code of Conduct",
-  "Passport/Visa",
-]
+type RetreatWebsiteHeaderProps = {
+  logo: string
+  pageIds: number[]
+  retreatName: string
+  selectedPage: string
+  homeRoute: string
+}
 
 function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
   let classes = useStyles()
@@ -79,30 +97,21 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
   return (
     <div className={classes.header}>
       <div className={classes.imgWrapper}>
-        <img src={props.logo} className={classes.logo} alt="logo"></img>
+        <a href={props.homeRoute}>
+          <img src={props.logo} className={classes.logo} alt="logo"></img>
+        </a>
       </div>
 
       {!isSmallScreen ? (
         <>
           <div className={classes.navLinkContainer}>
-            {testPages.map((page) => {
+            {props.pageIds.map((pageId) => {
               return (
-                <Link
-                  href={`/retreats/${props.retreatName}/${page}`}
-                  className={classes.navigationLink}
-                  style={
-                    page === props.selectedPage
-                      ? {
-                          textDecoration: "underline",
-                          // paddingBottom: "4px",
-                          // borderBottomStyle: "solid",
-                          // borderBottomWidth: "3.1px",
-                          // height: "1.2 rem",
-                        }
-                      : {}
-                  }>
-                  {page}
-                </Link>
+                <RetreatWebsiteHeaderLink
+                  retreatName={props.retreatName}
+                  pageId={pageId}
+                  selectedPage={props.selectedPage}
+                />
               )
             })}
           </div>
@@ -118,7 +127,9 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
         </>
       ) : (
         <>
-          <Button onClick={() => setDrawerOpen(true)}>Open Drawer</Button>
+          <IconButton onClick={() => setDrawerOpen(true)}>
+            <Menu />
+          </IconButton>
           <Drawer
             anchor={"right"}
             open={drawerOpen}
@@ -126,26 +137,21 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
               setDrawerOpen(false)
             }}
             className={classes.drawer}>
-            {props.pages.map((page) => {
-              return (
-                <Link
-                  href={`/retreats/${props.retreatName}/${page}`}
-                  className={classes.navigationLink}
-                  style={
-                    page === props.selectedPage
-                      ? {
-                          // paddingBottom: "4px",
-                          height: "1 rem",
-                          borderBottomStyle: "solid",
-                          borderBottomWidth: "3.1px",
-                        }
-                      : {}
-                  }>
-                  {page}
-                </Link>
-              )
-            })}
-            <Button color="primary" variant="contained">
+            <div className={classes.mobileNavLinkContainer}>
+              {props.pageIds.map((pageId) => {
+                return (
+                  <RetreatWebsiteHeaderLink
+                    retreatName={props.retreatName}
+                    pageId={pageId}
+                    selectedPage={props.selectedPage}
+                  />
+                )
+              })}
+            </div>
+            <Button
+              color="primary"
+              variant="contained"
+              className={classes.registerButton}>
               Register Now
             </Button>
           </Drawer>
@@ -155,3 +161,48 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
   )
 }
 export default RetreatWebsiteHeader
+
+let useLinkStyles = makeStyles((theme) => ({
+  navigationLink: {
+    paddingRight: theme.spacing(2),
+    lineHeight: "25px",
+    color: theme.palette.grey[900],
+    "&:hover": {
+      textDecoration: "none",
+    },
+    [theme.breakpoints.down("sm")]: {
+      minWidth: 200,
+      height: "45px",
+      fontSize: "130%",
+      fontWeight: theme.typography.fontWeightBold,
+      marginLeft: theme.spacing(2),
+    },
+  },
+}))
+type RetreatWebsiteHeaderLinkProps = {
+  retreatName: string
+  pageId: number
+  selectedPage: string
+}
+function RetreatWebsiteHeaderLink(props: RetreatWebsiteHeaderLinkProps) {
+  let classes = useLinkStyles()
+  let page = useAttendeeLandingPage(props.pageId)
+  return (
+    <Link
+      href={`/retreats/${props.retreatName}/${page?.title}`}
+      className={classes.navigationLink}
+      style={
+        page?.title === props.selectedPage
+          ? {
+              // paddingBottom: "4px",
+              height: "1 rem",
+              textDecoration: "underline",
+              // borderBottomStyle: "solid",
+              // borderBottomWidth: "3.1px",
+            }
+          : {}
+      }>
+      {page?.title}
+    </Link>
+  )
+}

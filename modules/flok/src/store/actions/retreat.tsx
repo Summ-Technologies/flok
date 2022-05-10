@@ -1,6 +1,8 @@
 import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
 import {
+  AttendeeLandingWebsiteBlockModel,
+  AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
   RetreatToTaskState,
   RetreatTravelModel,
@@ -367,5 +369,176 @@ export function putRetreatTask(
     {
       errorMessage: "Oops, something went wrong.",
     }
+  )
+}
+
+export const GET_WEBSITE_REQUEST = "GET_WEBSITE_REQUEST"
+export const GET_WEBSITE_SUCCESS = "GET_WEBSITE_SUCCESS"
+export const GET_WEBSITE_FAILURE = "GET_WEBSITE_FAILURE"
+export function getWebsite(websiteId: number) {
+  let endpoint = `/v1.0/websites/${websiteId}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_WEBSITE_REQUEST},
+      {type: GET_WEBSITE_SUCCESS, meta: {websiteId}},
+      {type: GET_WEBSITE_FAILURE, meta: {websiteId}},
+    ],
+  })
+}
+export function getWebsiteByName(websiteName: string) {
+  let endpoint = `/v1.0/websites/name/${websiteName}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_WEBSITE_REQUEST},
+      {type: GET_WEBSITE_SUCCESS, meta: {websiteName}},
+      {type: GET_WEBSITE_FAILURE, meta: {websiteName}},
+    ],
+  })
+}
+export const GET_PAGE_REQUEST = "GET_PAGE_REQUEST"
+export const GET_PAGE_SUCCESS = "GET_PAGE_SUCCESS"
+export const GET_PAGE_FAILURE = "GET_PAGE_FAILURE"
+export function getPage(pageId: number) {
+  let endpoint = `/v1.0/website-pages/${pageId}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_PAGE_REQUEST},
+      {type: GET_PAGE_SUCCESS, meta: {pageId}},
+      {type: GET_PAGE_FAILURE, meta: {pageId}},
+    ],
+  })
+}
+
+export function getPageByName(websiteName: string, pageName: string) {
+  let endpoint = `/v1.0/websites/name/${websiteName}/website-pages/name/${pageName}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_PAGE_REQUEST},
+      {type: GET_PAGE_SUCCESS, meta: {pageName}},
+      {type: GET_PAGE_FAILURE, meta: {pageName}},
+    ],
+  })
+}
+
+export const GET_BLOCK_REQUEST = "GET_BLOCK_REQUEST"
+export const GET_BLOCK_SUCCESS = "GET_BLOCK_SUCCESS"
+export const GET_BLOCK_FAILURE = "GET_BLOCK_FAILURE"
+export function getBlock(blockId: number) {
+  let endpoint = `/v1.0/website-page-blocks/${blockId}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_BLOCK_REQUEST},
+      {type: GET_BLOCK_SUCCESS, meta: {blockId}},
+      {type: GET_BLOCK_FAILURE, meta: {blockId}},
+    ],
+  })
+}
+
+export const PATCH_BLOCK_REQUEST = "PATCH_BLOCK_REQUEST"
+export const PATCH_BLOCK_SUCCESS = "PATCH_BLOCK_SUCCESS"
+export const PATCH_BLOCK_FAILURE = "PATCH_BLOCK_FAILURE"
+export function patchBlock(
+  blockId: number,
+  values: Partial<AttendeeLandingWebsiteBlockModel>
+) {
+  let endpoint = `/v1.0/website-page-blocks/${blockId}`
+  return createApiAction({
+    method: "PATCH",
+    endpoint,
+    body: JSON.stringify(values),
+    types: [
+      {type: PATCH_BLOCK_REQUEST},
+      {type: PATCH_BLOCK_SUCCESS, meta: {blockId}},
+      {type: PATCH_BLOCK_FAILURE, meta: {blockId}},
+    ],
+  })
+}
+export const POST_BLOCK_REQUEST = "POST_BLOCK_REQUEST"
+export const POST_BLOCK_SUCCESS = "POST_BLOCK_SUCCESS"
+export const POST_BLOCK_FAILURE = "POST_BLOCK_FAILURE"
+export function postBlock(values: Partial<AttendeeLandingWebsiteBlockModel>) {
+  let endpoint = `/v1.0/website-page-blocks`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify(values),
+    types: [
+      {type: POST_BLOCK_REQUEST},
+      {type: POST_BLOCK_SUCCESS},
+      {type: POST_BLOCK_FAILURE},
+    ],
+  })
+}
+
+export const POST_PAGE_REQUEST = "POST_PAGE_REQUEST"
+export const POST_PAGE_SUCCESS = "POST_PAGE_SUCCESS"
+export const POST_PAGE_FAILURE = "POST_PAGE_FAILURE"
+export function postPage(values: Partial<AttendeeLandingWebsitePageModel>) {
+  let endpoint = `/v1.0/website-pages`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: POST_PAGE_REQUEST},
+        {type: POST_PAGE_SUCCESS},
+        {type: POST_PAGE_FAILURE},
+      ],
+    },
+    {
+      successMessage: "Successfully added page",
+      errorMessage: "Something went wrong.",
+    }
+  )
+}
+export const PATCH_PAGE_REQUEST = "PATCH_PAGE_REQUEST"
+export const PATCH_PAGE_SUCCESS = "PATCH_PAGE_SUCCESS"
+export const PATCH_PAGE_FAILURE = "PATCH_PAGE_FAILURE"
+export function patchPage(
+  pageId: number,
+  values: Partial<AttendeeLandingWebsitePageModel>
+) {
+  let endpoint = `/v1.0/website-pages/${pageId}`
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: PATCH_PAGE_REQUEST},
+        {type: PATCH_PAGE_SUCCESS, meta: {pageId}},
+        {type: PATCH_PAGE_FAILURE, meta: {pageId}},
+      ],
+    },
+    {errorMessage: "Something went wrong"}
+  )
+}
+export const DELETE_PAGE_REQUEST = "DELETE_PAGE_REQUEST"
+export const DELETE_PAGE_SUCCESS = "DELETE_PAGE_SUCCESS"
+export const DELETE_PAGE_FAILURE = "DELETE_PAGE_FAILURE"
+export function deletePage(pageId: number) {
+  let endpoint = `/v1.0/website-pages/${pageId}`
+  return createApiAction(
+    {
+      method: "DELETE",
+      endpoint,
+      types: [
+        {type: DELETE_PAGE_REQUEST},
+        {type: DELETE_PAGE_SUCCESS, meta: {pageId}},
+        {type: DELETE_PAGE_FAILURE, meta: {pageId}},
+      ],
+    },
+    {errorMessage: "Something went wrong"}
   )
 }

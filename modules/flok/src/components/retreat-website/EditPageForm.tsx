@@ -1,5 +1,10 @@
 import {Box, Button, makeStyles, TextField} from "@material-ui/core"
+import {push} from "connected-react-router"
 import {useFormik} from "formik"
+import {useDispatch} from "react-redux"
+import {AppRoutes} from "../../Stack"
+import {patchPage} from "../../store/actions/retreat"
+import {useAttendeeLandingPage} from "../../utils/retreatUtils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -12,36 +17,61 @@ let useStyles = makeStyles((theme) => ({
       marginTop: theme.spacing(2),
     },
   },
+  saveButton: {
+    marginTop: theme.spacing(2),
+  },
 }))
-function EditPageForm() {
+
+type EditPageFormProps = {
+  pageId: number
+  retreatIdx: string
+  pageName: string
+}
+
+function EditPageForm(props: EditPageFormProps) {
+  let dispatch = useDispatch()
+  let classes = useStyles()
+  let page = useAttendeeLandingPage(props.pageId)
+  let disabledChange = page?.title.toLowerCase() === "home"
   let formik = useFormik({
     initialValues: {
-      page_name: "",
+      title: page?.title ?? "",
     },
     onSubmit: (values) => {
-      console.log(values)
+      dispatch(patchPage(props.pageId, values))
+      dispatch(
+        push(
+          AppRoutes.getPath("LandingPageGeneratorConfig", {
+            retreatIdx: props.retreatIdx.toString(),
+            pageName: props.pageName,
+          })
+        )
+      )
     },
   })
-  let classes = useStyles()
+
   return (
     <form onSubmit={formik.handleSubmit}>
-      {/* <BeforeUnload
-        when={formik.values !== formik.initialValues}
-        message="Are you sure you wish to leave without saving your changes"
-      /> */}
       <Box className={classes.body}>
         <TextField
           required
-          value={formik.values.page_name}
-          id={`page_name`}
+          value={formik.values.title}
+          id={`title`}
           onChange={formik.handleChange}
           variant="outlined"
           label="Page Name"
           className={classes.textField}
+          disabled={disabledChange}
         />
-        <Button type="submit" color="primary">
-          Save
-        </Button>
+        {!disabledChange && (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            className={classes.saveButton}>
+            Save
+          </Button>
+        )}
       </Box>
     </form>
   )

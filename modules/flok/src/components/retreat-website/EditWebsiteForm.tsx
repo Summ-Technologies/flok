@@ -24,6 +24,7 @@ type EditWebsiteModalProps = {
   // open: boolean
   // handleClose: () => void
 }
+// take in website id and usewebsite
 
 function EditWebsiteForm(props: EditWebsiteModalProps) {
   let retreat = useRetreat()
@@ -31,7 +32,7 @@ function EditWebsiteForm(props: EditWebsiteModalProps) {
     initialValues: {
       header_image: "",
       company_logo: "",
-      website_name: "",
+      name: "",
     },
     onSubmit: (values) => {
       console.log({
@@ -50,8 +51,8 @@ function EditWebsiteForm(props: EditWebsiteModalProps) {
         />
         <TextField
           required
-          value={formik.values.website_name}
-          id={`website_name`}
+          value={formik.values.name}
+          id={`name`}
           onChange={formik.handleChange}
           variant="outlined"
           label="Website Name"
@@ -74,10 +75,7 @@ function EditWebsiteForm(props: EditWebsiteModalProps) {
           handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             if (e.target.files) {
               // in practice we need to dispatch action to send image to image server, then use the response to update the website object which will trigger a change to the formik object
-              formik.setFieldValue(
-                "company_logo",
-                JSON.stringify(e.target.files[0])
-              )
+              formik.setFieldValue("company_logo", e.target.value)
               console.log(e.target.files[0])
             }
           }}

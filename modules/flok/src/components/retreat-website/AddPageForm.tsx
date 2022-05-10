@@ -1,5 +1,7 @@
 import {Button, makeStyles, TextField} from "@material-ui/core"
 import {useFormik} from "formik"
+import {useDispatch} from "react-redux"
+import {postPage} from "../../store/actions/retreat"
 
 let useStyles = makeStyles((theme) => ({
   addNew: {
@@ -12,21 +14,19 @@ let useStyles = makeStyles((theme) => ({
 }))
 type AddPageFormProps = {
   website_id: number
-  pages: any
 }
 function AddPageForm(props: AddPageFormProps) {
   let classes = useStyles()
+  let dispatch = useDispatch()
   let formik = useFormik({
     initialValues: {
       title: "",
     },
     onSubmit: (values) => {
-      console.log(values)
+      dispatch(postPage({...values, website_id: props.website_id}))
     },
   })
-  let disabledAdd: boolean =
-    props.pages.map((page: any) => page.title).includes(formik.values.title) ||
-    formik.values.title === ""
+  let disabledAdd: boolean = formik.values.title === ""
   return (
     <form onSubmit={formik.handleSubmit} className={classes.addNew}>
       <TextField

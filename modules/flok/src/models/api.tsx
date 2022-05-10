@@ -1,5 +1,11 @@
 // API endpoints
-import {RetreatAttendeeModel, RetreatTripModel} from "./retreat"
+import {
+  AttendeeLandingWebsiteBlockModel,
+  AttendeeLandingWebsiteModel,
+  AttendeeLandingWebsitePageModel,
+  RetreatAttendeeModel,
+  RetreatTripModel,
+} from "./retreat"
 import {UserModel} from "./user"
 
 // GET v1.0/user/home, GET_USER_HOME_SUCCESS
@@ -22,4 +28,13 @@ export type AttendeeApiResponse = {
 
 export type TripApiResponse = {
   trip: RetreatTripModel
+}
+export type AttendeeLandingWebsiteApiResponse = {
+  website: AttendeeLandingWebsiteModel
+}
+export type AttendeeLandingWebsitePageApiResponse = {
+  page: AttendeeLandingWebsitePageModel
+}
+export type AttendeeLandingWebsitePageBlockApiResponse = {
+  block: AttendeeLandingWebsiteBlockModel
 }

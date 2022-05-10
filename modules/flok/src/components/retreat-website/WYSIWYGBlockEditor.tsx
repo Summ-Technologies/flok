@@ -1,13 +1,17 @@
-import { Button, makeStyles } from "@material-ui/core"
+import {Button, makeStyles} from "@material-ui/core"
 import {
   convertFromRaw,
   convertToRaw,
   EditorState,
-  RawDraftContentState
+  RawDraftContentState,
 } from "draft-js"
-import { useFormik } from "formik"
+import {useFormik} from "formik"
 import _ from "lodash"
-import { Editor } from "react-draft-wysiwyg"
+import {useEffect} from "react"
+import {Editor} from "react-draft-wysiwyg"
+import {useDispatch} from "react-redux"
+import {getBlock, patchBlock} from "../../store/actions/retreat"
+import {useAttendeeLandingPageBlock} from "../../utils/retreatUtils"
 import BeforeUnload from "../base/BeforeUnload"
 
 let useStyles = makeStyles((theme) => ({
@@ -15,6 +19,9 @@ let useStyles = makeStyles((theme) => ({
     margin: "10px",
     display: "flex",
     justifyContent: "center",
+    [theme.breakpoints.down("sm")]: {
+      // width: "80vw",
+    },
   },
   toolbar: {
     display: "flex",
@@ -24,6 +31,9 @@ let useStyles = makeStyles((theme) => ({
     paddingRight: 15,
     borderRadius: 20,
     marginTop: -30,
+    [theme.breakpoints.down("sm")]: {
+      marginTop: -20,
+    },
     maxWidth: "70%",
     boxShadow: theme.shadows[2],
   },
@@ -31,12 +41,16 @@ let useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[1],
 
     autofocus: "true",
+    width: "90%",
     // height: "20rem",
     padding: "1rem",
     borderRadius: "8px",
     // border: "2px solid gray",
     marginTop: 30,
-    minWidth: "90%",
+    // minWidth: "90%",
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
     minHeight: 200,
     backgroundColor: "white",
   },
@@ -56,48 +70,49 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 type WYSIWYGBlockEditorProps = {
-  block: any
-  setBlocks: any
-  blocks: any
+  blockId: number
   config: boolean
 }
 
 function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
   // Block, rename, wysiwyg block editor
-  let {setBlocks} = props
+  let dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(getBlock(props.blockId))
+  }, [dispatch, props.blockId])
+  let block = useAttendeeLandingPageBlock(props.blockId)
+
   let formik = useFormik({
     initialValues: {
-      content: props.block.content
+      content: block?.content
         ? EditorState.createWithContent(
-            convertFromRaw(
-              props.block.content as unknown as RawDraftContentState
-            )
+            convertFromRaw(block.content as unknown as RawDraftContentState)
           )
         : EditorState.createEmpty(),
       type: "WYSIWYG",
     },
     onSubmit: (values) => {
       //convert from editor state to current content
-      console.log(
-        JSON.stringify(
-          {
-            ...values,
-            content: convertToRaw(values.content.getCurrentContent()),
-          }.content
-        )
-      )
-
-      // For actual posting use JSON.stringify and JSON.parse
-      setBlocks([
-        ...props.blocks,
-        {
-          ...values,
+      dispatch(
+        patchBlock(props.blockId, {
           content: convertToRaw(values.content.getCurrentContent()),
-          page_id: 0,
-        },
-      ])
+        })
+      )
     },
   })
+
+  useEffect(() => {
+    formik.resetForm({
+      values: {
+        content: block?.content
+          ? EditorState.createWithContent(
+              convertFromRaw(block.content as unknown as RawDraftContentState)
+            )
+          : EditorState.createEmpty(),
+        type: "WYSIWYG",
+      },
+    })
+  }, [block])
   let classes = useStyles(formik)
   return (
     <div>
