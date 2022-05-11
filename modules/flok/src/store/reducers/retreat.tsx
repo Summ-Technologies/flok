@@ -1,12 +1,12 @@
-import {Action} from "redux"
-import {ResourceNotFound, ResourceNotFoundType} from "../../models"
+import { Action } from "redux"
+import { ResourceNotFound, ResourceNotFoundType } from "../../models"
 import {
   AttendeeApiResponse,
   AttendeeLandingWebsiteApiResponse,
   AttendeeLandingWebsitePageApiResponse,
   AttendeeLandingWebsitePageBlockApiResponse,
   RetreatAttendeesApiResponse,
-  TripApiResponse,
+  TripApiResponse
 } from "../../models/api"
 import {
   AttendeeLandingWebsiteBlockModel,
@@ -14,9 +14,9 @@ import {
   AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
   RetreatModel,
-  RetreatTripModel,
+  RetreatTripModel
 } from "../../models/retreat"
-import {ApiAction} from "../actions/api"
+import { ApiAction } from "../actions/api"
 import {
   DELETE_PAGE_SUCCESS,
   DELETE_RETREAT_ATTENDEES_SUCCESS,
@@ -43,7 +43,7 @@ import {
   POST_RETREAT_ATTENDEES_SUCCESS,
   POST_WEBSITE_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
-  PUT_RETREAT_TASK_SUCCESS,
+  PUT_RETREAT_TASK_SUCCESS
 } from "../actions/retreat"
 
 export type RetreatState = {
@@ -60,6 +60,7 @@ export type RetreatState = {
   trips: {
     [id: number]: RetreatTripModel
   }
+<<<<<<< HEAD
   websites: {
     [id: number]: AttendeeLandingWebsiteModel | undefined
   }
@@ -68,6 +69,13 @@ export type RetreatState = {
   }
   blocks: {
     [id: number]: AttendeeLandingWebsiteBlockModel | undefined
+=======
+  forms: {
+    [id: number]: FormModel | undefined
+  }
+  formQuestions: {
+    [id: number]: FormQuestionModel | undefined
+>>>>>>> b6c9b5c... Checkpoint 2 for form builder
   }
 }
 
@@ -80,6 +88,82 @@ const initialState: RetreatState = {
   websites: {},
   pages: {},
   blocks: {},
+  forms: {
+    1: {
+      id: 1,
+      questions: [1, 2, 3],
+      title: "Flok Retreat Registration",
+      description: "Fill out this form by EOD 11/25 to go on the Flok retreat.",
+    },
+  },
+  formQuestions: {
+    1: {
+      description: "",
+      form_id: 1,
+      id: 1,
+      required: undefined,
+      select_allow_user_input: undefined,
+      select_options: [
+        {
+          id: 1,
+          option: "First option",
+        },
+        {
+          id: 2,
+          option: "Second option",
+        },
+        {
+          id: 3,
+          option: "Third option",
+        },
+      ],
+      title: "Single select",
+      type: "SINGLE_SELECT",
+    },
+    2: {
+      description: "",
+      form_id: 1,
+      id: 2,
+      required: undefined,
+      select_allow_user_input: undefined,
+      select_options: [
+        {
+          id: 4,
+          option: "First option",
+        },
+        {
+          id: 5,
+          option: "Second option",
+        },
+        {
+          id: 6,
+          option: "Third option",
+        },
+      ],
+      title: "Multi select",
+      type: "MULTI_SELECT",
+    },
+    3: {
+      description: "",
+      form_id: 1,
+      id: 3,
+      required: undefined,
+      select_allow_user_input: undefined,
+      select_options: [],
+      title: "Short answer",
+      type: "SHORT_ANSWER",
+    },
+    4: {
+      description: "",
+      form_id: 1,
+      id: 4,
+      required: undefined,
+      select_allow_user_input: undefined,
+      select_options: [],
+      title: "Long answer",
+      type: "LONG_ANSWER",
+    },
+  },
 }
 
 export default function retreatReducer(

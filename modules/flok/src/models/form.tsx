@@ -27,6 +27,7 @@ export const FormQuestionTypeValues: FormQuestionType[] =
 
 export type FormQuestionModel = {
   id: number
+  form_id: number
   title: string
   description?: string
   type: FormQuestionType
@@ -37,4 +38,5 @@ export type FormQuestionModel = {
 
 export type FormQuestionSelectOptionModel = {
   option: string
+  id: number
 }
