@@ -5,6 +5,7 @@ import {
   RetreatAttendeesApiResponse,
   TripApiResponse,
 } from "../../models/api"
+import {FormModel, FormQuestionModel} from "../../models/form"
 import {
   RetreatAttendeeModel,
   RetreatModel,
@@ -43,6 +44,12 @@ export type RetreatState = {
   trips: {
     [id: number]: RetreatTripModel
   }
+  forms: {
+    [id: number]: FormModel | undefined
+  }
+  formQuestions: {
+    [id: number]: FormQuestionModel | undefined
+  }
 }
 
 const initialState: RetreatState = {
@@ -51,6 +58,82 @@ const initialState: RetreatState = {
   retreatAttendees: {},
   attendees: {},
   trips: {},
+  forms: {
+    1: {
+      id: 1,
+      questions: [1, 2, 3],
+      title: "Flok Retreat Registration",
+      description: "Fill out this form by EOD 11/25 to go on the Flok retreat.",
+    },
+  },
+  formQuestions: {
+    1: {
+      description: "",
+      form_id: 1,
+      id: 1,
+      required: undefined,
+      select_allow_user_input: undefined,
+      select_options: [
+        {
+          id: 1,
+          option: "First option",
+        },
+        {
+          id: 2,
+          option: "Second option",
+        },
+        {
+          id: 3,
+          option: "Third option",
+        },
+      ],
+      title: "Single select",
+      type: "SINGLE_SELECT",
+    },
+    2: {
+      description: "",
+      form_id: 1,
+      id: 2,
+      required: undefined,
+      select_allow_user_input: undefined,
+      select_options: [
+        {
+          id: 4,
+          option: "First option",
+        },
+        {
+          id: 5,
+          option: "Second option",
+        },
+        {
+          id: 6,
+          option: "Third option",
+        },
+      ],
+      title: "Multi select",
+      type: "MULTI_SELECT",
+    },
+    3: {
+      description: "",
+      form_id: 1,
+      id: 3,
+      required: undefined,
+      select_allow_user_input: undefined,
+      select_options: [],
+      title: "Short answer",
+      type: "SHORT_ANSWER",
+    },
+    4: {
+      description: "",
+      form_id: 1,
+      id: 4,
+      required: undefined,
+      select_allow_user_input: undefined,
+      select_options: [],
+      title: "Long answer",
+      type: "LONG_ANSWER",
+    },
+  },
 }
 
 export default function retreatReducer(
