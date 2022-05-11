@@ -97,6 +97,9 @@ let useStyles = makeStyles((theme) => ({
   topRightOptions: {display: "flex", alignItems: "center"},
   viewPageLink: {
     textDecoration: "none",
+    "&:hover": {
+      textDecoration: "none",
+    },
   },
 }))
 
