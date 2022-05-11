@@ -5,28 +5,24 @@ import {
   Dialog,
   Link,
   makeStyles,
-  Tab,
-  Tabs,
 } from "@material-ui/core"
 import {push} from "connected-react-router"
 import _ from "lodash"
-import {useEffect, useState} from "react"
+import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {
   Link as ReactRouterLink,
   RouteComponentProps,
   withRouter,
 } from "react-router-dom"
-import AppTabPanel from "../components/base/AppTabPanel"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
-import AttendeesRegistrationFormIdForm from "../components/retreats/AttendeesRegistrationFormIdForm"
 import NewRetreatAttendeeForm from "../components/retreats/NewRetreatAttendeeForm"
 import RetreatAttendeesTable from "../components/retreats/RetreatAttendeesTable"
 import RetreatStateTitle from "../components/retreats/RetreatStateTitle"
 import {AppRoutes} from "../Stack"
 import {theme} from "../theme"
-import {useQuery, useRetreat, useRetreatAttendees} from "../utils"
+import {useRetreat, useRetreatAttendees} from "../utils"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -53,12 +49,6 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
   let retreatId = parseInt(props.match.params.retreatId) || -1 // -1 for an id that will always return 404
-  let [tabQuery, setTabQuery] = useQuery("tab")
-  let [tabValue, setTabValue] = useState<string | undefined>(undefined)
-  useEffect(() => {
-    const TABS = ["info", "attendees"]
-    setTabValue(tabQuery && TABS.includes(tabQuery) ? tabQuery : "attendees")
-  }, [tabQuery, setTabValue])
 
   // Get retreat data
   let [retreat] = useRetreat(retreatId)
@@ -109,50 +99,31 @@ function RetreatAttendeesPage(props: RetreatAttendeesPageProps) {
         </Box>
 
         {retreat && (
-          <>
-            <Tabs
-              value={tabValue}
-              onChange={(e, newVal) =>
-                setTabQuery(newVal === "attendees" ? null : newVal)
-              }
-              variant="fullWidth"
-              indicatorColor="primary">
-              <Tab value="attendees" label="Attendees" />
-              <Tab value="info" label="Other info" />
-            </Tabs>
-            <AppTabPanel
-              show={tabValue === "attendees"}
-              className={classes.tabBody}>
-              <RetreatAttendeesTable
-                rows={
-                  retreatAttendees
-                    ? retreatAttendees.map((a) =>
-                        _.pick(a, [
-                          "id",
-                          "first_name",
-                          "last_name",
-                          "email_address",
-                          "info_status",
-                        ])
-                      )
-                    : []
-                }
-                onSelect={(id: number) => {
-                  dispatch(
-                    push(
-                      AppRoutes.getPath("RetreatAttendeePage", {
-                        retreatId: retreatId.toString(),
-                        attendeeId: id.toString(),
-                      })
-                    )
+          <RetreatAttendeesTable
+            rows={
+              retreatAttendees
+                ? retreatAttendees.map((a) =>
+                    _.pick(a, [
+                      "id",
+                      "first_name",
+                      "last_name",
+                      "email_address",
+                      "info_status",
+                    ])
                   )
-                }}
-              />
-            </AppTabPanel>
-            <AppTabPanel show={tabValue === "info"} className={classes.tabBody}>
-              <AttendeesRegistrationFormIdForm retreatId={retreat.id} />
-            </AppTabPanel>
-          </>
+                : []
+            }
+            onSelect={(id: number) => {
+              dispatch(
+                push(
+                  AppRoutes.getPath("RetreatAttendeePage", {
+                    retreatId: retreatId.toString(),
+                    attendeeId: id.toString(),
+                  })
+                )
+              )
+            }}
+          />
         )}
       </div>
     </PageBase>
