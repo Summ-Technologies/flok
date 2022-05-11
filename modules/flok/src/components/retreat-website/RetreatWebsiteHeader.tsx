@@ -187,18 +187,26 @@ type RetreatWebsiteHeaderLinkProps = {
 function RetreatWebsiteHeaderLink(props: RetreatWebsiteHeaderLinkProps) {
   let classes = useLinkStyles()
   let page = useAttendeeLandingPage(props.pageId)
+  function titleToNavigation(str: string) {
+    let letters = str.split("")
+    letters.forEach((letter, i) => {
+      if (letter === " ") {
+        letters[i] = "-"
+      }
+    })
+    return letters.join("").toLowerCase()
+  }
   return (
     <Link
-      href={`/retreats/${props.retreatName}/${page?.title}`}
+      href={`/retreats/${titleToNavigation(
+        props.retreatName
+      )}/${titleToNavigation(page?.title ?? "home")}`}
       className={classes.navigationLink}
       style={
         page?.title === props.selectedPage
           ? {
-              // paddingBottom: "4px",
               height: "1 rem",
               textDecoration: "underline",
-              // borderBottomStyle: "solid",
-              // borderBottomWidth: "3.1px",
             }
           : {}
       }>

@@ -1,9 +1,12 @@
 import {Box, Button, makeStyles, TextField} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useFormik} from "formik"
+import _ from "lodash"
 import {useDispatch} from "react-redux"
+import * as yup from "yup"
 import {AppRoutes} from "../../Stack"
 import {patchPage} from "../../store/actions/retreat"
+import {getTextFieldErrorProps} from "../../utils"
 import {useAttendeeLandingPage} from "../../utils/retreatUtils"
 
 let useStyles = makeStyles((theme) => ({
@@ -48,6 +51,15 @@ function EditPageForm(props: EditPageFormProps) {
         )
       )
     },
+    validationSchema: yup.object({
+      title: yup
+        .string()
+        .required()
+        .matches(
+          /^[aA-zZ\s0-9]+$/,
+          "Can only contain letters, numbers, or spaces"
+        ),
+    }),
   })
 
   return (
@@ -62,13 +74,15 @@ function EditPageForm(props: EditPageFormProps) {
           label="Page Name"
           className={classes.textField}
           disabled={disabledChange}
+          {...getTextFieldErrorProps(formik, "title")}
         />
         {!disabledChange && (
           <Button
             type="submit"
             color="primary"
             variant="contained"
-            className={classes.saveButton}>
+            className={classes.saveButton}
+            disabled={_.isEqual(formik.values, formik.initialValues)}>
             Save
           </Button>
         )}

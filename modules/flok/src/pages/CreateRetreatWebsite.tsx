@@ -1,15 +1,21 @@
 import {Box, Button, makeStyles, TextField, Typography} from "@material-ui/core"
+import {push} from "connected-react-router"
 import {useFormik} from "formik"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
+import * as yup from "yup"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+import {UploadImage} from "../components/retreat-website/EditWebsiteForm"
+import {AppRoutes} from "../Stack"
+import {ApiAction} from "../store/actions/api"
+import {postPage, postWebsite} from "../store/actions/retreat"
+import {getTextFieldErrorProps} from "../utils"
+import {useAttendeeLandingWebsite} from "../utils/retreatUtils"
 import RedirectPage from "./misc/RedirectPage"
 import {useRetreat} from "./misc/RetreatProvider"
 
-type CreateRetreatWebsiteProps = RouteComponentProps<{
-  retreatIdx: string
-}>
 let useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
@@ -33,42 +39,83 @@ let useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
 }))
+type CreateRetreatWebsiteProps = RouteComponentProps<{
+  retreatIdx: string
+}>
 function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
   let retreat = useRetreat()
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let classes = useStyles()
+  let dispatch = useDispatch()
+  async function handleCreateWebsite(values: {
+    name: string
+    retreat_id: number
+  }) {
+    let websiteResponse = (await dispatch(
+      postWebsite(values)
+    )) as unknown as ApiAction
+    if (!websiteResponse.error) {
+      let pageResponse = (await dispatch(
+        postPage({
+          title: "Home",
+          website_id: websiteResponse.payload.website.id,
+        })
+      )) as unknown as ApiAction
+      if (!pageResponse.error) {
+        dispatch(
+          push(
+            AppRoutes.getPath("LandingPageGeneratorPage", {
+              retreatIdx: retreatIdx.toString(),
+              pageName: pageResponse.payload.page.id,
+            })
+          )
+        )
+      }
+    }
+  }
+
   let formik = useFormik({
     initialValues: {
-      header_image_link: "",
-      company_logo_link: "",
+      header_image: "",
+      company_logo: "",
       name: "",
     },
     onSubmit: (values) => {
-      //convert from editor state to current content
-      console.log({
-        ...values,
+      handleCreateWebsite({
+        name: values.name,
         retreat_id: retreat.id,
       })
     },
+    validationSchema: yup.object({
+      name: yup
+        .string()
+        .required()
+        .matches(
+          /^[aA-zZ\s0-9]+$/,
+          "Can only contain letters, numbers, or spaces"
+        ),
+    }),
   })
+  const website = useAttendeeLandingWebsite(retreat.website_id)
   // if retreat.website
   // change pageName to first page?  are we going to allow changes made to home or no?
-  if (true) {
+  if (website?.page_ids[0]) {
     return (
       <RedirectPage
         pageName="LandingPageGeneratorPage"
-        pathParams={{retreatIdx: retreatIdx.toString(), pageName: "home"}}
+        pathParams={{
+          retreatIdx: retreatIdx.toString(),
+          pageName: website.page_ids[0].toString(),
+        }}
       />
     )
   }
-  console.log(retreat)
   return (
     <PageContainer>
       <PageSidenav retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.root}>
           <Typography variant="h1">Create a Website</Typography>
-
           <form onSubmit={formik.handleSubmit} className={classes.form}>
             <Box className={classes.body}>
               <TextField
@@ -79,30 +126,39 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                 variant="outlined"
                 label="Website Name"
                 className={classes.textField}
+                {...getTextFieldErrorProps(formik, "name")}
               />
-              <TextField
-                value={formik.values.header_image_link}
-                id={`header_image_link`}
-                onChange={formik.handleChange}
-                variant="outlined"
-                label="Banner Image Link"
-                className={classes.textField}
+              <UploadImage
+                value={formik.values.header_image}
+                id="header_image"
+                handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (e.target.files) {
+                    // formik.setFieldValue("header_image", e.target.files[0])
+                    formik.setFieldValue("header_image", e.target.value)
+                    // console.log(e.target.files[0])
+                  }
+                }}
+                headerText="Header Image"
               />
-              <TextField
-                value={formik.values.company_logo_link}
-                id={`company_logo_link`}
-                onChange={formik.handleChange}
-                variant="outlined"
-                label="Logo Image"
-                className={classes.textField}
+              <UploadImage
+                value={formik.values.company_logo}
+                id="company_logo"
+                handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if (e.target.files) {
+                    formik.setFieldValue("company_logo", e.target.value)
+                    // (e.target.files[0])
+                  }
+                }}
+                headerText="Company Logo"
               />
             </Box>
             <Button
               type="submit"
               color="primary"
               variant="contained"
-              className={classes.submitButton}>
-              Save
+              className={classes.submitButton}
+              disabled={formik.values.name === ""}>
+              Create
             </Button>
           </form>
         </div>

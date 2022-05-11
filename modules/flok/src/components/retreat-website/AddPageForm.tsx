@@ -1,7 +1,12 @@
 import {Button, makeStyles, TextField} from "@material-ui/core"
+import {push} from "connected-react-router"
 import {useFormik} from "formik"
 import {useDispatch} from "react-redux"
+import * as yup from "yup"
+import {AppRoutes} from "../../Stack"
+import {ApiAction} from "../../store/actions/api"
 import {postPage} from "../../store/actions/retreat"
+import {getTextFieldErrorProps} from "../../utils"
 
 let useStyles = makeStyles((theme) => ({
   addNew: {
@@ -13,18 +18,44 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 type AddPageFormProps = {
-  website_id: number
+  websiteId: number
+  retreatIdx: number
 }
 function AddPageForm(props: AddPageFormProps) {
   let classes = useStyles()
   let dispatch = useDispatch()
+  async function handleAddPage(values: {title: string}) {
+    let result = (await dispatch(
+      postPage({...values, website_id: props.websiteId})
+    )) as unknown as ApiAction
+    if (!result.error) {
+      dispatch(
+        push(
+          AppRoutes.getPath("LandingPageGeneratorPage", {
+            retreatIdx: props.retreatIdx.toString(),
+            pageName: result.payload.page.id,
+          })
+        )
+      )
+    }
+    console.log(result)
+  }
   let formik = useFormik({
     initialValues: {
       title: "",
     },
     onSubmit: (values) => {
-      dispatch(postPage({...values, website_id: props.website_id}))
+      handleAddPage(values)
     },
+    validationSchema: yup.object({
+      title: yup
+        .string()
+        .required()
+        .matches(
+          /^[aA-zZ\s0-9]+$/,
+          "Can only contain letters, numbers, or spaces"
+        ),
+    }),
   })
   let disabledAdd: boolean = formik.values.title === ""
   return (
@@ -36,6 +67,7 @@ function AddPageForm(props: AddPageFormProps) {
         onChange={formik.handleChange}
         label="New Page Title"
         size="small"
+        {...getTextFieldErrorProps(formik, "title")}
       />
       <Button
         variant="contained"

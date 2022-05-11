@@ -2,6 +2,7 @@ import {ThunkDispatch} from "redux-thunk"
 import {RootState} from ".."
 import {
   AttendeeLandingWebsiteBlockModel,
+  AttendeeLandingWebsiteModel,
   AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
   RetreatToTaskState,
@@ -415,8 +416,8 @@ export function getPage(pageId: number) {
   })
 }
 
-export function getPageByName(websiteName: string, pageName: string) {
-  let endpoint = `/v1.0/websites/name/${websiteName}/website-pages/name/${pageName}`
+export function getPageByName(websiteId: number, pageName: string) {
+  let endpoint = `/v1.0/websites/${websiteId}/website-pages/name/${pageName}`
   return createApiAction({
     method: "GET",
     endpoint,
@@ -540,5 +541,51 @@ export function deletePage(pageId: number) {
       ],
     },
     {errorMessage: "Something went wrong"}
+  )
+}
+export const POST_WEBSITE_REQUEST = "POST_WEBSITE_REQUEST"
+export const POST_WEBSITE_SUCCESS = "POST_WEBSITE_SUCCESS"
+export const POST_WEBSITE_FAILURE = "POST_WEBSITE_FAILURE"
+export function postWebsite(values: Partial<AttendeeLandingWebsiteModel>) {
+  let endpoint = `/v1.0/websites`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: POST_WEBSITE_REQUEST},
+        {type: POST_WEBSITE_SUCCESS},
+        {type: POST_WEBSITE_FAILURE},
+      ],
+    },
+    {
+      errorMessage: "Something went wrong.",
+    }
+  )
+}
+export const PATCH_WEBSITE_REQUEST = "PATCH_WEBSITE_REQUEST"
+export const PATCH_WEBSITE_SUCCESS = "PATCH_WEBSITE_SUCCESS"
+export const PATCH_WEBSITE_FAILURE = "PATCH_WEBSITE_FAILURE"
+export function patchWebsite(
+  websiteId: number,
+  values: Partial<AttendeeLandingWebsiteModel>
+) {
+  let endpoint = `/v1.0/websites/${websiteId}`
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: PATCH_WEBSITE_REQUEST},
+        {type: PATCH_WEBSITE_SUCCESS, meta: {websiteId}},
+        {type: PATCH_WEBSITE_FAILURE, meta: {websiteId}},
+      ],
+    },
+    {
+      successMessage: "Website name updated",
+      errorMessage: "Something went wrong",
+    }
   )
 }

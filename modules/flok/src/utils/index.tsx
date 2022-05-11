@@ -1,3 +1,4 @@
+import {TextFieldProps} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
@@ -175,4 +176,15 @@ export function formatCurrency(
     maximumFractionDigits: 0,
   })
   return formatter.format(amount)
+}
+
+export function getTextFieldErrorProps(
+  formik: any,
+  field: string
+): TextFieldProps {
+  let isError = formik.errors && !!formik.errors[field]
+  return {
+    error: isError,
+    helperText: isError && formik.errors && formik.errors[field],
+  }
 }

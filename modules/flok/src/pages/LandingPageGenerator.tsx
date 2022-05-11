@@ -28,6 +28,7 @@ import EditWebsiteForm from "../components/retreat-website/EditWebsiteForm"
 import LandingPageEditForm from "../components/retreat-website/LandingPageEditForm"
 import PageWebsiteLink from "../components/retreat-website/PageWebsiteLink"
 import {AppRoutes} from "../Stack"
+import {ApiAction} from "../store/actions/api"
 import {deletePage} from "../store/actions/retreat"
 import {
   useAttendeeLandingPage,
@@ -105,10 +106,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let config = path === AppRoutes.getPath("LandingPageGeneratorConfig")
   const classes = useStyles()
   let dispatch = useDispatch()
-
-  // confirm with jared the best way to do this
-
-  let website = useAttendeeLandingWebsite(1)
+  let website = useAttendeeLandingWebsite(retreat.website_id)
   let page = useAttendeeLandingPage(parseInt(pageName))
 
   if (!website) {
@@ -205,7 +203,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                 </div>
 
                 <div>
-                  <AddPageForm website_id={website.id} />
+                  <AddPageForm websiteId={website.id} retreatIdx={retreatIdx} />
                 </div>
               </div>
             </Route>
@@ -234,7 +232,11 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                 </div>
 
                 <div className={classes.editWebsiteFormWrapper}>
-                  <EditWebsiteForm />
+                  <EditWebsiteForm
+                    websiteId={website.id}
+                    retreatIdx={retreatIdx}
+                    pageName={pageName}
+                  />
                 </div>
               </div>
             </Route>
@@ -302,21 +304,40 @@ function EditPageToolBar(props: EditPageToolBarProps) {
   let pageId = parseInt(props.match.params.pageId)
   let dispatch = useDispatch()
   let classes = useEditPageStyles()
+  let retreat = useRetreat()
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   let page = useAttendeeLandingPage(pageId)
+  let website = useAttendeeLandingWebsite(retreat.website_id)
+  async function handleDeletePage() {
+    let deleteResult = (await dispatch(
+      deletePage(pageId)
+    )) as unknown as ApiAction
+    if (!deleteResult.error) {
+      handleCloseDeleteModal()
+      dispatch(
+        push(
+          AppRoutes.getPath("LandingPageGeneratorConfig", {
+            retreatIdx: retreatIdx.toString(),
+            pageName:
+              deleteResult.meta.pageId.toString() === pageName
+                ? website?.page_ids[0].toString() ?? pageName
+                : pageName,
+          })
+        )
+      )
+    }
+  }
+  function handleCloseDeleteModal() {
+    setDeleteModalOpen(false)
+  }
   return (
     <div className={classes.toolbarPage}>
       <ConfirmationModal
         open={deleteModalOpen}
         title="Delete Page?"
         text="Are you sure you wish to delete this page?  This action cannot be undone."
-        onClose={() => {
-          setDeleteModalOpen(false)
-        }}
-        onSubmit={() => {
-          dispatch(deletePage(pageId))
-          // if we deleted current page reroute to home page
-        }}
+        onClose={handleCloseDeleteModal}
+        onSubmit={handleDeletePage}
       />
       <div
         style={{

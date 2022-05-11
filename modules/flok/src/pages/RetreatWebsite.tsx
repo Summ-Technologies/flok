@@ -41,17 +41,23 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
   let classes = useStyles()
 
-  let website = useAttendeeLandingWebsiteName(retreatName)
-  console.log(website)
-
-  let page = useAttendeeLandingPageName(retreatName, pageName ?? "home")
+  let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
+  let page = useAttendeeLandingPageName(
+    website?.id ?? 0,
+    replaceDashes(pageName ?? "home")
+  )
+  function replaceDashes(str: string) {
+    let strArray = str.split("")
+    strArray.forEach((char, i) => {
+      if (char === "-") {
+        strArray[i] = " "
+      }
+    })
+    return strArray.join("")
+  }
 
   //how do I do this to be ok with undefined?
   let block = useAttendeeLandingPageBlock(page?.block_ids[0] ?? 1)
-
-  //Need Header
-  // Header image
-  // Body
 
   return !page || !website ? (
     <NotFound404Page />
@@ -82,7 +88,7 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             }
             className={classes.bannerImg}
             alt="Banner"></img>
-          {block?.content && (
+          {/* {block?.content && (
             <div
               dangerouslySetInnerHTML={{
                 __html: draftToHtml(
@@ -90,6 +96,9 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
                 ),
               }}
               className={classes.websiteBody}></div>
+          )} */}
+          {page?.block_ids[0] && (
+            <WYSIWYGBlockRenderer blockId={page.block_ids[0]} />
           )}
         </div>
       </PageBody>
@@ -98,3 +107,32 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
 }
 
 export default RetreatWebsite
+
+let useBlockRendererStyles = makeStyles((theme) => ({
+  websiteBody: {
+    width: "75%",
+    "& > *:not(:first-child)": {
+      margin: "1em 0",
+    },
+    "& > *:not(:first-child) > *:not(:first-child)": {
+      margin: "1em 0",
+    },
+  },
+}))
+
+type WYSIWYGBlockRendererProps = {
+  blockId: number
+}
+function WYSIWYGBlockRenderer(props: WYSIWYGBlockRendererProps) {
+  let block = useAttendeeLandingPageBlock(props.blockId)
+  let classes = useBlockRendererStyles()
+  return block?.content ? (
+    <div
+      dangerouslySetInnerHTML={{
+        __html: draftToHtml(block!.content as unknown as RawDraftContentState),
+      }}
+      className={classes.websiteBody}></div>
+  ) : (
+    <></>
+  )
+}

@@ -119,7 +119,7 @@ export function useAttendeeLandingPageBlock(blockId: number) {
 }
 
 export function useAttendeeLandingPageName(
-  websiteName: string,
+  websiteId: number,
   pageName: string
 ) {
   let dispatch = useDispatch()
@@ -130,9 +130,9 @@ export function useAttendeeLandingPageName(
   })
   useEffect(() => {
     if (!page) {
-      dispatch(getPageByName(websiteName, pageName))
+      dispatch(getPageByName(websiteId, pageName))
     }
-  }, [page, dispatch, pageName, websiteName])
+  }, [page, dispatch, pageName, websiteId])
 
   return page
 }
