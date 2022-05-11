@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Drawer,
   IconButton,
   Link,
@@ -30,6 +31,7 @@ import PageWebsiteLink from "../components/retreat-website/PageWebsiteLink"
 import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
 import {deletePage} from "../store/actions/retreat"
+import {titleToNavigation} from "../utils"
 import {
   useAttendeeLandingPage,
   useAttendeeLandingWebsite,
@@ -91,6 +93,10 @@ let useStyles = makeStyles((theme) => ({
   },
   headerLink: {
     color: theme.palette.common.black,
+  },
+  topRightOptions: {display: "flex", alignItems: "center"},
+  viewPageLink: {
+    textDecoration: "none",
   },
 }))
 
@@ -253,19 +259,33 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                 {/* For now title case page name, later map and find page name casing */}
                 {retreat.company_name} Website - {page?.title ?? pageName}
               </Typography>
-              <IconButton
-                onClick={() => {
-                  dispatch(
-                    push(
-                      AppRoutes.getPath("LandingPageGeneratorConfig", {
-                        retreatIdx: retreatIdx.toString(),
-                        pageName: pageName,
-                      })
+              <div className={classes.topRightOptions}>
+                <Link
+                  className={classes.viewPageLink}
+                  href={AppRoutes.getPath("RetreatWebsitePage", {
+                    retreatName: website.name,
+                    pageName: titleToNavigation(page?.title ?? "home"),
+                  })}
+                  target="_blank">
+                  <Button variant="outlined" color="primary" size="small">
+                    View Page
+                  </Button>
+                </Link>
+
+                <IconButton
+                  onClick={() => {
+                    dispatch(
+                      push(
+                        AppRoutes.getPath("LandingPageGeneratorConfig", {
+                          retreatIdx: retreatIdx.toString(),
+                          pageName: pageName,
+                        })
+                      )
                     )
-                  )
-                }}>
-                <Settings fontSize="large"></Settings>
-              </IconButton>
+                  }}>
+                  <Settings fontSize="large"></Settings>
+                </IconButton>
+              </div>
             </div>
             {page && <LandingPageEditForm pageId={page?.id} config={config} />}
           </div>

@@ -38,7 +38,6 @@ function AddPageForm(props: AddPageFormProps) {
         )
       )
     }
-    console.log(result)
   }
   let formik = useFormik({
     initialValues: {

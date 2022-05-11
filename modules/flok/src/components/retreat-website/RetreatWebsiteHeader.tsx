@@ -9,6 +9,7 @@ import {
 import {Menu} from "@material-ui/icons"
 import {useState} from "react"
 import {FlokTheme} from "../../theme"
+import {titleToNavigation} from "../../utils"
 import {useAttendeeLandingPage} from "../../utils/retreatUtils"
 
 let useStyles = makeStyles((theme) => ({
@@ -187,15 +188,7 @@ type RetreatWebsiteHeaderLinkProps = {
 function RetreatWebsiteHeaderLink(props: RetreatWebsiteHeaderLinkProps) {
   let classes = useLinkStyles()
   let page = useAttendeeLandingPage(props.pageId)
-  function titleToNavigation(str: string) {
-    let letters = str.split("")
-    letters.forEach((letter, i) => {
-      if (letter === " ") {
-        letters[i] = "-"
-      }
-    })
-    return letters.join("").toLowerCase()
-  }
+
   return (
     <Link
       href={`/retreats/${titleToNavigation(

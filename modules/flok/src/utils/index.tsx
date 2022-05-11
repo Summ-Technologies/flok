@@ -188,3 +188,13 @@ export function getTextFieldErrorProps(
     helperText: isError && formik.errors && formik.errors[field],
   }
 }
+
+export function titleToNavigation(str: string) {
+  let letters = str.split("")
+  letters.forEach((letter, i) => {
+    if (letter === " ") {
+      letters[i] = "-"
+    }
+  })
+  return letters.join("").toLowerCase()
+}
