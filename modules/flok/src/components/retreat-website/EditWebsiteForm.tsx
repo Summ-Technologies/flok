@@ -27,16 +27,12 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type EditWebsiteModalProps = {
-  // open: boolean
-  // handleClose: () => void
+type EditWebsiteFormProps = {
   websiteId: number
   retreatIdx: number
-  pageName: string
+  currentPageId: string
 }
-// take in website id and usewebsite
-
-function EditWebsiteForm(props: EditWebsiteModalProps) {
+function EditWebsiteForm(props: EditWebsiteFormProps) {
   let dispatch = useDispatch()
   let website = useAttendeeLandingWebsite(props.websiteId)
 
@@ -49,7 +45,7 @@ function EditWebsiteForm(props: EditWebsiteModalProps) {
         push(
           AppRoutes.getPath("LandingPageGeneratorConfig", {
             retreatIdx: props.retreatIdx.toString(),
-            pageName: props.pageName,
+            currentPageId: props.currentPageId,
           })
         )
       )
@@ -78,10 +74,6 @@ function EditWebsiteForm(props: EditWebsiteModalProps) {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Box className={classes.body}>
-        {/* <BeforeUnload
-          when={formik.values !== formik.initialValues}
-          message="Are you sure you wish to leave without saving your changes?"
-        /> */}
         <TextField
           required
           value={formik.values.name}

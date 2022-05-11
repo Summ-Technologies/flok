@@ -66,7 +66,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
           push(
             AppRoutes.getPath("LandingPageGeneratorPage", {
               retreatIdx: retreatIdx.toString(),
-              pageName: pageResponse.payload.page.id,
+              currentPageId: pageResponse.payload.page.id,
             })
           )
         )
@@ -97,15 +97,13 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
     }),
   })
   const website = useAttendeeLandingWebsite(retreat.website_id)
-  // if retreat.website
-  // change pageName to first page?  are we going to allow changes made to home or no?
   if (website?.page_ids[0]) {
     return (
       <RedirectPage
         pageName="LandingPageGeneratorPage"
         pathParams={{
           retreatIdx: retreatIdx.toString(),
-          pageName: website.page_ids[0].toString(),
+          currentPageId: website.page_ids[0].toString(),
         }}
       />
     )

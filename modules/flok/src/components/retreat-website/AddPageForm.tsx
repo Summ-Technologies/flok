@@ -33,7 +33,7 @@ function AddPageForm(props: AddPageFormProps) {
         push(
           AppRoutes.getPath("LandingPageGeneratorPage", {
             retreatIdx: props.retreatIdx.toString(),
-            pageName: result.payload.page.id,
+            currentPageId: result.payload.page.id,
           })
         )
       )

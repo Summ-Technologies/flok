@@ -105,18 +105,18 @@ let useStyles = makeStyles((theme) => ({
 
 type LandingPageGeneratorProps = RouteComponentProps<{
   retreatIdx: string
-  pageName: string
+  currentPageId: string
 }>
 function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
-  let pageName = props.match.params.pageName
+  let currentPageId = props.match.params.currentPageId
   let retreat = useRetreat()
   let {path} = useRouteMatch()
   let config = path === AppRoutes.getPath("LandingPageGeneratorConfig")
   const classes = useStyles()
   let dispatch = useDispatch()
   let website = useAttendeeLandingWebsite(retreat.website_id)
-  let page = useAttendeeLandingPage(parseInt(pageName))
+  let page = useAttendeeLandingPage(parseInt(currentPageId))
 
   if (!website) {
     return <NotFound404Page />
@@ -133,7 +133,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
               push(
                 AppRoutes.getPath("LandingPageGeneratorPage", {
                   retreatIdx: retreatIdx.toString(),
-                  pageName: pageName,
+                  currentPageId: currentPageId,
                 })
               )
             )
@@ -153,7 +153,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                             "LandingPageGeneratorConfigAddPage",
                             {
                               retreatIdx: retreatIdx.toString(),
-                              pageName: pageName,
+                              currentPageId: currentPageId,
                             }
                           )
                         )
@@ -166,7 +166,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                   return (
                     <PageWebsiteLink
                       pageId={pageId}
-                      pageName={pageName}
+                      currentPageId={currentPageId}
                       retreatIdx={retreatIdx}
                     />
                   )
@@ -178,7 +178,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                     "LandingPageGeneratorConfigWebsiteSettings",
                     {
                       retreatIdx: retreatIdx.toString(),
-                      pageName: pageName,
+                      currentPageId: currentPageId,
                     }
                   )}>
                   <Typography
@@ -199,7 +199,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                         push(
                           AppRoutes.getPath("LandingPageGeneratorConfig", {
                             retreatIdx: retreatIdx.toString(),
-                            pageName: pageName,
+                            currentPageId: currentPageId,
                           })
                         )
                       )
@@ -228,7 +228,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                         push(
                           AppRoutes.getPath("LandingPageGeneratorConfig", {
                             retreatIdx: retreatIdx.toString(),
-                            pageName: pageName,
+                            currentPageId: currentPageId,
                           })
                         )
                       )
@@ -244,7 +244,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                   <EditWebsiteForm
                     websiteId={website.id}
                     retreatIdx={retreatIdx}
-                    pageName={pageName}
+                    currentPageId={currentPageId}
                   />
                 </div>
               </div>
@@ -259,15 +259,14 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
           <div className={classes.root}>
             <div className={classes.header}>
               <Typography variant="h1">
-                {/* For now title case page name, later map and find page name casing */}
-                {retreat.company_name} Website - {page?.title ?? pageName}
+                {retreat.company_name} Website - {page?.title ?? currentPageId}
               </Typography>
               <div className={classes.topRightOptions}>
                 <Link
                   className={classes.viewPageLink}
                   href={AppRoutes.getPath("RetreatWebsitePage", {
                     retreatName: website.name,
-                    pageName: titleToNavigation(page?.title ?? "home"),
+                    currentPageId: titleToNavigation(page?.title ?? "home"),
                   })}
                   target="_blank">
                   <Button variant="outlined" color="primary" size="small">
@@ -281,7 +280,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                       push(
                         AppRoutes.getPath("LandingPageGeneratorConfig", {
                           retreatIdx: retreatIdx.toString(),
-                          pageName: pageName,
+                          currentPageId: currentPageId,
                         })
                       )
                     )
@@ -319,11 +318,11 @@ let useEditPageStyles = makeStyles((theme) => ({
 type EditPageToolBarProps = RouteComponentProps<{
   pageId: string
   retreatIdx: string
-  pageName: string
+  currentPageId: string
 }>
 function EditPageToolBar(props: EditPageToolBarProps) {
   let retreatIdx = parseInt(props.match.params.retreatIdx)
-  let pageName = props.match.params.pageName
+  let currentPageId = props.match.params.currentPageId
   let pageId = parseInt(props.match.params.pageId)
   let dispatch = useDispatch()
   let classes = useEditPageStyles()
@@ -341,10 +340,10 @@ function EditPageToolBar(props: EditPageToolBarProps) {
         push(
           AppRoutes.getPath("LandingPageGeneratorConfig", {
             retreatIdx: retreatIdx.toString(),
-            pageName:
-              deleteResult.meta.pageId.toString() === pageName
-                ? website?.page_ids[0].toString() ?? pageName
-                : pageName,
+            currentPageId:
+              deleteResult.meta.pageId.toString() === currentPageId
+                ? website?.page_ids[0].toString() ?? currentPageId
+                : currentPageId,
           })
         )
       )
@@ -375,7 +374,7 @@ function EditPageToolBar(props: EditPageToolBarProps) {
                 push(
                   AppRoutes.getPath("LandingPageGeneratorConfig", {
                     retreatIdx: retreatIdx.toString(),
-                    pageName: pageName,
+                    currentPageId: currentPageId,
                   })
                 )
               )
@@ -397,7 +396,7 @@ function EditPageToolBar(props: EditPageToolBarProps) {
         <EditPageForm
           pageId={pageId}
           retreatIdx={retreatIdx.toString()}
-          pageName={pageName}
+          currentPageId={currentPageId}
         />
       </div>
     </div>

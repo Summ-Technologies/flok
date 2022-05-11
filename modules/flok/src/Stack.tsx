@@ -51,14 +51,14 @@ export class AppRoutes {
     LodgingPage: "/r/:retreatIdx/lodging",
     ProposalPage: "/r/:retreatIdx/proposals/:hotelGuid",
     LandingPageGeneratorHome: "/r/:retreatIdx/landing",
-    LandingPageGeneratorPage: "/r/:retreatIdx/landing/:pageName",
-    LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:pageName/config",
+    LandingPageGeneratorPage: "/r/:retreatIdx/landing/:currentPageId",
+    LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:currentPageId/config",
     LandingPageGeneratorConfigWebsiteSettings:
-      "/r/:retreatIdx/landing/:pageName/config/website-settings",
+      "/r/:retreatIdx/landing/:currentPageId/config/website-settings",
     LandingPageGeneratorConfigPageSettings:
-      "/r/:retreatIdx/landing/:pageName/config/page-settings/:pageId",
+      "/r/:retreatIdx/landing/:currentPageId/config/page-settings/:pageId",
     LandingPageGeneratorConfigAddPage:
-      "/r/:retreatIdx/landing/:pageName/config/add-page",
+      "/r/:retreatIdx/landing/:currentPageId/config/add-page",
     CreateRetreatWebsite: "/r/:retreatIdx/create-website",
     AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
     AttendeeProfileFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",

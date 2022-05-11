@@ -19,9 +19,6 @@ let useStyles = makeStyles((theme) => ({
     margin: "10px",
     display: "flex",
     justifyContent: "center",
-    [theme.breakpoints.down("sm")]: {
-      // width: "80vw",
-    },
   },
   toolbar: {
     display: "flex",
@@ -42,12 +39,9 @@ let useStyles = makeStyles((theme) => ({
 
     autofocus: "true",
     width: "90%",
-    // height: "20rem",
     padding: "1rem",
     borderRadius: "8px",
-    // border: "2px solid gray",
     marginTop: 30,
-    // minWidth: "90%",
     [theme.breakpoints.down("sm")]: {
       width: "100%",
     },
@@ -75,7 +69,6 @@ type WYSIWYGBlockEditorProps = {
 }
 
 function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
-  // Block, rename, wysiwyg block editor
   let dispatch = useDispatch()
   useEffect(() => {
     dispatch(getBlock(props.blockId))
@@ -92,7 +85,6 @@ function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
       type: "WYSIWYG",
     },
     onSubmit: (values) => {
-      //convert from editor state to current content
       dispatch(
         patchBlock(props.blockId, {
           content: convertToRaw(values.content.getCurrentContent()),

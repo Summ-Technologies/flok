@@ -25,7 +25,7 @@ let useStyles = makeStyles((theme) => ({
 type PageWebsiteLinkProps = {
   pageId: number
   retreatIdx: number
-  pageName: string
+  currentPageId: string
 }
 
 function PageWebsiteLink(props: PageWebsiteLinkProps) {
@@ -39,7 +39,7 @@ function PageWebsiteLink(props: PageWebsiteLinkProps) {
         component={RouterLink}
         to={AppRoutes.getPath("LandingPageGeneratorPage", {
           retreatIdx: props.retreatIdx.toString(),
-          pageName: props.pageId.toString(),
+          currentPageId: props.pageId.toString(),
         })}>
         <Typography>{page?.title}</Typography>
       </Link>
@@ -49,7 +49,7 @@ function PageWebsiteLink(props: PageWebsiteLinkProps) {
             push(
               AppRoutes.getPath("LandingPageGeneratorConfigPageSettings", {
                 retreatIdx: props.retreatIdx.toString(),
-                pageName: props.pageName,
+                currentPageId: props.currentPageId,
                 pageId: props.pageId.toString(),
               })
             )

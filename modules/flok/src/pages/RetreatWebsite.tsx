@@ -56,9 +56,6 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     return strArray.join("")
   }
 
-  //how do I do this to be ok with undefined?
-  let block = useAttendeeLandingPageBlock(page?.block_ids[0] ?? 1)
-
   return !page || !website ? (
     <NotFound404Page />
   ) : (
@@ -88,15 +85,6 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             }
             className={classes.bannerImg}
             alt="Banner"></img>
-          {/* {block?.content && (
-            <div
-              dangerouslySetInnerHTML={{
-                __html: draftToHtml(
-                  block!.content as unknown as RawDraftContentState
-                ),
-              }}
-              className={classes.websiteBody}></div>
-          )} */}
           {page?.block_ids[0] && (
             <WYSIWYGBlockRenderer blockId={page.block_ids[0]} />
           )}
