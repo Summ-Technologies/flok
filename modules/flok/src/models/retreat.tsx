@@ -154,7 +154,7 @@ export type RetreatModel = {
   //Retreat itinerary links
   itinerary_first_draft_link?: string
   itinerary_final_draft_link?: string
-  website_id: number
+  attendees_website_id: number
 }
 
 export type RetreatTripModel = {

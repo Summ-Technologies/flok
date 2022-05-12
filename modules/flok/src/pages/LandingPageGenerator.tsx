@@ -115,7 +115,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let config = path === AppRoutes.getPath("LandingPageGeneratorConfig")
   const classes = useStyles()
   let dispatch = useDispatch()
-  let website = useAttendeeLandingWebsite(retreat.website_id)
+  let website = useAttendeeLandingWebsite(retreat.attendees_website_id)
   let page = useAttendeeLandingPage(parseInt(currentPageId))
 
   if (!website) {
@@ -329,7 +329,7 @@ function EditPageToolBar(props: EditPageToolBarProps) {
   let retreat = useRetreat()
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   let page = useAttendeeLandingPage(pageId)
-  let website = useAttendeeLandingWebsite(retreat.website_id)
+  let website = useAttendeeLandingWebsite(retreat.attendees_website_id)
   async function handleDeletePage() {
     let deleteResult = (await dispatch(
       deletePage(pageId)

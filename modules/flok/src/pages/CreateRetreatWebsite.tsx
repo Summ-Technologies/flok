@@ -96,7 +96,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
         ),
     }),
   })
-  const website = useAttendeeLandingWebsite(retreat.website_id)
+  const website = useAttendeeLandingWebsite(retreat.attendees_website_id)
   if (website?.page_ids[0]) {
     return (
       <RedirectPage

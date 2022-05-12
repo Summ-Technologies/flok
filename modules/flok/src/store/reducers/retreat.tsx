@@ -202,7 +202,7 @@ export default function retreatReducer(
                   ...(state.retreats[
                     payload.website.retreat_id
                   ] as RetreatModel),
-                  website_id: payload.website.id,
+                  attendees_website_id: payload.website.id,
                 },
               }
             : {}),
