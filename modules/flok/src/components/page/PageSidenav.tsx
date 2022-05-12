@@ -198,15 +198,13 @@ export default function PageSidenav(props: PageSidenavProps) {
           )
         })}
         <ListItem
-          {...(retreatModel.itinerary_state === "IN_PROGRESS"
-            ? getLinkSidenavProps(retreatModel.itinerary_final_draft_link)
-            : getLinkSidenavProps())}>
+          {...getLinkSidenavProps(retreatModel.itinerary_final_draft_link)}>
           <ListItemIcon>
             <MapRounded fontSize="large" />
           </ListItemIcon>
           <ListItemText>Itinerary</ListItemText>
         </ListItem>
-        <ListItem {...getLinkSidenavProps(retreatModel.faq_link)}>
+        <ListItem {...getLinkSidenavProps(retreatModel.budget_link)}>
           <ListItemIcon>
             <LocalAtm fontSize="large" />
           </ListItemIcon>
