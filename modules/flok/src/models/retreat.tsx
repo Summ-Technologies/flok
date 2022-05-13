@@ -135,8 +135,9 @@ export type RetreatModel = {
   selected_hotels_ids: number[]
   selected_hotels: RetreatSelectedHotelProposal[]
 
-  // Retreat data related to flights
+  // Retreat data related to attendees
   attendees_state?: RetreatAttendeesState
+  attendees_website_id?: number
 
   // Retreat data related to flights
   flights_state?: RetreatFlightsState
@@ -154,9 +155,6 @@ export type RetreatModel = {
   //Retreat itinerary links
   itinerary_first_draft_link?: string
   itinerary_final_draft_link?: string
-
-  // Retreat attendees website landing page
-  attendees_website_id: number
 }
 
 export type RetreatTripModel = {

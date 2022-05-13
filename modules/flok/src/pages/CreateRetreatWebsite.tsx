@@ -12,7 +12,6 @@ import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
 import {postPage, postWebsite} from "../store/actions/retreat"
 import {getTextFieldErrorProps} from "../utils"
-import {useAttendeeLandingWebsite} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -93,7 +92,6 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
         ),
     }),
   })
-  const website = useAttendeeLandingWebsite(retreat.attendees_website_id)
 
   return (
     <PageContainer>

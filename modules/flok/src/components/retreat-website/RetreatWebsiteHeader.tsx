@@ -40,10 +40,11 @@ let useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       width: "10",
     },
+    justifyContent: "left",
   },
   registerWrapper: {
     width: "33%",
-    justifyContent: "center",
+    justifyContent: "right",
     display: "flex",
     alignItems: "center",
   },
@@ -58,7 +59,8 @@ let useStyles = makeStyles((theme) => ({
   registerButton: {
     [theme.breakpoints.down("sm")]: {
       width: "70%",
-      marginLeft: "15%",
+      marginLeft: "auto",
+      marginRight: "auto",
     },
   },
   mobileNavLinkContainer: {
@@ -136,7 +138,7 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
               })}
             </div>
             <Button
-              size="small"
+              size="large"
               color="primary"
               variant="contained"
               className={classes.registerButton}>
