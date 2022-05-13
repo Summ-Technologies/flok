@@ -1,12 +1,19 @@
-import {Button, makeStyles, TextField, Typography} from "@material-ui/core"
+import {
+  Button,
+  CircularProgress,
+  makeStyles,
+  TextField,
+  Typography,
+} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useFormik} from "formik"
 import _ from "lodash"
+import {useState} from "react"
 import {useDispatch} from "react-redux"
 import * as yup from "yup"
 import {AppRoutes} from "../../Stack"
 import {ApiAction} from "../../store/actions/api"
-import {patchWebsite} from "../../store/actions/retreat"
+import {patchWebsite, postImage} from "../../store/actions/retreat"
 import {getTextFieldErrorProps} from "../../utils"
 import {useAttendeeLandingWebsite} from "../../utils/retreatUtils"
 
@@ -130,6 +137,10 @@ let useImageStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
+  loader: {
+    height: 20,
+  },
+  imageUploadFlex: {display: "flex", alignItems: "center"},
 }))
 type UploadImageProps = {
   value: any
@@ -139,17 +150,44 @@ type UploadImageProps = {
 }
 
 export function UploadImage(props: UploadImageProps) {
+  const [loading, setLoading] = useState(false)
+  async function handlePostImage(values: {file: any}) {
+    setLoading(true)
+    let returnValue = await postImage(values)
+    setLoading(false)
+    return returnValue
+  }
   let classes = useImageStyles()
   return (
     <div className={classes.uploadImageContainer}>
       <Typography className={classes.header}>{props.headerText}</Typography>
-      <input
-        type="file"
-        accept="image/png, image/gif, image/jpeg"
-        value={props.value}
-        id={props.id}
-        onChange={props.handleChange}
-      />
+      {loading ? (
+        <CircularProgress size="20px" className={classes.loader} />
+      ) : (
+        <div className={classes.imageUploadFlex}>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            component="label">
+            Choose File
+            <input
+              type="file"
+              accept="image/png, image/gif, image/jpeg"
+              // value={props.value}
+              // id={props.id}
+              hidden
+              onChange={(e) => {
+                handlePostImage({
+                  file: e.target?.files![0] ?? "none",
+                }) as unknown as ApiAction
+                props.handleChange(e)
+              }}
+            />
+          </Button>
+          <Typography>{props.value || "No file chosen"}</Typography>
+        </div>
+      )}
     </div>
   )
 }
