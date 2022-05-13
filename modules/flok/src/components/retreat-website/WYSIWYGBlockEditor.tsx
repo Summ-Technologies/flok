@@ -89,9 +89,9 @@ function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
       )
     },
   })
-
+  let {resetForm} = formik
   useEffect(() => {
-    formik.resetForm({
+    resetForm({
       values: {
         content: block?.content
           ? EditorState.createWithContent(
@@ -101,7 +101,7 @@ function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
         type: "WYSIWYG",
       },
     })
-  }, [block])
+  }, [block, resetForm])
   let classes = useStyles(formik)
   return (
     <div>
