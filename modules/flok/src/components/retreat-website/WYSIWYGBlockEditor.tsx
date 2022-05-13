@@ -10,13 +10,13 @@ import _ from "lodash"
 import {useEffect} from "react"
 import {Editor} from "react-draft-wysiwyg"
 import {useDispatch} from "react-redux"
-import {getBlock, patchBlock} from "../../store/actions/retreat"
+import {patchBlock} from "../../store/actions/retreat"
 import {useAttendeeLandingPageBlock} from "../../utils/retreatUtils"
 import BeforeUnload from "../base/BeforeUnload"
 
 let useStyles = makeStyles((theme) => ({
   wrapper: {
-    margin: "10px",
+    margin: theme.spacing(2),
     display: "flex",
     justifyContent: "center",
   },
@@ -24,8 +24,8 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     position: "absolute",
     zIndex: 1000,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
     borderRadius: 20,
     marginTop: -30,
     [theme.breakpoints.down("sm")]: {
@@ -39,8 +39,8 @@ let useStyles = makeStyles((theme) => ({
 
     autofocus: "true",
     width: "90%",
-    padding: "1rem",
-    borderRadius: "8px",
+    padding: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
     marginTop: 30,
     [theme.breakpoints.down("sm")]: {
       width: "100%",
@@ -70,9 +70,6 @@ type WYSIWYGBlockEditorProps = {
 
 function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
   let dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(getBlock(props.blockId))
-  }, [dispatch, props.blockId])
   let block = useAttendeeLandingPageBlock(props.blockId)
 
   let formik = useFormik({

@@ -13,7 +13,6 @@ import {ApiAction} from "../store/actions/api"
 import {postPage, postWebsite} from "../store/actions/retreat"
 import {getTextFieldErrorProps} from "../utils"
 import {useAttendeeLandingWebsite} from "../utils/retreatUtils"
-import RedirectPage from "./misc/RedirectPage"
 import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -25,12 +24,10 @@ let useStyles = makeStyles((theme) => ({
   body: {
     display: "flex",
     flexDirection: "column",
-  },
-  textField: {
-    marginTop: theme.spacing(1),
+    paddingTop: theme.spacing(1),
   },
   form: {
-    backgroundColor: "white",
+    backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(2),
     borderRadius: theme.shape.borderRadius,
     marginTop: theme.spacing(2),
@@ -97,17 +94,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
     }),
   })
   const website = useAttendeeLandingWebsite(retreat.attendees_website_id)
-  if (website?.page_ids[0]) {
-    return (
-      <RedirectPage
-        pageName="LandingPageGeneratorPage"
-        pathParams={{
-          retreatIdx: retreatIdx.toString(),
-          currentPageId: website.page_ids[0].toString(),
-        }}
-      />
-    )
-  }
+
   return (
     <PageContainer>
       <PageSidenav retreatIdx={retreatIdx} />
@@ -123,7 +110,6 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                 onChange={formik.handleChange}
                 variant="outlined"
                 label="Website Name"
-                className={classes.textField}
                 {...getTextFieldErrorProps(formik, "name")}
               />
               <UploadImage

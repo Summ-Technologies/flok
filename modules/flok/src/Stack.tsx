@@ -4,7 +4,6 @@ import AttendeeProfilePage from "./pages/AttendeeProfilePage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
-import CreateRetreatWebsite from "./pages/CreateRetreatWebsite"
 import DeprecatedHomeRoutingPage from "./pages/deprecated/DeprecatedHomeRoutingPage"
 import DeprecatedNewRetreatFormPage from "./pages/deprecated/DeprecatedNewRetreatFormPage"
 import DeprecatedProposalPage from "./pages/deprecated/DeprecatedProposalPage"
@@ -59,7 +58,6 @@ export class AppRoutes {
       "/r/:retreatIdx/landing/:currentPageId/config/page-settings/:pageId",
     LandingPageGeneratorConfigAddPage:
       "/r/:retreatIdx/landing/:currentPageId/config/add-page",
-    CreateRetreatWebsite: "/r/:retreatIdx/create-website",
     AttendeeProfilePage: "/r/:retreatIdx/attendees/:attendeeId",
     AttendeeProfileFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
 
@@ -170,21 +168,12 @@ export default function Stack() {
               component={RetreatItineraryPage}
             />
             <ProtectedRoute
-              path={AppRoutes.getPath("LandingPageGeneratorHome")}
-              exact
-              component={CreateRetreatWebsite}
-            />
-            <ProtectedRoute
               path={[
                 AppRoutes.getPath("LandingPageGeneratorConfig"),
                 AppRoutes.getPath("LandingPageGeneratorPage"),
+                AppRoutes.getPath("LandingPageGeneratorHome"),
               ]}
               component={LandingPageGenerator}
-            />
-            <ProtectedRoute
-              path={AppRoutes.getPath("CreateRetreatWebsite")}
-              exact
-              component={CreateRetreatWebsite}
             />
             <ProtectedRoute
               path={AppRoutes.getPath("LodgingPage")}

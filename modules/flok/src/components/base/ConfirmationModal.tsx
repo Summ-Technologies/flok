@@ -7,14 +7,14 @@ import {
   DialogTitle,
 } from "@material-ui/core"
 
-type ConfirmationModalProps = {
+type AppConfirmationModalProps = {
   onSubmit: () => void
   title: string
   open: boolean
   onClose: () => void
   text: string
 }
-function ConfirmationModal(props: ConfirmationModalProps) {
+function AppConfirmationModal(props: AppConfirmationModalProps) {
   return (
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>{props.title}</DialogTitle>
@@ -28,4 +28,4 @@ function ConfirmationModal(props: ConfirmationModalProps) {
     </Dialog>
   )
 }
-export default ConfirmationModal
+export default AppConfirmationModal

@@ -31,6 +31,11 @@ let useStyles = makeStyles((theme) => ({
       margin: "1em 0",
     },
   },
+  overallPage: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
 }))
 type RetreatWebsiteProps = RouteComponentProps<{
   retreatName: string
@@ -40,12 +45,6 @@ type RetreatWebsiteProps = RouteComponentProps<{
 function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
   let classes = useStyles()
-
-  let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
-  let page = useAttendeeLandingPageName(
-    website?.id ?? 0,
-    replaceDashes(pageName ?? "home")
-  )
   function replaceDashes(str: string) {
     let strArray = str.split("")
     strArray.forEach((char, i) => {
@@ -55,18 +54,17 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     })
     return strArray.join("")
   }
-
+  let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
+  let page = useAttendeeLandingPageName(
+    website?.id ?? 0,
+    replaceDashes(pageName ?? "home")
+  )
   return !page || !website ? (
     <NotFound404Page />
   ) : (
     <PageContainer>
       <PageBody>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}>
+        <div className={classes.overallPage}>
           <RetreatWebsiteHeader
             logo={
               website.company_logo_img ??

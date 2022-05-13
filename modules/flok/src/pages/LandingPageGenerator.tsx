@@ -19,7 +19,7 @@ import {
   Switch,
   useRouteMatch,
 } from "react-router-dom"
-import ConfirmationModal from "../components/base/ConfirmationModal"
+import AppConfirmationModal from "../components/base/ConfirmationModal"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
@@ -36,7 +36,8 @@ import {
   useAttendeeLandingPage,
   useAttendeeLandingWebsite,
 } from "../utils/retreatUtils"
-import NotFound404Page from "./misc/NotFound404Page"
+import CreateRetreatWebsite from "./CreateRetreatWebsite"
+import RedirectPage from "./misc/RedirectPage"
 import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -101,6 +102,9 @@ let useStyles = makeStyles((theme) => ({
       textDecoration: "none",
     },
   },
+  toolbarPageFlexBox: {
+    display: "flex",
+  },
 }))
 
 type LandingPageGeneratorProps = RouteComponentProps<{
@@ -119,7 +123,18 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let page = useAttendeeLandingPage(parseInt(currentPageId))
 
   if (!website) {
-    return <NotFound404Page />
+    return <CreateRetreatWebsite {...props} />
+  }
+  if (!currentPageId) {
+    return (
+      <RedirectPage
+        pageName="LandingPageGeneratorPage"
+        pathParams={{
+          retreatIdx: retreatIdx.toString(),
+          currentPageId: website.page_ids[0].toString(),
+        }}
+      />
+    )
   }
   return (
     <PageContainer>
@@ -141,7 +156,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
           <Switch>
             <Route exact path={path}>
               <div className={classes.toolbarPage}>
-                <div style={{display: "flex"}}>
+                <div className={classes.toolbarPageFlexBox}>
                   <Typography variant="h4" className={classes.pagesTitle}>
                     Pages
                   </Typography>
@@ -313,6 +328,11 @@ let useEditPageStyles = makeStyles((theme) => ({
   pageTitleContainer: {
     display: "flex",
   },
+  pageSettingsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 }))
 
 type EditPageToolBarProps = RouteComponentProps<{
@@ -335,7 +355,7 @@ function EditPageToolBar(props: EditPageToolBarProps) {
       deletePage(pageId)
     )) as unknown as ApiAction
     if (!deleteResult.error) {
-      handleCloseDeleteModal()
+      setDeleteModalOpen(false)
       dispatch(
         push(
           AppRoutes.getPath("LandingPageGeneratorConfig", {
@@ -349,24 +369,17 @@ function EditPageToolBar(props: EditPageToolBarProps) {
       )
     }
   }
-  function handleCloseDeleteModal() {
-    setDeleteModalOpen(false)
-  }
+
   return (
     <div className={classes.toolbarPage}>
-      <ConfirmationModal
+      <AppConfirmationModal
         open={deleteModalOpen}
         title="Delete Page?"
         text="Are you sure you wish to delete this page?  This action cannot be undone."
-        onClose={handleCloseDeleteModal}
+        onClose={() => setDeleteModalOpen(false)}
         onSubmit={handleDeletePage}
       />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}>
+      <div className={classes.pageSettingsContainer}>
         <div className={classes.pageTitleContainer}>
           <IconButton
             onClick={() => {

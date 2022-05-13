@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core"
 import {Menu} from "@material-ui/icons"
 import {useState} from "react"
+import {AppRoutes} from "../../Stack"
 import {FlokTheme} from "../../theme"
 import {titleToNavigation} from "../../utils"
 import {useAttendeeLandingPage} from "../../utils/retreatUtils"
@@ -31,21 +32,6 @@ let useStyles = makeStyles((theme) => ({
       justifyContent: "space-between",
     },
   },
-  navigationLink: {
-    paddingRight: theme.spacing(2),
-    lineHeight: "25px",
-    color: theme.palette.grey[900],
-    "&:hover": {
-      textDecoration: "none",
-    },
-    [theme.breakpoints.down("sm")]: {
-      minWidth: 200,
-      height: "45px",
-      fontSize: "130%",
-      fontWeight: theme.typography.fontWeightBold,
-      marginLeft: theme.spacing(2),
-    },
-  },
   drawer: {
     width: "100%",
   },
@@ -59,6 +45,7 @@ let useStyles = makeStyles((theme) => ({
     width: "33%",
     justifyContent: "center",
     display: "flex",
+    alignItems: "center",
   },
   navLinkContainer: {
     width: "33%",
@@ -69,7 +56,6 @@ let useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   registerButton: {
-    maxHeight: 40,
     [theme.breakpoints.down("sm")]: {
       width: "70%",
       marginLeft: "15%",
@@ -150,6 +136,7 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
               })}
             </div>
             <Button
+              size="small"
               color="primary"
               variant="contained"
               className={classes.registerButton}>
@@ -166,15 +153,11 @@ export default RetreatWebsiteHeader
 let useLinkStyles = makeStyles((theme) => ({
   navigationLink: {
     paddingRight: theme.spacing(2),
-    lineHeight: "25px",
     color: theme.palette.grey[900],
-    "&:hover": {
-      textDecoration: "none",
-    },
     [theme.breakpoints.down("sm")]: {
       minWidth: 200,
       height: "45px",
-      fontSize: "130%",
+      fontSize: "1.3rem",
       fontWeight: theme.typography.fontWeightBold,
       marginLeft: theme.spacing(2),
     },
@@ -191,18 +174,16 @@ function RetreatWebsiteHeaderLink(props: RetreatWebsiteHeaderLinkProps) {
 
   return (
     <Link
-      href={`/retreats/${titleToNavigation(
-        props.retreatName
-      )}/${titleToNavigation(page?.title ?? "home")}`}
-      className={classes.navigationLink}
-      style={
-        page?.title === props.selectedPage
-          ? {
-              height: "1 rem",
-              textDecoration: "underline",
-            }
-          : {}
-      }>
+      underline={
+        page && titleToNavigation(page.title) === props.selectedPage
+          ? "always"
+          : "none"
+      }
+      href={AppRoutes.getPath("RetreatWebsitePage", {
+        retreatName: props.retreatName,
+        pageName: titleToNavigation(page?.title ?? "home"),
+      })}
+      className={classes.navigationLink}>
       {page?.title}
     </Link>
   )

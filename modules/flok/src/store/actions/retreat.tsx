@@ -584,7 +584,7 @@ export function patchWebsite(
       ],
     },
     {
-      successMessage: "Website name updated",
+      successMessage: "Succesfully updated website",
       errorMessage: "Something went wrong",
     }
   )

@@ -35,7 +35,8 @@ function EditPageForm(props: EditPageFormProps) {
   let dispatch = useDispatch()
   let classes = useStyles()
   let page = useAttendeeLandingPage(props.pageId)
-  let disabledChange = page?.title.toLowerCase() === "home"
+  let disabledChange: boolean =
+    page?.title !== undefined && page.title.toLowerCase() === "home"
   let formik = useFormik({
     initialValues: {
       title: page?.title ?? "",

@@ -56,7 +56,6 @@ function AddPageForm(props: AddPageFormProps) {
         ),
     }),
   })
-  let disabledAdd: boolean = formik.values.title === ""
   return (
     <form onSubmit={formik.handleSubmit} className={classes.addNew}>
       <TextField
@@ -72,7 +71,7 @@ function AddPageForm(props: AddPageFormProps) {
         variant="contained"
         color="primary"
         type="submit"
-        disabled={disabledAdd}
+        disabled={formik.values.title === ""}
         size="small">
         Add New Page
       </Button>
