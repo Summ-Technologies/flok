@@ -1,6 +1,7 @@
 import {Button, Chip, makeStyles, Paper, Tooltip} from "@material-ui/core"
 import {Info} from "@material-ui/icons"
 import React from "react"
+import {Link as ReactRouterLink} from "react-router-dom"
 import {DestinationModel, HotelModel} from "../../models/lodging"
 import {HotelLodgingProposal} from "../../models/retreat"
 import {formatCurrency} from "../../utils"
@@ -96,12 +97,15 @@ type ProposalListRowProps = {
   hotel: HotelModel
   destination: DestinationModel
   proposals: HotelLodgingProposal[]
-  onViewProposal?: () => void
+  openInTab?: boolean
+  proposalUrl?: string
   unavailable?: boolean
 }
 export default function ProposalListRow(props: ProposalListRowProps) {
   let classes = useStyles(props)
-  let {hotel, proposals, destination, onViewProposal, unavailable} = {...props}
+  let {hotel, proposals, destination, openInTab, proposalUrl, unavailable} = {
+    ...props,
+  }
 
   function getLowestCompare(vals: HotelLodgingProposal[]) {
     if (vals.length > 0) {
@@ -219,10 +223,18 @@ export default function ProposalListRow(props: ProposalListRowProps) {
         disabled={unavailable}
         variant={unavailable ? "contained" : "outlined"}
         color="primary"
-        onClick={(e) => {
-          e.stopPropagation()
-          if (onViewProposal) onViewProposal()
-        }}>
+        {...(openInTab && proposalUrl
+          ? {
+              component: "a",
+              href: proposalUrl,
+              target: "_blank",
+            }
+          : proposalUrl
+          ? {
+              component: ReactRouterLink,
+              to: proposalUrl,
+            }
+          : {})}>
         <AppTypography variant="inherit" noWrap>
           {unavailable
             ? "No Availability"
