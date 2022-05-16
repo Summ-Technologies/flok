@@ -43,6 +43,7 @@ export type AdminRetreatModel = {
 
   // Retreat data related to flights
   attendees_state?: RetreatAttendeesState
+  attendees_registration_form_link?: string
 
   // Retreat data related to flights
   flights_state?: RetreatFlightsState
@@ -54,10 +55,9 @@ export type AdminRetreatModel = {
   itinerary_first_draft_link?: string
   itinerary_final_draft_link?: string
 
-  flights_travel_policies_link: string | null
-  attendees_registration_form_id: string | null
   faq_link?: string
   budget_link?: string
+  rmc_survey_link?: string
 }
 
 export type AdminRetreatUpdateModel = Pick<
