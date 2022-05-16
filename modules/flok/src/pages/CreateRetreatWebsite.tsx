@@ -55,7 +55,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
         })
       )
     }
-  }, [dipatch, website])
+  }, [dispatch, website])
 
   async function handleCreateWebsite(values: {
     name: string
