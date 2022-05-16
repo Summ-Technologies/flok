@@ -133,11 +133,23 @@ let navItems: NavItem[] = [
   {
     title: "Budget",
     icon: LocalAtm,
-    activeRoutes: [],
-    redirect: (retreat) =>
-      retreat.budget_link
-        ? {url: retreat.budget_link, external: true}
-        : undefined,
+    activeRoutes: ["RetreatBudgetPage"],
+    redirect: redirectFlok("RetreatBudgetPage"),
+    navSubItems: [
+      {
+        title: "Calculator",
+        activeRoutes: ["RetreatBudgetEstimatePage"],
+        redirect: redirectFlok("RetreatBudgetEstimatePage"),
+      },
+      {
+        title: "Details",
+        activeRoutes: [],
+        redirect: (retreat) =>
+          retreat.budget_link
+            ? {url: retreat.budget_link, external: true}
+            : undefined,
+      },
+    ],
   },
 ]
 

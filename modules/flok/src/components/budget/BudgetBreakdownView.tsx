@@ -26,7 +26,7 @@ import {Fragment, useState} from "react"
 import {
   BudgetBreakdownInputType,
   BudgetBreakdownType,
-} from "../../utils/pretripUtils"
+} from "../../utils/budgetUtils"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({

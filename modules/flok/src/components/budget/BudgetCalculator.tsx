@@ -16,7 +16,7 @@ import * as Yup from "yup"
 import {
   BudgetBreakdownInputType,
   BUDGET_TOOL_FLOK_RECOMENDATIONS,
-} from "../../utils/pretripUtils"
+} from "../../utils/budgetUtils"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({

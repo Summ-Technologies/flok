@@ -7,6 +7,8 @@ import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
 import AttendeePage from "./pages/dashboard/AttendeePage"
 import AttendeesPage from "./pages/dashboard/AttendeesPage"
+import BudgetEstimatePage from "./pages/dashboard/BudgetEstimatePage"
+import BudgetPage from "./pages/dashboard/BudgetPage"
 import FlightsPage from "./pages/dashboard/FlightsPage"
 import LodgingContractPage from "./pages/dashboard/LodgingContractPage"
 import LodgingPage from "./pages/dashboard/LodgingPage"
@@ -54,6 +56,7 @@ export class AppRoutes {
     RetreatFlightsPage: "/r/:retreatIdx/flights",
 
     RetreatBudgetPage: "/r/:retreatIdx/budget",
+    RetreatBudgetEstimatePage: "/r/:retreatIdx/budget/estimate",
 
     // TODO, remove once dashboard release
     DeprecatedNewRetreatFormPage: "/getting-started",
@@ -169,6 +172,16 @@ export default function Stack() {
               {/* Flights */}
               <Route exact path={AppRoutes.getPath("RetreatFlightsPage")}>
                 <FlightsPage />
+              </Route>
+
+              {/* Budget */}
+              <Route exact path={AppRoutes.getPath("RetreatBudgetPage")}>
+                <BudgetPage />
+              </Route>
+              <Route
+                exact
+                path={AppRoutes.getPath("RetreatBudgetEstimatePage")}>
+                <BudgetEstimatePage />
               </Route>
               <Route path={"*"} component={NotFound404Page} />
             </Switch>
