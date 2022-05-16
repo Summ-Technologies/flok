@@ -1,6 +1,6 @@
 import {makeStyles} from "@material-ui/core"
 import {useState} from "react"
-import {RouteComponentProps, withRouter} from "react-router-dom"
+import {withRouter} from "react-router-dom"
 import AppTypography from "../../components/base/AppTypography"
 import BudgetBreakdownView from "../../components/budget/BudgetBreakdownView"
 import BudgetCalculator from "../../components/budget/BudgetCalculator"
@@ -23,7 +23,7 @@ let useStyles = makeStyles((theme) => ({
   overviewHeader: {},
 }))
 
-type BudgetEstimatePageProps = RouteComponentProps<{retreatIdx: string}>
+type BudgetEstimatePageProps = {}
 
 function BudgetEstimatePage(props: BudgetEstimatePageProps) {
   let classes = useStyles()
