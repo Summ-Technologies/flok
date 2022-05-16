@@ -198,9 +198,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 colId: "cost",
                 renderCell: (val) => (
                   <AppTypography>
-                    {val !== undefined
-                      ? currencyFormat(val as number)
-                      : undefined}
+                    {val != null ? currencyFormat(val as number) : undefined}
                   </AppTypography>
                 ),
               },

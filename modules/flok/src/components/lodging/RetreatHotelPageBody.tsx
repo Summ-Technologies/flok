@@ -91,6 +91,7 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
 
   const dateFormatter = Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
+    timeZone: "UTC",
   })
 
   // Probably not the best way to set loading state, but will do for now
