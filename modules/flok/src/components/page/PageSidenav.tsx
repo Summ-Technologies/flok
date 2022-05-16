@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core"
 import {
   ApartmentRounded,
+  Build,
   FlightRounded,
   HomeRounded,
   LocalAtm,
@@ -27,14 +28,21 @@ import React, {
   useState,
 } from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {Link as ReactRouterLink, matchPath} from "react-router-dom"
+import {
+  Link as ReactRouterLink,
+  matchPath,
+  useRouteMatch,
+} from "react-router-dom"
 import AppImage from "../../components/base/AppImage"
+import {Constants} from "../../config"
+import {ResourceNotFound} from "../../models"
 import {RetreatModel} from "../../models/retreat"
 import {useRetreat} from "../../pages/misc/RetreatProvider"
 import {AppRoutes, FlokPageName} from "../../Stack"
 import {RootState} from "../../store"
 import {deleteUserSignin} from "../../store/actions/user"
 import {FlokTheme} from "../../theme"
+import {useRetreatByGuid} from "../../utils/retreatUtils"
 
 let DRAWER_WIDTH = 240
 const TRANSITION_DURATION = 250
@@ -354,5 +362,173 @@ function NavListItem(props: NavListItemType) {
       </ListItemIcon>
       <ListItemText>{props.title}</ListItemText>
     </ListItem>
+  )
+}
+
+let demoNavItems: NavItem[] = [
+  {
+    title: "Pretrip Tools",
+    icon: Build,
+    activeRoutes: [],
+    redirect: () => ({
+      url: AppRoutes.getPath("PretripHomePage"),
+    }),
+    navSubItems: [
+      {
+        title: "Budget",
+        activeRoutes: ["PretripBudgetEstimatorPage"],
+        redirect: () => ({
+          url: AppRoutes.getPath("PretripBudgetEstimatorPage"),
+        }),
+      },
+      {
+        title: "Proposals",
+        activeRoutes: [
+          "PretripLodgingProposalPage",
+          "PretripLodgingProposalsPage",
+        ],
+        redirect: () => ({
+          url: AppRoutes.getPath("PretripLodgingProposalsPage"),
+        }),
+      },
+    ],
+  },
+  {
+    title: "Overview",
+    icon: HomeRounded,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Lodging",
+    icon: ApartmentRounded,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Attendees",
+    icon: PeopleAlt,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Flights",
+    icon: FlightRounded,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Itinerary",
+    icon: MapRounded,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Budget",
+    icon: LocalAtm,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+]
+
+/**
+ * THIS IS NOT A GOOD COMPONENT.
+ * Copy pasted from PageSidenav but sets some "demo parameters"
+ */
+export function PageDemoSidenav(props: {}) {
+  const classes = useStyles()
+  let [retreat] = useRetreatByGuid(Constants.demoRetreatGuid)
+  let {sidebarOpen, closeSidebar} = useSidebar()
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
+  )
+  let {path} = useRouteMatch()
+  console.log(path)
+
+  return (
+    <Drawer
+      open={sidebarOpen}
+      transitionDuration={TRANSITION_DURATION}
+      onClose={closeSidebar}
+      color="primary"
+      classes={{root: classes.root, paper: classes.paper}}
+      variant={isSmallScreen ? "temporary" : "permanent"}>
+      <Box
+        marginLeft="auto"
+        marginRight="auto"
+        marginBottom={4}
+        style={{display: "flex", alignItems: "flex-end"}}>
+        <AppImage
+          height="40px"
+          alt="White Flok logo"
+          img="branding/logos/icon_text-empty_bg-white%40.5x.png"
+        />
+      </Box>
+      <List>
+        {demoNavItems.map((navItem, i) => {
+          let redirect = navItem.redirect
+            ? navItem.redirect(retreat as unknown as RetreatModel, -1)
+            : undefined
+          let activeRoutes = navItem.activeRoutes.filter((page) => {
+            return matchPath(window.location.pathname, {
+              path: AppRoutes.getPath(page),
+              exact: true,
+            })
+          })
+          let active = activeRoutes.length > 0
+          let activeSubItem = false
+          let subItems: JSX.Element[] = []
+          if (navItem.navSubItems) {
+            subItems = navItem.navSubItems.map((subItem, j) => {
+              let subnavRedirect = subItem.redirect
+                ? subItem.redirect(retreat as unknown as RetreatModel, -1)
+                : undefined
+              let subItemActiveRoutes = subItem.activeRoutes.filter((page) => {
+                return matchPath(window.location.pathname, {
+                  path: AppRoutes.getPath(page),
+                  exact: true,
+                })
+              })
+              let subActive = subItemActiveRoutes.length > 0
+              if (subActive) {
+                activeSubItem = true
+              }
+              return (
+                <NavListItem
+                  key={`${i}-${j}`}
+                  title={subItem.title}
+                  redirect={subnavRedirect?.url}
+                  externalLink={subnavRedirect?.external}
+                  Icon={subItem.icon}
+                  active={subActive}
+                />
+              )
+            })
+          }
+          return (
+            <>
+              <NavListItem
+                key={i}
+                title={navItem.title}
+                redirect={redirect?.url}
+                externalLink={redirect?.external}
+                Icon={navItem.icon}
+                active={active}
+              />
+              {activeSubItem ? subItems : undefined}
+            </>
+          )
+        })}
+      </List>
+      <List className={classes.footer}>
+        <ListItem>
+          <ListItemText>
+            {retreat && retreat !== ResourceNotFound
+              ? retreat.company_name
+              : undefined}
+          </ListItemText>
+        </ListItem>
+      </List>
+    </Drawer>
   )
 }

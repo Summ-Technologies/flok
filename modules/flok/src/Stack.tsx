@@ -1,7 +1,7 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
 import PageContainer from "./components/page/PageContainer"
-import PageSidenav from "./components/page/PageSidenav"
+import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
@@ -23,6 +23,9 @@ import HomeRoutingPage from "./pages/HomeRoutingPage"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import ProtectedRoute from "./pages/misc/ProtectedRoute"
 import RetreatProvider from "./pages/misc/RetreatProvider"
+import PretripHomePage from "./pages/pretrip/PretripHomePage"
+import PretripProposalPage from "./pages/pretrip/PretripProposalPage"
+import PretripProposalsPage from "./pages/pretrip/PretripProposalsPage"
 
 export type FlokPageName = keyof typeof AppRoutes.pages
 
@@ -57,6 +60,12 @@ export class AppRoutes {
 
     RetreatBudgetPage: "/r/:retreatIdx/budget",
     RetreatBudgetEstimatePage: "/r/:retreatIdx/budget/estimate",
+
+    // PRETRIP DEMO
+    PretripHomePage: "/r/demo",
+    PretripLodgingProposalsPage: "/r/demo/lodging/proposals",
+    PretripLodgingProposalPage: "/r/demo/lodging/proposals/:hotelGuid",
+    PretripBudgetEstimatorPage: "/r/demo/lodging/budget/estimate",
 
     // TODO, remove once dashboard release
     DeprecatedNewRetreatFormPage: "/getting-started",
@@ -124,6 +133,30 @@ export default function Stack() {
         exact
         component={ForgotPasswordPage}
       />
+
+      {/* Dashboard routes */}
+      <Route path="/r/demo">
+        <PageContainer>
+          <PageDemoSidenav />
+          <Switch>
+            <Route exact path={AppRoutes.getPath("PretripHomePage")}>
+              <PretripHomePage />
+            </Route>
+            <Route
+              exact
+              path={AppRoutes.getPath("PretripLodgingProposalsPage")}>
+              <PretripProposalsPage />
+            </Route>
+            <Route exact path={AppRoutes.getPath("PretripLodgingProposalPage")}>
+              <PretripProposalPage />
+            </Route>
+
+            <Route exact path={AppRoutes.getPath("PretripBudgetEstimatorPage")}>
+              <BudgetEstimatePage />
+            </Route>
+          </Switch>
+        </PageContainer>
+      </Route>
 
       {/* Dashboard routes */}
       <ProtectedRoute path="/r/:retreatIdx">
