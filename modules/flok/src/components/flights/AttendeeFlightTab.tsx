@@ -228,7 +228,7 @@ function AttendeeFlightTab(props: AttendeeFlightTabProps) {
                       Flights Cost
                     </Typography>
                     <Typography className={classes.flightCost}>
-                      {attendee.travel?.cost
+                      {attendee.travel?.cost !== undefined
                         ? new Intl.NumberFormat("en-US", {
                             style: "currency",
                             currency: "USD",
