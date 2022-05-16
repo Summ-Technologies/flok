@@ -593,23 +593,15 @@ export const POST_IMAGE_REQUEST = "POST_IMAGE_REQUEST"
 export const POST_IMAGE_SUCCESS = "POST_IMAGE_SUCCESS"
 export const POST_IMAGE_FAILURE = "POST_IMAGE_FAILURE"
 export function postImage(values: {file: any}) {
-  function resolveAfter2Seconds() {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve("resolved")
-      }, 2000)
-    })
-  }
-  async function sleepAndReturn() {
-    await resolveAfter2Seconds()
-    return {
-      id: 1,
-      image_url:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTp0OHwWO4stikG5WgHQez1aYW2FpxalSRIxg&usqp=CAU",
-      alt: "banner image",
-      orientation: "LANDSCAPE",
-      tag: undefined,
-    }
-  }
-  return sleepAndReturn()
+  let endpoint = `/v1.0/test`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify(values),
+    types: [
+      {type: POST_IMAGE_REQUEST},
+      {type: POST_IMAGE_SUCCESS},
+      {type: POST_IMAGE_FAILURE},
+    ],
+  })
 }

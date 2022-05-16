@@ -11,6 +11,7 @@ import _ from "lodash"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import * as yup from "yup"
+import {ImageModel} from "../../models"
 import {AppRoutes} from "../../Stack"
 import {ApiAction} from "../../store/actions/api"
 import {patchWebsite, postImage} from "../../store/actions/retreat"
@@ -42,6 +43,7 @@ type EditWebsiteFormProps = {
 function EditWebsiteForm(props: EditWebsiteFormProps) {
   let dispatch = useDispatch()
   let website = useAttendeeLandingWebsite(props.websiteId)
+  let [images, setImages] = useState<{[key: number]: ImageModel}>({})
 
   async function handlePatchWebsite(values: {name: string}) {
     let patchWebsiteResponse = (await dispatch(
@@ -60,7 +62,7 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
   }
   let formik = useFormik({
     initialValues: {
-      header_image: "",
+      header_image_id: -1,
       company_logo: "",
       name: website?.name ?? "",
     },
@@ -92,17 +94,15 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
           {...getTextFieldErrorProps(formik, "name")}
         />
         <UploadImage
-          value={formik.values.header_image}
+          value={images[formik.values.header_image_id]}
           id="header_image"
-          handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            if (e.target.files) {
-              formik.setFieldValue("header_image", e.target.value)
-              // console.log(e.target.files[0])
-            }
+          handleChange={(image) => {
+            formik.setFieldValue("header_image_id", image.id)
+            setImages({...images, [image.id]: image})
           }}
           headerText="Header Image"
         />
-        <UploadImage
+        {/* <UploadImage
           value={formik.values.company_logo}
           id="company_logo"
           handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +113,7 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
             }
           }}
           headerText="Company Logo"
-        />
+        /> */}
         <Button
           type="submit"
           color="primary"
@@ -143,19 +143,24 @@ let useImageStyles = makeStyles((theme) => ({
   imageUploadFlex: {display: "flex", alignItems: "center"},
 }))
 type UploadImageProps = {
-  value: any
-  handleChange: any
+  value: ImageModel | undefined
+  handleChange: (image: ImageModel) => void
   id: string
   headerText: string
 }
 
 export function UploadImage(props: UploadImageProps) {
   const [loading, setLoading] = useState(false)
+  let dispatch = useDispatch()
   async function handlePostImage(values: {file: any}) {
     setLoading(true)
-    let returnValue = await postImage(values)
+    let returnValue = (await dispatch(
+      postImage(values)
+    )) as unknown as ApiAction
     setLoading(false)
-    return returnValue
+    if (!returnValue.error) {
+      props.handleChange(returnValue.payload.image as ImageModel)
+    }
   }
   let classes = useImageStyles()
   return (
@@ -180,12 +185,11 @@ export function UploadImage(props: UploadImageProps) {
               onChange={(e) => {
                 handlePostImage({
                   file: e.target?.files![0] ?? "none",
-                }) as unknown as ApiAction
-                props.handleChange(e)
+                })
               }}
             />
           </Button>
-          <Typography>{props.value || "No file chosen"}</Typography>
+          <Typography>{props.value?.image_url || "No file chosen"}</Typography>
         </div>
       )}
     </div>

@@ -7,7 +7,6 @@ import * as yup from "yup"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
-import {UploadImage} from "../components/retreat-website/EditWebsiteForm"
 import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
 import {postPage, postWebsite} from "../store/actions/retreat"
@@ -110,7 +109,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                 label="Website Name"
                 {...getTextFieldErrorProps(formik, "name")}
               />
-              <UploadImage
+              {/* <UploadImage
                 value={formik.values.header_image}
                 id="header_image"
                 handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +131,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                   }
                 }}
                 headerText="Company Logo"
-              />
+              /> */}
             </Box>
             <Button
               type="submit"
