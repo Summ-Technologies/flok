@@ -15,6 +15,7 @@ import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
 import AppImageGrid from "../base/AppImageGrid"
 import AppLoadingScreen from "../base/AppLoadingScreen"
+import PageLockedModal from "../page/PageLockedModal"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -137,7 +138,7 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
       {loadingHotel ? (
         <AppLoadingScreen />
       ) : hotel === undefined ? (
-        "Oops, something went wrong."
+        <PageLockedModal pageDesc="This page will be unlocked when the contract phase begins" />
       ) : (
         <Grid container className={classes.hotelBody}>
           <Grid
