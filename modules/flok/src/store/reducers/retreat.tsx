@@ -2,29 +2,45 @@ import {Action} from "redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {
   AttendeeApiResponse,
+  AttendeeLandingWebsiteApiResponse,
+  AttendeeLandingWebsitePageApiResponse,
+  AttendeeLandingWebsitePageBlockApiResponse,
   RetreatAttendeesApiResponse,
   TripApiResponse,
 } from "../../models/api"
 import {
+  AttendeeLandingWebsiteBlockModel,
+  AttendeeLandingWebsiteModel,
+  AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
   RetreatModel,
   RetreatTripModel,
 } from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
+  DELETE_PAGE_SUCCESS,
   DELETE_RETREAT_ATTENDEES_SUCCESS,
   GET_ATTENDEE_SUCCESS,
+  GET_BLOCK_SUCCESS,
+  GET_PAGE_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_BY_GUID_FAILURE,
   GET_RETREAT_BY_GUID_SUCCESS,
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
   GET_TRIP_SUCCESS,
+  GET_WEBSITE_SUCCESS,
   INSTANTIATE_ATTENDEE_TRIPS_SUCCESS,
   PATCH_ATTENDEE_SUCCESS,
   PATCH_ATTENDEE_TRAVEL_SUCCESS,
+  PATCH_BLOCK_SUCCESS,
+  PATCH_PAGE_SUCCESS,
   PATCH_TRIP_SUCCESS,
+  PATCH_WEBSITE_SUCCESS,
+  POST_BLOCK_SUCCESS,
+  POST_PAGE_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
+  POST_WEBSITE_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
@@ -43,6 +59,15 @@ export type RetreatState = {
   trips: {
     [id: number]: RetreatTripModel
   }
+  websites: {
+    [id: number]: AttendeeLandingWebsiteModel | undefined
+  }
+  pages: {
+    [id: number]: AttendeeLandingWebsitePageModel | undefined
+  }
+  blocks: {
+    [id: number]: AttendeeLandingWebsiteBlockModel | undefined
+  }
 }
 
 const initialState: RetreatState = {
@@ -51,6 +76,9 @@ const initialState: RetreatState = {
   retreatAttendees: {},
   attendees: {},
   trips: {},
+  websites: {},
+  pages: {},
+  blocks: {},
 }
 
 export default function retreatReducer(
@@ -154,6 +182,108 @@ export default function retreatReducer(
         }
       }
       return state
+    case GET_WEBSITE_SUCCESS:
+    case PATCH_WEBSITE_SUCCESS:
+    case POST_WEBSITE_SUCCESS:
+      payload = (action as ApiAction)
+        .payload as AttendeeLandingWebsiteApiResponse
+      return {
+        ...state,
+        websites: {
+          ...state.websites,
+          [payload.website.id]: payload.website,
+        },
+        retreats: {
+          ...state.retreats,
+          ...(state.retreats[payload.website.retreat_id] &&
+          state.retreats[payload.website.retreat_id] !== ResourceNotFound
+            ? {
+                [payload.website.retreat_id]: {
+                  ...(state.retreats[
+                    payload.website.retreat_id
+                  ] as RetreatModel),
+                  attendees_website_id: payload.website.id,
+                },
+              }
+            : {}),
+        },
+      }
+    case GET_PAGE_SUCCESS:
+    case PATCH_PAGE_SUCCESS:
+      payload = (action as ApiAction)
+        .payload as AttendeeLandingWebsitePageApiResponse
+      return {
+        ...state,
+        pages: {...state.pages, [payload.page.id]: payload.page},
+      }
+    case GET_BLOCK_SUCCESS:
+    case PATCH_BLOCK_SUCCESS:
+      payload = (action as ApiAction)
+        .payload as AttendeeLandingWebsitePageBlockApiResponse
+      return {
+        ...state,
+        blocks: {...state.blocks, [payload.block.id]: payload.block},
+      }
+    case POST_BLOCK_SUCCESS:
+      payload = (action as ApiAction)
+        .payload as AttendeeLandingWebsitePageBlockApiResponse
+      return {
+        ...state,
+        blocks: {...state.blocks, [payload.block.id]: payload.block},
+        pages: {
+          ...state.pages,
+          [payload.block.page_id]: {
+            ...state.pages[payload.block.page_id]!,
+            block_ids: [
+              ...(state.pages[payload.block.page_id]
+                ? state.pages[payload.block.page_id]!.block_ids
+                : []),
+              payload.block.id,
+            ],
+          },
+        },
+      }
+    case POST_PAGE_SUCCESS:
+      payload = (action as ApiAction)
+        .payload as AttendeeLandingWebsitePageApiResponse
+      return {
+        ...state,
+        pages: {...state.pages, [payload.page.id]: payload.page},
+        websites: {
+          ...state.websites,
+          [payload.page.website_id]: {
+            ...state.websites[payload.page.website_id]!,
+            page_ids: [
+              ...(state.websites[payload.page.website_id]
+                ? state.websites[payload.page.website_id]!.page_ids
+                : []),
+              payload.page.id,
+            ],
+          },
+        },
+      }
+    case DELETE_PAGE_SUCCESS:
+      const pageId = (action as unknown as {meta: {pageId: number}}).meta.pageId
+      let websiteId = Object.values(state.websites).find((website) =>
+        website?.page_ids.includes(pageId)
+      )?.id
+      let newPages = {...state.pages}
+      delete newPages[pageId]
+      return {
+        ...state,
+        websites: {
+          ...state.websites,
+          [websiteId!]: {
+            ...state.websites[websiteId!]!,
+            page_ids: [
+              ...state.websites[websiteId!]!.page_ids.filter(
+                (id) => id !== pageId
+              ),
+            ],
+          },
+        },
+        pages: newPages,
+      }
     default:
       return state
   }

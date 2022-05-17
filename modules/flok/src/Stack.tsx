@@ -20,12 +20,14 @@ import DeprecatedProposalPage from "./pages/deprecated/DeprecatedProposalPage"
 import DeprecatedProposalsListPage from "./pages/deprecated/DeprecatedProposalsListPage"
 import DeprecatedRetreatPreferencesFormPage from "./pages/deprecated/DeprecatedRetreatPreferencesFormPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
+import LandingPageGenerator from "./pages/LandingPageGenerator"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import ProtectedRoute from "./pages/misc/ProtectedRoute"
 import RetreatProvider from "./pages/misc/RetreatProvider"
 import PretripHomePage from "./pages/pretrip/PretripHomePage"
 import PretripProposalPage from "./pages/pretrip/PretripProposalPage"
 import PretripProposalsPage from "./pages/pretrip/PretripProposalsPage"
+import RetreatWebsite from "./pages/RetreatWebsite"
 
 export type FlokPageName = keyof typeof AppRoutes.pages
 
@@ -44,7 +46,9 @@ export class AppRoutes {
     SigninPage: "/login",
     ForgotPasswordPage: "/forgot-password",
     PasswordResetPage: "/reset-password",
+    // NewRetreatFormPage: "/getting-started",
 
+    // DASHBOARD
     RetreatHomePage: "/r/:retreatIdx",
 
     RetreatLodgingPage: "/r/:retreatIdx/lodging",
@@ -60,6 +64,19 @@ export class AppRoutes {
 
     RetreatBudgetPage: "/r/:retreatIdx/budget",
     RetreatBudgetEstimatePage: "/r/:retreatIdx/budget/estimate",
+
+    // Not in sidebar yet
+    RetreatWebsiteHome: "/retreats/:retreatName",
+    RetreatWebsitePage: "/retreats/:retreatName/:pageName",
+    LandingPageGeneratorHome: "/r/:retreatIdx/landing",
+    LandingPageGeneratorPage: "/r/:retreatIdx/landing/:currentPageId",
+    LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:currentPageId/config",
+    LandingPageGeneratorConfigWebsiteSettings:
+      "/r/:retreatIdx/landing/:currentPageId/config/website-settings",
+    LandingPageGeneratorConfigPageSettings:
+      "/r/:retreatIdx/landing/:currentPageId/config/page-settings/:pageId",
+    LandingPageGeneratorConfigAddPage:
+      "/r/:retreatIdx/landing/:currentPageId/config/add-page",
 
     // PRETRIP DEMO
     PretripHomePage: "/r/demo",
@@ -133,7 +150,14 @@ export default function Stack() {
         exact
         component={ForgotPasswordPage}
       />
-
+      <Route
+        path={[
+          AppRoutes.getPath("RetreatWebsiteHome"),
+          AppRoutes.getPath("RetreatWebsitePage"),
+        ]}
+        exact
+        component={RetreatWebsite}
+      />
       {/* Dashboard routes */}
       <Route path="/r/demo">
         <PageContainer>
@@ -201,6 +225,14 @@ export default function Stack() {
                 path={AppRoutes.getPath("RetreatAttendeeFlightsPage")}>
                 <AttendeePage />
               </Route>
+              <Route
+                path={[
+                  AppRoutes.getPath("LandingPageGeneratorConfig"),
+                  AppRoutes.getPath("LandingPageGeneratorPage"),
+                  AppRoutes.getPath("LandingPageGeneratorHome"),
+                ]}
+                component={LandingPageGenerator}
+              />
 
               {/* Flights */}
               <Route exact path={AppRoutes.getPath("RetreatFlightsPage")}>
