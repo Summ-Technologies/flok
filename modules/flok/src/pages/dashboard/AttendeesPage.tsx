@@ -222,7 +222,7 @@ function AttendeesPage() {
             },
             {name: "Email", colId: "email_address"},
             {
-              name: "Retreat Arrival",
+              name: "Hotel check in",
               colId: "hotel_check_in",
               renderCell: (val) => (
                 <AppTypography>
@@ -231,7 +231,7 @@ function AttendeesPage() {
               ),
             },
             {
-              name: "Retreat Departure",
+              name: "Hotel check out",
               colId: "hotel_check_out",
               renderCell: (val) => (
                 <AppTypography>
