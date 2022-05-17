@@ -6,8 +6,6 @@ import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import * as yup from "yup"
 import PageBody from "../components/page/PageBody"
-import PageContainer from "../components/page/PageContainer"
-import PageSidenav from "../components/page/PageSidenav"
 import {UploadImage} from "../components/retreat-website/EditWebsiteForm"
 import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
@@ -41,8 +39,7 @@ type CreateRetreatWebsiteProps = RouteComponentProps<{
   retreatIdx: string
 }>
 function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
-  let retreat = useRetreat()
-  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let [retreat, retreatIdx] = useRetreat()
   let classes = useStyles()
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)
   let dispatch = useDispatch()
@@ -108,58 +105,55 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
   })
 
   return (
-    <PageContainer>
-      <PageSidenav retreatIdx={retreatIdx} />
-      <PageBody appBar>
-        <div className={classes.root}>
-          <Typography variant="h1">Create a Website</Typography>
-          <form onSubmit={formik.handleSubmit} className={classes.form}>
-            <Box className={classes.body}>
-              <TextField
-                required
-                value={formik.values.name}
-                id={`name`}
-                onChange={formik.handleChange}
-                variant="outlined"
-                label="Website Name"
-                {...getTextFieldErrorProps(formik, "name")}
-              />
-              <UploadImage
-                value={formik.values.header_image}
-                id="header_image"
-                handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.files) {
-                    // formik.setFieldValue("header_image", e.target.files[0])
-                    formik.setFieldValue("header_image", e.target.value)
-                    // console.log(e.target.files[0])
-                  }
-                }}
-                headerText="Header Image"
-              />
-              <UploadImage
-                value={formik.values.company_logo}
-                id="company_logo"
-                handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  if (e.target.files) {
-                    formik.setFieldValue("company_logo", e.target.value)
-                    // (e.target.files[0])
-                  }
-                }}
-                headerText="Company Logo"
-              />
-            </Box>
-            <Button
-              type="submit"
-              color="primary"
-              variant="contained"
-              className={classes.submitButton}
-              disabled={formik.values.name === ""}>
-              Create
-            </Button>
-          </form>
-        </div>
-      </PageBody>
-    </PageContainer>
+    <PageBody appBar>
+      <div className={classes.root}>
+        <Typography variant="h1">Create a Website</Typography>
+        <form onSubmit={formik.handleSubmit} className={classes.form}>
+          <Box className={classes.body}>
+            <TextField
+              required
+              value={formik.values.name}
+              id={`name`}
+              onChange={formik.handleChange}
+              variant="outlined"
+              label="Website Name"
+              {...getTextFieldErrorProps(formik, "name")}
+            />
+            <UploadImage
+              value={formik.values.header_image}
+              id="header_image"
+              handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                if (e.target.files) {
+                  // formik.setFieldValue("header_image", e.target.files[0])
+                  formik.setFieldValue("header_image", e.target.value)
+                  // console.log(e.target.files[0])
+                }
+              }}
+              headerText="Header Image"
+            />
+            <UploadImage
+              value={formik.values.company_logo}
+              id="company_logo"
+              handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                if (e.target.files) {
+                  formik.setFieldValue("company_logo", e.target.value)
+                  // (e.target.files[0])
+                }
+              }}
+              headerText="Company Logo"
+            />
+          </Box>
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            className={classes.submitButton}
+            disabled={formik.values.name === ""}>
+            Create
+          </Button>
+        </form>
+      </div>
+    </PageBody>
   )
 }
 export default CreateRetreatWebsite
