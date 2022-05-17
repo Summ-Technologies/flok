@@ -139,11 +139,15 @@ export default function RetreatHomePage() {
       OrderedRetreatFlightsState.indexOf(retreat.flights_state) >=
         OrderedRetreatFlightsState.indexOf("POLICY_REVIEW")
     ) {
-      let numBookedFlights = attendees.filter(
-        (attendee) =>
-          attendee.flight_status &&
-          ["OPT_OUT", "BOOKED"].includes(attendee.flight_status)
-      ).length
+      let numBookedFlights = attendees
+        .filter((attendee) =>
+          ["INFO_ENTERED", "CREATED"].includes(attendee.info_status)
+        )
+        .filter(
+          (attendee) =>
+            attendee.flight_status &&
+            ["OPT_OUT", "BOOKED"].includes(attendee.flight_status)
+        ).length
       setFlightsOverview(
         `${numBookedFlights} / ${getRegisteredAttendees(attendees).length}`
       )

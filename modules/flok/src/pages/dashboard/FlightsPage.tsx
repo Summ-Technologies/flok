@@ -89,6 +89,10 @@ export default function FlightsPage() {
     attendeeTravelInfo = SampleLockedAttendees
   }
 
+  attendeeTravelInfo = attendeeTravelInfo.filter((attendee) =>
+    ["CREATED", "INFO_ENTERED"].includes(attendee.info_status)
+  )
+
   let dispatch = useDispatch()
   let trips = useSelector((state: RootState) => {
     return state.retreat.trips
