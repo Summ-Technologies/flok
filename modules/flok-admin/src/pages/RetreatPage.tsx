@@ -8,6 +8,7 @@ import {
 } from "react-router-dom"
 import AppTypography from "../components/base/AppTypography"
 import PageBase from "../components/page/PageBase"
+import RetreatLinksForm from "../components/retreats/RetreatLinksForm"
 import RetreatStatesForm from "../components/retreats/RetreatStatesForm"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
@@ -109,15 +110,6 @@ function RetreatPage(props: RetreatPageProps) {
           <Typography variant="body1" component="li">
             <Link
               component={ReactRouterLink}
-              to={AppRoutes.getPath("RetreatItineraryPage", {
-                retreatId: retreatId.toString(),
-              })}>
-              Itinerary
-            </Link>
-          </Typography>
-          <Typography variant="body1" component="li">
-            <Link
-              component={ReactRouterLink}
               to={AppRoutes.getPath("RetreatTasksPage", {
                 retreatId: retreatId.toString(),
               })}>
@@ -135,9 +127,14 @@ function RetreatPage(props: RetreatPageProps) {
           </Typography>
         </ul>
         {retreat != null && (
-          <Box marginTop={2}>
-            <RetreatStatesForm retreat={retreat} />
-          </Box>
+          <>
+            <Box marginTop={2}>
+              <RetreatStatesForm retreat={retreat} />
+            </Box>
+            <Box marginTop={2}>
+              <RetreatLinksForm retreat={retreat} />
+            </Box>
+          </>
         )}
       </div>
     </PageBase>

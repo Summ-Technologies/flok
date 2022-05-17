@@ -198,7 +198,7 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                 colId: "cost",
                 renderCell: (val) => (
                   <AppTypography>
-                    {val ? currencyFormat(val as number) : undefined}
+                    {val != null ? currencyFormat(val as number) : undefined}
                   </AppTypography>
                 ),
               },
@@ -271,7 +271,11 @@ function RetreatFlightsPage(props: RetreatFlightsProps) {
                         attendee.travel &&
                         attendee.travel.arr_trip &&
                         attendee.travel.arr_trip.trip_legs.length &&
-                        trips[attendee.travel.arr_trip.id]
+                        trips[attendee.travel.arr_trip.id] &&
+                        trips[attendee.travel.arr_trip.id].trip_legs[
+                          trips[attendee.travel.arr_trip.id].trip_legs.length -
+                            1
+                        ]
                           ? trips[attendee.travel.arr_trip.id].trip_legs[
                               trips[attendee.travel.arr_trip.id].trip_legs
                                 .length - 1
