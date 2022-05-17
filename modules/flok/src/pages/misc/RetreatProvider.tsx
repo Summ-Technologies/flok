@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RouteComponentProps} from "react-router-dom"
+import {useRouteMatch} from "react-router-dom"
 import {ResourceNotFound} from "../../models"
 import {RetreatModel} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
@@ -15,28 +15,28 @@ import {RootState} from "../../store"
 import {getRetreat} from "../../store/actions/retreat"
 import LoadingPage from "./LoadingPage"
 
-const RetreatContext = createContext<RetreatModel | undefined>(undefined)
+const RetreatContext = createContext<
+  {retreat: RetreatModel; retreatIdx: number} | undefined
+>(undefined)
 
 export function useRetreat() {
-  const retreat = useContext(RetreatContext)
-  if (retreat === undefined) {
+  const retreatContext = useContext(RetreatContext)
+  if (retreatContext === undefined) {
     throw Error("useRetreat must be used within a RetreatProvider")
   }
-  return retreat
+  return [retreatContext.retreat, retreatContext.retreatIdx] as const
 }
 
-type RetreatProviderProps = PropsWithChildren<
-  RouteComponentProps<{
-    retreatIdx: string
-  }>
->
-export default function RetreatProvider(props: RetreatProviderProps) {
+export default function RetreatProvider(props: PropsWithChildren<{}>) {
   let dispatch = useDispatch()
+  let router = useRouteMatch<{
+    retreatIdx: string
+  }>()
   let user = useSelector((state: RootState) => state.user.user)
   if (!user) {
     throw Error("retreat provider needs to be in a ProtectedRoute")
   }
-  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let retreatIdx = parseInt(router.params.retreatIdx)
   let [retreatId, setRetreatId] = useState(
     !isNaN(retreatIdx) && retreatIdx >= 0
       ? user.retreat_ids[retreatIdx]
@@ -72,7 +72,7 @@ export default function RetreatProvider(props: RetreatProviderProps) {
   ) : retreat === undefined ? (
     <LoadingPage />
   ) : (
-    <RetreatContext.Provider value={retreat}>
+    <RetreatContext.Provider value={{retreat, retreatIdx}}>
       {props.children}
     </RetreatContext.Provider>
   )
