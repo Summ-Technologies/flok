@@ -122,7 +122,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)
   let page = useAttendeeLandingPage(parseInt(currentPageId))
 
-  if (!website || !website.page_ids[0] || !website.page_ids[0]) {
+  if (!website || !website.page_ids[0]) {
     return <CreateRetreatWebsite {...props} />
   }
   if (!currentPageId) {
