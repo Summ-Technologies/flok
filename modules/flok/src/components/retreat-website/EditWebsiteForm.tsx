@@ -43,9 +43,19 @@ type EditWebsiteFormProps = {
 function EditWebsiteForm(props: EditWebsiteFormProps) {
   let dispatch = useDispatch()
   let website = useAttendeeLandingWebsite(props.websiteId)
-  let [images, setImages] = useState<{[key: number]: ImageModel}>({})
-
-  async function handlePatchWebsite(values: {name: string}) {
+  let imageHolder: {[key: number]: ImageModel} = {}
+  if (website?.banner_image) {
+    imageHolder[website?.banner_image.id] = website?.banner_image
+  }
+  if (website?.logo_image) {
+    imageHolder[website?.logo_image.id] = website?.logo_image
+  }
+  let [images, setImages] = useState<{[key: number]: ImageModel}>(imageHolder)
+  async function handlePatchWebsite(values: {
+    name: string
+    banner_image_id: number
+    logo_image_id: number
+  }) {
     let patchWebsiteResponse = (await dispatch(
       patchWebsite(props.websiteId, values)
     )) as unknown as ApiAction
@@ -62,12 +72,17 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
   }
   let formik = useFormik({
     initialValues: {
-      header_image_id: -1,
-      company_logo: "",
+      banner_image_id: website?.banner_image?.id ?? -1,
+      logo_image_id: website?.logo_image?.id ?? -1,
       name: website?.name ?? "",
     },
     onSubmit: (values) => {
-      handlePatchWebsite({name: formik.values.name})
+      for (let k in values) {
+        if (values[k as keyof typeof values] === -1) {
+          delete values[k as keyof typeof values]
+        }
+      }
+      handlePatchWebsite(values)
     },
     validationSchema: yup.object({
       name: yup
@@ -80,6 +95,7 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
     }),
   })
   let classes = useStyles()
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className={classes.body}>
@@ -94,13 +110,22 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
           {...getTextFieldErrorProps(formik, "name")}
         />
         <UploadImage
-          value={images[formik.values.header_image_id]}
-          id="header_image"
+          value={images[formik.values.banner_image_id]}
+          id="banner_image"
           handleChange={(image) => {
-            formik.setFieldValue("header_image_id", image.id)
+            formik.setFieldValue("banner_image_id", image.id)
             setImages({...images, [image.id]: image})
           }}
-          headerText="Header Image"
+          headerText="Banner Image"
+        />
+        <UploadImage
+          value={images[formik.values.logo_image_id]}
+          id="logo_image"
+          handleChange={(image) => {
+            formik.setFieldValue("logo_image_id", image.id)
+            setImages({...images, [image.id]: image})
+          }}
+          headerText="Logo Image"
         />
         {/* <UploadImage
           value={formik.values.company_logo}
@@ -152,6 +177,10 @@ type UploadImageProps = {
 export function UploadImage(props: UploadImageProps) {
   const [loading, setLoading] = useState(false)
   let dispatch = useDispatch()
+  var splitTest = function (str: string) {
+    // @ts-ignore
+    return str.split("\\").pop().split("/").pop()
+  }
   async function handlePostImage(values: {file: any}) {
     setLoading(true)
     let returnValue = (await dispatch(
@@ -189,7 +218,17 @@ export function UploadImage(props: UploadImageProps) {
               }}
             />
           </Button>
-          <Typography>{props.value?.image_url || "No file chosen"}</Typography>
+          <Typography
+            style={{
+              width: 160,
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+            }}>
+            {props.value?.image_url
+              ? splitTest(props.value?.image_url)
+              : "No file chosen"}
+          </Typography>
         </div>
       )}
     </div>

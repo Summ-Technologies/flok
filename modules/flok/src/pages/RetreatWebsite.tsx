@@ -1,6 +1,7 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
@@ -17,6 +18,7 @@ let useStyles = makeStyles((theme) => ({
   bannerImg: {
     width: "100%",
     maxHeight: "325px",
+    objectFit: "cover",
     [theme.breakpoints.down("sm")]: {
       minHeight: "130px",
       objectFit: "cover",
@@ -45,6 +47,7 @@ type RetreatWebsiteProps = RouteComponentProps<{
 function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
   let classes = useStyles()
+  let dispatch = useDispatch()
   function replaceDashes(str: string) {
     let strArray = str.split("")
     strArray.forEach((char, i) => {
@@ -54,6 +57,11 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     })
     return strArray.join("")
   }
+  // let [loading, setLoading] = useState(false)
+  // useEffect(() => {
+  //   setLoading(true)
+  //   dispatch(getWebsiteByName(replaceDashes(retreatName)))
+  // }, [])
   let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
   let page = useAttendeeLandingPageName(
     website?.id ?? 0,
@@ -67,7 +75,7 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
         <div className={classes.overallPage}>
           <RetreatWebsiteHeader
             logo={
-              website.company_logo_img ??
+              website.logo_image?.image_url ??
               "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Brex_logo_black.svg/1200px-Brex_logo_black.svg.png"
             }
             pageIds={website.page_ids}
@@ -78,7 +86,7 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             selectedPage={pageName ?? "home"}></RetreatWebsiteHeader>
           <img
             src={
-              website.banner_img ??
+              website.banner_image?.image_url ??
               "https://upload.wikimedia.org/wikipedia/commons/b/bb/Table_Rock_scenery_banner.jpg"
             }
             className={classes.bannerImg}

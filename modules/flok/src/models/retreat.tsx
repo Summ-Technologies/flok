@@ -1,3 +1,5 @@
+import {ImageModel} from "."
+
 export type RetreatSelectedHotelProposalState =
   | "SELECTED"
   | "PENDING"
@@ -180,9 +182,9 @@ export type AttendeeLandingWebsiteBlockModel = {
 }
 
 export type AttendeeLandingWebsiteModel = {
-  banner_img?: string
+  banner_image?: ImageModel
   name: string
-  company_logo_img?: string
+  logo_image?: ImageModel
   retreat_id: number
   id: number
   page_ids: number[]
