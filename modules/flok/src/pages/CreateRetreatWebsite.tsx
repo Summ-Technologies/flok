@@ -1,7 +1,7 @@
 import {Box, Button, makeStyles, TextField, Typography} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useFormik} from "formik"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import * as yup from "yup"
@@ -14,6 +14,7 @@ import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
 import {postPage, postWebsite} from "../store/actions/retreat"
 import {getTextFieldErrorProps} from "../utils"
+import {useAttendeeLandingWebsite} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -44,8 +45,20 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
   let retreat = useRetreat()
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let classes = useStyles()
+  let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)
   let dispatch = useDispatch()
   let [images, setImages] = useState<{[key: number]: ImageModel}>({})
+  useEffect(() => {
+    if (website && !website.page_ids[0]) {
+      dispatch(
+        postPage({
+          title: "Home",
+          website_id: website.id,
+        })
+      )
+    }
+  }, [dispatch, website])
+
   async function handleCreateWebsite(values: {
     name: string
     retreat_id: number
