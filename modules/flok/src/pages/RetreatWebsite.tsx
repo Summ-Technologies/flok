@@ -1,11 +1,15 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
+import {useEffect, useState} from "react"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
 import {AppRoutes} from "../Stack"
+import {ApiAction} from "../store/actions/api"
+import {getRetreat} from "../store/actions/retreat"
 import {
   useAttendeeLandingPageBlock,
   useAttendeeLandingPageName,
@@ -44,6 +48,8 @@ type RetreatWebsiteProps = RouteComponentProps<{
 
 function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
+  let dispatch = useDispatch()
+
   let classes = useStyles()
   function replaceDashes(str: string) {
     let strArray = str.split("")
@@ -59,6 +65,20 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     website?.id ?? 0,
     replaceDashes(pageName ?? "home")
   )
+  let [registrationLink, setRegistrationLink] = useState("")
+  useEffect(() => {
+    async function handleGetRetreat(retreatId: number) {
+      let result = (await dispatch(
+        getRetreat(retreatId)
+      )) as unknown as ApiAction
+      if (!result.error) {
+        setRegistrationLink(
+          result.payload.retreat.attendees_registration_form_link
+        )
+      }
+    }
+    handleGetRetreat(website?.retreat_id ?? -1)
+  }, [website?.retreat_id, dispatch])
   return !page || !website ? (
     <NotFound404Page />
   ) : (
@@ -75,7 +95,8 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             homeRoute={AppRoutes.getPath("RetreatWebsiteHome", {
               retreatName: retreatName,
             })}
-            selectedPage={pageName ?? "home"}></RetreatWebsiteHeader>
+            selectedPage={pageName ?? "home"}
+            registrationLink={registrationLink}></RetreatWebsiteHeader>
           <img
             src={
               website.banner_img ??

@@ -271,7 +271,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
               <Link
                 className={classes.viewPageLink}
                 href={AppRoutes.getPath("RetreatWebsitePage", {
-                  retreatName: website.name,
+                  retreatName: titleToNavigation(website.name),
                   pageName: titleToNavigation(page?.title ?? "home"),
                 })}
                 target="_blank">
