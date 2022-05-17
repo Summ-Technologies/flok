@@ -57,6 +57,11 @@ function EditAttendeeTravelModal(props: EditAttendeeTravelModalProps) {
       cost: props.flightCost,
     },
     onSubmit: (values) => {
+      // @ts-ignore
+      if (values.cost === "") {
+        // @ts-ignore
+        values.cost = null
+      }
       dispatch(patchAttendeeTravel(props.attendeeId, values))
     },
     enableReinitialize: true,

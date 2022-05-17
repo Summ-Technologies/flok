@@ -87,6 +87,7 @@ export default function RetreatHomePage() {
       const formatter = Intl.DateTimeFormat("en-us", {
         dateStyle: "medium",
         timeStyle: undefined,
+        timeZone: "UTC",
       })
       let startDateParts = formatter.format(
         new Date(retreat.lodging_final_start_date!)
