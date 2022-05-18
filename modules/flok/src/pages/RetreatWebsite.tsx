@@ -50,7 +50,6 @@ type RetreatWebsiteProps = RouteComponentProps<{
 function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
   let dispatch = useDispatch()
-
   let classes = useStyles()
   function replaceDashes(str: string) {
     let strArray = str.split("")
