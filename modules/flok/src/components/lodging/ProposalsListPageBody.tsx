@@ -1,5 +1,5 @@
 import {Box, Button, makeStyles, Typography} from "@material-ui/core"
-import {ScreenShare} from "@material-ui/icons"
+import {Lock} from "@material-ui/icons"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
@@ -153,8 +153,8 @@ export default function ProposalsListPageBody(
             variant="contained"
             color="primary"
             onClick={() => setShareModalOpen(true)}>
+            <Lock fontSize="small" />
             <Typography> Share</Typography>
-            <ScreenShare />
           </Button>
         </div>
         <Typography variant="body1">

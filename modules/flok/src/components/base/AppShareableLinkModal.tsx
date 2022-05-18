@@ -58,7 +58,10 @@ function AppShareableLinkModal(props: AppShareableLinkModalProps) {
           variant="contained"
           color="primary"
           size="small"
-          onClick={props.handleClose}>
+          onClick={() => {
+            props.handleClose()
+            setCopied(false)
+          }}>
           Done
         </Button>
       </DialogActions>
