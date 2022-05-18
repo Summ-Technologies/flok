@@ -145,12 +145,12 @@ let navItems: NavItem[] = [
     redirect: redirectFlok("RetreatBudgetPage"),
     navSubItems: [
       {
-        title: "Calculator",
+        title: "Estimate",
         activeRoutes: ["RetreatBudgetEstimatePage"],
         redirect: redirectFlok("RetreatBudgetEstimatePage"),
       },
       {
-        title: "Details",
+        title: "Actual",
         activeRoutes: [],
         redirect: (retreat) =>
           retreat.budget_link
