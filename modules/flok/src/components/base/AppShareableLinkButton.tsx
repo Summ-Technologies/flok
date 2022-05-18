@@ -86,7 +86,6 @@ function AppShareableLinkButton(props: AppShareableLinkButtonProps) {
         </DialogContent>
         <DialogActions>
           <Button
-            variant="contained"
             color="primary"
             size="small"
             onClick={() => {

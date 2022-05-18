@@ -1,24 +1,25 @@
-import { Hidden, Icon, Link, makeStyles, Paper } from "@material-ui/core"
-import { ArrowBackIos, InsertLink } from "@material-ui/icons"
-import { ToggleButton, ToggleButtonGroup } from "@material-ui/lab"
+import {Hidden, Icon, Link, makeStyles, Paper} from "@material-ui/core"
+import {ArrowBackIos, InsertLink} from "@material-ui/icons"
+import {ToggleButton, ToggleButtonGroup} from "@material-ui/lab"
 import clsx from "clsx"
-import { useEffect, useState } from "react"
-import { useRouteMatch } from "react-router"
-import { Link as ReactRouterLink } from "react-router-dom"
+import {useEffect, useState} from "react"
+import {useRouteMatch} from "react-router"
+import {Link as ReactRouterLink} from "react-router-dom"
 import AppImageGrid from "../../components/base/AppImageGrid"
 import AppMoreInfoIcon from "../../components/base/AppMoreInfoIcon"
+import AppShareableLinkButton from "../../components/base/AppShareableLinkButton"
 import AppTypography from "../../components/base/AppTypography"
 import PageBody from "../../components/page/PageBody"
 import PageHeader from "../../components/page/PageHeader"
 import PageOverlay from "../../components/page/PageOverlay"
-import { ResourceNotFound, ResourceNotFoundType } from "../../models"
-import { HotelModel } from "../../models/lodging"
-import { HotelLodgingProposal } from "../../models/retreat"
-import { AppRoutes } from "../../Stack"
-import { convertGuid, useQuery } from "../../utils"
-import { HotelUtils, useHotel } from "../../utils/lodgingUtils"
+import {ResourceNotFound, ResourceNotFoundType} from "../../models"
+import {HotelModel} from "../../models/lodging"
+import {HotelLodgingProposal} from "../../models/retreat"
+import {AppRoutes} from "../../Stack"
+import {convertGuid, useQuery} from "../../utils"
+import {HotelUtils, useHotel} from "../../utils/lodgingUtils"
 import NotFound404Page from "../misc/NotFound404Page"
-import { useRetreat } from "../misc/RetreatProvider"
+import {useRetreat} from "../misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
   popover: {
@@ -116,6 +117,15 @@ let useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(-2), // removes need to adjust page overlay default padding
     marginBottom: theme.spacing(1),
   },
+  shareableLinkBtnContainer: {
+    marginTop: theme.spacing(-2), // removes need to adjust page overlay default padding
+  },
+  topButtonsContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: theme.spacing(2),
+  },
 }))
 
 export default function LodgingProposalPage() {
@@ -193,20 +203,35 @@ export default function LodgingProposalPage() {
               <AppImageGrid images={hotel.imgs} />
             ) : undefined
           }>
-          <Link
-            className={classes.backBtn}
-            component={ReactRouterLink}
-            variant="inherit"
-            underline="none"
-            color="inherit"
-            to={AppRoutes.getPath("RetreatLodgingProposalsPage", {
-              retreatIdx: retreatIdx.toString(),
-            })}>
-            <Icon>
-              <ArrowBackIos />
-            </Icon>
-            Proposals
-          </Link>
+          <div className={classes.topButtonsContainer}>
+            <Link
+              className={classes.backBtn}
+              component={ReactRouterLink}
+              variant="inherit"
+              underline="none"
+              color="inherit"
+              to={AppRoutes.getPath("RetreatLodgingProposalsPage", {
+                retreatIdx: retreatIdx.toString(),
+              })}>
+              <Icon>
+                <ArrowBackIos />
+              </Icon>
+              Proposals
+            </Link>
+            <div className={classes.shareableLinkBtnContainer}>
+              <AppShareableLinkButton
+                link={
+                  window.location.protocol +
+                  window.location.host +
+                  AppRoutes.getPath("DeprecatedProposalPage", {
+                    retreatGuid: retreat.guid,
+                    hotelGuid: hotelGuid,
+                  })
+                }
+              />
+            </div>
+          </div>
+
           <PageHeader
             header={
               <AppTypography variant="h1" fontWeight="bold">
@@ -571,8 +596,8 @@ export default function LodgingProposalPage() {
                     ) : undefined}
                   </Paper>
                 )}
-                {(proposal.cost_saving_notes ||
-                  proposal.additional_links?.length ) ? (
+                {proposal.cost_saving_notes ||
+                proposal.additional_links?.length ? (
                   <Paper className={classes.detailsSection}>
                     <AppTypography variant="h3" fontWeight="bold">
                       Additional Info
