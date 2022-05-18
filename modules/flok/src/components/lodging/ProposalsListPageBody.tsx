@@ -1,5 +1,4 @@
-import {Box, Button, makeStyles, Typography} from "@material-ui/core"
-import {Lock} from "@material-ui/icons"
+import {Box, makeStyles, Typography} from "@material-ui/core"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
@@ -9,7 +8,7 @@ import {getHotels} from "../../store/actions/lodging"
 import {theme} from "../../theme"
 import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
-import AppShareableLinkModal from "../base/AppShareableLinkModal"
+import AppShareableLinkButton from "../base/AppShareableLinkButton"
 import AppTypography from "../base/AppTypography"
 import PageLockedModal from "../page/PageLockedModal"
 import ProposalListRow from "./ProposalListRow"
@@ -48,7 +47,6 @@ export default function ProposalsListPageBody(
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
   let selectedHotels = retreat.selected_hotels
-  let [shareModalOpen, setShareModalOpen] = useState(false)
 
   // Probably not the best way to set loading state, but will do for now
   let [loadingHotels, setLoadingHotels] = useState(false)
@@ -122,16 +120,6 @@ export default function ProposalsListPageBody(
 
   return (
     <div className={classes.root}>
-      <AppShareableLinkModal
-        open={shareModalOpen}
-        link={
-          "https://app.goflok.com" +
-          AppRoutes.getPath("DeprecatedProposalsListPage", {
-            retreatGuid: retreat.guid,
-          })
-        }
-        handleClose={() => setShareModalOpen(false)}
-      />
       <div className={classes.header}>
         <div
           style={{
@@ -149,13 +137,15 @@ export default function ProposalsListPageBody(
               - Hotel Proposals
             </Typography>
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setShareModalOpen(true)}>
-            <Lock fontSize="small" />
-            <Typography> Share</Typography>
-          </Button>
+          <AppShareableLinkButton
+            link={
+              window.location.protocol +
+              window.location.host +
+              AppRoutes.getPath("DeprecatedProposalsListPage", {
+                retreatGuid: retreat.guid,
+              })
+            }
+          />
         </div>
         <Typography variant="body1">
           Review the following hotel proposals with negotiated prices from our
