@@ -113,14 +113,8 @@ let useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(0.5),
     },
   },
-  backBtn: {
-    marginTop: theme.spacing(-2), // removes need to adjust page overlay default padding
-    marginBottom: theme.spacing(1),
-  },
-  shareableLinkBtnContainer: {
-    marginTop: theme.spacing(-2), // removes need to adjust page overlay default padding
-  },
   topButtonsContainer: {
+    marginTop: theme.spacing(-2), // removes need to adjust page overlay default padding
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -205,7 +199,6 @@ export default function LodgingProposalPage() {
           }>
           <div className={classes.topButtonsContainer}>
             <Link
-              className={classes.backBtn}
               component={ReactRouterLink}
               variant="inherit"
               underline="none"
@@ -218,18 +211,17 @@ export default function LodgingProposalPage() {
               </Icon>
               Proposals
             </Link>
-            <div className={classes.shareableLinkBtnContainer}>
-              <AppShareableLinkButton
-                link={
-                  window.location.protocol +
-                  window.location.host +
+            <AppShareableLinkButton
+              link={
+                new URL(
                   AppRoutes.getPath("DeprecatedProposalPage", {
                     retreatGuid: retreat.guid,
                     hotelGuid: hotelGuid,
-                  })
-                }
-              />
-            </div>
+                  }),
+                  window.location.origin
+                ).href
+              }
+            />
           </div>
 
           <PageHeader

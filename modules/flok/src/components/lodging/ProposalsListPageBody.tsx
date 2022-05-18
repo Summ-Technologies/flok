@@ -5,7 +5,6 @@ import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
-import {theme} from "../../theme"
 import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppShareableLinkButton from "../base/AppShareableLinkButton"
@@ -23,7 +22,9 @@ let useStyles = makeStyles((theme) => ({
     height: "100%",
   },
   header: {
-    width: "95%",
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
   },
   proposalsList: {
     display: "flex",
@@ -121,36 +122,31 @@ export default function ProposalsListPageBody(
   return (
     <div className={classes.root}>
       <div className={classes.header}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}>
+        <div>
           <Typography variant="h1">
             Lodging
-            <Typography
-              variant="inherit"
-              style={{fontWeight: theme.typography.fontWeightLight}}>
+            <AppTypography variant="inherit" fontWeight="light">
               {" "}
               - Hotel Proposals
-            </Typography>
+            </AppTypography>
           </Typography>
+          <Typography variant="body1">
+            Review the following hotel proposals with negotiated prices from our
+            team.
+          </Typography>
+        </div>
+        <div>
           <AppShareableLinkButton
             link={
-              window.location.protocol +
-              window.location.host +
-              AppRoutes.getPath("DeprecatedProposalsListPage", {
-                retreatGuid: retreat.guid,
-              })
+              new URL(
+                AppRoutes.getPath("DeprecatedProposalsListPage", {
+                  retreatGuid: retreat.guid,
+                }),
+                window.location.origin
+              ).href
             }
           />
         </div>
-        <Typography variant="body1">
-          Review the following hotel proposals with negotiated prices from our
-          team.
-        </Typography>
       </div>
       <Box overflow="auto" width="100%">
         {groupedSelectedHotels.length + unavailableSelectedHotels.length ===

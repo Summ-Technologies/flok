@@ -6,30 +6,28 @@ import {
   DialogTitle,
   makeStyles,
   Typography,
-  useMediaQuery,
 } from "@material-ui/core"
 import {Check, Link, Share} from "@material-ui/icons"
 import {useState} from "react"
-import {FlokTheme} from "../../theme"
 
 let useStyles = makeStyles((theme) => ({
   dialogWrapper: {
     display: "flex",
     alignItems: "center",
-    margin: 8,
+    justifyContent: "center",
   },
   linkText: {
-    backgroundColor: theme.palette.background.default,
-    padding: 3,
-    borderRadius: 4,
+    backgroundColor: theme.palette.grey[300],
+    padding: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
     whiteSpace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
-    width: "90%",
-    maxWidth: 260,
+    flex: 1,
   },
   copyButton: {
-    marginLeft: theme.spacing(0.25),
+    marginLeft: theme.spacing(0.5),
+    minWidth: "max-content",
   },
 }))
 type AppShareableLinkButtonProps = {
@@ -38,10 +36,10 @@ type AppShareableLinkButtonProps = {
 function AppShareableLinkButton(props: AppShareableLinkButtonProps) {
   let classes = useStyles()
   let [copied, setCopied] = useState(false)
-  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
-    theme.breakpoints.down("sm")
-  )
   let [shareModalOpen, setShareModalOpen] = useState(false)
+  let [buttonTimeout, setButtonTimeout] = useState<NodeJS.Timeout | undefined>(
+    undefined
+  )
 
   return (
     <>
@@ -50,9 +48,13 @@ function AppShareableLinkButton(props: AppShareableLinkButtonProps) {
         color="primary"
         onClick={() => setShareModalOpen(true)}>
         <Share fontSize="small" />
-        <Typography> Share</Typography>
+        <Typography>&nbsp;Share</Typography>
       </Button>
-      <Dialog open={shareModalOpen}>
+      <Dialog
+        open={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        maxWidth={"xs"}
+        fullWidth>
         <DialogTitle>
           <Link fontSize="large" /> Get Shareable Link
         </DialogTitle>
@@ -67,14 +69,13 @@ function AppShareableLinkButton(props: AppShareableLinkButtonProps) {
               onClick={() => {
                 navigator.clipboard.writeText(props.link)
                 setCopied(true)
+                if (buttonTimeout) {
+                  clearTimeout(buttonTimeout)
+                  setButtonTimeout(undefined)
+                }
+                setButtonTimeout(setTimeout(() => setCopied(false), 2000))
               }}>
-              {isSmallScreen ? (
-                copied ? (
-                  "Copied"
-                ) : (
-                  "Copy"
-                )
-              ) : copied ? (
+              {copied ? (
                 <>
                   <Check fontSize="small" /> Copied
                 </>
@@ -87,7 +88,6 @@ function AppShareableLinkButton(props: AppShareableLinkButtonProps) {
         <DialogActions>
           <Button
             color="primary"
-            size="small"
             onClick={() => {
               setShareModalOpen(false)
               setCopied(false)
