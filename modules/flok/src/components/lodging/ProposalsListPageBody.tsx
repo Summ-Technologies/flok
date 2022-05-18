@@ -1,4 +1,5 @@
-import {Box, makeStyles, Typography} from "@material-ui/core"
+import {Box, Button, makeStyles, Typography} from "@material-ui/core"
+import {ScreenShare} from "@material-ui/icons"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
@@ -8,6 +9,7 @@ import {getHotels} from "../../store/actions/lodging"
 import {theme} from "../../theme"
 import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
+import AppShareableLinkModal from "../base/AppShareableLinkModal"
 import AppTypography from "../base/AppTypography"
 import PageLockedModal from "../page/PageLockedModal"
 import ProposalListRow from "./ProposalListRow"
@@ -21,7 +23,9 @@ let useStyles = makeStyles((theme) => ({
     flex: 1,
     height: "100%",
   },
-  header: {},
+  header: {
+    width: "95%",
+  },
   proposalsList: {
     display: "flex",
     flexDirection: "column",
@@ -44,6 +48,7 @@ export default function ProposalsListPageBody(
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
   let selectedHotels = retreat.selected_hotels
+  let [shareModalOpen, setShareModalOpen] = useState(false)
 
   // Probably not the best way to set loading state, but will do for now
   let [loadingHotels, setLoadingHotels] = useState(false)
@@ -117,16 +122,41 @@ export default function ProposalsListPageBody(
 
   return (
     <div className={classes.root}>
+      <AppShareableLinkModal
+        open={shareModalOpen}
+        link={
+          "https://app.goflok.com" +
+          AppRoutes.getPath("DeprecatedProposalsListPage", {
+            retreatGuid: retreat.guid,
+          })
+        }
+        handleClose={() => setShareModalOpen(false)}
+      />
       <div className={classes.header}>
-        <Typography variant="h1">
-          Lodging
-          <Typography
-            variant="inherit"
-            style={{fontWeight: theme.typography.fontWeightLight}}>
-            {" "}
-            - Hotel Proposals
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}>
+          <Typography variant="h1">
+            Lodging
+            <Typography
+              variant="inherit"
+              style={{fontWeight: theme.typography.fontWeightLight}}>
+              {" "}
+              - Hotel Proposals
+            </Typography>
           </Typography>
-        </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setShareModalOpen(true)}>
+            <Typography> Share</Typography>
+            <ScreenShare />
+          </Button>
+        </div>
         <Typography variant="body1">
           Review the following hotel proposals with negotiated prices from our
           team.
