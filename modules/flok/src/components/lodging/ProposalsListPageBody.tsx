@@ -9,6 +9,7 @@ import {theme} from "../../theme"
 import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppTypography from "../base/AppTypography"
+import PageLockedModal from "../page/PageLockedModal"
 import ProposalListRow from "./ProposalListRow"
 
 let useStyles = makeStyles((theme) => ({
@@ -137,10 +138,7 @@ export default function ProposalsListPageBody(
           loadingHotels ? (
             <AppTypography variant="body1">Loading...</AppTypography>
           ) : (
-            <AppTypography variant="body1">
-              Check back soon. We're currently working on collecting hotel
-              proposals on your behalf!
-            </AppTypography>
+            <PageLockedModal pageDesc="We're currently working on collecting hotel proposals on your behalf and will let you know they are ready to view!" />
           )
         ) : undefined}
         {/* Available hotels render */}
