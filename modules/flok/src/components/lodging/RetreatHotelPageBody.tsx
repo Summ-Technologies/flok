@@ -138,7 +138,7 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
       {loadingHotel ? (
         <AppLoadingScreen />
       ) : hotel === undefined ? (
-        <PageLockedModal pageDesc="This page will be unlocked when the contract phase begins" />
+        <PageLockedModal pageDesc="This page will unlock once your hotel contract is finalized and signed!" />
       ) : (
         <Grid container className={classes.hotelBody}>
           <Grid

@@ -138,7 +138,7 @@ export default function ProposalsListPageBody(
           loadingHotels ? (
             <AppTypography variant="body1">Loading...</AppTypography>
           ) : (
-            <PageLockedModal pageDesc="We're currently working on collecting hotel proposals on your behalf!" />
+            <PageLockedModal pageDesc="We're currently working on collecting hotel proposals on your behalf and will let you know they are ready to view!" />
           )
         ) : undefined}
         {/* Available hotels render */}
