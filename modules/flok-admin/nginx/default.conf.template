@@ -1,5 +1,9 @@
 server {
   listen $PORT;
+
+  if ($http_x_forwarded_proto != "https") {
+      return 301 https://$host$request_uri;
+  }
   
   location / {
     root /usr/share/nginx/html;
