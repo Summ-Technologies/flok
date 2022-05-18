@@ -82,6 +82,7 @@ function WYSIWYGBlockEditor(props: WYSIWYGBlockEditorProps) {
       type: "WYSIWYG",
     },
     onSubmit: (values) => {
+      console.log(convertToRaw(values.content.getCurrentContent()))
       dispatch(
         patchBlock(props.blockId, {
           content: convertToRaw(values.content.getCurrentContent()),

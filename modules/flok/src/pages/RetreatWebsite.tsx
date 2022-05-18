@@ -15,6 +15,7 @@ import {
   useAttendeeLandingPageName,
   useAttendeeLandingWebsiteName,
 } from "../utils/retreatUtils"
+import LoadingPage from "./misc/LoadingPage"
 import NotFound404Page from "./misc/NotFound404Page"
 
 let useStyles = makeStyles((theme) => ({
@@ -60,12 +61,16 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     })
     return strArray.join("")
   }
-  let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
-  let page = useAttendeeLandingPageName(
+  let [website, websiteLoading] = useAttendeeLandingWebsiteName(
+    replaceDashes(retreatName)
+  )
+  let [page, pageLoading] = useAttendeeLandingPageName(
     website?.id ?? 0,
     replaceDashes(pageName ?? "home")
   )
   let [registrationLink, setRegistrationLink] = useState("")
+  const titleTag = document.getElementById("titleTag")
+  titleTag!.innerHTML = `${website?.name} | ${page?.title}`
   useEffect(() => {
     async function handleGetRetreat(retreatId: number) {
       let result = (await dispatch(
@@ -79,7 +84,9 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     }
     handleGetRetreat(website?.retreat_id ?? -1)
   }, [website?.retreat_id, dispatch])
-  return !page || !website ? (
+  return websiteLoading || pageLoading ? (
+    <LoadingPage />
+  ) : !page || !website ? (
     <NotFound404Page />
   ) : (
     <PageContainer>
@@ -88,7 +95,7 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
           <RetreatWebsiteHeader
             logo={
               website.company_logo_img ??
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Brex_logo_black.svg/1200px-Brex_logo_black.svg.png"
+              "https://goflok.com/_next/image?url=https%3A%2F%2Fflok-b32d43c.s3.amazonaws.com%2Flanding-page%2Flogo.png&w=256&q=75"
             }
             pageIds={website.page_ids}
             retreatName={retreatName}
