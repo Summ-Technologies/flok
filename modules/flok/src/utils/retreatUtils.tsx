@@ -2,23 +2,18 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
-import {
-  AttendeeLandingWebsiteApiResponse,
-  AttendeeLandingWebsitePageApiResponse,
-  AttendeeLandingWebsitePageBlockApiResponse,
-} from "../models/api"
-import {RetreatModel, RetreatToTask} from "../models/retreat"
+import {RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getBlock,
   getPage,
   getPageByName,
+  getRetreat,
   getRetreatAttendees,
   getRetreatByGuid,
   getWebsite,
   getWebsiteByName,
 } from "../store/actions/retreat"
-import {RetreatState} from "../store/reducers/retreat"
 
 export function useRetreatAttendees(retreatId: number) {
   let dispatch = useDispatch()
@@ -176,72 +171,26 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
 
   return [website, loading] as const
 }
+export function useRetreat(retreatId: number) {
+  let [loading, setLoading] = useState(true)
+  let retreat = useSelector((state: RootState) => {
+    return Object.values(state.retreat.retreats).find(
+      (retreat) => retreat !== ResourceNotFound && retreat.id === retreatId
+    )
+  })
+  let dispatch = useDispatch()
+  useEffect(() => {
+    async function loadRetreat() {
+      setLoading(true)
+      await dispatch(getRetreat(retreatId))
+      setLoading(false)
+    }
+    if (!retreat) {
+      loadRetreat()
+    } else {
+      setLoading(false)
+    }
+  }, [retreat, dispatch, retreatId])
 
-export function reduceWebsitePost(
-  payload: AttendeeLandingWebsiteApiResponse,
-  state: RetreatState
-) {
-  return {
-    ...state,
-    websites: {
-      ...state.websites,
-      [payload.website.id]: payload.website,
-    },
-    retreats: {
-      ...state.retreats,
-      ...(state.retreats[payload.website.retreat_id] &&
-      state.retreats[payload.website.retreat_id] !== ResourceNotFound
-        ? {
-            [payload.website.retreat_id]: {
-              ...(state.retreats[payload.website.retreat_id] as RetreatModel),
-              attendees_website_id: payload.website.id,
-            },
-          }
-        : {}),
-    },
-  }
-}
-
-export function reducePagePost(
-  payload: AttendeeLandingWebsitePageApiResponse,
-  state: RetreatState
-) {
-  return {
-    ...state,
-    pages: {...state.pages, [payload.page.id]: payload.page},
-    websites: {
-      ...state.websites,
-      [payload.page.website_id]: {
-        ...state.websites[payload.page.website_id]!,
-        page_ids: [
-          ...(state.websites[payload.page.website_id]
-            ? state.websites[payload.page.website_id]!.page_ids
-            : []),
-          payload.page.id,
-        ],
-      },
-    },
-  }
-}
-
-export function reduceBlockPost(
-  payload: AttendeeLandingWebsitePageBlockApiResponse,
-  state: RetreatState
-) {
-  return {
-    ...state,
-    blocks: {...state.blocks, [payload.block.id]: payload.block},
-    pages: {
-      ...state.pages,
-      [payload.block.page_id]: {
-        ...state.pages[payload.block.page_id]!,
-        block_ids: [
-          ...(state.pages[payload.block.page_id]
-            ? state.pages[payload.block.page_id]!.block_ids
-            : []),
-          payload.block.id,
-        ],
-      },
-    },
-  }
+  return [retreat, loading] as const
 }

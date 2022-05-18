@@ -66,7 +66,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
         push(
           AppRoutes.getPath("LandingPageGeneratorPage", {
             retreatIdx: retreatIdx.toString(),
-            currentPageId: websiteResponse.payload.page.id,
+            currentPageId: websiteResponse.payload.website.page_ids[0],
           })
         )
       )

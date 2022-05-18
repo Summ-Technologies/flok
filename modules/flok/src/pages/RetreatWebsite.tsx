@@ -1,19 +1,19 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
-import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
+import {ResourceNotFound} from "../models"
 import {AppRoutes} from "../Stack"
-import {ApiAction} from "../store/actions/api"
-import {getRetreat} from "../store/actions/retreat"
+import {ImageUtils} from "../utils/imageUtils"
 import {
   useAttendeeLandingPageBlock,
   useAttendeeLandingPageName,
   useAttendeeLandingWebsiteName,
+  useRetreat,
 } from "../utils/retreatUtils"
 import LoadingPage from "./misc/LoadingPage"
 import NotFound404Page from "./misc/NotFound404Page"
@@ -67,25 +67,12 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     website?.id ?? 0,
     replaceDashes(pageName ?? "home")
   )
-  let [registrationLink, setRegistrationLink] = useState("")
+  let [retreat, retreatLoading] = useRetreat(website?.retreat_id ?? -1)
   const titleTag = document.getElementById("titleTag")
   titleTag!.innerHTML = `${website?.name} | ${page?.title}`
-  useEffect(() => {
-    async function handleGetRetreat(retreatId: number) {
-      let result = (await dispatch(
-        getRetreat(retreatId)
-      )) as unknown as ApiAction
-      if (!result.error) {
-        setRegistrationLink(
-          result.payload.retreat.attendees_registration_form_link
-        )
-      }
-    }
-    handleGetRetreat(website?.retreat_id ?? -1)
-  }, [website?.retreat_id, dispatch])
-  return websiteLoading || pageLoading ? (
+  return websiteLoading || pageLoading || retreatLoading ? (
     <LoadingPage />
-  ) : !page || !website ? (
+  ) : !page || !website || !retreat || retreat === ResourceNotFound ? (
     <NotFound404Page />
   ) : (
     <PageContainer>
@@ -94,7 +81,7 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
           <RetreatWebsiteHeader
             logo={
               website.company_logo_img ??
-              "https://goflok.com/_next/image?url=https%3A%2F%2Fflok-b32d43c.s3.amazonaws.com%2Flanding-page%2Flogo.png&w=256&q=75"
+              ImageUtils.getImageUrl("logoIconTextTrans")
             }
             pageIds={website.page_ids}
             retreatName={retreatName}
@@ -102,7 +89,9 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
               retreatName: retreatName,
             })}
             selectedPage={pageName ?? "home"}
-            registrationLink={registrationLink}></RetreatWebsiteHeader>
+            registrationLink={
+              retreat.attendees_registration_form_link
+            }></RetreatWebsiteHeader>
           <img
             src={
               website.banner_img ??

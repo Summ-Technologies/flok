@@ -16,11 +16,6 @@ import {
   RetreatModel,
   RetreatTripModel,
 } from "../../models/retreat"
-import {
-  reduceBlockPost,
-  reducePagePost,
-  reduceWebsitePost,
-} from "../../utils/retreatUtils"
 import {ApiAction} from "../actions/api"
 import {
   DELETE_PAGE_SUCCESS,
@@ -192,7 +187,27 @@ export default function retreatReducer(
     case POST_INITIAL_WEBSITE_SUCCESS:
       payload = (action as ApiAction)
         .payload as AttendeeLandingWebsiteApiResponse
-      return reduceWebsitePost(payload, state)
+      return {
+        ...state,
+        websites: {
+          ...state.websites,
+          [payload.website.id]: payload.website,
+        },
+        retreats: {
+          ...state.retreats,
+          ...(state.retreats[payload.website.retreat_id] &&
+          state.retreats[payload.website.retreat_id] !== ResourceNotFound
+            ? {
+                [payload.website.retreat_id]: {
+                  ...(state.retreats[
+                    payload.website.retreat_id
+                  ] as RetreatModel),
+                  attendees_website_id: payload.website.id,
+                },
+              }
+            : {}),
+        },
+      }
     case GET_PAGE_SUCCESS:
     case PATCH_PAGE_SUCCESS:
       payload = (action as ApiAction)
@@ -212,11 +227,41 @@ export default function retreatReducer(
     case POST_BLOCK_SUCCESS:
       payload = (action as ApiAction)
         .payload as AttendeeLandingWebsitePageBlockApiResponse
-      return reduceBlockPost(payload, state)
+      return {
+        ...state,
+        blocks: {...state.blocks, [payload.block.id]: payload.block},
+        pages: {
+          ...state.pages,
+          [payload.block.page_id]: {
+            ...state.pages[payload.block.page_id]!,
+            block_ids: [
+              ...(state.pages[payload.block.page_id]
+                ? state.pages[payload.block.page_id]!.block_ids
+                : []),
+              payload.block.id,
+            ],
+          },
+        },
+      }
     case POST_PAGE_SUCCESS:
       payload = (action as ApiAction)
         .payload as AttendeeLandingWebsitePageApiResponse
-      return reducePagePost(payload, state)
+      return {
+        ...state,
+        pages: {...state.pages, [payload.page.id]: payload.page},
+        websites: {
+          ...state.websites,
+          [payload.page.website_id]: {
+            ...state.websites[payload.page.website_id]!,
+            page_ids: [
+              ...(state.websites[payload.page.website_id]
+                ? state.websites[payload.page.website_id]!.page_ids
+                : []),
+              payload.page.id,
+            ],
+          },
+        },
+      }
     case DELETE_PAGE_SUCCESS:
       const pageId = (action as unknown as {meta: {pageId: number}}).meta.pageId
       let websiteId = Object.values(state.websites).find((website) =>
