@@ -27,6 +27,7 @@ import {push} from "connected-react-router"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {withRouter} from "react-router-dom"
+import AppCsvXlsxUpload from "../../components/base/AppCsvXlsxUpload"
 import AppExpandableTable from "../../components/base/AppExpandableTable"
 import AppTypography from "../../components/base/AppTypography"
 import PageBody from "../../components/page/PageBody"
@@ -133,7 +134,17 @@ function AttendeesPage() {
   const handleClose = () => {
     setOpenNotAttendingModal(false)
   }
-
+  const handleFileUploaded = (data: string[][]) => {
+    console.log(
+      data.map((row) => {
+        return {
+          first_name: row[0],
+          last_name: row[1],
+          email: row[2],
+        }
+      })
+    )
+  }
   const handleNewAttendeeSubmit = () => {
     const errorState = {firstName: false, lastName: false, email: false}
     if (newAttendeeFirstName === "") {
@@ -378,13 +389,23 @@ function AttendeesPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleNewAttendeeSubmit}>
-            Submit
-          </Button>
-          <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}>
+            <AppCsvXlsxUpload onUpload={handleFileUploaded} />
+            <div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleNewAttendeeSubmit}>
+                Submit
+              </Button>
+              <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
+            </div>
+          </div>
         </DialogActions>
       </Dialog>
       {/* not attending modal below */}
