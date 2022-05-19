@@ -3,8 +3,6 @@ import {RouteComponentProps, withRouter} from "react-router-dom"
 import FormBuilder from "../components/forms/FormBuilder"
 import FormProvider from "../components/forms/FormProvider"
 import PageBody from "../components/page/PageBody"
-import PageContainer from "../components/page/PageContainer"
-import PageSidenav from "../components/page/PageSidenav"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -35,21 +33,17 @@ let useStyles = makeStyles((theme) => ({
 type AttendeesRegFormBuilderProps = RouteComponentProps<{retreatIdx: string}>
 function AttendeesRegFormBuilderPage(props: AttendeesRegFormBuilderProps) {
   let classes = useStyles()
-  let retreatIdx = parseInt(props.match.params.retreatIdx)
   let formId = 1
 
   return (
-    <PageContainer>
-      <PageSidenav activeItem="attendees" retreatIdx={retreatIdx} />
-      <PageBody appBar>
-        <div className={classes.body}>
-          <Typography variant="h1">Attendee Registration Form</Typography>
-          <FormProvider formId={formId}>
-            <FormBuilder />
-          </FormProvider>
-        </div>
-      </PageBody>
-    </PageContainer>
+    <PageBody appBar>
+      <div className={classes.body}>
+        <Typography variant="h1">Attendee Registration Form</Typography>
+        <FormProvider formId={formId}>
+          <FormBuilder />
+        </FormProvider>
+      </div>
+    </PageBody>
   )
 }
 

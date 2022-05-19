@@ -1,7 +1,7 @@
 import React from "react"
-import { Route, Switch } from "react-router-dom"
+import {Route, Switch} from "react-router-dom"
 import PageContainer from "./components/page/PageContainer"
-import PageSidenav, { PageDemoSidenav } from "./components/page/PageSidenav"
+import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
 import AttendeesRegFormBuilderPage from "./pages/AttendeesRegFormBuilderPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
@@ -29,11 +29,6 @@ import PretripHomePage from "./pages/pretrip/PretripHomePage"
 import PretripProposalPage from "./pages/pretrip/PretripProposalPage"
 import PretripProposalsPage from "./pages/pretrip/PretripProposalsPage"
 import RetreatWebsite from "./pages/RetreatWebsite"
-<<<<<<< HEAD
-=======
-import AttendeeProfilePage from "./pages/AttendeeProfilePage"
-import AttendeesRegFormBuilderPage from "./pages/AttendeesRegFormBuilderPage"
->>>>>>> 87e5003... reg checkpoint
 
 export type FlokPageName = keyof typeof AppRoutes.pages
 
@@ -63,7 +58,7 @@ export class AppRoutes {
     RetreatLodgingContractPage: "/r/:retreatIdx/lodging/contract", // no sidebar
 
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
-    RetreatAttendeePage: "/r/:retreatIdx/attendees/:attendeeId",
+    RetreatAttendeePage: "/r/:retreatIdx/attendees/:attendeeId/profile",
     RetreatAttendeeFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
     RetreatAttendeesRegFormBuilderPage: "/r/:retreatIdx/attendees/reg-form",
 
@@ -224,7 +219,9 @@ export default function Stack() {
               <Route exact path={AppRoutes.getPath("RetreatAttendeesPage")}>
                 <AttendeesPage />
               </Route>
-              <Route exact path={AppRoutes.getPath("RetreatAttendeesRegFormBuilderPage")}>
+              <Route
+                exact
+                path={AppRoutes.getPath("RetreatAttendeesRegFormBuilderPage")}>
                 <AttendeesRegFormBuilderPage />
               </Route>
               <Route exact path={AppRoutes.getPath("RetreatAttendeePage")}>

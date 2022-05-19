@@ -1,22 +1,23 @@
-import { Action } from "redux"
-import { ResourceNotFound, ResourceNotFoundType } from "../../models"
+import {Action} from "redux"
+import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {
   AttendeeApiResponse,
   AttendeeLandingWebsiteApiResponse,
   AttendeeLandingWebsitePageApiResponse,
   AttendeeLandingWebsitePageBlockApiResponse,
   RetreatAttendeesApiResponse,
-  TripApiResponse
+  TripApiResponse,
 } from "../../models/api"
+import {FormModel, FormQuestionModel} from "../../models/form"
 import {
   AttendeeLandingWebsiteBlockModel,
   AttendeeLandingWebsiteModel,
   AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
   RetreatModel,
-  RetreatTripModel
+  RetreatTripModel,
 } from "../../models/retreat"
-import { ApiAction } from "../actions/api"
+import {ApiAction} from "../actions/api"
 import {
   DELETE_PAGE_SUCCESS,
   DELETE_RETREAT_ATTENDEES_SUCCESS,
@@ -43,7 +44,7 @@ import {
   POST_RETREAT_ATTENDEES_SUCCESS,
   POST_WEBSITE_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
-  PUT_RETREAT_TASK_SUCCESS
+  PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
 
 export type RetreatState = {
@@ -60,7 +61,6 @@ export type RetreatState = {
   trips: {
     [id: number]: RetreatTripModel
   }
-<<<<<<< HEAD
   websites: {
     [id: number]: AttendeeLandingWebsiteModel | undefined
   }
@@ -69,13 +69,12 @@ export type RetreatState = {
   }
   blocks: {
     [id: number]: AttendeeLandingWebsiteBlockModel | undefined
-=======
+  }
   forms: {
     [id: number]: FormModel | undefined
   }
   formQuestions: {
     [id: number]: FormQuestionModel | undefined
->>>>>>> b6c9b5c... Checkpoint 2 for form builder
   }
 }
 
