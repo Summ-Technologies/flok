@@ -94,9 +94,6 @@ let useStyles = makeStyles((theme) => ({
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
-  table: {
-    minWidth: "40vw",
-  },
   notAttendingDialogBody: {
     padding: "0 !important",
     maxHeight: "30vh",
@@ -410,7 +407,7 @@ function AttendeesPage() {
               return attendee.info_status === "NOT_ATTENDING"
             }).length ? (
               <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
+                <Table aria-label="simple table">
                   <TableBody>
                     {attendeeTravelInfo &&
                       attendeeTravelInfo
