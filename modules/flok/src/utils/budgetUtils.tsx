@@ -152,8 +152,8 @@ export function getBudgetBreakdown(userInput: BudgetBreakdownInputType) {
       userInput.experience_type === 3
         ? 50
         : userInput.experience_type === 4
-        ? 100
-        : 150,
+        ? 75
+        : 100,
   }))
 
   let misc = userInput.addons.map((name) => {
@@ -228,9 +228,9 @@ export function getBudgetBreakdown(userInput: BudgetBreakdownInputType) {
 
   let attendeeCost =
     activities.cost +
-    meals.map((o) => o.cost * o.num).reduce((p, v) => p + v) +
-    (ground_transport.map((o) => o.cost) ?? [0]).reduce((p, v) => p + v) +
-    misc.map((o) => o.cost).reduce((p, v) => p + v) +
+    meals.map((o) => o.cost * o.num).reduce((p, v) => p + v, 0) +
+    (ground_transport.map((o) => o.cost) ?? [0]).reduce((p, v) => p + v, 0) +
+    misc.map((o) => o.cost).reduce((p, v) => p + v, 0) +
     userInput.avg_flight_cost +
     hotelPerNight * (userInput.trip_length - 1)
 
