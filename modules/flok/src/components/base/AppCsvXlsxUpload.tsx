@@ -16,22 +16,22 @@ function AppCsvXlsxUpload(props: AppCsvXlsxUploadProps) {
   }
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
+    var files = e.target.files
+    if (files) {
+      let f = files[0]
+      var reader = new FileReader()
+      reader.onload = function (e) {
+        var data = e!.target!.result
+        let readedData = XLSX.read(data, {type: "binary"})
+        const wsname = readedData.SheetNames[0]
+        const ws = readedData.Sheets[wsname]
 
-    var files = e.target.files,
-      // @ts-ignore
-      f = files[0]
-    var reader = new FileReader()
-    reader.onload = function (e) {
-      var data = e!.target!.result
-      let readedData = XLSX.read(data, {type: "binary"})
-      const wsname = readedData.SheetNames[0]
-      const ws = readedData.Sheets[wsname]
-
-      /* Convert array to json*/
-      const dataParse = XLSX.utils.sheet_to_json(ws, {header: 1})
-      props.onUpload(dataParse as unknown as string[][])
+        /* Convert array to json*/
+        const dataParse = XLSX.utils.sheet_to_json(ws, {header: 1})
+        props.onUpload(dataParse as unknown as string[][])
+      }
+      reader.readAsBinaryString(f)
     }
-    reader.readAsBinaryString(f)
   }
   return (
     <Button component="label">
