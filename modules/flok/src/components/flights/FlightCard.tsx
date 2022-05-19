@@ -110,7 +110,7 @@ let useStyles = makeStyles((theme) => ({
     width: "50%",
   },
   singleColumnContainer: {
-    width: "30%",
+    width: "35%",
   },
   columnInSingle: {
     width: "fit-content",
