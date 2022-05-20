@@ -138,7 +138,7 @@ function FlightCard(props: FlightCardProps) {
   }
   function differenceInDays(arr_datetime: Date, dep_datetime: Date) {
     return Math.ceil(
-      (arr_datetime.getTime() - dep_datetime?.getTime()) / (1000 * 3600 * 24)
+      (arr_datetime.getTime() - dep_datetime.getTime()) / (1000 * 3600 * 24)
     )
   }
 
@@ -208,13 +208,10 @@ function FlightCard(props: FlightCardProps) {
                 {arr_datetime &&
                   dep_datetime &&
                   differenceInDays(arr_datetime, dep_datetime) > 0 && (
-                    <sup style={{marginLeft: "auto"}}>
-                      {"(+" +
-                        differenceInDays(
-                          arr_datetime,
-                          dep_datetime
-                        ).toString() +
-                        ")"}
+                    <sup>
+                      &nbsp;
+                      {"+" +
+                        differenceInDays(arr_datetime, dep_datetime).toString()}
                     </sup>
                   )}
               </Typography>
