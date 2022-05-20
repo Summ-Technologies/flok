@@ -1,9 +1,10 @@
 import {Button} from "@material-ui/core"
+import {Publish} from "@material-ui/icons"
 import Papa from "papaparse"
 import * as XLSX from "xlsx"
-import AppMoreInfoIcon from "./AppMoreInfoIcon"
 type AppCsvXlsxUploadProps = {
   onUpload: (data: string[][]) => void
+  text?: string
 }
 function AppCsvXlsxUpload(props: AppCsvXlsxUploadProps) {
   function handleCsvUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -34,8 +35,9 @@ function AppCsvXlsxUpload(props: AppCsvXlsxUploadProps) {
     }
   }
   return (
-    <Button component="label">
-      Batch Upload
+    <Button component="label" variant="outlined" color="primary">
+      <Publish />
+      {props.text ? props.text : "Upload"}
       <input
         type="file"
         accept=".xlsx, .csv"
@@ -48,7 +50,6 @@ function AppCsvXlsxUpload(props: AppCsvXlsxUploadProps) {
             handleUpload(e)
           }
         }}></input>
-      <AppMoreInfoIcon tooltipText="Accepts CSV and XLSX files" />
     </Button>
   )
 }

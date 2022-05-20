@@ -16,6 +16,8 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
+  TableHead,
   TableRow,
   TextField,
   Tooltip,
@@ -34,9 +36,11 @@ import PageBody from "../../components/page/PageBody"
 import PageLockedModal from "../../components/page/PageLockedModal"
 import {RetreatAttendeeModel, SampleLockedAttendees} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
+import {ApiAction} from "../../store/actions/api"
 import {
   deleteRetreatAttendees,
   postRetreatAttendees,
+  postRetreatAttendeesBatch,
 } from "../../store/actions/retreat"
 import {useRetreatAttendees} from "../../utils/retreatUtils"
 import {useRetreat} from "../misc/RetreatProvider"
@@ -106,6 +110,9 @@ let useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
   },
+  previewTable: {
+    // maxWidth: "70%",
+  },
 }))
 
 function AttendeesPage() {
@@ -130,20 +137,41 @@ function AttendeesPage() {
   }
 
   const [openNotAttendingModal, setOpenNotAttendingModal] = useState(false)
+  const [batchUploadingPage, setBatchUploadingPage] = useState(false)
+  const [batchUploadData, setBatchUploadData] = useState<
+    {
+      email_address: string
+      first_name: string
+      last_name: string
+      retreat_id: number
+    }[]
+  >([])
 
   const handleClose = () => {
     setOpenNotAttendingModal(false)
   }
   const handleFileUploaded = (data: string[][]) => {
-    console.log(
+    setBatchUploadData(
       data.map((row) => {
         return {
-          first_name: row[0],
-          last_name: row[1],
-          email: row[2],
+          email_address: row[0],
+          first_name: row[1],
+          last_name: row[2],
+          retreat_id: retreat.id,
         }
       })
     )
+  }
+
+  async function handleBatchAttendeeSubmit() {
+    let response = (await dispatch(
+      postRetreatAttendeesBatch({attendees: batchUploadData}, retreat.id)
+    )) as unknown as ApiAction
+    if (!response.error) {
+      setAddDialogOpen(false)
+      setBatchUploadingPage(false)
+      setBatchUploadData([])
+    }
   }
   const handleNewAttendeeSubmit = () => {
     const errorState = {firstName: false, lastName: false, email: false}
@@ -346,47 +374,94 @@ function AttendeesPage() {
       <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
         <DialogTitle>Add New Attendee</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            To add a new attendee to your retreat please enter their full name
-            and email address below. We'll reach out to them to confirm and fill
-            in some of their information and when they have confirmed their name
-            will be added here.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="first_name"
-            label="First Name"
-            value={newAttendeeFirstName}
-            error={newAttendeeErrorState.firstName}
-            onChange={(e) => setNewAttendeeFirstName(e.target.value)}
-            fullWidth
-            variant="standard"
-            required
-          />
-          <TextField
-            margin="dense"
-            id="last_name"
-            label="Last Name"
-            value={newAttendeeLastName}
-            error={newAttendeeErrorState.lastName}
-            onChange={(e) => setNewAttendeeLastName(e.target.value)}
-            fullWidth
-            variant="standard"
-            required
-          />
-          <TextField
-            margin="dense"
-            id="email"
-            label="Email Address"
-            value={newAttendeeEmail}
-            error={newAttendeeErrorState.email}
-            onChange={(e) => setNewAttendeeEmail(e.target.value)}
-            type="email"
-            fullWidth
-            variant="standard"
-            required
-          />
+          {batchUploadingPage ? (
+            <>
+              <DialogContentText>
+                To batch upload, please upload a CSV or XLSX file. The file
+                should be in the format Email, First Name, Last Name, with no
+                headers.
+              </DialogContentText>
+              {batchUploadData[0] && (
+                <TableContainer
+                  component={Paper}
+                  className={classes.previewTable}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Email</TableCell>
+                        <TableCell>First Name</TableCell>
+                        <TableCell>Last Name</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {batchUploadData.slice(0, 3).map((user) => {
+                        return (
+                          <TableRow>
+                            <TableCell>{user.email_address}</TableCell>
+                            <TableCell>{user.first_name}</TableCell>
+                            <TableCell>{user.last_name}</TableCell>
+                          </TableRow>
+                        )
+                      })}
+
+                      {batchUploadData.length > 3 && (
+                        <TableFooter>
+                          <div style={{marginLeft: 8}}>
+                            ... {batchUploadData.length - 3} more row
+                            {batchUploadData.length - 3 > 1 && "s"}
+                          </div>
+                        </TableFooter>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </>
+          ) : (
+            <>
+              <DialogContentText>
+                To add a new attendee to your retreat please enter their full
+                name and email address below. We'll reach out to them to confirm
+                and fill in some of their information and when they have
+                confirmed their name will be added here.
+              </DialogContentText>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="first_name"
+                label="First Name"
+                value={newAttendeeFirstName}
+                error={newAttendeeErrorState.firstName}
+                onChange={(e) => setNewAttendeeFirstName(e.target.value)}
+                fullWidth
+                variant="standard"
+                required
+              />
+              <TextField
+                margin="dense"
+                id="last_name"
+                label="Last Name"
+                value={newAttendeeLastName}
+                error={newAttendeeErrorState.lastName}
+                onChange={(e) => setNewAttendeeLastName(e.target.value)}
+                fullWidth
+                variant="standard"
+                required
+              />
+              <TextField
+                margin="dense"
+                id="email"
+                label="Email Address"
+                value={newAttendeeEmail}
+                error={newAttendeeErrorState.email}
+                onChange={(e) => setNewAttendeeEmail(e.target.value)}
+                type="email"
+                fullWidth
+                variant="standard"
+                required
+              />
+            </>
+          )}
         </DialogContent>
         <DialogActions>
           <div
@@ -394,16 +469,45 @@ function AttendeesPage() {
               display: "flex",
               justifyContent: "space-between",
               width: "100%",
+              alignItems: "right",
             }}>
-            <AppCsvXlsxUpload onUpload={handleFileUploaded} />
-            <div>
+            {!batchUploadingPage && (
               <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNewAttendeeSubmit}>
-                Submit
+                onClick={() => {
+                  setBatchUploadingPage(true)
+                }}>
+                Batch Upload
               </Button>
-              <Button onClick={() => setAddDialogOpen(false)}>Cancel</Button>
+            )}
+            {batchUploadingPage && batchUploadData[0] && (
+              <AppCsvXlsxUpload
+                text="Upload New File"
+                onUpload={handleFileUploaded}
+              />
+            )}
+            <div style={{marginLeft: "auto"}}>
+              {batchUploadingPage && !batchUploadData[0] ? (
+                <AppCsvXlsxUpload onUpload={handleFileUploaded} />
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={
+                    batchUploadingPage
+                      ? handleBatchAttendeeSubmit
+                      : handleNewAttendeeSubmit
+                  }>
+                  Submit
+                </Button>
+              )}
+              <Button
+                onClick={() => {
+                  setAddDialogOpen(false)
+                  setBatchUploadingPage(false)
+                  setBatchUploadData([])
+                }}>
+                Cancel
+              </Button>
             </div>
           </div>
         </DialogActions>
