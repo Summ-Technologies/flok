@@ -23,8 +23,9 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core"
-import {Delete, Person} from "@material-ui/icons"
+import {Delete, DoneAll, Person} from "@material-ui/icons"
 import CloseIcon from "@material-ui/icons/Close"
+import {Alert} from "@material-ui/lab"
 import {push} from "connected-react-router"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
@@ -113,6 +114,31 @@ let useStyles = makeStyles((theme) => ({
   previewTable: {
     // maxWidth: "70%",
   },
+  errorText: {
+    color: theme.palette.error.main,
+  },
+  errorTableContainer: {
+    marginTop: 8,
+    maxHeight: 200,
+  },
+  errorTable: {
+    height: "max-content",
+  },
+  successfulUploadDiv: {
+    display: "flex",
+  },
+  uploadPreviewFooter: {
+    marginLeft: theme.spacing(1),
+  },
+  actionButtons: {
+    marginLeft: "auto",
+  },
+  actionButtonsContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    alignItems: "right",
+  },
 }))
 
 function AttendeesPage() {
@@ -146,6 +172,9 @@ function AttendeesPage() {
       retreat_id: number
     }[]
   >([])
+  const [batchUploadResponse, setBatchUploadResponse] = useState<
+    string | Partial<RetreatAttendeeModel>[]
+  >("")
 
   const handleClose = () => {
     setOpenNotAttendingModal(false)
@@ -163,14 +192,67 @@ function AttendeesPage() {
     )
   }
 
+  function batchAttendeeResponsetoJSX(
+    response: string | Partial<RetreatAttendeeModel>[]
+  ) {
+    if (response === "success") {
+      return (
+        <div className={classes.successfulUploadDiv}>
+          <DoneAll />
+          &nbsp;
+          <Typography>All Attendees successfully added</Typography>
+        </div>
+      )
+    } else {
+      response = response as unknown as Partial<RetreatAttendeeModel>[]
+      return (
+        <>
+          <Alert severity="error">
+            The following attendees could not be added as they were found to be
+            duplicates
+          </Alert>
+          <TableContainer
+            component={Paper}
+            className={classes.errorTableContainer}>
+            <Table size="small" className={classes.errorTable}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Email</TableCell>
+                  <TableCell>First Name</TableCell>
+                  <TableCell>Last Name</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {response.map((user) => {
+                  return (
+                    <TableRow>
+                      <TableCell>{user.email_address}</TableCell>
+                      <TableCell>{user.first_name}</TableCell>
+                      <TableCell>{user.last_name}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )
+    }
+  }
+
   async function handleBatchAttendeeSubmit() {
     let response = (await dispatch(
       postRetreatAttendeesBatch({attendees: batchUploadData}, retreat.id)
     )) as unknown as ApiAction
     if (!response.error) {
-      setAddDialogOpen(false)
-      setBatchUploadingPage(false)
+      // setAddDialogOpen(false)
+      // setBatchUploadingPage(false)
       setBatchUploadData([])
+      if (!response.payload.errors[0]) {
+        setBatchUploadResponse("success")
+      } else {
+        setBatchUploadResponse(response.payload.errors)
+      }
     }
   }
   const handleNewAttendeeSubmit = () => {
@@ -372,51 +454,57 @@ function AttendeesPage() {
         </div>
       </div>
       <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
-        <DialogTitle>Add New Attendee</DialogTitle>
+        <DialogTitle>
+          {batchUploadingPage ? "Batch Upload Attendees" : "Add New Attendee"}
+        </DialogTitle>
         <DialogContent>
           {batchUploadingPage ? (
-            <>
-              <DialogContentText>
-                To batch upload, please upload a CSV or XLSX file. The file
-                should be in the format Email, First Name, Last Name, with no
-                headers.
-              </DialogContentText>
-              {batchUploadData[0] && (
-                <TableContainer
-                  component={Paper}
-                  className={classes.previewTable}>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Email</TableCell>
-                        <TableCell>First Name</TableCell>
-                        <TableCell>Last Name</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {batchUploadData.slice(0, 3).map((user) => {
-                        return (
-                          <TableRow>
-                            <TableCell>{user.email_address}</TableCell>
-                            <TableCell>{user.first_name}</TableCell>
-                            <TableCell>{user.last_name}</TableCell>
-                          </TableRow>
-                        )
-                      })}
+            batchUploadResponse[0] ? (
+              batchAttendeeResponsetoJSX(batchUploadResponse)
+            ) : (
+              <>
+                <DialogContentText>
+                  To batch upload, please upload a CSV or XLSX file. The file
+                  should be in the format Email, First Name, Last Name, with no
+                  headers.
+                </DialogContentText>
+                {batchUploadData[0] && (
+                  <TableContainer
+                    component={Paper}
+                    className={classes.previewTable}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Email</TableCell>
+                          <TableCell>First Name</TableCell>
+                          <TableCell>Last Name</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {batchUploadData.slice(0, 3).map((user) => {
+                          return (
+                            <TableRow>
+                              <TableCell>{user.email_address}</TableCell>
+                              <TableCell>{user.first_name}</TableCell>
+                              <TableCell>{user.last_name}</TableCell>
+                            </TableRow>
+                          )
+                        })}
 
-                      {batchUploadData.length > 3 && (
-                        <TableFooter>
-                          <div style={{marginLeft: 8}}>
-                            ... {batchUploadData.length - 3} more row
-                            {batchUploadData.length - 3 > 1 && "s"}
-                          </div>
-                        </TableFooter>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
-            </>
+                        {batchUploadData.length > 3 && (
+                          <TableFooter>
+                            <div className={classes.uploadPreviewFooter}>
+                              ... {batchUploadData.length - 3} more row
+                              {batchUploadData.length - 3 > 1 && "s"}
+                            </div>
+                          </TableFooter>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </>
+            )
           ) : (
             <>
               <DialogContentText>
@@ -464,13 +552,7 @@ function AttendeesPage() {
           )}
         </DialogContent>
         <DialogActions>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-              alignItems: "right",
-            }}>
+          <div className={classes.actionButtonsContainer}>
             {!batchUploadingPage && (
               <Button
                 onClick={() => {
@@ -485,29 +567,43 @@ function AttendeesPage() {
                 onUpload={handleFileUploaded}
               />
             )}
-            <div style={{marginLeft: "auto"}}>
-              {batchUploadingPage && !batchUploadData[0] ? (
-                <AppCsvXlsxUpload onUpload={handleFileUploaded} />
-              ) : (
+            <div className={classes.actionButtons}>
+              {!batchUploadResponse[0] &&
+                (batchUploadingPage && !batchUploadData[0] ? (
+                  <AppCsvXlsxUpload onUpload={handleFileUploaded} />
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={
+                      batchUploadingPage
+                        ? handleBatchAttendeeSubmit
+                        : handleNewAttendeeSubmit
+                    }>
+                    Submit
+                  </Button>
+                ))}
+              {!batchUploadResponse[0] && (
                 <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={
-                    batchUploadingPage
-                      ? handleBatchAttendeeSubmit
-                      : handleNewAttendeeSubmit
-                  }>
-                  Submit
+                  onClick={() => {
+                    setAddDialogOpen(false)
+                    setBatchUploadingPage(false)
+                    setBatchUploadData([])
+                  }}>
+                  Cancel
                 </Button>
               )}
-              <Button
-                onClick={() => {
-                  setAddDialogOpen(false)
-                  setBatchUploadingPage(false)
-                  setBatchUploadData([])
-                }}>
-                Cancel
-              </Button>
+              {batchUploadResponse[0] && (
+                <Button
+                  onClick={() => {
+                    setAddDialogOpen(false)
+                    setBatchUploadingPage(false)
+                    setBatchUploadData([])
+                    setBatchUploadResponse("")
+                  }}>
+                  Done
+                </Button>
+              )}
             </div>
           </div>
         </DialogActions>
