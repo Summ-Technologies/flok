@@ -207,7 +207,7 @@ function AttendeesPage() {
       response = response as unknown as Partial<RetreatAttendeeModel>[]
       return (
         <>
-          <Alert severity="error">
+          <Alert severity="warning">
             The following attendees could not be added as they were found to be
             duplicates
           </Alert>
