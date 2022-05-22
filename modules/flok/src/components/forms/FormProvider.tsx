@@ -9,6 +9,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {FormModel} from "../../models/form"
 import LoadingPage from "../../pages/misc/LoadingPage"
 import {RootState} from "../../store"
+import {getForm} from "../../store/actions/form"
 
 const FormContext = createContext<FormModel | undefined>(undefined)
 
@@ -24,16 +25,14 @@ type FormProviderProps = PropsWithChildren<{formId: number}>
 export default function FormProvider(props: FormProviderProps) {
   let dispatch = useDispatch()
   let [loading, setLoading] = useState(false)
-  let form = useSelector(
-    (state: RootState) => state.retreat.forms[props.formId]
-  )
+  let form = useSelector((state: RootState) => state.form.forms[props.formId])
   useEffect(() => {
     if (!form) {
       setLoading(true)
-      // dispatch(getForm(formId))
+      dispatch(getForm(props.formId))
       setLoading(false)
     }
-  }, [form, dispatch])
+  }, [form, dispatch, props.formId])
 
   return !form && loading ? (
     <LoadingPage />

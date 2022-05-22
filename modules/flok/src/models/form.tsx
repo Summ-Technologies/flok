@@ -33,10 +33,11 @@ export type FormQuestionModel = {
   type: FormQuestionType
   required?: boolean
   select_allow_user_input?: boolean
-  select_options: FormQuestionSelectOptionModel[]
+  select_options: number[]
 }
 
 export type FormQuestionSelectOptionModel = {
   option: string
   id: number
+  form_question_id: number
 }

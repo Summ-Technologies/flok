@@ -7,7 +7,13 @@ import {
 } from "@material-ui/core"
 import {Add} from "@material-ui/icons"
 import React from "react"
-import {FormQuestionTypeName, FormQuestionTypeValues} from "../../models/form"
+import {useDispatch} from "react-redux"
+import {
+  FormQuestionType,
+  FormQuestionTypeName,
+  FormQuestionTypeValues,
+} from "../../models/form"
+import {postFormQuestion} from "../../store/actions/form"
 import AppTypography from "../base/AppTypography"
 import {useForm} from "./FormProvider"
 import FormQuestionProvider from "./FormQuestionProvider"
@@ -56,6 +62,7 @@ let useStyles = makeStyles((theme) => ({
 type FormBuilderProps = {}
 export default function FormBuilder(props: FormBuilderProps) {
   let classes = useStyles(props)
+  let dispatch = useDispatch()
   let form = useForm()
 
   const [addQuestionAnchorEl, setAddQuestionAnchorEl] =
@@ -65,8 +72,12 @@ export default function FormBuilder(props: FormBuilderProps) {
   ) => {
     setAddQuestionAnchorEl(event.currentTarget)
   }
-  const closeAddQuestionPopover = () => {
+  function closeNewQuestionPopover() {
     setAddQuestionAnchorEl(null)
+  }
+  async function postNewQuestion(questionType: FormQuestionType) {
+    await dispatch(postFormQuestion({form_id: form.id, type: questionType}))
+    closeNewQuestionPopover()
   }
   const addQuestionOpen = Boolean(addQuestionAnchorEl)
 
@@ -97,7 +108,7 @@ export default function FormBuilder(props: FormBuilderProps) {
         <Popover
           anchorEl={addQuestionAnchorEl}
           open={addQuestionOpen}
-          onClose={closeAddQuestionPopover}>
+          onClose={closeNewQuestionPopover}>
           <div>
             <ListItem>
               <AppTypography fontWeight="bold" variant="body1">
@@ -105,7 +116,10 @@ export default function FormBuilder(props: FormBuilderProps) {
               </AppTypography>
             </ListItem>
             {FormQuestionTypeValues.map((type) => (
-              <MenuItem value={type} button onClick={closeAddQuestionPopover}>
+              <MenuItem
+                value={type}
+                button
+                onClick={() => postNewQuestion(type)}>
                 {FormQuestionTypeName[type] ?? type}
               </MenuItem>
             ))}

@@ -8,17 +8,21 @@ import {
   MenuItem,
   Radio,
   TextField,
-  TextFieldProps,
 } from "@material-ui/core"
-import {useFormik} from "formik"
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
+import {useDispatch, useSelector} from "react-redux"
 import {
   FormQuestionModel,
-  FormQuestionSelectOptionModel,
   FormQuestionTypeEnum,
   FormQuestionTypeName,
   FormQuestionTypeValues,
 } from "../../models/form"
+import {RootState} from "../../store"
+import {
+  getFormQuestionOption,
+  postFormQuestionOption,
+} from "../../store/actions/form"
+import AppLoadingScreen from "../base/AppLoadingScreen"
 import {useFormQuestion} from "./FormQuestionProvider"
 import {FormQuestionHeader} from "./Headers"
 
@@ -131,14 +135,16 @@ function RegFormBuilderQuestionSwitch(props: {question: FormQuestionModel}) {
         return (
           <RegFormBuilderSelectQuestion
             type={FormQuestionTypeEnum.SINGLE_SELECT}
-            options={props.question.select_options}
+            optionIds={props.question.select_options}
+            questionId={props.question.id}
           />
         )
       case FormQuestionTypeEnum.MULTI_SELECT:
         return (
           <RegFormBuilderSelectQuestion
             type={FormQuestionTypeEnum.MULTI_SELECT}
-            options={props.question.select_options}
+            optionIds={props.question.select_options}
+            questionId={props.question.id}
           />
         )
       // case FormQuestionTypeEnum.DATE:
@@ -184,27 +190,33 @@ let useSelectQuestionStyles = makeStyles((theme) => ({
 
 type RegFormBuilderSelectQuestionProps = {
   type: FormQuestionTypeEnum.MULTI_SELECT | FormQuestionTypeEnum.SINGLE_SELECT
-  options: FormQuestionSelectOptionModel[]
+  optionIds: number[]
+  questionId: number
 }
 export function RegFormBuilderSelectQuestion(
   props: RegFormBuilderSelectQuestionProps
 ) {
   let classes = useSelectQuestionStyles()
-  let formik = useFormik({
-    initialValues: {
-      options: props.options,
-    },
-    onSubmit: () => undefined,
-  })
-  let commonOptionTextFieldProps: TextFieldProps = {
-    onChange: formik.handleChange,
-    size: "small",
-  }
+  let dispatch = useDispatch()
+  let [loadingPost, setLoadingPost] = useState(false)
+  // let formik = useFormik({
+  //   initialValues: {
+  //     options: props.options,
+  //   },
+  //   onSubmit: () => undefined,
+  // })
+  // let commonOptionTextFieldProps: TextFieldProps = {
+  //   onChange: formik.handleChange,
+  //   size: "small",
+  // }
 
   return (
     <FormControl>
       <FormGroup>
-        {formik.values.options.map((opt, i) => {
+        {props.optionIds.map((optionId, i) => {
+          return <SelectQuestionLabel optionId={optionId} type={props.type} />
+        })}
+        {/* {formik.values.options.map((opt, i) => {
           return (
             <FormControlLabel
               value={formik.values.options[i].option}
@@ -224,50 +236,69 @@ export function RegFormBuilderSelectQuestion(
               }
             />
           )
-        })}
-        <FormControlLabel
-          value={"new"}
-          control={
-            props.type === FormQuestionTypeEnum.SINGLE_SELECT ? (
-              <Radio />
-            ) : (
-              <Checkbox checked={false} />
-            )
-          }
-          label={
-            <TextField
-              onClick={() =>
-                formik.setFieldValue("options", [
-                  ...formik.values.options,
-                  {id: -1, option: ""},
-                ])
-              }
-            />
-          }
-        />
+        })} */}
+        {loadingPost ? (
+          <AppLoadingScreen />
+        ) : (
+          <FormControlLabel
+            value={"new"}
+            control={
+              props.type === FormQuestionTypeEnum.SINGLE_SELECT ? (
+                <Radio />
+              ) : (
+                <Checkbox checked={false} />
+              )
+            }
+            label={
+              <TextField
+                onClick={async () => {
+                  setLoadingPost(true)
+                  await dispatch(
+                    postFormQuestionOption({
+                      form_question_id: props.questionId,
+                      option: "",
+                    })
+                  )
+                  setLoadingPost(false)
+                }}
+              />
+            }
+          />
+        )}
       </FormGroup>
     </FormControl>
   )
 }
 
 function SelectQuestionLabel(props: {
-  editActive: boolean
-  option: string
+  editActive?: boolean
+  optionId: number
   type:
     | typeof FormQuestionTypeEnum.MULTI_SELECT
     | typeof FormQuestionTypeEnum.SINGLE_SELECT
 }) {
+  let dispatch = useDispatch()
+  let option = useSelector(
+    (state: RootState) => state.form.questionOptions[props.optionId]
+  )
+  useEffect(() => {
+    if (!option) {
+      dispatch(getFormQuestionOption(props.optionId))
+    }
+  }, [option, props.optionId, dispatch])
   let control =
     props.type === FormQuestionTypeEnum.MULTI_SELECT ? (
       <Checkbox checked={false} />
     ) : (
       <Radio />
     )
-  return (
+  return option ? (
     <FormControlLabel
-      value={props.option}
+      value={option.option}
       control={control}
-      label={<TextField value={props.option} />}
+      label={<TextField value={option.option} />}
     />
+  ) : (
+    <AppLoadingScreen />
   )
 }

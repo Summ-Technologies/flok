@@ -9,6 +9,7 @@ import {useDispatch, useSelector} from "react-redux"
 import {FormQuestionModel} from "../../models/form"
 import LoadingPage from "../../pages/misc/LoadingPage"
 import {RootState} from "../../store"
+import {getFormQuestion} from "../../store/actions/form"
 
 const FormQuestionContext = createContext<FormQuestionModel | undefined>(
   undefined
@@ -27,15 +28,15 @@ export default function FormQuestionProvider(props: FormQuestionProviderProps) {
   let dispatch = useDispatch()
   let [loading, setLoading] = useState(false)
   let formQuestion = useSelector(
-    (state: RootState) => state.retreat.formQuestions[props.questionId]
+    (state: RootState) => state.form.formQuestions[props.questionId]
   )
   useEffect(() => {
     if (!formQuestion) {
       setLoading(true)
-      // dispatch(getFormQuestion(formQuestionId))
+      dispatch(getFormQuestion(props.questionId))
       setLoading(false)
     }
-  }, [formQuestion, dispatch])
+  }, [formQuestion, dispatch, props.questionId])
 
   return !formQuestion && loading ? (
     <LoadingPage />

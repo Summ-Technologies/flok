@@ -1,8 +1,8 @@
 import {makeStyles, Typography} from "@material-ui/core"
 import {RouteComponentProps, withRouter} from "react-router-dom"
-import FormBuilder from "../components/forms/FormBuilder"
-import FormProvider from "../components/forms/FormProvider"
-import PageBody from "../components/page/PageBody"
+import FormBuilder from "../../components/forms/FormBuilder"
+import FormProvider from "../../components/forms/FormProvider"
+import PageBody from "../../components/page/PageBody"
 
 let useStyles = makeStyles((theme) => ({
   body: {
