@@ -389,7 +389,9 @@ function AttendeesPage() {
         <Dialog
           onClose={handleClose}
           aria-labelledby="customized-dialog-title"
-          open={openNotAttendingModal}>
+          open={openNotAttendingModal}
+          maxWidth="sm"
+          fullWidth>
           <DialogTitle id="customized-dialog-title">
             Invitees not attending
             <IconButton
@@ -416,14 +418,16 @@ function AttendeesPage() {
                         })
                         .map((attendee) => (
                           <TableRow key={attendee.id}>
-                            <TableCell component="th" scope="row">
+                            <TableCell
+                              width={"100%"}
+                              component="th"
+                              scope="row">
                               {attendee.first_name + " " + attendee.last_name}
                             </TableCell>
                             <TableCell align="right">
                               {attendee.email_address}
                             </TableCell>
                             <TableCell>
-                              {" "}
                               <Button
                                 variant="contained"
                                 color="primary"
@@ -439,7 +443,7 @@ function AttendeesPage() {
                                 }>
                                 Edit <Person />
                               </Button>
-                            </TableCell>{" "}
+                            </TableCell>
                           </TableRow>
                         ))}
                   </TableBody>
