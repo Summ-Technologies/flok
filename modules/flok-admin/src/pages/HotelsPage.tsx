@@ -5,6 +5,7 @@ import {push} from "connected-react-router"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import AddDestinationModal from "../components/lodging/AddDestinationModal"
 import HotelSelectModal from "../components/lodging/HotelSelectModal"
 import NewHotelForm from "../components/lodging/NewHotelForm"
 import PageBase from "../components/page/PageBase"
@@ -40,6 +41,7 @@ function HotelsPage(props: LodgingContentPageProps) {
 
   let [hotelSearchOpen, setHotelSearchOpen] = useState(false)
   let [newHotelOpen, setNewHotelOpen] = useState(false)
+  let [addDestinationModalOpen, setAddDestinationModalOpen] = useState(false)
 
   return (
     <PageBase>
@@ -87,6 +89,16 @@ function HotelsPage(props: LodgingContentPageProps) {
               Add a new hotel
             </Button>
           </Box>
+          <Box ml={1} clone>
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() => {
+                setAddDestinationModalOpen(true)
+              }}>
+              Add a new destination
+            </Button>
+          </Box>
         </Box>
         {newHotelOpen && (
           <Dialog open={newHotelOpen} onClose={() => setNewHotelOpen(false)}>
@@ -95,6 +107,12 @@ function HotelsPage(props: LodgingContentPageProps) {
             </Box>
           </Dialog>
         )}
+        <AddDestinationModal
+          open={addDestinationModalOpen}
+          onClose={() => {
+            setAddDestinationModalOpen(false)
+          }}
+        />
       </div>
     </PageBase>
   )

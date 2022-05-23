@@ -1,5 +1,6 @@
 import querystring from "querystring"
 import {
+  AdminDestinationModel,
   AdminHotelDetailsModel,
   AdminLodgingProposalUpdateModel,
   AdminRetreatAttendeeModel,
@@ -720,6 +721,24 @@ export function addRetreatTasks(
       {type: ADD_RETREAT_TASKS_REQUEST, meta: {retreatId: retreat_id}},
       {type: ADD_RETREAT_TASKS_SUCCESS, meta: {retreatId: retreat_id}},
       {type: ADD_RETREAT_TASKS_FAILURE, meta: {retreatId: retreat_id}},
+    ],
+  })
+}
+
+export const POST_DESTINATION_REQUEST = "POST_DESTINATION_REQUEST"
+export const POST_DESTINATION_SUCCESS = "POST_DESTINATION_SUCCESS"
+export const POST_DESTINATION_FAILURE = "POST_DESTINATION_FAILURE"
+
+export function postDestination(values: Partial<AdminDestinationModel>) {
+  let endpoint = `/v1.0/admin/destinations`
+  return createApiAction({
+    endpoint,
+    method: "POST",
+    body: JSON.stringify(values),
+    types: [
+      {type: POST_DESTINATION_REQUEST},
+      {type: POST_DESTINATION_SUCCESS},
+      {type: POST_DESTINATION_FAILURE},
     ],
   })
 }
