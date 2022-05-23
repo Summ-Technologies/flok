@@ -20,8 +20,8 @@ let useStyles = makeStyles((theme) => ({
   },
   dialogContent: {
     paddingTop: "0 !important",
-    // " & > :makeStyles-dialogContent-44": {
-    //   paddingTop: "0 !important",
+    // "& .MuiDialogContent-root:first-child": {
+    //   paddingTop: 0,
     // },
   },
 }))
