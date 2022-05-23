@@ -3,11 +3,11 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogTitle,
   FormControlLabel,
   makeStyles,
   Switch,
   TextField,
+  Typography,
 } from "@material-ui/core"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
@@ -17,12 +17,6 @@ import {postDestination} from "../../store/actions/admin"
 let useStyles = makeStyles((theme) => ({
   textField: {
     marginTop: theme.spacing(2),
-  },
-  dialogContent: {
-    paddingTop: "0 !important",
-    // "& .MuiDialogContent-root:first-child": {
-    //   paddingTop: 0,
-    // },
   },
 }))
 
@@ -74,9 +68,11 @@ function AddDestinationModal(props: AddDestinationModalProps) {
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <DialogTitle>Add Destination</DialogTitle>
       <form onSubmit={formik.handleSubmit}>
-        <DialogContent className={classes.dialogContent}>
+        <DialogContent>
+          <Typography variant="h2" paragraph>
+            Add Destination
+          </Typography>
           <FormControlLabel
             control={
               <Switch
@@ -102,6 +98,7 @@ function AddDestinationModal(props: AddDestinationModalProps) {
             <>
               <TextField
                 fullWidth
+                required
                 id={`state`}
                 value={formik.values.state}
                 label="State"
@@ -110,11 +107,13 @@ function AddDestinationModal(props: AddDestinationModalProps) {
               />
               <TextField
                 fullWidth
+                required
                 id={`state_abbreviation`}
                 value={formik.values.state_abbreviation}
                 label="State Abbreviation"
                 onChange={formik.handleChange}
                 className={classes.textField}
+                helperText="Two Letter Abbreviation (CA, NY, etc.)"
               />
             </>
           ) : (
@@ -131,10 +130,12 @@ function AddDestinationModal(props: AddDestinationModalProps) {
               <TextField
                 fullWidth
                 id={`country_abbreviation`}
+                required
                 value={formik.values.country_abbreviation}
                 label="Country Abbreviation"
                 onChange={formik.handleChange}
                 className={classes.textField}
+                helperText="Three Letter Abbreviation (USA, ESP, etc.)"
               />
             </>
           )}
