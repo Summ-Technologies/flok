@@ -18,8 +18,11 @@ let useStyles = makeStyles((theme) => ({
   textField: {
     marginTop: theme.spacing(2),
   },
-  root: {
-    marginTop: "0 !important",
+  dialogContent: {
+    paddingTop: "0 !important",
+    // " & > :makeStyles-dialogContent-44": {
+    //   paddingTop: "0 !important",
+    // },
   },
 }))
 
@@ -73,7 +76,7 @@ function AddDestinationModal(props: AddDestinationModalProps) {
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>Add Destination</DialogTitle>
       <form onSubmit={formik.handleSubmit}>
-        <DialogContent style={{margin: 0}}>
+        <DialogContent className={classes.dialogContent}>
           <FormControlLabel
             control={
               <Switch
