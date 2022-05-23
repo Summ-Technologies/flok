@@ -138,10 +138,8 @@ function FlightCard(props: FlightCardProps) {
   }
 
   function differenceInDays(arr_datetime: Date, dep_datetime: Date) {
-    dep_datetime.setHours(0)
-    arr_datetime.setHours(0)
-    console.log(dep_datetime)
-    console.log(arr_datetime)
+    dep_datetime.setHours(0, 0, 0, 0)
+    arr_datetime.setHours(0, 0, 0, 0)
     return Math.ceil(
       (arr_datetime.getTime() - dep_datetime.getTime()) / (1000 * 3600 * 24)
     )
@@ -153,11 +151,6 @@ function FlightCard(props: FlightCardProps) {
   let arr_datetime = flight.arr_datetime
     ? new Date(flight.arr_datetime)
     : undefined
-  // //@ts-ignore
-  // console.log(dep_datetime?.getTime())
-  // //@ts-ignore
-
-  // console.log(dep_datetime?.getTime())
 
   return (
     <div
