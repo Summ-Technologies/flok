@@ -41,10 +41,12 @@ export type HotelLodgingProposal = {
 }
 
 export type RetreatSelectedHotelProposal = {
+  id: number
   retreat_id: number
   hotel_id: number
   state: RetreatSelectedHotelProposalState
   hotel_proposals?: HotelLodgingProposal[]
+  is_liked?: boolean
 }
 
 export type RetreatProgressState = // Deprecated

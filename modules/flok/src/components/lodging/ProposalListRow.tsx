@@ -1,9 +1,12 @@
 import {Button, Chip, makeStyles, Paper, Tooltip} from "@material-ui/core"
-import {Info} from "@material-ui/icons"
+import {Favorite, FavoriteBorder, Info} from "@material-ui/icons"
 import React from "react"
+import {useDispatch} from "react-redux"
 import {Link as ReactRouterLink} from "react-router-dom"
 import {DestinationModel, HotelModel} from "../../models/lodging"
 import {HotelLodgingProposal} from "../../models/retreat"
+import {useRetreat} from "../../pages/misc/RetreatProvider"
+import {patchSelectedHotel} from "../../store/actions/retreat"
 import {formatCurrency} from "../../utils"
 import {DestinationUtils, HotelUtils} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
@@ -91,6 +94,9 @@ let useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     marginRight: theme.spacing(1),
   },
+  heart: {
+    color: theme.palette.primary.light,
+  },
 }))
 
 type ProposalListRowProps = {
@@ -100,12 +106,15 @@ type ProposalListRowProps = {
   openInTab?: boolean
   proposalUrl?: string
   unavailable?: boolean
+  isLiked?: boolean
 }
 export default function ProposalListRow(props: ProposalListRowProps) {
+  let dispatch = useDispatch()
   let classes = useStyles(props)
   let {hotel, proposals, destination, openInTab, proposalUrl, unavailable} = {
     ...props,
   }
+  let [retreat] = useRetreat()
 
   function getLowestCompare(vals: HotelLodgingProposal[]) {
     if (vals.length > 0) {
@@ -145,6 +154,28 @@ export default function ProposalListRow(props: ProposalListRowProps) {
             </AppTypography>
             <div style={{display: "flex"}}>
               <AppTypography variant="h4">{hotel.name}</AppTypography>
+              &nbsp;
+              {props.isLiked ? (
+                <Favorite
+                  className={classes.heart}
+                  onClick={() => {
+                    dispatch(
+                      patchSelectedHotel(retreat.id, hotel.id, {
+                        is_liked: false,
+                      })
+                    )
+                  }}
+                />
+              ) : (
+                <FavoriteBorder
+                  className={classes.heart}
+                  onClick={() => {
+                    dispatch(
+                      patchSelectedHotel(retreat.id, hotel.id, {is_liked: true})
+                    )
+                  }}
+                />
+              )}
             </div>
           </div>
           {!unavailable && (

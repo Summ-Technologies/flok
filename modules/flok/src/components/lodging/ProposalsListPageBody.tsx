@@ -157,22 +157,32 @@ export default function ProposalsListPageBody(
             <PageLockedModal pageDesc="We're currently working on collecting hotel proposals on your behalf and will let you know they are ready to view!" />
           )
         ) : undefined}
-        {/* Available hotels render */}
-        {groupedSelectedHotels.map((destList) => {
-          let destination = destinations[destList.destinationId]
-          if (destination && destList.selectedHotels.length) {
-            return (
-              <div className={classes.proposalsList}>
-                <AppTypography variant="h2">
-                  {DestinationUtils.getLocationName(destination)}
-                </AppTypography>
-                {destList.selectedHotels.map((selectedHotel) => {
-                  let hotel = hotelsById[selectedHotel.hotel_id]
-                  let proposals = selectedHotel.hotel_proposals || []
+        {/* Liked hotels render */}
+
+        {selectedHotels.filter((selectedHotel) => selectedHotel.is_liked)
+          .length > 0 && (
+          <div className={classes.proposalsList}>
+            <AppTypography variant="h2">Liked</AppTypography>
+            {selectedHotels
+              .sort((a, b) => {
+                if (hotelsById[a.hotel_id] && hotelsById[b.hotel_id]) {
+                  return (
+                    hotelsById[a.hotel_id].destination_id -
+                    hotelsById[b.hotel_id].destination_id
+                  )
+                } else return a.hotel_id - b.hotel_id
+              })
+              .filter((selectedHotel) => selectedHotel.is_liked)
+              .map((selectedHotel) => {
+                let hotel = hotelsById[selectedHotel.hotel_id]
+                let proposals = selectedHotel.hotel_proposals || []
+                if (hotel) {
+                  let destination = destinations[hotel.destination_id]
                   return (
                     <ProposalListRow
                       hotel={hotel}
                       destination={destination}
+                      isLiked={selectedHotel.is_liked}
                       proposals={proposals}
                       proposalUrl={AppRoutes.getPath(
                         "RetreatLodgingProposalPage",
@@ -183,7 +193,42 @@ export default function ProposalsListPageBody(
                       )}
                     />
                   )
-                })}
+                }
+              })}
+          </div>
+        )}
+
+        {/* Available hotels render */}
+        {groupedSelectedHotels.map((destList) => {
+          let destination = destinations[destList.destinationId]
+          if (destination && destList.selectedHotels.length) {
+            return (
+              <div className={classes.proposalsList}>
+                <AppTypography variant="h2">
+                  {DestinationUtils.getLocationName(destination)}
+                </AppTypography>
+                {destList.selectedHotels
+                  .sort((a, b) => a.hotel_id - b.hotel_id)
+                  .filter((selectedHotel) => !selectedHotel.is_liked)
+                  .map((selectedHotel) => {
+                    let hotel = hotelsById[selectedHotel.hotel_id]
+                    let proposals = selectedHotel.hotel_proposals || []
+                    return (
+                      <ProposalListRow
+                        hotel={hotel}
+                        destination={destination}
+                        isLiked={selectedHotel.is_liked}
+                        proposals={proposals}
+                        proposalUrl={AppRoutes.getPath(
+                          "RetreatLodgingProposalPage",
+                          {
+                            retreatIdx: retreatIdx.toString(),
+                            hotelGuid: hotel.guid,
+                          }
+                        )}
+                      />
+                    )
+                  })}
               </div>
             )
           } else {
@@ -205,6 +250,7 @@ export default function ProposalsListPageBody(
               <ProposalListRow
                 unavailable
                 hotel={hotel}
+                isLiked={selectedHotel.is_liked}
                 proposals={[]}
                 destination={destination}
               />
