@@ -35,6 +35,7 @@ import AppExpandableTable from "../../components/base/AppExpandableTable"
 import AppTypography from "../../components/base/AppTypography"
 import PageBody from "../../components/page/PageBody"
 import PageLockedModal from "../../components/page/PageLockedModal"
+import {AttendeeBatchUploadApiResponse} from "../../models/api"
 import {RetreatAttendeeModel, SampleLockedAttendees} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {ApiAction} from "../../store/actions/api"
@@ -111,9 +112,6 @@ let useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
   },
-  previewTable: {
-    // maxWidth: "70%",
-  },
   errorText: {
     color: theme.palette.error.main,
   },
@@ -173,29 +171,37 @@ function AttendeesPage() {
     }[]
   >([])
   const [batchUploadResponse, setBatchUploadResponse] = useState<
-    string | Partial<RetreatAttendeeModel>[]
-  >("")
+    AttendeeBatchUploadApiResponse | undefined
+  >(undefined)
 
   const handleClose = () => {
     setOpenNotAttendingModal(false)
   }
   const handleFileUploaded = (data: string[][]) => {
     setBatchUploadData(
-      data.map((row) => {
-        return {
-          email_address: row[0],
-          first_name: row[1],
-          last_name: row[2],
-          retreat_id: retreat.id,
-        }
-      })
+      data
+        .map((row) => {
+          return [
+            row[0] ? row[0].toString() : "",
+            row[1] ? row[1].toString() : "",
+            row[2] ? row[2].toString() : "",
+          ]
+        })
+        .map((row) => {
+          return {
+            email_address: row[0],
+            first_name: row[1],
+            last_name: row[2],
+            retreat_id: retreat.id,
+          }
+        })
     )
   }
 
   function batchAttendeeResponsetoJSX(
-    response: string | Partial<RetreatAttendeeModel>[]
+    response: AttendeeBatchUploadApiResponse
   ) {
-    if (response === "success") {
+    if (response.errors.length === 0) {
       return (
         <div className={classes.successfulUploadDiv}>
           <DoneAll />
@@ -204,12 +210,23 @@ function AttendeesPage() {
         </div>
       )
     } else {
-      response = response as unknown as Partial<RetreatAttendeeModel>[]
+      response = response as unknown as AttendeeBatchUploadApiResponse
       return (
         <>
-          <Alert severity="warning">
-            The following attendees could not be added as they were found to be
-            duplicates
+          {response.attendees.length > 0 && (
+            <Typography
+              style={{
+                marginLeft: "auto",
+                marginRight: "auto",
+                marginBottom: "8px",
+                textAlign: "center",
+              }}>
+              {response.attendees.length} attendee
+              {response.attendees.length > 1 ? "s" : ""} successfully added
+            </Typography>
+          )}
+          <Alert severity="error">
+            The following attendees could not be added
           </Alert>
           <TableContainer
             component={Paper}
@@ -218,20 +235,23 @@ function AttendeesPage() {
               <TableHead>
                 <TableRow>
                   <TableCell>Email</TableCell>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Last Name</TableCell>
+                  <TableCell>Error</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {response.map((user) => {
-                  return (
-                    <TableRow>
-                      <TableCell>{user.email_address}</TableCell>
-                      <TableCell>{user.first_name}</TableCell>
-                      <TableCell>{user.last_name}</TableCell>
-                    </TableRow>
-                  )
-                })}
+                {response.errors &&
+                  response.errors.map((user) => {
+                    return (
+                      <TableRow>
+                        <TableCell>{user.email_address}</TableCell>
+                        <TableCell>
+                          {user.error === "email"
+                            ? "Invalid Email"
+                            : "Duplicate Entry"}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -245,14 +265,8 @@ function AttendeesPage() {
       postRetreatAttendeesBatch({attendees: batchUploadData}, retreat.id)
     )) as unknown as ApiAction
     if (!response.error) {
-      // setAddDialogOpen(false)
-      // setBatchUploadingPage(false)
       setBatchUploadData([])
-      if (!response.payload.errors[0]) {
-        setBatchUploadResponse("success")
-      } else {
-        setBatchUploadResponse(response.payload.errors)
-      }
+      setBatchUploadResponse(response.payload)
     }
   }
   const handleNewAttendeeSubmit = () => {
@@ -453,13 +467,14 @@ function AttendeesPage() {
           </Button>
         </div>
       </div>
+      {/*  */}
       <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
         <DialogTitle>
           {batchUploadingPage ? "Batch Upload Attendees" : "Add New Attendee"}
         </DialogTitle>
         <DialogContent>
           {batchUploadingPage ? (
-            batchUploadResponse[0] ? (
+            batchUploadResponse !== undefined ? (
               batchAttendeeResponsetoJSX(batchUploadResponse)
             ) : (
               <>
@@ -469,9 +484,7 @@ function AttendeesPage() {
                   headers.
                 </DialogContentText>
                 {batchUploadData[0] && (
-                  <TableContainer
-                    component={Paper}
-                    className={classes.previewTable}>
+                  <TableContainer component={Paper}>
                     <Table size="small">
                       <TableHead>
                         <TableRow>
@@ -568,7 +581,7 @@ function AttendeesPage() {
               />
             )}
             <div className={classes.actionButtons}>
-              {!batchUploadResponse[0] &&
+              {batchUploadResponse === undefined &&
                 (batchUploadingPage && !batchUploadData[0] ? (
                   <AppCsvXlsxUpload onUpload={handleFileUploaded} />
                 ) : (
@@ -583,7 +596,7 @@ function AttendeesPage() {
                     Submit
                   </Button>
                 ))}
-              {!batchUploadResponse[0] && (
+              {batchUploadResponse === undefined && (
                 <Button
                   onClick={() => {
                     setAddDialogOpen(false)
@@ -593,13 +606,13 @@ function AttendeesPage() {
                   Cancel
                 </Button>
               )}
-              {batchUploadResponse[0] && (
+              {batchUploadResponse !== undefined && (
                 <Button
                   onClick={() => {
                     setAddDialogOpen(false)
                     setBatchUploadingPage(false)
                     setBatchUploadData([])
-                    setBatchUploadResponse("")
+                    setBatchUploadResponse(undefined)
                   }}>
                   Done
                 </Button>
