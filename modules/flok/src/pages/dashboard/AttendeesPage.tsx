@@ -137,6 +137,12 @@ let useStyles = makeStyles((theme) => ({
     width: "100%",
     alignItems: "right",
   },
+  attendeesAddedText: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginBottom: "8px",
+    textAlign: "center",
+  },
 }))
 
 function AttendeesPage() {
@@ -214,13 +220,7 @@ function AttendeesPage() {
       return (
         <>
           {response.attendees.length > 0 && (
-            <Typography
-              style={{
-                marginLeft: "auto",
-                marginRight: "auto",
-                marginBottom: "8px",
-                textAlign: "center",
-              }}>
+            <Typography className={classes.attendeesAddedText}>
               {response.attendees.length} attendee
               {response.attendees.length > 1 ? "s" : ""} successfully added
             </Typography>
