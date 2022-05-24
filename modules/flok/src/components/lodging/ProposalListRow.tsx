@@ -143,7 +143,9 @@ export default function ProposalListRow(props: ProposalListRowProps) {
             <AppTypography variant="body2" color="textSecondary" uppercase>
               {DestinationUtils.getLocationName(destination, true, hotel)}
             </AppTypography>
-            <AppTypography variant="h4">{hotel.name}</AppTypography>
+            <div style={{display: "flex"}}>
+              <AppTypography variant="h4">{hotel.name}</AppTypography>
+            </div>
           </div>
           {!unavailable && (
             <div className={classes.attributesContainer}>
