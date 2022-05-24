@@ -35,6 +35,7 @@ import {
   PATCH_ATTENDEE_TRAVEL_SUCCESS,
   PATCH_BLOCK_SUCCESS,
   PATCH_PAGE_SUCCESS,
+  PATCH_SELECTED_HOTEL_SUCCESS,
   PATCH_TRIP_SUCCESS,
   PATCH_WEBSITE_SUCCESS,
   POST_BLOCK_SUCCESS,
@@ -92,6 +93,7 @@ export default function retreatReducer(
     case GET_RETREAT_SUCCESS:
     case PUT_RETREAT_PREFERENCES_SUCCESS:
     case PUT_RETREAT_TASK_SUCCESS:
+    case PATCH_SELECTED_HOTEL_SUCCESS:
       retreat = ((action as ApiAction).payload as {retreat: RetreatModel})
         .retreat
       retreatId = retreat.id

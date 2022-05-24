@@ -45,6 +45,7 @@ export type RetreatSelectedHotelProposal = {
   hotel_id: number
   state: RetreatSelectedHotelProposalState
   hotel_proposals?: HotelLodgingProposal[]
+  is_liked?: boolean
 }
 
 export type RetreatProgressState = // Deprecated

@@ -592,3 +592,31 @@ export function patchWebsite(
     }
   )
 }
+
+export const PATCH_SELECTED_HOTEL_REQUEST = "PATCH_SELECTED_HOTEL_REQUEST"
+export const PATCH_SELECTED_HOTEL_SUCCESS = "PATCH_SELECTED_HOTEL_SUCCESS"
+export const PATCH_SELECTED_HOTEL_FAILURE = "PATCH_SELECTED_HOTEL_FAILURE"
+export function patchSelectedHotel(
+  retreatId: number,
+  hotelId: number,
+  values: {
+    is_liked: boolean
+  }
+) {
+  let endpoint = `/v1.0/retreats/${retreatId}/selected-hotels/${hotelId}`
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: PATCH_SELECTED_HOTEL_REQUEST},
+        {type: PATCH_SELECTED_HOTEL_SUCCESS, meta: {retreatId}},
+        {type: PATCH_SELECTED_HOTEL_FAILURE, meta: {retreatId}},
+      ],
+    },
+    {
+      errorMessage: "Something went wrong",
+    }
+  )
+}
