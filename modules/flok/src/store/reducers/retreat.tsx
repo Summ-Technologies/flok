@@ -289,8 +289,9 @@ export default function retreatReducer(
       retreatId = (action as unknown as {meta: {retreatId: number}}).meta
         .retreatId
       payload = (action as ApiAction).payload as RetreatAttendeesApiResponse
+      let newState = {...state}
       if (payload) {
-        state.retreatAttendees = {
+        newState.retreatAttendees = {
           ...state.retreatAttendees,
           [retreatId]: [
             ...(state.retreatAttendees[retreatId] !== undefined
@@ -299,7 +300,7 @@ export default function retreatReducer(
             ...payload.attendees.map((attendee) => attendee.id),
           ],
         }
-        state.attendees = {
+        newState.attendees = {
           ...state.attendees,
           ...payload.attendees.reduce(
             (last: any, curr: RetreatAttendeeModel) => {
@@ -309,7 +310,7 @@ export default function retreatReducer(
           ),
         }
       }
-      return state
+      return newState
     default:
       return state
   }

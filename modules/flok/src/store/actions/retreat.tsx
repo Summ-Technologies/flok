@@ -606,22 +606,27 @@ export function postRetreatAttendeesBatch(
   retreatId: number
 ) {
   let endpoint = `/v1.0/attendees/batch`
-  return createApiAction({
-    method: "POST",
-    endpoint,
-    body: JSON.stringify(values),
-    types: [
-      {
-        type: POST_RETREAT_ATTENDEES_BATCH_REQUEST,
-      },
-      {
-        type: POST_RETREAT_ATTENDEES_BATCH_SUCCESS,
-        meta: {retreatId},
-      },
-      {
-        type: POST_RETREAT_ATTENDEES_BATCH_FAILURE,
-        meta: {retreatId},
-      },
-    ],
-  })
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {
+          type: POST_RETREAT_ATTENDEES_BATCH_REQUEST,
+        },
+        {
+          type: POST_RETREAT_ATTENDEES_BATCH_SUCCESS,
+          meta: {retreatId},
+        },
+        {
+          type: POST_RETREAT_ATTENDEES_BATCH_FAILURE,
+          meta: {retreatId},
+        },
+      ],
+    },
+    {
+      errorMessage: "Something went wrong",
+    }
+  )
 }

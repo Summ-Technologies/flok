@@ -169,12 +169,10 @@ function AttendeesPage() {
   const [openNotAttendingModal, setOpenNotAttendingModal] = useState(false)
   const [batchUploadingPage, setBatchUploadingPage] = useState(false)
   const [batchUploadData, setBatchUploadData] = useState<
-    {
-      email_address: string
-      first_name: string
-      last_name: string
-      retreat_id: number
-    }[]
+    (Pick<
+      RetreatAttendeeModel,
+      "email_address" | "first_name" | "last_name"
+    > & {retreat_id: number})[]
   >([])
   const [batchUploadResponse, setBatchUploadResponse] = useState<
     AttendeeBatchUploadApiResponse | undefined
@@ -467,7 +465,6 @@ function AttendeesPage() {
           </Button>
         </div>
       </div>
-      {/*  */}
       <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
         <DialogTitle>
           {batchUploadingPage ? "Batch Upload Attendees" : "Add New Attendee"}

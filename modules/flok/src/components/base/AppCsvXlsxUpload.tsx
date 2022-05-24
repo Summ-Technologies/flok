@@ -8,12 +8,13 @@ type AppCsvXlsxUploadProps = {
 }
 function AppCsvXlsxUpload(props: AppCsvXlsxUploadProps) {
   function handleCsvUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    // @ts-ignore
-    Papa.parse(e.target.files[0], {
-      complete: function (results) {
-        props.onUpload(results.data as unknown as string[][])
-      },
-    })
+    if (e.target && e.target.files && e.target.files[0]) {
+      Papa.parse(e.target.files[0], {
+        complete: function (results) {
+          props.onUpload(results.data as unknown as string[][])
+        },
+      })
+    }
   }
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
@@ -43,11 +44,12 @@ function AppCsvXlsxUpload(props: AppCsvXlsxUploadProps) {
         accept=".xlsx, .csv"
         hidden
         onChange={(e) => {
-          // @ts-ignore
-          if (e.target.files[0].type === "text/csv") {
-            handleCsvUpload(e)
-          } else {
-            handleUpload(e)
+          if (e.target && e.target.files && e.target.files[0]) {
+            if (e.target.files[0].type === "text/csv") {
+              handleCsvUpload(e)
+            } else {
+              handleUpload(e)
+            }
           }
         }}></input>
     </Button>
