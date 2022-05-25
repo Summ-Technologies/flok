@@ -26,15 +26,15 @@ export const BUDGET_TOOL_FLOK_RECOMENDATIONS = {
 } as BudgetBreakdownInputType
 
 export const INITIAL_BUDGET_TOOL_VALUES = {
-  trip_length: 0,
+  trip_length: 1,
   experience_type: 0,
-  avg_flight_cost: 600,
-  num_attendees: null,
-  work_play_mix: "",
-  alcohol: "",
+  avg_flight_cost: 0,
+  num_attendees: 0,
+  work_play_mix: "Mix",
+  alcohol: "No",
   ground_transportation: [],
   addons: [],
-}
+} as BudgetBreakdownInputType
 
 export type BudgetBreakdownType = {
   attendeeCost: number
