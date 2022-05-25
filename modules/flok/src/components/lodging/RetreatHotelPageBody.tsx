@@ -36,6 +36,7 @@ let useStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
     height: "100%",
+    minHeight: 0,
   },
   hotelDetailsSection: {
     boxShadow: theme.shadows[0],
