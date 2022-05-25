@@ -114,6 +114,7 @@ export type AdminSelectedHotelProposalModel = {
   hotel_id: number
   state: AdminSelectedHotelStateTypes
   hotel_proposals?: AdminLodgingProposalModel[]
+  is_liked?: boolean
 }
 
 export type AdminLodgingProposalModel = {

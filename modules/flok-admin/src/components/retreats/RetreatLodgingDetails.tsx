@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core"
+import {Favorite} from "@material-ui/icons"
 import {useFormik} from "formik"
 import querystring from "querystring"
 import React, {useEffect, useState} from "react"
@@ -45,6 +46,12 @@ let useAccordionItemStyles = makeStyles((theme) => ({
     width: "100%",
     display: "flex",
     flexDirection: "column",
+  },
+  heart: {
+    color: theme.palette.primary.light,
+  },
+  nameDisplay: {
+    display: "flex",
   },
 }))
 
@@ -80,10 +87,16 @@ function HotelAccordionItem(props: {
     <Accordion>
       <AccordionSummary>
         <Box display="flex" justifyContent="space-between" width="100%">
-          <AppTypography variant="body1">
-            <strong>{props.hotel.name}</strong>
-            {props.hotel.location ? `, ${props.hotel.location}` : ""}
-          </AppTypography>
+          <div className={classes.nameDisplay}>
+            <AppTypography variant="body1">
+              <strong>{props.hotel.name}</strong>
+              {props.hotel.location ? `, ${props.hotel.location}` : ""}
+            </AppTypography>
+            {props.selectedHotel.is_liked && (
+              <Favorite fontSize="small" className={classes.heart} />
+            )}
+          </div>
+
           {props.selectedHotel.state === "REVIEW" ? (
             <Chip
               label="Ready for review"
