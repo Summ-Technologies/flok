@@ -100,11 +100,6 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
           {datesString}
         </AppTypography>
       ) : undefined} */}
-      {numAttendees != null ? (
-        <AppTypography variant="body1" noWrap>
-          ~{numAttendees} attendees
-        </AppTypography>
-      ) : undefined}
       {/*
       Disabling change button for now
       <AppTypography variant="body1">
