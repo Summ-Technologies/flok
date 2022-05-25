@@ -87,9 +87,6 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
   //   }
   // }
 
-  let numAttendees = props.retreat.preferences_num_attendees_lower
-    ? props.retreat.preferences_num_attendees_lower
-    : undefined
   return (
     <div className={classes.root}>
       <AppTypography variant="body1" fontWeight="bold" noWrap>
