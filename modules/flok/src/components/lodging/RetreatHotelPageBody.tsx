@@ -36,6 +36,7 @@ let useStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
     height: "100%",
+    minHeight: 0,
   },
   hotelDetailsSection: {
     boxShadow: theme.shadows[0],
@@ -67,7 +68,7 @@ let useStyles = makeStyles((theme) => ({
     width: "100%",
     paddingLeft: theme.spacing(0.5),
     "& > .MuiTypography-body1": {
-      whiteSpace: "pre-wrap",
+      whiteSpace: "auto",
     },
     "& > :nth-child(2)": {
       marginLeft: theme.spacing(1),
