@@ -68,7 +68,7 @@ let useStyles = makeStyles((theme) => ({
     width: "100%",
     paddingLeft: theme.spacing(0.5),
     "& > .MuiTypography-body1": {
-      whiteSpace: "auto",
+      whiteSpace: "pre-wrap",
     },
     "& > :nth-child(2)": {
       marginLeft: theme.spacing(1),
