@@ -12,6 +12,7 @@ import {
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
+import * as yup from "yup"
 import {postDestination} from "../../store/actions/admin"
 
 let useStyles = makeStyles((theme) => ({
@@ -37,6 +38,10 @@ function AddDestinationModal(props: AddDestinationModalProps) {
       state: "",
       state_abbreviation: "",
     },
+    validationSchema: yup.object({
+      country_abbreviation: yup.string().optional().min(3).max(3),
+      state_abbreviation: yup.string().optional().min(2).max(2),
+    }),
     onSubmit: (values) => {
       let submissionValues: {
         location: string
@@ -73,6 +78,11 @@ function AddDestinationModal(props: AddDestinationModalProps) {
           <Typography variant="h2" paragraph>
             Add Destination
           </Typography>
+          <Typography variant="body2" paragraph>
+            To avoid duplicates, please ensure this destination isn't already
+            created. To check the existing list of destinations open the "Add a
+            new hotel" modal and view the "Destinations" dropdown.
+          </Typography>
           <FormControlLabel
             control={
               <Switch
@@ -104,6 +114,7 @@ function AddDestinationModal(props: AddDestinationModalProps) {
                 label="State"
                 onChange={formik.handleChange}
                 className={classes.textField}
+                helperText="Even if the location is the name of the state, still fill out this field too."
               />
               <TextField
                 fullWidth
@@ -114,6 +125,7 @@ function AddDestinationModal(props: AddDestinationModalProps) {
                 onChange={formik.handleChange}
                 className={classes.textField}
                 helperText="Two Letter Abbreviation (CA, NY, etc.)"
+                error={formik.errors.state_abbreviation ? true : false}
               />
             </>
           ) : (
@@ -126,6 +138,7 @@ function AddDestinationModal(props: AddDestinationModalProps) {
                 label="Country"
                 onChange={formik.handleChange}
                 className={classes.textField}
+                helperText="Even if the location is the name of the country, still fill out this field too."
               />
               <TextField
                 fullWidth
@@ -136,6 +149,7 @@ function AddDestinationModal(props: AddDestinationModalProps) {
                 onChange={formik.handleChange}
                 className={classes.textField}
                 helperText="Three Letter Abbreviation (USA, ESP, etc.)"
+                error={formik.errors.country_abbreviation ? true : false}
               />
             </>
           )}
