@@ -11,6 +11,7 @@ import _ from "lodash"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import * as yup from "yup"
+import config, {IMAGE_SERVER_BASE_URL_KEY} from "../../config"
 import {ImageModel} from "../../models"
 import {AppRoutes} from "../../Stack"
 import {ApiAction} from "../../store/actions/api"
@@ -212,9 +213,14 @@ export function UploadImage(props: UploadImageProps) {
               // id={props.id}
               hidden
               onChange={(e) => {
-                handlePostImage({
-                  file: e.target?.files![0] ?? "none",
-                })
+                handlePostImage({file: "none"})
+                let data = new FormData()
+                data.append("file", e.target?.files![0])
+                fetch(`${config.get(IMAGE_SERVER_BASE_URL_KEY)}/api/images`, {
+                  body: data,
+                  method: "POST",
+                  mode: "cors",
+                }).then((res) => console.log(res))
               }}
             />
           </Button>
