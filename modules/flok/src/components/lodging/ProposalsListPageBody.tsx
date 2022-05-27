@@ -1,7 +1,6 @@
 import {Box, makeStyles, Typography} from "@material-ui/core"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {HotelModel} from "../../models/lodging"
 import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
@@ -115,17 +114,6 @@ export default function ProposalsListPageBody(
     setUnavailableSelectedHotels(unavailableHotels)
   }, [selectedHotels, setUnavailableSelectedHotels, retreat, hotelsById])
 
-  // Actions
-  function onExplore(hotel: HotelModel) {
-    const newTab = window.open(
-      AppRoutes.getPath("ProposalPage", {
-        retreatIdx: retreatIdx.toString(),
-        hotelGuid: hotel.guid,
-      }),
-      "_blank"
-    )
-    newTab?.focus()
-  }
   return (
     <div className={classes.root}>
       <div className={classes.header}>
@@ -172,7 +160,13 @@ export default function ProposalsListPageBody(
                       hotel={hotel}
                       destination={destination}
                       proposals={proposals}
-                      onViewProposal={() => onExplore(hotel)}
+                      proposalUrl={AppRoutes.getPath(
+                        "RetreatLodgingProposalPage",
+                        {
+                          retreatIdx: retreatIdx.toString(),
+                          hotelGuid: hotel.guid,
+                        }
+                      )}
                     />
                   )
                 })}
@@ -183,13 +177,13 @@ export default function ProposalsListPageBody(
           }
         })}
         {/* Unavailable hotels render */}
-        {unavailableSelectedHotels.length ? (
-          <AppTypography variant="h2">
-            Unavailable Hotels{" "}
-            <AppMoreInfoIcon tooltipText="We reached out to the following hotels but they cannot support your group during the requested dates." />
-          </AppTypography>
-        ) : undefined}
         <div className={classes.proposalsList}>
+          {unavailableSelectedHotels.length ? (
+            <AppTypography variant="h2">
+              Unavailable Hotels{" "}
+              <AppMoreInfoIcon tooltipText="We reached out to the following hotels but they cannot support your group during the requested dates." />
+            </AppTypography>
+          ) : undefined}
           {unavailableSelectedHotels.map((selectedHotel) => {
             let hotel = hotelsById[selectedHotel.hotel_id]
             let destination = destinations[hotel.destination_id]

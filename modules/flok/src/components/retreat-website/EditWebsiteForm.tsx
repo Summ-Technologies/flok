@@ -3,21 +3,22 @@ import {
   CircularProgress,
   makeStyles,
   TextField,
-  Typography,
+  Typography
 } from "@material-ui/core"
-import {push} from "connected-react-router"
-import {useFormik} from "formik"
+import { push } from "connected-react-router"
+import { useFormik } from "formik"
 import _ from "lodash"
-import {useState} from "react"
-import {useDispatch} from "react-redux"
+import { useState } from "react"
+import { useDispatch } from "react-redux"
 import * as yup from "yup"
-import config, {IMAGE_SERVER_BASE_URL_KEY} from "../../config"
-import {ImageModel} from "../../models"
-import {AppRoutes} from "../../Stack"
-import {ApiAction} from "../../store/actions/api"
-import {patchWebsite, postImage} from "../../store/actions/retreat"
-import {getTextFieldErrorProps} from "../../utils"
-import {useAttendeeLandingWebsite} from "../../utils/retreatUtils"
+import config, { IMAGE_SERVER_BASE_URL_KEY } from "../../config"
+import { ImageModel } from "../../models"
+import { AppRoutes } from "../../Stack"
+import { ApiAction } from "../../store/actions/api"
+import { patchWebsite, postImage } from "../../store/actions/retreat"
+import { getTextFieldErrorProps } from "../../utils"
+import { useAttendeeLandingWebsite } from "../../utils/retreatUtils"
+
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -96,7 +97,6 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
     }),
   })
   let classes = useStyles()
-
   return (
     <form onSubmit={formik.handleSubmit}>
       <div className={classes.body}>
@@ -139,6 +139,7 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
             }
           }}
           headerText="Company Logo"
+
         /> */}
         <Button
           type="submit"
@@ -171,11 +172,13 @@ let useImageStyles = makeStyles((theme) => ({
 type UploadImageProps = {
   value: ImageModel | undefined
   handleChange: (image: ImageModel) => void
+
   id: string
   headerText: string
 }
 
 export function UploadImage(props: UploadImageProps) {
+
   const [loading, setLoading] = useState(false)
   let dispatch = useDispatch()
   var splitTest = function (str: string) {

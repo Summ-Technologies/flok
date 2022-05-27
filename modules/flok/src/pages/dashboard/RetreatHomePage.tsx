@@ -9,27 +9,24 @@ import {
 } from "@material-ui/icons"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
-import {RouteComponentProps, withRouter} from "react-router"
-import AppTypography from "../components/base/AppTypography"
+import AppTypography from "../../components/base/AppTypography"
 import AppOverviewCard, {
   AppOverviewCardList,
-} from "../components/overview/AppOverviewCard"
-import AppTodoList from "../components/overview/AppTaskList"
-import PageBody from "../components/page/PageBody"
-import PageContainer from "../components/page/PageContainer"
-import PageSidenav from "../components/page/PageSidenav"
-import config, {MAX_TASKS} from "../config"
+} from "../../components/overview/AppOverviewCard"
+import AppTodoList from "../../components/overview/AppTaskList"
+import PageBody from "../../components/page/PageBody"
+import config, {MAX_TASKS} from "../../config"
 import {
   OrderedRetreatAttendeesState,
   OrderedRetreatFlightsState,
   RetreatAttendeeModel,
   RetreatToTask,
-} from "../models/retreat"
-import {RootState} from "../store"
-import {getHotels} from "../store/actions/lodging"
-import {putRetreatTask} from "../store/actions/retreat"
-import {useRetreatAttendees} from "../utils/retreatUtils"
-import {useRetreat} from "./misc/RetreatProvider"
+} from "../../models/retreat"
+import {RootState} from "../../store"
+import {getHotels} from "../../store/actions/lodging"
+import {putRetreatTask} from "../../store/actions/retreat"
+import {useRetreatAttendees} from "../../utils/retreatUtils"
+import {useRetreat} from "../misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
   section: {
@@ -64,13 +61,11 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type RetreatOverviewProps = RouteComponentProps<{retreatIdx: string}>
-function RetreatOverviewPage(props: RetreatOverviewProps) {
+export default function RetreatHomePage() {
   let classes = useStyles()
   // Path and query params
   let dispatch = useDispatch()
-  let retreatIdx = parseInt(props.match.params.retreatIdx)
-  let retreat = useRetreat()
+  let [retreat, retreatIdx] = useRetreat()
   let [attendees] = useRetreatAttendees(retreat.id)
   let retreatBaseUrl = `/r/${retreatIdx}`
 
@@ -92,6 +87,7 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
       const formatter = Intl.DateTimeFormat("en-us", {
         dateStyle: "medium",
         timeStyle: undefined,
+        timeZone: "UTC",
       })
       let startDateParts = formatter.format(
         new Date(retreat.lodging_final_start_date!)
@@ -143,11 +139,15 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
       OrderedRetreatFlightsState.indexOf(retreat.flights_state) >=
         OrderedRetreatFlightsState.indexOf("POLICY_REVIEW")
     ) {
-      let numBookedFlights = attendees.filter(
-        (attendee) =>
-          attendee.flight_status &&
-          ["OPT_OUT", "BOOKED"].includes(attendee.flight_status)
-      ).length
+      let numBookedFlights = attendees
+        .filter((attendee) =>
+          ["INFO_ENTERED", "CREATED"].includes(attendee.info_status)
+        )
+        .filter(
+          (attendee) =>
+            attendee.flight_status &&
+            ["OPT_OUT", "BOOKED"].includes(attendee.flight_status)
+        ).length
       setFlightsOverview(
         `${numBookedFlights} / ${getRegisteredAttendees(attendees).length}`
       )
@@ -218,117 +218,110 @@ function RetreatOverviewPage(props: RetreatOverviewProps) {
   }, [MAX_TASKS_SHOWN, setTodoTasksExtra, setTodoTasks, retreat])
 
   return (
-    <PageContainer>
-      <PageSidenav activeItem="overview" retreatIdx={retreatIdx} />
-      <PageBody appBar>
-        <div className={classes.section}>
-          <div className={classes.overviewHeader}>
-            <Typography variant="h1">Overview</Typography>
-            <Typography variant="body1">
-              {retreat.company_name}'s Retreat
-            </Typography>
-            <Typography variant="body1">{datesOverview}</Typography>
-          </div>
-          <AppOverviewCardList>
-            <AppOverviewCard
-              label="Destination"
-              Icon={Room}
-              value={destinationOverview}
-            />
-            <AppOverviewCard
-              label="Lodging"
-              Icon={Apartment}
-              value={lodgingOverview}
-            />
-            <AppOverviewCard
-              label="Attendees"
-              Icon={People}
-              value={attendeesOverview}
-              moreInfo={
-                "# of attendees successfully registered for your retreat"
-              }
-            />
-            <AppOverviewCard
-              label="Flights"
-              Icon={Flight}
-              value={flightsOverview ?? "-- / --"}
-              moreInfo={
-                "# of attendees who've confirmed their flights for your retreat"
-              }
-            />
-          </AppOverviewCardList>
+    <PageBody appBar>
+      <div className={classes.section}>
+        <div className={classes.overviewHeader}>
+          <Typography variant="h1">Overview</Typography>
+          <Typography variant="body1">
+            {retreat.company_name}'s Retreat
+          </Typography>
+          <Typography variant="body1">{datesOverview}</Typography>
         </div>
-        <div className={classes.section}>
-          <AppTypography variant="h4" paragraph>
-            To Do List{" "}
-            <Error
-              color="inherit"
-              className={`${classes.headerIcon} todo`}
-              fontSize="small"
-            />
-          </AppTypography>
-          <AppTodoList
-            retreatToTasks={todoTasks}
-            retreatBaseUrl={retreatBaseUrl}
-            handleCheckboxClick={handleTaskClick}
-            orderBadge={true}
+        <AppOverviewCardList>
+          <AppOverviewCard
+            label="Destination"
+            Icon={Room}
+            value={destinationOverview}
           />
-          {todoTasksExtra.length > 0 ? (
-            <>
-              <AppTodoList
-                retreatToTasks={todoTasksExtra}
-                retreatBaseUrl={retreatBaseUrl}
-                handleCheckboxClick={handleTaskClick}
-                orderBadge={true}
-                collapsed={todoTasksCollapsed}
-                noComplete
-              />
-              <Box marginTop={2}>
-                <Typography
-                  className={classes.expandButtons}
-                  component="span"
-                  color="textSecondary"
-                  variant="body2"
-                  onClick={() => setTodoTasksCollapsed(!todoTasksCollapsed)}>
-                  {todoTasksCollapsed ? "show more" : "show less"}
-                </Typography>
-              </Box>
-            </>
-          ) : undefined}
-        </div>
-        <div className={classes.section}>
-          <AppTypography variant="h4" paragraph>
-            Completed{" "}
-            <CheckCircle
-              color="inherit"
-              className={`${classes.headerIcon} completed`}
-              fontSize="small"
+          <AppOverviewCard
+            label="Lodging"
+            Icon={Apartment}
+            value={lodgingOverview}
+          />
+          <AppOverviewCard
+            label="Attendees"
+            Icon={People}
+            value={attendeesOverview}
+            moreInfo={"# of attendees successfully registered for your retreat"}
+          />
+          <AppOverviewCard
+            label="Flights"
+            Icon={Flight}
+            value={flightsOverview ?? "-- / --"}
+            moreInfo={
+              "# of attendees who've confirmed their flights for your retreat"
+            }
+          />
+        </AppOverviewCardList>
+      </div>
+      <div className={classes.section}>
+        <AppTypography variant="h4" paragraph>
+          To Do List{" "}
+          <Error
+            color="inherit"
+            className={`${classes.headerIcon} todo`}
+            fontSize="small"
+          />
+        </AppTypography>
+        <AppTodoList
+          retreatToTasks={todoTasks}
+          retreatBaseUrl={retreatBaseUrl}
+          handleCheckboxClick={handleTaskClick}
+          orderBadge={true}
+        />
+        {todoTasksExtra.length > 0 ? (
+          <>
+            <AppTodoList
+              retreatToTasks={todoTasksExtra}
+              retreatBaseUrl={retreatBaseUrl}
+              handleCheckboxClick={handleTaskClick}
+              orderBadge={true}
+              collapsed={todoTasksCollapsed}
+              noComplete
             />
-            {retreat.tasks_completed.length > 0 && (
+            <Box marginTop={2}>
               <Typography
-                component="span"
                 className={classes.expandButtons}
+                component="span"
+                color="textSecondary"
                 variant="body2"
-                onClick={() =>
-                  setCompletedTasksCollapsed(!completedTasksCollapsed)
-                }>
-                {completedTasksCollapsed ? "show completed" : "hide"}
+                onClick={() => setTodoTasksCollapsed(!todoTasksCollapsed)}>
+                {todoTasksCollapsed ? "show more" : "show less"}
               </Typography>
-            )}
-          </AppTypography>
-          <AppTodoList
-            retreatToTasks={retreat.tasks_completed.sort(
-              (a, b) => b.order - a.order
-            )}
-            retreatBaseUrl={retreatBaseUrl}
-            handleCheckboxClick={handleTaskClick}
-            orderBadge={false}
-            collapsed={completedTasksCollapsed}
+            </Box>
+          </>
+        ) : undefined}
+      </div>
+      <div className={classes.section}>
+        <AppTypography variant="h4" paragraph>
+          Completed{" "}
+          <CheckCircle
+            color="inherit"
+            className={`${classes.headerIcon} completed`}
+            fontSize="small"
           />
-        </div>
-      </PageBody>
-    </PageContainer>
+          {retreat.tasks_completed.length > 0 && (
+            <Typography
+              component="span"
+              className={classes.expandButtons}
+              variant="body2"
+              onClick={() =>
+                setCompletedTasksCollapsed(!completedTasksCollapsed)
+              }>
+              {completedTasksCollapsed ? "show completed" : "hide"}
+            </Typography>
+          )}
+        </AppTypography>
+        <AppTodoList
+          retreatToTasks={retreat.tasks_completed.sort(
+            (a, b) => b.order - a.order
+          )}
+          retreatBaseUrl={retreatBaseUrl}
+          handleCheckboxClick={handleTaskClick}
+          orderBadge={false}
+          collapsed={completedTasksCollapsed}
+        />
+      </div>
+    </PageBody>
   )
 }
-
-export default withRouter(RetreatOverviewPage)

@@ -1,12 +1,17 @@
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Constants} from "../config"
+import {ResourceNotFound} from "../models"
 import {RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getBlock,
   getPage,
   getPageByName,
+<<<<<<< HEAD
+=======
+  getRetreat,
+>>>>>>> andrew/landing-pages-fixes
   getRetreatAttendees,
   getRetreatByGuid,
   getWebsite,
@@ -123,11 +128,16 @@ export function useAttendeeLandingPageName(
   pageName: string
 ) {
   let dispatch = useDispatch()
+<<<<<<< HEAD
+=======
+  let [loading, setLoading] = useState(true)
+>>>>>>> andrew/landing-pages-fixes
   let page = useSelector((state: RootState) => {
     return Object.values(state.retreat.pages).find(
       (page) => page?.title.toLowerCase() === pageName.toLowerCase()
     )
   })
+<<<<<<< HEAD
   useEffect(() => {
     if (!page) {
       dispatch(getPageByName(websiteId, pageName))
@@ -138,6 +148,27 @@ export function useAttendeeLandingPageName(
 }
 
 export function useAttendeeLandingWebsiteName(websiteName: string) {
+=======
+
+  useEffect(() => {
+    async function loadPage() {
+      setLoading(true)
+      await dispatch(getPageByName(websiteId, pageName))
+      setLoading(false)
+    }
+    if (!page) {
+      loadPage()
+    } else {
+      setLoading(false)
+    }
+  }, [page, dispatch, pageName, websiteId])
+
+  return [page, loading] as const
+}
+
+export function useAttendeeLandingWebsiteName(websiteName: string) {
+  let [loading, setLoading] = useState(true)
+>>>>>>> andrew/landing-pages-fixes
   let website = useSelector((state: RootState) => {
     return Object.values(state.retreat.websites).find(
       (website) => website?.name.toLowerCase() === websiteName.toLowerCase()
@@ -145,10 +176,49 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
   })
   let dispatch = useDispatch()
   useEffect(() => {
+<<<<<<< HEAD
     if (!website) {
       dispatch(getWebsiteByName(websiteName))
     }
   }, [website, dispatch, websiteName])
 
   return website
+=======
+    async function loadWebsite() {
+      setLoading(true)
+      await dispatch(getWebsiteByName(websiteName))
+      setLoading(false)
+    }
+    if (!website) {
+      loadWebsite()
+    } else {
+      setLoading(false)
+    }
+  }, [website, dispatch, websiteName])
+
+  return [website, loading] as const
+}
+export function useRetreat(retreatId: number) {
+  let [loading, setLoading] = useState(true)
+  let retreat = useSelector((state: RootState) => {
+    return Object.values(state.retreat.retreats).find(
+      (retreat) => retreat !== ResourceNotFound && retreat.id === retreatId
+    )
+  })
+  let dispatch = useDispatch()
+  useEffect(() => {
+    async function loadRetreat() {
+      setLoading(true)
+      await dispatch(getRetreat(retreatId))
+      setLoading(false)
+    }
+    if (!retreat) {
+      loadRetreat()
+    } else {
+      setLoading(false)
+    }
+  }, [retreat, dispatch, retreatId])
+
+  return [retreat, loading] as const
+>>>>>>> andrew/landing-pages-fixes
 }

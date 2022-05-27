@@ -1,5 +1,5 @@
-import {ThunkDispatch} from "redux-thunk"
-import {RootState} from ".."
+import { ThunkDispatch } from "redux-thunk"
+import { RootState } from ".."
 import {
   AttendeeLandingWebsiteBlockModel,
   AttendeeLandingWebsiteModel,
@@ -7,11 +7,11 @@ import {
   RetreatAttendeeModel,
   RetreatToTaskState,
   RetreatTravelModel,
-  RetreatTripModel,
+  RetreatTripModel
 } from "../../models/retreat"
-import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
-import {apiNotification} from "../../notistack-lib/utils"
-import {ApiAction, createApiAction} from "./api"
+import { closeSnackbar, enqueueSnackbar } from "../../notistack-lib/actions"
+import { apiNotification } from "../../notistack-lib/utils"
+import { ApiAction, createApiAction } from "./api"
 
 export const POST_NEW_RETREAT_REQUEST = "POST_NEW_RETREAT_REQUEST"
 export const POST_NEW_RETREAT_SUCCESS = "POST_NEW_RETREAT_SUCCESS"
@@ -226,16 +226,19 @@ export function patchAttendee(
   if (values.hotel_check_out === "") {
     values.hotel_check_out = null
   }
-  return createApiAction({
-    method: "PATCH",
-    endpoint,
-    body: JSON.stringify(values),
-    types: [
-      {type: PATCH_ATTENDEE_REQUEST},
-      {type: PATCH_ATTENDEE_SUCCESS, meta: {attendeeId}},
-      {type: PATCH_ATTENDEE_FAILURE, meta: {attendeeId}},
-    ],
-  })
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: PATCH_ATTENDEE_REQUEST},
+        {type: PATCH_ATTENDEE_SUCCESS, meta: {attendeeId}},
+        {type: PATCH_ATTENDEE_FAILURE, meta: {attendeeId}},
+      ],
+    },
+    {errorMessage: "Something went wrong"}
+  )
 }
 
 export const PATCH_TRIP_REQUEST = "PATCH_TRIP_REQUEST"
@@ -543,27 +546,6 @@ export function deletePage(pageId: number) {
     {errorMessage: "Something went wrong"}
   )
 }
-export const POST_WEBSITE_REQUEST = "POST_WEBSITE_REQUEST"
-export const POST_WEBSITE_SUCCESS = "POST_WEBSITE_SUCCESS"
-export const POST_WEBSITE_FAILURE = "POST_WEBSITE_FAILURE"
-export function postWebsite(values: Partial<AttendeeLandingWebsiteModel>) {
-  let endpoint = `/v1.0/websites`
-  return createApiAction(
-    {
-      method: "POST",
-      endpoint,
-      body: JSON.stringify(values),
-      types: [
-        {type: POST_WEBSITE_REQUEST},
-        {type: POST_WEBSITE_SUCCESS},
-        {type: POST_WEBSITE_FAILURE},
-      ],
-    },
-    {
-      errorMessage: "Something went wrong.",
-    }
-  )
-}
 export const PATCH_WEBSITE_REQUEST = "PATCH_WEBSITE_REQUEST"
 export const PATCH_WEBSITE_SUCCESS = "PATCH_WEBSITE_SUCCESS"
 export const PATCH_WEBSITE_FAILURE = "PATCH_WEBSITE_FAILURE"
@@ -589,6 +571,7 @@ export function patchWebsite(
     }
   )
 }
+
 export const POST_IMAGE_REQUEST = "POST_IMAGE_REQUEST"
 export const POST_IMAGE_SUCCESS = "POST_IMAGE_SUCCESS"
 export const POST_IMAGE_FAILURE = "POST_IMAGE_FAILURE"
@@ -604,4 +587,27 @@ export function postImage(values: {file: any}) {
       {type: POST_IMAGE_FAILURE},
     ],
   })
+export const POST_INITIAL_WEBSITE_REQUEST = "POST_INITIAL_WEBSITE_REQUEST"
+export const POST_INITIAL_WEBSITE_SUCCESS = "POST_INITIAL_WEBSITE_SUCCESS"
+export const POST_INITIAL_WEBSITE_FAILURE = "POST_INITIAL_WEBSITE_FAILURE"
+export function postInitialWebsite(
+  values: Partial<AttendeeLandingWebsiteModel>
+) {
+  let endpoint = `/v1.0/websites/initialize`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: POST_INITIAL_WEBSITE_REQUEST},
+        {type: POST_INITIAL_WEBSITE_SUCCESS},
+        {type: POST_INITIAL_WEBSITE_FAILURE},
+      ],
+    },
+    {
+      errorMessage: "Something went wrong.",
+    }
+  )
+
 }

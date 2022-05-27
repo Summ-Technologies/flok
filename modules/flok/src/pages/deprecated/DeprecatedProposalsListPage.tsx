@@ -9,7 +9,6 @@ import PageBody from "../../components/page/PageBody"
 import PageContainer from "../../components/page/PageContainer"
 import PageHeader from "../../components/page/PageHeader"
 import {ResourceNotFound} from "../../models"
-import {HotelModel} from "../../models/lodging"
 import {RetreatSelectedHotelProposal} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
@@ -139,18 +138,6 @@ function ProposalsListPage(props: ProposalsListPageProps) {
     setUnavailableSelectedHotels(unavailableHotels)
   }, [selectedHotels, setUnavailableSelectedHotels, retreat, hotelsById])
 
-  // Actions
-  function onExplore(hotel: HotelModel) {
-    const newTab = window.open(
-      AppRoutes.getPath("DeprecatedProposalPage", {
-        retreatGuid: retreatGuid,
-        hotelGuid: hotel.guid,
-      }),
-      "_blank"
-    )
-    newTab?.focus()
-  }
-
   return (
     <PageContainer>
       <PageBody>
@@ -197,7 +184,14 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                           hotel={hotel}
                           destination={destination}
                           proposals={proposals}
-                          onViewProposal={() => onExplore(hotel)}
+                          openInTab
+                          proposalUrl={AppRoutes.getPath(
+                            "DeprecatedProposalPage",
+                            {
+                              retreatGuid: retreatGuid,
+                              hotelGuid: hotel.guid,
+                            }
+                          )}
                         />
                       )
                     })}

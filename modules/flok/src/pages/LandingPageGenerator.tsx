@@ -21,8 +21,11 @@ import {
 } from "react-router-dom"
 import AppConfirmationModal from "../components/base/ConfirmationModal"
 import PageBody from "../components/page/PageBody"
+<<<<<<< HEAD
 import PageContainer from "../components/page/PageContainer"
 import PageSidenav from "../components/page/PageSidenav"
+=======
+>>>>>>> andrew/landing-pages-fixes
 import AddPageForm from "../components/retreat-website/AddPageForm"
 import EditPageForm from "../components/retreat-website/EditPageForm"
 import EditWebsiteForm from "../components/retreat-website/EditWebsiteForm"
@@ -112,9 +115,14 @@ type LandingPageGeneratorProps = RouteComponentProps<{
   currentPageId: string
 }>
 function LandingPageGenerator(props: LandingPageGeneratorProps) {
+<<<<<<< HEAD
   let retreatIdx = parseInt(props.match.params.retreatIdx)
   let currentPageId = props.match.params.currentPageId
   let retreat = useRetreat()
+=======
+  let [retreat, retreatIdx] = useRetreat()
+  let currentPageId = props.match.params.currentPageId
+>>>>>>> andrew/landing-pages-fixes
   let {path} = useRouteMatch()
   let config = path === AppRoutes.getPath("LandingPageGeneratorConfig")
   const classes = useStyles()
@@ -122,7 +130,11 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)
   let page = useAttendeeLandingPage(parseInt(currentPageId))
 
+<<<<<<< HEAD
   if (!website || !website.page_ids[0]) {
+=======
+  if (!website || !website.page_ids[0] || !website.page_ids[0]) {
+>>>>>>> andrew/landing-pages-fixes
     return <CreateRetreatWebsite {...props} />
   }
   if (!currentPageId) {
@@ -137,6 +149,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
     )
   }
   return (
+<<<<<<< HEAD
     <PageContainer>
       <PageSidenav activeItem="lodging" retreatIdx={retreatIdx} />
       <PageBody appBar>
@@ -289,6 +302,73 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                   </Button>
                 </Link>
 
+=======
+    <PageBody appBar>
+      <Drawer
+        anchor="right"
+        open={config}
+        onClose={() => {
+          dispatch(
+            push(
+              AppRoutes.getPath("LandingPageGeneratorPage", {
+                retreatIdx: retreatIdx.toString(),
+                currentPageId: currentPageId,
+              })
+            )
+          )
+        }}>
+        <Switch>
+          <Route exact path={path}>
+            <div className={classes.toolbarPage}>
+              <div className={classes.toolbarPageFlexBox}>
+                <Typography variant="h4" className={classes.pagesTitle}>
+                  Pages
+                </Typography>
+                <IconButton
+                  onClick={() => {
+                    dispatch(
+                      push(
+                        AppRoutes.getPath("LandingPageGeneratorConfigAddPage", {
+                          retreatIdx: retreatIdx.toString(),
+                          currentPageId: currentPageId,
+                        })
+                      )
+                    )
+                  }}>
+                  <Add fontSize="small" />
+                </IconButton>
+              </div>
+              {website.page_ids.map((pageId) => {
+                return (
+                  <PageWebsiteLink
+                    pageId={pageId}
+                    currentPageId={currentPageId}
+                    retreatIdx={retreatIdx}
+                  />
+                )
+              })}
+              <Link
+                className={classes.headerLink}
+                component={RouterLink}
+                to={AppRoutes.getPath(
+                  "LandingPageGeneratorConfigWebsiteSettings",
+                  {
+                    retreatIdx: retreatIdx.toString(),
+                    currentPageId: currentPageId,
+                  }
+                )}>
+                <Typography
+                  variant="h4"
+                  className={`${classes.pagesTitle} ${classes.underline}`}>
+                  Website Settings
+                </Typography>
+              </Link>
+            </div>
+          </Route>
+          <Route path={AppRoutes.getPath("LandingPageGeneratorConfigAddPage")}>
+            <div className={classes.toolbarPage}>
+              <div className={classes.pageTitleContainer}>
+>>>>>>> andrew/landing-pages-fixes
                 <IconButton
                   onClick={() => {
                     dispatch(
@@ -300,6 +380,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                       )
                     )
                   }}>
+<<<<<<< HEAD
                   <Settings fontSize="large"></Settings>
                 </IconButton>
               </div>
@@ -309,6 +390,97 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
         </Box>
       </PageBody>
     </PageContainer>
+=======
+                  <ArrowBack fontSize="small" />
+                </IconButton>
+                <Typography variant="h4" className={classes.pagesTitle}>
+                  Add New Page
+                </Typography>
+              </div>
+
+              <div>
+                <AddPageForm websiteId={website.id} retreatIdx={retreatIdx} />
+              </div>
+            </div>
+          </Route>
+          <Route
+            path={AppRoutes.getPath(
+              "LandingPageGeneratorConfigWebsiteSettings"
+            )}>
+            <div className={classes.toolbarPage}>
+              <div className={classes.pageTitleContainer}>
+                <IconButton
+                  onClick={() => {
+                    dispatch(
+                      push(
+                        AppRoutes.getPath("LandingPageGeneratorConfig", {
+                          retreatIdx: retreatIdx.toString(),
+                          currentPageId: currentPageId,
+                        })
+                      )
+                    )
+                  }}>
+                  <ArrowBack fontSize="small" />
+                </IconButton>
+                <Typography variant="h4" className={classes.pagesTitle}>
+                  Website Settings
+                </Typography>
+              </div>
+
+              <div className={classes.editWebsiteFormWrapper}>
+                <EditWebsiteForm
+                  websiteId={website.id}
+                  retreatIdx={retreatIdx}
+                  currentPageId={currentPageId}
+                />
+              </div>
+            </div>
+          </Route>
+          <Route
+            path={AppRoutes.getPath("LandingPageGeneratorConfigPageSettings")}
+            component={EditPageToolBar}></Route>
+        </Switch>
+      </Drawer>
+
+      <Box>
+        <div className={classes.root}>
+          <div className={classes.header}>
+            <Typography variant="h1">
+              {retreat.company_name} Website - {page?.title ?? currentPageId}
+            </Typography>
+            <div className={classes.topRightOptions}>
+              <Link
+                className={classes.viewPageLink}
+                href={AppRoutes.getPath("RetreatWebsitePage", {
+                  retreatName: titleToNavigation(website.name),
+                  pageName: titleToNavigation(page?.title ?? "home"),
+                })}
+                target="_blank">
+                <Button variant="outlined" color="primary" size="small">
+                  View Page
+                </Button>
+              </Link>
+
+              <IconButton
+                onClick={() => {
+                  dispatch(
+                    push(
+                      AppRoutes.getPath("LandingPageGeneratorConfig", {
+                        retreatIdx: retreatIdx.toString(),
+                        currentPageId: currentPageId,
+                      })
+                    )
+                  )
+                }}>
+                <Settings fontSize="large"></Settings>
+              </IconButton>
+            </div>
+          </div>
+          {page && <LandingPageEditForm pageId={page?.id} config={config} />}
+        </div>
+      </Box>
+    </PageBody>
+>>>>>>> andrew/landing-pages-fixes
   )
 }
 export default LandingPageGenerator
@@ -341,12 +513,19 @@ type EditPageToolBarProps = RouteComponentProps<{
   currentPageId: string
 }>
 function EditPageToolBar(props: EditPageToolBarProps) {
+<<<<<<< HEAD
   let retreatIdx = parseInt(props.match.params.retreatIdx)
+=======
+>>>>>>> andrew/landing-pages-fixes
   let currentPageId = props.match.params.currentPageId
   let pageId = parseInt(props.match.params.pageId)
   let dispatch = useDispatch()
   let classes = useEditPageStyles()
+<<<<<<< HEAD
   let retreat = useRetreat()
+=======
+  let [retreat, retreatIdx] = useRetreat()
+>>>>>>> andrew/landing-pages-fixes
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   let page = useAttendeeLandingPage(pageId)
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)

@@ -140,6 +140,10 @@ export type RetreatModel = {
   // Retreat data related to attendees
   attendees_state?: RetreatAttendeesState
   attendees_website_id?: number
+<<<<<<< HEAD
+=======
+  attendees_registration_form_link?: string
+>>>>>>> andrew/landing-pages-fixes
 
   // Retreat data related to flights
   flights_state?: RetreatFlightsState
@@ -182,9 +186,15 @@ export type AttendeeLandingWebsiteBlockModel = {
 }
 
 export type AttendeeLandingWebsiteModel = {
+<<<<<<< HEAD
   banner_image?: ImageModel
   name: string
   logo_image?: ImageModel
+=======
+  banner_img?: string
+  name: string
+  company_logo_img?: string
+>>>>>>> andrew/landing-pages-fixes
   retreat_id: number
   id: number
   page_ids: number[]
@@ -255,11 +265,11 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
         ],
       },
       dep_trip: {
-        id: 1,
+        id: 2,
         cost: 250,
         trip_legs: [
           {
-            trip_id: 1,
+            trip_id: 2,
             airline: "Jet Blue",
             dep_airport: "LGA",
             dep_datetime: "2022-04-10T13:33:14.195Z",
@@ -277,7 +287,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     info_status: "CREATED",
     first_name: "Tiki",
     last_name: "Barber",
-    id: 1,
+    id: 2,
     travel: undefined,
     notes: "",
     city: "New York",
@@ -291,18 +301,18 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     info_status: "INFO_ENTERED",
     first_name: "Jeremy",
     last_name: "Shockey",
-    id: 1,
+    id: 3,
     hotel_check_in: "2022-04-21",
     hotel_check_out: "2022-04-25",
     travel: {
-      id: 1,
+      id: 7,
       cost: 400,
       arr_trip: {
-        id: 1,
+        id: 11,
         cost: 250,
         trip_legs: [
           {
-            trip_id: 1,
+            trip_id: 11,
             airline: "Jet Blue",
             dep_airport: "LGA",
             dep_datetime: "2022-04-05T18:31:27.963Z",
@@ -313,11 +323,11 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
         ],
       },
       dep_trip: {
-        id: 1,
+        id: 28,
         cost: 250,
         trip_legs: [
           {
-            trip_id: 1,
+            trip_id: 28,
             airline: "Jet Blue",
             dep_airport: "LGA",
             dep_datetime: "2022-04-10T13:33:14.195Z",
@@ -338,16 +348,16 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     info_status: "INFO_ENTERED",
     first_name: "Kevin",
     last_name: "Boss",
-    id: 1,
+    id: 67,
     travel: {
-      id: 1,
+      id: 323,
       cost: 325,
       arr_trip: {
-        id: 1,
+        id: 311,
         cost: 250,
         trip_legs: [
           {
-            trip_id: 1,
+            trip_id: 311,
             airline: "Jet Blue",
             dep_airport: "LGA",
             dep_datetime: "2022-04-05T18:31:27.963Z",
@@ -358,11 +368,11 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
         ],
       },
       dep_trip: {
-        id: 1,
+        id: 354,
         cost: 250,
         trip_legs: [
           {
-            trip_id: 1,
+            trip_id: 354,
             airline: "Jet Blue",
             dep_airport: "LGA",
             dep_datetime: "2022-04-10T13:33:14.195Z",
@@ -383,7 +393,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     info_status: "CREATED",
     first_name: "Plaxico",
     last_name: "Burress",
-    id: 1,
+    id: 682,
     travel: undefined,
     notes: "",
     city: "New York",
@@ -395,7 +405,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     info_status: "INFO_ENTERED",
     first_name: "Amani",
     last_name: "Toomer",
-    id: 1,
+    id: 292,
     travel: undefined,
     notes: "",
     city: "New York",
@@ -407,7 +417,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     info_status: "INFO_ENTERED",
     first_name: "Ahmad",
     last_name: "Bradshaw",
-    id: 1,
+    id: 893,
     travel: undefined,
     notes: "Says they are vegan but not really",
     city: "New York",
@@ -419,7 +429,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     info_status: "CREATED",
     first_name: "Brandon",
     last_name: "Jacobs",
-    id: 1,
+    id: 3156,
     travel: undefined,
     notes: "",
     city: "New York",
@@ -431,7 +441,7 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     info_status: "INFO_ENTERED",
     first_name: "Mario",
     last_name: "Manning",
-    id: 1,
+    id: 130,
     travel: undefined,
     notes: "",
     city: "New York",

@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core"
 import {
   ApartmentRounded,
+  Build,
   FlightRounded,
   HomeRounded,
   LocalAtm,
@@ -20,22 +21,28 @@ import {
   PeopleAlt,
   SvgIconComponent,
 } from "@material-ui/icons"
-import {push} from "connected-react-router"
 import React, {
   createContext,
   PropsWithChildren,
   useContext,
-  useEffect,
   useState,
 } from "react"
 import {useDispatch, useSelector} from "react-redux"
+import {
+  Link as ReactRouterLink,
+  matchPath,
+  useRouteMatch,
+} from "react-router-dom"
 import AppImage from "../../components/base/AppImage"
+import {Constants} from "../../config"
+import {ResourceNotFound} from "../../models"
 import {RetreatModel} from "../../models/retreat"
 import {useRetreat} from "../../pages/misc/RetreatProvider"
 import {AppRoutes, FlokPageName} from "../../Stack"
 import {RootState} from "../../store"
 import {deleteUserSignin} from "../../store/actions/user"
 import {FlokTheme} from "../../theme"
+import {useRetreatByGuid} from "../../utils/retreatUtils"
 
 let DRAWER_WIDTH = 240
 const TRANSITION_DURATION = 250
@@ -65,16 +72,94 @@ const useStyles = makeStyles((theme: FlokTheme) => ({
   },
 }))
 
-let navItem = (title: string, Icon: SvgIconComponent, pageName: FlokPageName) =>
-  [title, <Icon fontSize="large" />, pageName] as const
-
-let navItems = {
-  overview: navItem("Overview", HomeRounded, "RetreatHomePage"),
-  lodging: navItem("Lodging", ApartmentRounded, "LodgingPage"),
-  attendees: navItem("Attendees", PeopleAlt, "RetreatAttendeesPage"),
-  flights: navItem("Flights", FlightRounded, "RetreatFlightsPage"),
-  // itinerary: navItem("Itinerary", MapRounded, "RetreatItineraryPage"),
+type NavItem = {
+  title: string
+  icon?: SvgIconComponent
+  activeRoutes: FlokPageName[]
+  redirect?: (
+    retreat: RetreatModel,
+    retreatIdx: number
+  ) => {url: string; external?: boolean} | undefined
+  navSubItems?: Exclude<NavItem, "navSubItems">[]
 }
+
+function redirectFlok(pageName: FlokPageName) {
+  return (retreat: RetreatModel, retreatIdx: number) => ({
+    url: AppRoutes.getPath(pageName, {retreatIdx: retreatIdx.toString()}),
+  })
+}
+
+let navItems: NavItem[] = [
+  {
+    title: "Overview",
+    icon: HomeRounded,
+    activeRoutes: ["RetreatHomePage"],
+    redirect: redirectFlok("RetreatHomePage"),
+  },
+  {
+    title: "Lodging",
+    icon: ApartmentRounded,
+    activeRoutes: [],
+    redirect: redirectFlok("RetreatLodgingPage"),
+    navSubItems: [
+      {
+        title: "Proposals",
+        activeRoutes: [
+          "RetreatLodgingProposalsPage",
+          "RetreatLodgingProposalPage",
+        ],
+        redirect: redirectFlok("RetreatLodgingProposalsPage"),
+      },
+      {
+        title: "Contract",
+        activeRoutes: ["RetreatLodgingContractPage"],
+        redirect: redirectFlok("RetreatLodgingContractPage"),
+      },
+    ],
+  },
+  {
+    title: "Attendees",
+    icon: PeopleAlt,
+    activeRoutes: ["RetreatAttendeesPage", "RetreatAttendeePage"],
+    redirect: redirectFlok("RetreatAttendeesPage"),
+  },
+  {
+    title: "Flights",
+    icon: FlightRounded,
+    activeRoutes: ["RetreatFlightsPage", "RetreatAttendeeFlightsPage"],
+    redirect: redirectFlok("RetreatFlightsPage"),
+  },
+  {
+    title: "Itinerary",
+    icon: MapRounded,
+    activeRoutes: [],
+    redirect: (retreat) =>
+      retreat.itinerary_final_draft_link
+        ? {url: retreat.itinerary_final_draft_link, external: true}
+        : undefined,
+  },
+  {
+    title: "Budget",
+    icon: LocalAtm,
+    activeRoutes: ["RetreatBudgetPage"],
+    redirect: redirectFlok("RetreatBudgetPage"),
+    navSubItems: [
+      {
+        title: "Calculator",
+        activeRoutes: ["RetreatBudgetEstimatePage"],
+        redirect: redirectFlok("RetreatBudgetEstimatePage"),
+      },
+      {
+        title: "Details",
+        activeRoutes: [],
+        redirect: (retreat) =>
+          retreat.budget_link
+            ? {url: retreat.budget_link, external: true}
+            : undefined,
+      },
+    ],
+  },
+]
 
 const SidebarContext = createContext<{
   sidebarOpen: boolean
@@ -104,49 +189,23 @@ export function SidebarProvider(props: PropsWithChildren<{}>) {
   )
 }
 
-type SidenavItemType = keyof typeof navItems
-type PageSidenavProps = {
-  retreatIdx: number
-  activeItem?: SidenavItemType
-}
-export default function PageSidenav(props: PageSidenavProps) {
+/**
+ * PageSideav requires access to the useRetreat hook therefore needs to be rendered in a RetreatProvider.
+ * PageSidenav also requires access to the user object, therefore needs to be rendered in a ProtectedRoute
+ */
+export default function PageSidenav() {
   let dispatch = useDispatch()
   const classes = useStyles()
+  let [retreat, retreatIdx] = useRetreat()
   let user = useSelector((state: RootState) => state.user.user)
   let {sidebarOpen, closeSidebar} = useSidebar()
   const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
     theme.breakpoints.down("sm")
   )
-  let retreatModel = useRetreat()
 
   let isLoggedIn = useSelector(
     (state: RootState) => state.user.loginStatus === "LOGGED_IN"
   )
-
-  let [retreat, setRetreat] = useState<
-    Pick<RetreatModel, "company_name" | "id"> | undefined
-  >(undefined)
-  useEffect(() => {
-    if (user && user.retreats && user.retreats.length > props.retreatIdx) {
-      setRetreat(user.retreats[props.retreatIdx])
-    }
-  }, [props.retreatIdx, user])
-
-  function getLinkSidenavProps(link?: string): any {
-    if (link) {
-      return {
-        button: true,
-        href: link,
-        component: "a",
-        target: "_blank",
-      }
-    } else {
-      return {
-        button: true,
-        disabled: true,
-      }
-    }
-  }
 
   return (
     <Drawer
@@ -168,50 +227,60 @@ export default function PageSidenav(props: PageSidenavProps) {
         />
       </Box>
       <List>
-        {Object.keys(navItems).map((item, index) => {
-          let sidenavItem = item as SidenavItemType
-          const itemTup = navItems[sidenavItem]
+        {navItems.map((navItem, i) => {
+          let redirect = navItem.redirect
+            ? navItem.redirect(retreat, retreatIdx)
+            : undefined
+          let activeRoutes = navItem.activeRoutes.filter((page) => {
+            return matchPath(window.location.pathname, {
+              path: AppRoutes.getPath(page),
+              exact: true,
+            })
+          })
+          let active = activeRoutes.length > 0
+          let activeSubItem = false
+          let subItems: JSX.Element[] = []
+          if (navItem.navSubItems) {
+            subItems = navItem.navSubItems.map((subItem, j) => {
+              let subnavRedirect = subItem.redirect
+                ? subItem.redirect(retreat, retreatIdx)
+                : undefined
+              let subItemActiveRoutes = subItem.activeRoutes.filter((page) => {
+                return matchPath(window.location.pathname, {
+                  path: AppRoutes.getPath(page),
+                  exact: true,
+                })
+              })
+              let subActive = subItemActiveRoutes.length > 0
+              if (subActive) {
+                activeSubItem = true
+              }
+              return (
+                <NavListItem
+                  key={`${i}-${j}`}
+                  title={subItem.title}
+                  redirect={subnavRedirect?.url}
+                  externalLink={subnavRedirect?.external}
+                  Icon={subItem.icon}
+                  active={subActive}
+                />
+              )
+            })
+          }
           return (
-            <ListItem
-              key={index}
-              button
-              selected={props.activeItem === sidenavItem}
-              onClick={() => {
-                let redirect = () =>
-                  dispatch(
-                    push(
-                      AppRoutes.getPath(itemTup[2], {
-                        retreatIdx: props.retreatIdx.toString(),
-                      })
-                    )
-                  )
-                if (sidebarOpen) {
-                  closeSidebar()
-                  setTimeout(redirect, TRANSITION_DURATION)
-                } else {
-                  redirect()
-                }
-              }}>
-              <ListItemIcon>{itemTup[1]}</ListItemIcon>
-              <ListItemText>{itemTup[0]}</ListItemText>
-            </ListItem>
+            <>
+              <NavListItem
+                key={i}
+                title={navItem.title}
+                redirect={redirect?.url}
+                externalLink={redirect?.external}
+                Icon={navItem.icon}
+                active={active}
+              />
+              {activeSubItem ? subItems : undefined}
+            </>
           )
         })}
-        <ListItem
-          {...(retreatModel.itinerary_state === "IN_PROGRESS"
-            ? getLinkSidenavProps(retreatModel.itinerary_final_draft_link)
-            : getLinkSidenavProps())}>
-          <ListItemIcon>
-            <MapRounded fontSize="large" />
-          </ListItemIcon>
-          <ListItemText>Itinerary</ListItemText>
-        </ListItem>
-        <ListItem {...getLinkSidenavProps(retreatModel.faq_link)}>
-          <ListItemIcon>
-            <LocalAtm fontSize="large" />
-          </ListItemIcon>
-          <ListItemText>Budget</ListItemText>
-        </ListItem>
       </List>
       <List className={classes.footer}>
         {retreat && user && user.retreats.length > 1 ? (
@@ -225,7 +294,7 @@ export default function PageSidenav(props: PageSidenavProps) {
               fullWidth
               select
               SelectProps={{native: false, IconComponent: Box}}
-              value={props.retreatIdx}
+              value={retreatIdx}
               InputProps={{
                 disableUnderline: true,
                 className: classes.companySelector,
@@ -254,6 +323,211 @@ export default function PageSidenav(props: PageSidenavProps) {
             <ListItemText>Log out</ListItemText>
           </Link>
         )}
+      </List>
+    </Drawer>
+  )
+}
+
+type NavListItemType = {
+  title: string
+  Icon?: SvgIconComponent
+  redirect?: string
+  externalLink?: boolean
+  active?: boolean
+}
+function NavListItem(props: NavListItemType) {
+  let {sidebarOpen, closeSidebar} = useSidebar()
+  let listItemProps = props.externalLink
+    ? {
+        component: "a",
+        href: props.redirect,
+        target: "_blank",
+      }
+    : {
+        component: ReactRouterLink,
+        to: props.redirect,
+      }
+  let disabled = !props.redirect
+  return (
+    <ListItem
+      {...listItemProps}
+      button
+      selected={props.active}
+      disabled={disabled}
+      onClick={() => {
+        if (sidebarOpen) closeSidebar()
+      }}>
+      <ListItemIcon>
+        {props.Icon ? <props.Icon fontSize={"large"} /> : undefined}
+      </ListItemIcon>
+      <ListItemText>{props.title}</ListItemText>
+    </ListItem>
+  )
+}
+
+let demoNavItems: NavItem[] = [
+  {
+    title: "Pretrip Tools",
+    icon: Build,
+    activeRoutes: [],
+    redirect: () => ({
+      url: AppRoutes.getPath("PretripHomePage"),
+    }),
+    navSubItems: [
+      {
+        title: "Budget",
+        activeRoutes: ["PretripBudgetEstimatorPage"],
+        redirect: () => ({
+          url: AppRoutes.getPath("PretripBudgetEstimatorPage"),
+        }),
+      },
+      {
+        title: "Proposals",
+        activeRoutes: [
+          "PretripLodgingProposalPage",
+          "PretripLodgingProposalsPage",
+        ],
+        redirect: () => ({
+          url: AppRoutes.getPath("PretripLodgingProposalsPage"),
+        }),
+      },
+    ],
+  },
+  {
+    title: "Overview",
+    icon: HomeRounded,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Lodging",
+    icon: ApartmentRounded,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Attendees",
+    icon: PeopleAlt,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Flights",
+    icon: FlightRounded,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Itinerary",
+    icon: MapRounded,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+  {
+    title: "Budget",
+    icon: LocalAtm,
+    activeRoutes: [],
+    redirect: undefined,
+  },
+]
+
+/**
+ * THIS IS NOT A GOOD COMPONENT.
+ * Copy pasted from PageSidenav but sets some "demo parameters"
+ */
+export function PageDemoSidenav(props: {}) {
+  const classes = useStyles()
+  let [retreat] = useRetreatByGuid(Constants.demoRetreatGuid)
+  let {sidebarOpen, closeSidebar} = useSidebar()
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
+  )
+  let {path} = useRouteMatch()
+  console.log(path)
+
+  return (
+    <Drawer
+      open={sidebarOpen}
+      transitionDuration={TRANSITION_DURATION}
+      onClose={closeSidebar}
+      color="primary"
+      classes={{root: classes.root, paper: classes.paper}}
+      variant={isSmallScreen ? "temporary" : "permanent"}>
+      <Box
+        marginLeft="auto"
+        marginRight="auto"
+        marginBottom={4}
+        style={{display: "flex", alignItems: "flex-end"}}>
+        <AppImage
+          height="40px"
+          alt="White Flok logo"
+          img="branding/logos/icon_text-empty_bg-white%40.5x.png"
+        />
+      </Box>
+      <List>
+        {demoNavItems.map((navItem, i) => {
+          let redirect = navItem.redirect
+            ? navItem.redirect(retreat as unknown as RetreatModel, -1)
+            : undefined
+          let activeRoutes = navItem.activeRoutes.filter((page) => {
+            return matchPath(window.location.pathname, {
+              path: AppRoutes.getPath(page),
+              exact: true,
+            })
+          })
+          let active = activeRoutes.length > 0
+          let activeSubItem = false
+          let subItems: JSX.Element[] = []
+          if (navItem.navSubItems) {
+            subItems = navItem.navSubItems.map((subItem, j) => {
+              let subnavRedirect = subItem.redirect
+                ? subItem.redirect(retreat as unknown as RetreatModel, -1)
+                : undefined
+              let subItemActiveRoutes = subItem.activeRoutes.filter((page) => {
+                return matchPath(window.location.pathname, {
+                  path: AppRoutes.getPath(page),
+                  exact: true,
+                })
+              })
+              let subActive = subItemActiveRoutes.length > 0
+              if (subActive) {
+                activeSubItem = true
+              }
+              return (
+                <NavListItem
+                  key={`${i}-${j}`}
+                  title={subItem.title}
+                  redirect={subnavRedirect?.url}
+                  externalLink={subnavRedirect?.external}
+                  Icon={subItem.icon}
+                  active={subActive}
+                />
+              )
+            })
+          }
+          return (
+            <>
+              <NavListItem
+                key={i}
+                title={navItem.title}
+                redirect={redirect?.url}
+                externalLink={redirect?.external}
+                Icon={navItem.icon}
+                active={active}
+              />
+              {activeSubItem ? subItems : undefined}
+            </>
+          )
+        })}
+      </List>
+      <List className={classes.footer}>
+        <ListItem>
+          <ListItemText>
+            {retreat && retreat !== ResourceNotFound
+              ? retreat.company_name
+              : undefined}
+          </ListItemText>
+        </ListItem>
       </List>
     </Drawer>
   )
