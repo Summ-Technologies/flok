@@ -171,7 +171,7 @@ function FlightCard(props: FlightCardProps) {
                     .substring(0, 3)
                 : "") +
                 " " +
-                chop(
+                (chop(
                   new Intl.DateTimeFormat("en-US", {
                     dateStyle: "full",
                     timeStyle: undefined,
@@ -180,7 +180,20 @@ function FlightCard(props: FlightCardProps) {
                     .split(" ")
                     .slice(1, 3)
                     .join(" ")
-                )}
+                )
+                  .split(" ")[0]
+                  .substring(0, 3) +
+                  " " +
+                  chop(
+                    new Intl.DateTimeFormat("en-US", {
+                      dateStyle: "full",
+                      timeStyle: undefined,
+                    })
+                      .format(dep_datetime)
+                      .split(" ")
+                      .slice(1, 3)
+                      .join(" ")
+                  ).split(" ")[1])}
             </Typography>
           ) : (
             "N/A"
