@@ -10,10 +10,12 @@ import AttendeesPage from "./pages/dashboard/AttendeesPage"
 import BudgetEstimatePage from "./pages/dashboard/BudgetEstimatePage"
 import BudgetPage from "./pages/dashboard/BudgetPage"
 import FlightsPage from "./pages/dashboard/FlightsPage"
+import ItineraryPage from "./pages/dashboard/ItineraryPage"
 import LodgingContractPage from "./pages/dashboard/LodgingContractPage"
 import LodgingPage from "./pages/dashboard/LodgingPage"
 import LodgingProposalPage from "./pages/dashboard/LodgingProposalPage"
 import LodgingProposalsPage from "./pages/dashboard/LodgingProposalsPage"
+import RetreatBudgetPage from "./pages/dashboard/RetreatBudgetPage"
 import RetreatHomePage from "./pages/dashboard/RetreatHomePage"
 import DeprecatedNewRetreatFormPage from "./pages/deprecated/DeprecatedNewRetreatFormPage"
 import DeprecatedProposalPage from "./pages/deprecated/DeprecatedProposalPage"
@@ -63,7 +65,9 @@ export class AppRoutes {
     RetreatFlightsPage: "/r/:retreatIdx/flights",
 
     RetreatBudgetPage: "/r/:retreatIdx/budget",
+    RetreatBudgetLinkPage: "/r/:retreatIdx/budget-link",
     RetreatBudgetEstimatePage: "/r/:retreatIdx/budget/estimate",
+    RetreatItineraryPage: "/r/:retreatIdx/itinerary",
 
     // Not in sidebar yet
     RetreatWebsiteHome: "/retreats/:retreatName",
@@ -247,6 +251,13 @@ export default function Stack() {
                 exact
                 path={AppRoutes.getPath("RetreatBudgetEstimatePage")}>
                 <BudgetEstimatePage />
+              </Route>
+              <Route exact path={AppRoutes.getPath("RetreatBudgetLinkPage")}>
+                <RetreatBudgetPage />
+              </Route>
+              {/* Itinerary */}
+              <Route exact path={AppRoutes.getPath("RetreatItineraryPage")}>
+                <ItineraryPage />
               </Route>
               <Route path={"*"} component={NotFound404Page} />
             </Switch>

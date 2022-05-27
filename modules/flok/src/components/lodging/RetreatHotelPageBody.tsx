@@ -15,7 +15,7 @@ import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
 import AppImageGrid from "../base/AppImageGrid"
 import AppLoadingScreen from "../base/AppLoadingScreen"
-import PageLockedModal from "../page/PageLockedModal"
+import ContractFormModal from "../forms/ContractFormModal"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -108,6 +108,7 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
       loadMissingHotel(retreat.lodging_final_hotel_id)
     }
   }, [hotel, dispatch, setLoadingHotel, retreat.lodging_final_hotel_id])
+  const [editContractModalOpen, setEditContractModalOpen] = useState(false)
 
   return (
     <div className={classes.root}>
@@ -139,9 +140,15 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
       {loadingHotel ? (
         <AppLoadingScreen />
       ) : hotel === undefined ? (
-        <PageLockedModal pageDesc="This page will unlock once your hotel contract is finalized and signed!" />
+        <ContractFormModal open={true} sideNav={true} />
       ) : (
         <Grid container className={classes.hotelBody}>
+          <ContractFormModal
+            open={editContractModalOpen}
+            onClose={() => {
+              setEditContractModalOpen(false)
+            }}
+          />
           <Grid
             item
             xs={12}
@@ -151,7 +158,19 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
             className={classes.overlay}>
             <div className={classes.overlayBody}>
               <Paper className={classes.hotelDetailsSection}>
-                <Typography variant="h4">Contract</Typography>
+                <div style={{justifyContent: "space-between", display: "flex"}}>
+                  <Typography variant="h4">Contract</Typography>
+                  <Button
+                    color="primary"
+                    size="small"
+                    variant="outlined"
+                    onClick={() => {
+                      setEditContractModalOpen(true)
+                    }}>
+                    Edit
+                  </Button>
+                </div>
+
                 {retreat.lodging_final_start_date &&
                 retreat.lodging_final_end_date ? (
                   <div className={classes.hotelDetail}>

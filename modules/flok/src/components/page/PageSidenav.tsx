@@ -133,10 +133,14 @@ let navItems: NavItem[] = [
     title: "Itinerary",
     icon: MapRounded,
     activeRoutes: [],
-    redirect: (retreat) =>
+    redirect: (retreat, retreatIdx) =>
       retreat.itinerary_final_draft_link
         ? {url: retreat.itinerary_final_draft_link, external: true}
-        : undefined,
+        : {
+            url: AppRoutes.getPath("RetreatItineraryPage", {
+              retreatIdx: retreatIdx.toString(),
+            }),
+          },
   },
   {
     title: "Budget",
@@ -152,10 +156,14 @@ let navItems: NavItem[] = [
       {
         title: "Actual",
         activeRoutes: [],
-        redirect: (retreat) =>
+        redirect: (retreat, retreatIdx) =>
           retreat.budget_link
             ? {url: retreat.budget_link, external: true}
-            : undefined,
+            : {
+                url: AppRoutes.getPath("RetreatBudgetLinkPage", {
+                  retreatIdx: retreatIdx.toString(),
+                }),
+              },
       },
     ],
   },

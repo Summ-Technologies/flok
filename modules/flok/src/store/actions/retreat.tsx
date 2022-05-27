@@ -5,6 +5,7 @@ import {
   AttendeeLandingWebsiteModel,
   AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
+  RetreatModel,
   RetreatToTaskState,
   RetreatTravelModel,
   RetreatTripModel,
@@ -626,6 +627,45 @@ export function postRetreatAttendeesBatch(
       ],
     },
     {
+      errorMessage: "Something went wrong",
+    }
+  )
+}
+
+export const PATCH_RETREAT_REQUEST = "PATCH_RETREAT_REQUEST"
+export const PATCH_RETREAT_SUCCESS = "PATCH_RETREAT_SUCCESS"
+export const PATCH_RETREAT_FAILURE = "PATCH_RETREAT_FAILURE"
+export function patchRetreat(
+  retreatId: number,
+  values: Partial<
+    Pick<
+      RetreatModel,
+      | "budget_link"
+      | "itinerary_final_draft_link"
+      | "lodging_final_end_date"
+      | "lodging_final_start_date"
+      | "lodging_final_hotel_id"
+      | "lodging_final_destination"
+      | "lodging_final_contract_url"
+    >
+  >
+) {
+  let endpoint = `/v1.0/retreats/${retreatId}`
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values, (key, value) =>
+        typeof value === "undefined" ? null : value
+      ),
+      types: [
+        {type: PATCH_RETREAT_REQUEST},
+        {type: PATCH_RETREAT_SUCCESS, meta: {retreatId: retreatId}},
+        {type: PATCH_RETREAT_FAILURE, meta: {retreatId: retreatId}},
+      ],
+    },
+    {
+      successMessage: "Successfully updated retreat",
       errorMessage: "Something went wrong",
     }
   )
