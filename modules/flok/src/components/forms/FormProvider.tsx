@@ -1,3 +1,4 @@
+import {Box, CircularProgress} from "@material-ui/core"
 import React, {
   createContext,
   PropsWithChildren,
@@ -7,7 +8,6 @@ import React, {
 } from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {FormModel} from "../../models/form"
-import LoadingPage from "../../pages/misc/LoadingPage"
 import {RootState} from "../../store"
 import {getForm} from "../../store/actions/form"
 
@@ -27,15 +27,26 @@ export default function FormProvider(props: FormProviderProps) {
   let [loading, setLoading] = useState(false)
   let form = useSelector((state: RootState) => state.form.forms[props.formId])
   useEffect(() => {
-    if (!form) {
+    async function loadForm() {
       setLoading(true)
-      dispatch(getForm(props.formId))
+      await dispatch(getForm(props.formId))
       setLoading(false)
+    }
+    if (!form) {
+      loadForm()
     }
   }, [form, dispatch, props.formId])
 
   return !form && loading ? (
-    <LoadingPage />
+    // this loader is pretty lazy with minHeight. Shouldn't copy this pattern, didn't feel like refactoring though
+    <Box
+      width="100%"
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="300px">
+      <CircularProgress />
+    </Box>
   ) : !form ? (
     <div>Error loading form</div>
   ) : (

@@ -6,12 +6,6 @@ import {FormHeader} from "./Headers"
 import {AddNewQuestionButton, RegFormBuilderQuestion} from "./Questions"
 
 let useStyles = makeStyles((theme) => ({
-  body: {
-    margin: theme.spacing(2),
-    [theme.breakpoints.down("sm")]: {
-      margin: theme.spacing(0.5),
-    },
-  },
   builderForm: {
     margin: theme.spacing(1),
     "& > :not(:first-child)": {marginTop: theme.spacing(2)},

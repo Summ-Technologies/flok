@@ -1,3 +1,4 @@
+import {Box} from "@material-ui/core"
 import React, {
   createContext,
   PropsWithChildren,
@@ -7,9 +8,9 @@ import React, {
 } from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {FormQuestionModel} from "../../models/form"
-import LoadingPage from "../../pages/misc/LoadingPage"
 import {RootState} from "../../store"
 import {getFormQuestion} from "../../store/actions/form"
+import AppLoadingScreen from "../base/AppLoadingScreen"
 
 const FormQuestionContext = createContext<FormQuestionModel | undefined>(
   undefined
@@ -31,15 +32,20 @@ export default function FormQuestionProvider(props: FormQuestionProviderProps) {
     (state: RootState) => state.form.formQuestions[props.questionId]
   )
   useEffect(() => {
-    if (!formQuestion) {
+    async function loadQuestion() {
       setLoading(true)
-      dispatch(getFormQuestion(props.questionId))
+      await dispatch(getFormQuestion(props.questionId))
       setLoading(false)
+    }
+    if (!formQuestion) {
+      loadQuestion()
     }
   }, [formQuestion, dispatch, props.questionId])
 
   return !formQuestion && loading ? (
-    <LoadingPage />
+    <Box position="relative" height="100%" width="100%" paddingY="20px">
+      <AppLoadingScreen />
+    </Box>
   ) : !formQuestion ? (
     <div>Error loading form question</div>
   ) : (

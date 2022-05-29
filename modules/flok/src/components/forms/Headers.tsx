@@ -22,6 +22,7 @@ let useFormHeaderStyles = makeStyles((theme) => ({
     ...theme.typography.h1,
   },
   formDescription: {
+    whiteSpace: "pre-wrap",
     ...theme.typography.body1,
   },
   editableText: {
@@ -171,6 +172,7 @@ let useFormQuestionHeaderStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightBold,
   },
   questionDescription: {
+    whiteSpace: "pre-wrap",
     ...theme.typography.body2,
   },
   editableText: {
