@@ -169,6 +169,7 @@ function FlightCard(props: FlightCardProps) {
         <div className={`${classes.column} ${classes.columnInSingle}`}>
           {flight?.dep_datetime ? (
             <Typography className={classes.bold}>
+              {/* TODO fix this logic. Way too many substrings and splits */}
               {(!isSmallScreen
                 ? new Intl.DateTimeFormat("en-US", {
                     dateStyle: "full",
@@ -179,7 +180,7 @@ function FlightCard(props: FlightCardProps) {
                     .substring(0, 3)
                 : "") +
                 " " +
-                chop(
+                (chop(
                   new Intl.DateTimeFormat("en-US", {
                     dateStyle: "full",
                     timeStyle: undefined,
@@ -188,7 +189,20 @@ function FlightCard(props: FlightCardProps) {
                     .split(" ")
                     .slice(1, 3)
                     .join(" ")
-                )}
+                )
+                  .split(" ")[0]
+                  .substring(0, 3) +
+                  " " +
+                  chop(
+                    new Intl.DateTimeFormat("en-US", {
+                      dateStyle: "full",
+                      timeStyle: undefined,
+                    })
+                      .format(dep_datetime)
+                      .split(" ")
+                      .slice(1, 3)
+                      .join(" ")
+                  ).split(" ")[1])}
             </Typography>
           ) : (
             "N/A"
