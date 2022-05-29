@@ -1,28 +1,45 @@
 import {
+  Box,
+  Button,
   Checkbox,
+  CircularProgress,
   ClickAwayListener,
   FormControl,
   FormControlLabel,
   FormGroup,
+  IconButton,
+  ListItem,
   makeStyles,
   MenuItem,
+  Popover,
   Radio,
+  Switch,
   TextField,
 } from "@material-ui/core"
+import {Add, CalendarToday, Delete} from "@material-ui/icons"
+import clsx from "clsx"
+import {useFormik} from "formik"
 import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
   FormQuestionModel,
+  FormQuestionType,
   FormQuestionTypeEnum,
   FormQuestionTypeName,
   FormQuestionTypeValues,
 } from "../../models/form"
 import {RootState} from "../../store"
 import {
+  deleteFormQuestion,
+  deleteFormQuestionOption,
   getFormQuestionOption,
+  patchFormQuestion,
+  patchFormQuestionOption,
+  postFormQuestion,
   postFormQuestionOption,
 } from "../../store/actions/form"
 import AppLoadingScreen from "../base/AppLoadingScreen"
+import AppTypography from "../base/AppTypography"
 import {useFormQuestion} from "./FormQuestionProvider"
 import {FormQuestionHeader} from "./Headers"
 
@@ -32,6 +49,9 @@ let useQuestionStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     display: "flex",
     flexDirection: "column",
+    "&.noclickthrough > *": {
+      pointerEvents: "none",
+    },
   },
   questionHeaderContainer: {
     display: "flex",
@@ -40,7 +60,6 @@ let useQuestionStyles = makeStyles((theme) => ({
   },
   questionTitleSubtitle: {
     flex: 1,
-    marginRight: theme.spacing(2),
     "& > *:not(:first-child)": {
       marginTop: theme.spacing(1),
     },
@@ -52,6 +71,17 @@ let useQuestionStyles = makeStyles((theme) => ({
   formQuestionDescriptionInput: {
     ...theme.typography.body2,
   },
+  formQuestionActions: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: theme.spacing(2),
+    "& > *:last-child": {
+      marginLeft: theme.spacing(1),
+    },
+    "& > *:first-child": {
+      marginRight: "auto",
+    },
+  },
 }))
 
 type RegFormBuilderQuestionProps = {
@@ -61,9 +91,23 @@ export function RegFormBuilderQuestion(props: RegFormBuilderQuestionProps) {
   let classes = useQuestionStyles()
   let [editActive, setEditActive] = useState(false)
   let question = useFormQuestion()
+  let dispatch = useDispatch()
+  let [deleteLoading, setDeleteLoading] = useState(false)
+  let [patchTypeLoading, setPatchTypeLoading] = useState(false)
+  let requiredFormik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      required: question.required ?? false,
+    },
+    onSubmit: (values) => {
+      if (values.required !== question.required) {
+        dispatch(patchFormQuestion(question.id, {required: values.required}))
+      }
+    },
+  })
   let questionBody = (
     <div
-      className={classes.root}
+      className={clsx(classes.root, editActive ? undefined : "noclickthrough")}
       onClick={() => setEditActive(true)}
       onFocus={() => setEditActive(true)}
       onBlur={(e) => {
@@ -79,6 +123,7 @@ export function RegFormBuilderQuestion(props: RegFormBuilderQuestionProps) {
       <div className={classes.questionHeaderContainer}>
         <div className={classes.questionTitleSubtitle}>
           <FormQuestionHeader
+            required={requiredFormik.values.required}
             title={question.title}
             description={question.description ?? ""}
             questionId={question.id}
@@ -86,22 +131,68 @@ export function RegFormBuilderQuestion(props: RegFormBuilderQuestionProps) {
             editActive={editActive}
           />
         </div>
-        {editActive && (
+      </div>
+      <RegFormBuilderQuestionSwitch question={question} />
+      {editActive && (
+        <div className={classes.formQuestionActions}>
+          <FormControl>
+            <FormControlLabel
+              checked={requiredFormik.values.required}
+              onChange={async (e, checked) => {
+                await requiredFormik.setFieldValue("required", checked)
+                requiredFormik.submitForm()
+              }}
+              control={<Switch color="primary" />}
+              label="Required?"
+            />
+          </FormControl>
           <TextField
             variant="outlined"
             select
             size="small"
-            SelectProps={{native: false}}
-            value={question?.type || "SHORT_ANSWER"}>
-            {FormQuestionTypeValues.map((type) => (
-              <MenuItem value={type}>
-                {FormQuestionTypeName[type] ?? type}
+            onChange={async (e) => {
+              let type = e.target.value as FormQuestionType
+              if (type !== question.type) {
+                setPatchTypeLoading(true)
+                await dispatch(patchFormQuestion(question.id, {type}))
+                setPatchTypeLoading(false)
+              }
+            }}
+            value={
+              patchTypeLoading ? "loading" : question.type || "SHORT_ANSWER"
+            }
+            SelectProps={{
+              MenuProps: {disablePortal: true},
+              native: false,
+            }}>
+            {patchTypeLoading ? (
+              <MenuItem value="loading">
+                &nbsp;&nbsp;&nbsp;
+                <CircularProgress size="15px" />
+                &nbsp;&nbsp;&nbsp;
               </MenuItem>
-            ))}
+            ) : (
+              FormQuestionTypeValues.map((type) => (
+                <MenuItem value={type} key={type}>
+                  {FormQuestionTypeName[type] ?? type}
+                </MenuItem>
+              ))
+            )}
           </TextField>
-        )}
-      </div>
-      <RegFormBuilderQuestionSwitch question={question} />
+          <div style={{display: "flex", alignItems: "center"}}>
+            <IconButton
+              size="small"
+              disabled={deleteLoading}
+              onClick={async () => {
+                setDeleteLoading(true)
+                await dispatch(deleteFormQuestion(question.id))
+                setDeleteLoading(false)
+              }}>
+              {deleteLoading ? <CircularProgress size={25} /> : <Delete />}
+            </IconButton>
+          </div>
+        </div>
+      )}
     </div>
   )
   return editActive ? (
@@ -147,8 +238,12 @@ function RegFormBuilderQuestionSwitch(props: {question: FormQuestionModel}) {
             questionId={props.question.id}
           />
         )
-      // case FormQuestionTypeEnum.DATE:
-      // case FormQuestionTypeEnum.DATETIME:
+      case FormQuestionTypeEnum.DATE:
+        return <RegFormBuilderDateQuestion type={FormQuestionTypeEnum.DATE} />
+      case FormQuestionTypeEnum.DATETIME:
+        return (
+          <RegFormBuilderDateQuestion type={FormQuestionTypeEnum.DATETIME} />
+        )
       default:
         return <div>Something went wrong</div>
     }
@@ -186,6 +281,10 @@ function RegFormBuilderTextQuestion(props: RegFormBuilderTextQuestionProps) {
 
 let useSelectQuestionStyles = makeStyles((theme) => ({
   root: {},
+  addOptionButton: {
+    display: "flex",
+    marginTop: theme.spacing(1),
+  },
 }))
 
 type RegFormBuilderSelectQuestionProps = {
@@ -199,76 +298,57 @@ export function RegFormBuilderSelectQuestion(
   let classes = useSelectQuestionStyles()
   let dispatch = useDispatch()
   let [loadingPost, setLoadingPost] = useState(false)
-  // let formik = useFormik({
-  //   initialValues: {
-  //     options: props.options,
-  //   },
-  //   onSubmit: () => undefined,
-  // })
-  // let commonOptionTextFieldProps: TextFieldProps = {
-  //   onChange: formik.handleChange,
-  //   size: "small",
-  // }
-
   return (
     <FormControl>
       <FormGroup>
         {props.optionIds.map((optionId, i) => {
           return <SelectQuestionLabel optionId={optionId} type={props.type} />
         })}
-        {/* {formik.values.options.map((opt, i) => {
-          return (
-            <FormControlLabel
-              value={formik.values.options[i].option}
-              control={
-                props.type === FormQuestionTypeEnum.SINGLE_SELECT ? (
-                  <Radio />
-                ) : (
-                  <Checkbox checked={false} />
-                )
-              }
-              label={
-                <TextField
-                  {...commonOptionTextFieldProps}
-                  id={`options[${i}]`}
-                  value={formik.values.options[i].option}
-                />
-              }
-            />
-          )
-        })} */}
-        {loadingPost ? (
-          <AppLoadingScreen />
-        ) : (
-          <FormControlLabel
-            value={"new"}
-            control={
-              props.type === FormQuestionTypeEnum.SINGLE_SELECT ? (
-                <Radio />
-              ) : (
-                <Checkbox checked={false} />
+        <div className={classes.addOptionButton}>
+          <Button
+            disabled={loadingPost}
+            size="small"
+            onClick={async () => {
+              setLoadingPost(true)
+              await dispatch(
+                postFormQuestionOption({
+                  form_question_id: props.questionId,
+                  option: "",
+                })
               )
-            }
-            label={
-              <TextField
-                onClick={async () => {
-                  setLoadingPost(true)
-                  await dispatch(
-                    postFormQuestionOption({
-                      form_question_id: props.questionId,
-                      option: "",
-                    })
-                  )
-                  setLoadingPost(false)
-                }}
-              />
-            }
-          />
-        )}
+              setLoadingPost(false)
+            }}>
+            {loadingPost ? (
+              <CircularProgress size="20px" />
+            ) : (
+              <>
+                <Add /> Add option
+              </>
+            )}
+          </Button>
+        </div>
       </FormGroup>
     </FormControl>
   )
 }
+
+let useSelectOptionStyles = makeStyles((theme) => ({
+  label: {
+    flex: 1,
+  },
+  labelInput: {
+    display: "flex",
+    alignContent: "flex-end",
+    "& > :last-child:not(.loading)": {
+      opacity: 0,
+    },
+    "&:hover": {
+      "& > :last-child": {
+        opacity: "100%",
+      },
+    },
+  },
+}))
 
 function SelectQuestionLabel(props: {
   editActive?: boolean
@@ -277,28 +357,167 @@ function SelectQuestionLabel(props: {
     | typeof FormQuestionTypeEnum.MULTI_SELECT
     | typeof FormQuestionTypeEnum.SINGLE_SELECT
 }) {
+  let classes = useSelectOptionStyles()
   let dispatch = useDispatch()
+  let [loadingOption, setLoadingOption] = useState(false)
   let option = useSelector(
     (state: RootState) => state.form.questionOptions[props.optionId]
   )
+  let formik = useFormik({
+    initialValues: {
+      option: option?.option || "",
+    },
+    onSubmit: (values) => {
+      if (option && option.option !== values.option) {
+        dispatch(patchFormQuestionOption(option.id, values))
+      }
+    },
+    enableReinitialize: true,
+  })
   useEffect(() => {
+    async function loadOption() {
+      setLoadingOption(true)
+      await dispatch(getFormQuestionOption(props.optionId))
+      setLoadingOption(false)
+    }
     if (!option) {
-      dispatch(getFormQuestionOption(props.optionId))
+      loadOption()
     }
   }, [option, props.optionId, dispatch])
+  let [deleteLoading, setDeleteLoading] = useState(false)
   let control =
     props.type === FormQuestionTypeEnum.MULTI_SELECT ? (
       <Checkbox checked={false} />
     ) : (
-      <Radio />
+      <Radio checked={false} />
     )
   return option ? (
     <FormControlLabel
-      value={option.option}
+      disabled
+      classes={{label: classes.label}}
+      value={""}
       control={control}
-      label={<TextField value={option.option} />}
+      label={
+        <div className={classes.labelInput}>
+          <TextField
+            fullWidth
+            id="option"
+            value={formik.values.option}
+            onBlur={() => formik.handleSubmit()}
+            onChange={formik.handleChange}
+          />
+          <IconButton
+            className={clsx(deleteLoading ? "loading" : undefined)}
+            size="small"
+            disabled={deleteLoading}
+            onClick={async () => {
+              setDeleteLoading(true)
+              await dispatch(deleteFormQuestionOption(props.optionId))
+              setDeleteLoading(false)
+            }}>
+            {deleteLoading ? <CircularProgress size={25} /> : <Delete />}
+          </IconButton>
+        </div>
+      }
+    />
+  ) : loadingOption ? (
+    <FormControlLabel
+      value={""}
+      control={control}
+      label={
+        <Box height="50px" width="100px" position="relative">
+          <CircularProgress />
+        </Box>
+      }
     />
   ) : (
-    <AppLoadingScreen />
+    <></>
+  )
+}
+
+type RegFormBuilderDateQuestionProps = {
+  type: FormQuestionTypeEnum.DATE | FormQuestionTypeEnum.DATETIME
+}
+function RegFormBuilderDateQuestion(props: RegFormBuilderDateQuestionProps) {
+  return (
+    <TextField
+      variant="outlined"
+      type={
+        props.type === FormQuestionTypeEnum.DATETIME ? "datetime-local" : "date"
+      }
+      InputProps={{
+        endAdornment: <CalendarToday fontSize="inherit" />,
+      }}
+      disabled
+    />
+  )
+}
+
+let useNewQuestionButtonStyles = makeStyles((theme) => ({
+  addQuestionButton: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    "&:hover": {
+      backgroundColor: theme.palette.primary.light,
+      color: theme.palette.common.white,
+    },
+  },
+}))
+type AddNewQuestionButtonProps = {
+  formId: number
+}
+export function AddNewQuestionButton(props: AddNewQuestionButtonProps) {
+  let classes = useNewQuestionButtonStyles()
+  let dispatch = useDispatch()
+  const [addQuestionAnchorEl, setAddQuestionAnchorEl] =
+    React.useState<HTMLButtonElement | null>(null)
+  const openAddQuestionPopover = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setAddQuestionAnchorEl(event.currentTarget)
+  }
+  const addQuestionOpen = Boolean(addQuestionAnchorEl)
+  let [loadingNewQuestion, setLoadingNewQuestion] = useState(false)
+  function closeNewQuestionPopover() {
+    setAddQuestionAnchorEl(null)
+  }
+  async function postNewQuestion(questionType: FormQuestionType) {
+    setLoadingNewQuestion(true)
+    closeNewQuestionPopover()
+    await dispatch(
+      postFormQuestion({form_id: props.formId, type: questionType})
+    )
+    setLoadingNewQuestion(false)
+  }
+  return loadingNewQuestion ? (
+    <Box width="100%" height="100px" position="relative">
+      <AppLoadingScreen />
+    </Box>
+  ) : (
+    <>
+      <IconButton
+        color="inherit"
+        className={classes.addQuestionButton}
+        onClick={openAddQuestionPopover}>
+        <Add />
+      </IconButton>
+      <Popover
+        anchorEl={addQuestionAnchorEl}
+        open={addQuestionOpen}
+        onClose={closeNewQuestionPopover}>
+        <div>
+          <ListItem>
+            <AppTypography fontWeight="bold" variant="body1">
+              Add new question
+            </AppTypography>
+          </ListItem>
+          {FormQuestionTypeValues.map((type) => (
+            <MenuItem value={type} button onClick={() => postNewQuestion(type)}>
+              {FormQuestionTypeName[type] ?? type}
+            </MenuItem>
+          ))}
+        </div>
+      </Popover>
+    </>
   )
 }

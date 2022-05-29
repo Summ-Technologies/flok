@@ -11,6 +11,8 @@ import {
 } from "../../models/form"
 import {ApiAction} from "../actions/api"
 import {
+  DELETE_FORM_QUESTION_OPTION_SUCCESS,
+  DELETE_FORM_QUESTION_SUCCESS,
   GET_FORM_QUESTION_OPTION_SUCCESS,
   GET_FORM_QUESTION_SUCCESS,
   GET_FORM_SUCCESS,
@@ -92,6 +94,9 @@ export default function formReducer(
   action: Action
 ): FormState {
   var payload
+  var newFormQuestions
+  var newForms
+  var newQuestionOptions
   switch (action.type) {
     case GET_FORM_SUCCESS:
     case PATCH_FORM_SUCCESS:
@@ -109,6 +114,27 @@ export default function formReducer(
         ...state,
         formQuestions: {...state.formQuestions, [question.id]: question},
       }
+    case DELETE_FORM_QUESTION_SUCCESS:
+      let questionId = (action as unknown as {meta: {questionId: number}}).meta
+        .questionId
+      newFormQuestions = {...state.formQuestions}
+      delete newFormQuestions[questionId]
+      newForms = Object.keys(state.forms).reduce((prev, currKey: string) => {
+        let currId = currKey as unknown as number
+        let currForm = state.forms[currId]
+        if (currForm && currForm.questions) {
+          currForm = {...currForm}
+          currForm.questions = currForm.questions.filter(
+            (id) => id !== questionId
+          )
+        }
+        return {...prev, [currId]: currForm}
+      }, {})
+      return {
+        ...state,
+        forms: newForms,
+        formQuestions: newFormQuestions,
+      }
     case GET_FORM_QUESTION_OPTION_SUCCESS:
     case POST_FORM_QUESTION_OPTION_SUCCESS:
     case PATCH_FORM_QUESTION_OPTION_SUCCESS:
@@ -117,6 +143,30 @@ export default function formReducer(
       return {
         ...state,
         questionOptions: {...state.questionOptions, [option.id]: option},
+      }
+    case DELETE_FORM_QUESTION_OPTION_SUCCESS:
+      let optionId = (action as unknown as {meta: {optionId: number}}).meta
+        .optionId
+      newQuestionOptions = {...state.questionOptions}
+      delete newQuestionOptions[optionId]
+      newFormQuestions = Object.keys(state.formQuestions).reduce(
+        (prev, currKey: string) => {
+          let currId = currKey as unknown as number
+          let currQuestion = state.formQuestions[currId]
+          if (currQuestion && currQuestion.select_options) {
+            currQuestion = {...currQuestion}
+            currQuestion.select_options = currQuestion.select_options.filter(
+              (id) => id !== optionId
+            )
+          }
+          return {...prev, [currId]: currQuestion}
+        },
+        {}
+      )
+      return {
+        ...state,
+        questionOptions: newQuestionOptions,
+        formQuestions: newFormQuestions,
       }
     default:
       return state

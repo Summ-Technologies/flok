@@ -85,12 +85,12 @@ export const PATCH_FORM_QUESTION_SUCCESS = "PATCH_FORM_QUESTION_SUCCESS"
 export const PATCH_FORM_QUESTION_FAILURE = "PATCH_FORM_QUESTION_FAILURE"
 
 export function patchFormQuestion(
-  formId: number,
+  questionId: number,
   formQuestion: Partial<
-    Pick<FormQuestionModel, "description" | "title" | "type">
+    Pick<FormQuestionModel, "description" | "title" | "type" | "required">
   >
 ) {
-  let endpoint = `/v1.0/forms/${formId}`
+  let endpoint = `/v1.0/questions/${questionId}`
   return createApiAction({
     method: "PATCH",
     body: JSON.stringify(formQuestion),
@@ -99,6 +99,23 @@ export function patchFormQuestion(
       PATCH_FORM_QUESTION_REQUEST,
       PATCH_FORM_QUESTION_SUCCESS,
       PATCH_FORM_QUESTION_FAILURE,
+    ],
+  })
+}
+
+export const DELETE_FORM_QUESTION_REQUEST = "DELETE_FORM_QUESTION_REQUEST"
+export const DELETE_FORM_QUESTION_SUCCESS = "DELETE_FORM_QUESTION_SUCCESS"
+export const DELETE_FORM_QUESTION_FAILURE = "DELETE_FORM_QUESTION_FAILURE"
+
+export function deleteFormQuestion(questionId: number) {
+  let endpoint = `/v1.0/questions/${questionId}`
+  return createApiAction({
+    method: "DELETE",
+    endpoint,
+    types: [
+      {type: DELETE_FORM_QUESTION_REQUEST, meta: {questionId}},
+      {type: DELETE_FORM_QUESTION_SUCCESS, meta: {questionId}},
+      {type: DELETE_FORM_QUESTION_FAILURE, meta: {questionId}},
     ],
   })
 }
@@ -163,11 +180,11 @@ export const PATCH_FORM_QUESTION_OPTION_SUCCESS =
 export const PATCH_FORM_QUESTION_OPTION_FAILURE =
   "PATCH_FORM_QUESTION_OPTION_FAILURE"
 
-export function patchFormQuestionOptions(
-  questionId: number,
+export function patchFormQuestionOption(
+  optionId: number,
   questionOption: Partial<Pick<FormQuestionSelectOptionModel, "option">>
 ) {
-  let endpoint = `/v1.0/questions/${questionId}`
+  let endpoint = `/v1.0/options/${optionId}`
   return createApiAction({
     method: "PATCH",
     body: JSON.stringify(questionOption),
@@ -176,6 +193,26 @@ export function patchFormQuestionOptions(
       PATCH_FORM_QUESTION_OPTION_REQUEST,
       PATCH_FORM_QUESTION_OPTION_SUCCESS,
       PATCH_FORM_QUESTION_OPTION_FAILURE,
+    ],
+  })
+}
+
+export const DELETE_FORM_QUESTION_OPTION_REQUEST =
+  "DELETE_FORM_QUESTION_OPTION_REQUEST"
+export const DELETE_FORM_QUESTION_OPTION_SUCCESS =
+  "DELETE_FORM_QUESTION_OPTION_SUCCESS"
+export const DELETE_FORM_QUESTION_OPTION_FAILURE =
+  "DELETE_FORM_QUESTION_OPTION_FAILURE"
+
+export function deleteFormQuestionOption(optionId: number) {
+  let endpoint = `/v1.0/options/${optionId}`
+  return createApiAction({
+    method: "DELETE",
+    endpoint,
+    types: [
+      {type: DELETE_FORM_QUESTION_OPTION_REQUEST, meta: {optionId}},
+      {type: DELETE_FORM_QUESTION_OPTION_SUCCESS, meta: {optionId}},
+      {type: DELETE_FORM_QUESTION_OPTION_FAILURE, meta: {optionId}},
     ],
   })
 }

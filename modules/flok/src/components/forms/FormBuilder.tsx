@@ -1,24 +1,9 @@
-import {
-  IconButton,
-  ListItem,
-  makeStyles,
-  MenuItem,
-  Popover,
-} from "@material-ui/core"
-import {Add} from "@material-ui/icons"
+import {makeStyles} from "@material-ui/core"
 import React from "react"
-import {useDispatch} from "react-redux"
-import {
-  FormQuestionType,
-  FormQuestionTypeName,
-  FormQuestionTypeValues,
-} from "../../models/form"
-import {postFormQuestion} from "../../store/actions/form"
-import AppTypography from "../base/AppTypography"
 import {useForm} from "./FormProvider"
 import FormQuestionProvider from "./FormQuestionProvider"
 import {FormHeader} from "./Headers"
-import {RegFormBuilderQuestion} from "./Questions"
+import {AddNewQuestionButton, RegFormBuilderQuestion} from "./Questions"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -49,37 +34,12 @@ let useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     width: "100%",
   },
-  addQuestionButton: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.common.white,
-    "&:hover": {
-      backgroundColor: theme.palette.primary.light,
-      color: theme.palette.common.white,
-    },
-  },
 }))
 
 type FormBuilderProps = {}
 export default function FormBuilder(props: FormBuilderProps) {
   let classes = useStyles(props)
-  let dispatch = useDispatch()
   let form = useForm()
-
-  const [addQuestionAnchorEl, setAddQuestionAnchorEl] =
-    React.useState<HTMLButtonElement | null>(null)
-  const openAddQuestionPopover = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    setAddQuestionAnchorEl(event.currentTarget)
-  }
-  function closeNewQuestionPopover() {
-    setAddQuestionAnchorEl(null)
-  }
-  async function postNewQuestion(questionType: FormQuestionType) {
-    await dispatch(postFormQuestion({form_id: form.id, type: questionType}))
-    closeNewQuestionPopover()
-  }
-  const addQuestionOpen = Boolean(addQuestionAnchorEl)
 
   return (
     <div className={classes.builderForm}>
@@ -99,32 +59,7 @@ export default function FormBuilder(props: FormBuilderProps) {
         </div>
       ))}
       <div className={classes.addQuestionButtonContainer}>
-        <IconButton
-          color="inherit"
-          className={classes.addQuestionButton}
-          onClick={openAddQuestionPopover}>
-          <Add />
-        </IconButton>
-        <Popover
-          anchorEl={addQuestionAnchorEl}
-          open={addQuestionOpen}
-          onClose={closeNewQuestionPopover}>
-          <div>
-            <ListItem>
-              <AppTypography fontWeight="bold" variant="body1">
-                Add new question
-              </AppTypography>
-            </ListItem>
-            {FormQuestionTypeValues.map((type) => (
-              <MenuItem
-                value={type}
-                button
-                onClick={() => postNewQuestion(type)}>
-                {FormQuestionTypeName[type] ?? type}
-              </MenuItem>
-            ))}
-          </div>
-        </Popover>
+        <AddNewQuestionButton formId={form.id} />
       </div>
     </div>
   )

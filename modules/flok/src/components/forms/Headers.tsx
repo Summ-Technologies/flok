@@ -8,6 +8,8 @@ import {
 import clsx from "clsx"
 import {useFormik} from "formik"
 import React, {useState} from "react"
+import {useDispatch} from "react-redux"
+import {patchForm, patchFormQuestion} from "../../store/actions/form"
 
 let useFormHeaderStyles = makeStyles((theme) => ({
   root: {
@@ -39,17 +41,42 @@ type FormHeaderProps = {
 
 export function FormHeader(props: FormHeaderProps) {
   let classes = useFormHeaderStyles()
-  let formik = useFormik({
+  let dispatch = useDispatch()
+  let titleFormik = useFormik({
     initialValues: {
       title: props.title,
+    },
+    onSubmit: (values) => {
+      let patchData: {title?: string; description?: string} = {}
+      if (values.title !== props.title) {
+        patchData.title = values.title
+      }
+      if (Object.keys(patchData).length) {
+        dispatch(patchForm(props.formId, patchData))
+      }
+    },
+    enableReinitialize: true,
+  })
+
+  let descriptionFormik = useFormik({
+    initialValues: {
       description: props.description,
     },
-    onSubmit: () => undefined,
+    onSubmit: (values) => {
+      let patchData: {title?: string; description?: string} = {}
+      if (values.description !== props.description) {
+        patchData.description = values.description
+      }
+      if (Object.keys(patchData).length) {
+        dispatch(patchForm(props.formId, patchData))
+      }
+    },
+    enableReinitialize: true,
   })
+
   const commonTextFieldProps: TextFieldProps = {
     variant: "outlined",
     fullWidth: true,
-    onChange: formik.handleChange,
     size: "small",
   }
   let [editActive, setEditActive] = useState(false)
@@ -73,7 +100,9 @@ export function FormHeader(props: FormHeaderProps) {
             <TextField
               {...commonTextFieldProps}
               id="title"
-              value={formik.values.title ?? ""}
+              value={titleFormik.values.title ?? ""}
+              onChange={titleFormik.handleChange}
+              onBlur={() => titleFormik.handleSubmit()}
               placeholder={"Form title"}
               InputProps={{
                 className: classes.formTitle,
@@ -82,7 +111,9 @@ export function FormHeader(props: FormHeaderProps) {
             <TextField
               {...commonTextFieldProps}
               id="description"
-              value={formik.values.description ?? ""}
+              value={descriptionFormik.values.description ?? ""}
+              onChange={descriptionFormik.handleChange}
+              onBlur={() => descriptionFormik.handleSubmit()}
               placeholder={"(Optional) form description"}
               InputProps={{
                 className: classes.formDescription,
@@ -102,19 +133,26 @@ export function FormHeader(props: FormHeaderProps) {
               classes.formTitle,
               props.editable ? classes.editableText : undefined
             )}>
-            {props.title}
+            {titleFormik.values.title}
           </Typography>
-          {props.description && (
-            <Typography
-              variant="inherit"
-              component="p"
-              className={clsx(
-                classes.formDescription,
-                props.editable ? classes.editableText : undefined
-              )}>
-              {props.description}
-            </Typography>
-          )}
+          <Typography
+            variant="inherit"
+            component="p"
+            className={clsx(
+              classes.formDescription,
+              props.editable ? classes.editableText : undefined
+            )}>
+            {descriptionFormik.values.description ? (
+              descriptionFormik.values.description
+            ) : (
+              <Typography
+                variant="inherit"
+                component="span"
+                color="textSecondary">
+                (Optional) Form description
+              </Typography>
+            )}
+          </Typography>
         </div>
       )}
     </div>
@@ -140,6 +178,9 @@ let useFormQuestionHeaderStyles = makeStyles((theme) => ({
     borderBottomStyle: "dashed",
     borderBottomWidth: 1,
     borderBottomColor: theme.palette.grey[700],
+    "&:not(:first-child)": {
+      marginTop: theme.spacing(1),
+    },
   },
 }))
 
@@ -149,21 +190,46 @@ type FormQuestionHeaderProps = {
   description: string
   editable?: boolean
   editActive?: boolean
+  required?: boolean
 }
 
 export function FormQuestionHeader(props: FormQuestionHeaderProps) {
   let classes = useFormQuestionHeaderStyles()
-  let formik = useFormik({
+  let dispatch = useDispatch()
+  let titleFormik = useFormik({
     initialValues: {
       title: props.title,
+    },
+    onSubmit: (values) => {
+      let patchData: {title?: string; description?: string} = {}
+      if (values.title !== props.title) {
+        patchData.title = values.title
+      }
+      if (Object.keys(patchData).length) {
+        dispatch(patchFormQuestion(props.questionId, patchData))
+      }
+    },
+    enableReinitialize: true,
+  })
+
+  let descriptionFormik = useFormik({
+    initialValues: {
       description: props.description,
     },
-    onSubmit: () => undefined,
+    onSubmit: (values) => {
+      let patchData: {title?: string; description?: string} = {}
+      if (values.description !== props.description) {
+        patchData.description = values.description
+      }
+      if (Object.keys(patchData).length) {
+        dispatch(patchFormQuestion(props.questionId, patchData))
+      }
+    },
+    enableReinitialize: true,
   })
   const commonTextFieldProps: TextFieldProps = {
     variant: "outlined",
     fullWidth: true,
-    onChange: formik.handleChange,
     size: "small",
   }
 
@@ -172,7 +238,10 @@ export function FormQuestionHeader(props: FormQuestionHeaderProps) {
       <TextField
         {...commonTextFieldProps}
         id="title"
-        value={formik.values.title ?? ""}
+        required={props.required}
+        value={titleFormik.values.title ?? ""}
+        onChange={titleFormik.handleChange}
+        onBlur={() => titleFormik.handleSubmit()}
         placeholder={"Question header"}
         InputProps={{
           className: classes.questionTitle,
@@ -181,7 +250,9 @@ export function FormQuestionHeader(props: FormQuestionHeaderProps) {
       <TextField
         {...commonTextFieldProps}
         id="description"
-        value={formik.values.description ?? ""}
+        value={descriptionFormik.values.description ?? ""}
+        onChange={descriptionFormik.handleChange}
+        onBlur={() => descriptionFormik.handleSubmit()}
         placeholder={"(Optional) question description"}
         InputProps={{
           className: classes.questionDescription,
@@ -200,19 +271,34 @@ export function FormQuestionHeader(props: FormQuestionHeaderProps) {
           classes.questionTitle,
           props.editable ? classes.editableText : undefined
         )}>
-        {props.title}
+        {titleFormik.values.title ? (
+          titleFormik.values.title
+        ) : (
+          <Typography variant="inherit" component="span" color="textSecondary">
+            Question title
+          </Typography>
+        )}
+        {props.required ? (
+          <>
+            &nbsp;<sup style={{color: "red"}}>*</sup>
+          </>
+        ) : undefined}
       </Typography>
-      {props.description && (
-        <Typography
-          variant="inherit"
-          component="p"
-          className={clsx(
-            classes.questionDescription,
-            props.editable ? classes.editableText : undefined
-          )}>
-          {props.description}
-        </Typography>
-      )}
+      <Typography
+        variant="inherit"
+        component="p"
+        className={clsx(
+          classes.questionDescription,
+          props.editable ? classes.editableText : undefined
+        )}>
+        {descriptionFormik.values.description ? (
+          descriptionFormik.values.description
+        ) : (
+          <Typography variant="inherit" component="span" color="textSecondary">
+            (Optional) question description
+          </Typography>
+        )}
+      </Typography>
     </div>
   )
 }
