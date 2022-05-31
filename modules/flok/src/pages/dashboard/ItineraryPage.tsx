@@ -67,14 +67,14 @@ function ItineraryPage() {
           response.payload.retreat.itinerary_final_draft_link,
           "_blank"
         )
-      }
-      dispatch(
-        push(
-          AppRoutes.getPath("RetreatHomePage", {
-            retreatIdx: retreatIdx.toString(),
-          })
+        dispatch(
+          push(
+            AppRoutes.getPath("RetreatHomePage", {
+              retreatIdx: retreatIdx.toString(),
+            })
+          )
         )
-      )
+      }
     },
     validationSchema: yup.object().shape({
       itinerary_final_draft_link: yup.string().url("Enter a valid url"),
