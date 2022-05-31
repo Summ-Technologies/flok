@@ -132,11 +132,6 @@ function FlightCard(props: FlightCardProps) {
 
   let classes = useStyles(props)
 
-  function chop(string: string) {
-    //removes the last character from a string
-    return string.substring(0, string.length - 1)
-  }
-
   let dep_datetime = flight.dep_datetime
     ? new Date(flight.dep_datetime)
     : undefined
@@ -161,39 +156,11 @@ function FlightCard(props: FlightCardProps) {
         <div className={`${classes.column} ${classes.columnInSingle}`}>
           {flight?.dep_datetime ? (
             <Typography className={classes.bold}>
-              {(!isSmallScreen
-                ? new Intl.DateTimeFormat("en-US", {
-                    dateStyle: "full",
-                    timeStyle: undefined,
-                  })
-                    .format(dep_datetime)
-                    .split(" ")[0]
-                    .substring(0, 3)
-                : "") +
-                " " +
-                (chop(
-                  new Intl.DateTimeFormat("en-US", {
-                    dateStyle: "full",
-                    timeStyle: undefined,
-                  })
-                    .format(dep_datetime)
-                    .split(" ")
-                    .slice(1, 3)
-                    .join(" ")
-                )
-                  .split(" ")[0]
-                  .substring(0, 3) +
-                  " " +
-                  chop(
-                    new Intl.DateTimeFormat("en-US", {
-                      dateStyle: "full",
-                      timeStyle: undefined,
-                    })
-                      .format(dep_datetime)
-                      .split(" ")
-                      .slice(1, 3)
-                      .join(" ")
-                  ).split(" ")[1])}
+              {new Intl.DateTimeFormat("en-US", {
+                weekday: isSmallScreen ? undefined : "short",
+                month: "short",
+                day: "numeric",
+              }).format(dep_datetime)}
             </Typography>
           ) : (
             "N/A"
