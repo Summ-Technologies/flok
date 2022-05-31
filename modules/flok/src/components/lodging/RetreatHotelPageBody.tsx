@@ -77,6 +77,7 @@ let useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(0.5),
     },
   },
+  editingHeaderDiv: {justifyContent: "space-between", display: "flex"},
 }))
 
 type RetreatHotelPageBodyProps = {retreat: RetreatModel; retreatIdx: number}
@@ -158,7 +159,7 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
             className={classes.overlay}>
             <div className={classes.overlayBody}>
               <Paper className={classes.hotelDetailsSection}>
-                <div style={{justifyContent: "space-between", display: "flex"}}>
+                <div className={classes.editingHeaderDiv}>
                   <Typography variant="h4">Contract</Typography>
                   <Button
                     color="primary"
