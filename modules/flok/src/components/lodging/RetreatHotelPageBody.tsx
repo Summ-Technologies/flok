@@ -137,7 +137,7 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
       {loadingHotel ? (
         <AppLoadingScreen />
       ) : hotel === undefined ? (
-        "Oops, something went wrong."
+        "Something went wrong."
       ) : (
         <Grid container className={classes.hotelBody}>
           <Grid

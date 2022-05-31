@@ -3,22 +3,22 @@ import {
   CircularProgress,
   makeStyles,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core"
-import { push } from "connected-react-router"
-import { useFormik } from "formik"
+import {push} from "connected-react-router"
+import {useFormik} from "formik"
 import _ from "lodash"
-import { useState } from "react"
-import { useDispatch } from "react-redux"
+import {useState} from "react"
+import {useDispatch} from "react-redux"
 import * as yup from "yup"
-import config, { IMAGE_SERVER_BASE_URL_KEY } from "../../config"
-import { ImageModel } from "../../models"
-import { enqueueSnackbar } from "../../notistack-lib/actions"
-import { AppRoutes } from "../../Stack"
-import { ApiAction } from "../../store/actions/api"
-import { patchWebsite } from "../../store/actions/retreat"
-import { getTextFieldErrorProps } from "../../utils"
-import { useAttendeeLandingWebsite } from "../../utils/retreatUtils"
+import config, {IMAGE_SERVER_BASE_URL_KEY} from "../../config"
+import {ImageModel} from "../../models"
+import {enqueueSnackbar} from "../../notistack-lib/actions"
+import {AppRoutes} from "../../Stack"
+import {ApiAction} from "../../store/actions/api"
+import {patchWebsite} from "../../store/actions/retreat"
+import {getTextFieldErrorProps} from "../../utils"
+import {useAttendeeLandingWebsite} from "../../utils/retreatUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 
 let useStyles = makeStyles((theme) => ({
@@ -118,7 +118,6 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
           handleChange={(image) => {
             formik.setFieldValue("banner_image_id", image.id)
             setImages({...images, [image.id]: image})
-            console.log(formik.values)
           }}
           headerText="Banner Image"
         />
@@ -129,7 +128,6 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
           handleChange={(image) => {
             formik.setFieldValue("logo_image_id", image.id)
             setImages({...images, [image.id]: image})
-            console.log(formik.values)
           }}
           headerText="Logo Image"
         />
@@ -172,7 +170,7 @@ type UploadImageProps = {
 export function UploadImage(props: UploadImageProps) {
   const [loading, setLoading] = useState(false)
   let dispatch = useDispatch()
-  var splitTest = function (str: string) {
+  var splitFileName = function (str: string) {
     // @ts-ignore
     return str.split("\\").pop().split("/").pop()
   }
@@ -199,33 +197,35 @@ export function UploadImage(props: UploadImageProps) {
             Choose File
             <input
               type="file"
-              accept="image/png, image/gif, image/jpeg"
+              accept="image/png, image/jpg, image/jpeg"
               hidden
               onChange={(e) => {
-                let data = new FormData()
-                data.append("file", e.target?.files![0])
-                setLoading(true)
-                fetch(`${config.get(IMAGE_SERVER_BASE_URL_KEY)}/api/images`, {
-                  body: data,
-                  method: "POST",
-                  mode: "cors",
-                })
-                  .then((res) => res.json())
-                  .then((resdata) => {
-                    props.handleChange(resdata.image)
-                    setLoading(false)
+                if (e.target && e.target.files && e.target.files[0]) {
+                  let data = new FormData()
+                  data.append("file", e.target.files[0])
+                  setLoading(true)
+                  fetch(`${config.get(IMAGE_SERVER_BASE_URL_KEY)}/api/images`, {
+                    body: data,
+                    method: "POST",
+                    mode: "cors",
                   })
-                  .catch((error) => {
-                    setLoading(false)
-                    dispatch(
-                      enqueueSnackbar({
-                        message: "Oops, something went wrong",
-                        options: {
-                          variant: "error",
-                        },
-                      })
-                    )
-                  })
+                    .then((res) => res.json())
+                    .then((resdata) => {
+                      props.handleChange(resdata.image)
+                      setLoading(false)
+                    })
+                    .catch((error) => {
+                      setLoading(false)
+                      dispatch(
+                        enqueueSnackbar({
+                          message: "Oops, something went wrong",
+                          options: {
+                            variant: "error",
+                          },
+                        })
+                      )
+                    })
+                }
               }}
             />
           </Button>
@@ -237,7 +237,7 @@ export function UploadImage(props: UploadImageProps) {
               overflow: "hidden",
             }}>
             {props.value?.image_url
-              ? splitTest(props.value?.image_url)
+              ? splitFileName(props.value?.image_url)
               : "No file chosen"}
           </Typography>
         </div>
