@@ -1,12 +1,12 @@
-import { Action } from "redux"
-import { ResourceNotFound, ResourceNotFoundType } from "../../models"
+import {Action} from "redux"
+import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {
   AttendeeApiResponse,
   AttendeeLandingWebsiteApiResponse,
   AttendeeLandingWebsitePageApiResponse,
   AttendeeLandingWebsitePageBlockApiResponse,
   RetreatAttendeesApiResponse,
-  TripApiResponse
+  TripApiResponse,
 } from "../../models/api"
 import {
   AttendeeLandingWebsiteBlockModel,
@@ -14,9 +14,9 @@ import {
   AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
   RetreatModel,
-  RetreatTripModel
+  RetreatTripModel,
 } from "../../models/retreat"
-import { ApiAction } from "../actions/api"
+import {ApiAction} from "../actions/api"
 import {
   DELETE_PAGE_SUCCESS,
   DELETE_RETREAT_ATTENDEES_SUCCESS,
@@ -38,13 +38,11 @@ import {
   PATCH_TRIP_SUCCESS,
   PATCH_WEBSITE_SUCCESS,
   POST_BLOCK_SUCCESS,
-
-
-
-
+  POST_INITIAL_WEBSITE_SUCCESS,
   POST_PAGE_SUCCESS,
-  POST_RETREAT_ATTENDEES_SUCCESS, PUT_RETREAT_PREFERENCES_SUCCESS,
-  PUT_RETREAT_TASK_SUCCESS
+  POST_RETREAT_ATTENDEES_SUCCESS,
+  PUT_RETREAT_PREFERENCES_SUCCESS,
+  PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
 
 export type RetreatState = {

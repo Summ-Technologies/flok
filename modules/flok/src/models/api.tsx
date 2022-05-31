@@ -38,11 +38,8 @@ export type AttendeeLandingWebsitePageApiResponse = {
 export type AttendeeLandingWebsitePageBlockApiResponse = {
   block: AttendeeLandingWebsiteBlockModel
 }
-<<<<<<< HEAD
-=======
 export type AttendeeLandingWebsiteInitializeApiResponse = {
   website: AttendeeLandingWebsiteModel
   page: AttendeeLandingWebsitePageModel
   block: AttendeeLandingWebsiteBlockModel
 }
->>>>>>> andrew/landing-pages-fixes

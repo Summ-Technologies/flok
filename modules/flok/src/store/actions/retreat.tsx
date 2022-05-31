@@ -1,5 +1,5 @@
-import { ThunkDispatch } from "redux-thunk"
-import { RootState } from ".."
+import {ThunkDispatch} from "redux-thunk"
+import {RootState} from ".."
 import {
   AttendeeLandingWebsiteBlockModel,
   AttendeeLandingWebsiteModel,
@@ -7,11 +7,11 @@ import {
   RetreatAttendeeModel,
   RetreatToTaskState,
   RetreatTravelModel,
-  RetreatTripModel
+  RetreatTripModel,
 } from "../../models/retreat"
-import { closeSnackbar, enqueueSnackbar } from "../../notistack-lib/actions"
-import { apiNotification } from "../../notistack-lib/utils"
-import { ApiAction, createApiAction } from "./api"
+import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
+import {apiNotification} from "../../notistack-lib/utils"
+import {ApiAction, createApiAction} from "./api"
 
 export const POST_NEW_RETREAT_REQUEST = "POST_NEW_RETREAT_REQUEST"
 export const POST_NEW_RETREAT_SUCCESS = "POST_NEW_RETREAT_SUCCESS"
@@ -572,21 +572,6 @@ export function patchWebsite(
   )
 }
 
-export const POST_IMAGE_REQUEST = "POST_IMAGE_REQUEST"
-export const POST_IMAGE_SUCCESS = "POST_IMAGE_SUCCESS"
-export const POST_IMAGE_FAILURE = "POST_IMAGE_FAILURE"
-export function postImage(values: {file: any}) {
-  let endpoint = `/v1.0/test`
-  return createApiAction({
-    method: "POST",
-    endpoint,
-    body: JSON.stringify(values),
-    types: [
-      {type: POST_IMAGE_REQUEST},
-      {type: POST_IMAGE_SUCCESS},
-      {type: POST_IMAGE_FAILURE},
-    ],
-  })
 export const POST_INITIAL_WEBSITE_REQUEST = "POST_INITIAL_WEBSITE_REQUEST"
 export const POST_INITIAL_WEBSITE_SUCCESS = "POST_INITIAL_WEBSITE_SUCCESS"
 export const POST_INITIAL_WEBSITE_FAILURE = "POST_INITIAL_WEBSITE_FAILURE"
@@ -609,5 +594,4 @@ export function postInitialWebsite(
       errorMessage: "Something went wrong.",
     }
   )
-
 }

@@ -140,10 +140,7 @@ export type RetreatModel = {
   // Retreat data related to attendees
   attendees_state?: RetreatAttendeesState
   attendees_website_id?: number
-<<<<<<< HEAD
-=======
   attendees_registration_form_link?: string
->>>>>>> andrew/landing-pages-fixes
 
   // Retreat data related to flights
   flights_state?: RetreatFlightsState
@@ -186,15 +183,9 @@ export type AttendeeLandingWebsiteBlockModel = {
 }
 
 export type AttendeeLandingWebsiteModel = {
-<<<<<<< HEAD
   banner_image?: ImageModel
   name: string
   logo_image?: ImageModel
-=======
-  banner_img?: string
-  name: string
-  company_logo_img?: string
->>>>>>> andrew/landing-pages-fixes
   retreat_id: number
   id: number
   page_ids: number[]

@@ -8,10 +8,7 @@ import {
   getBlock,
   getPage,
   getPageByName,
-<<<<<<< HEAD
-=======
   getRetreat,
->>>>>>> andrew/landing-pages-fixes
   getRetreatAttendees,
   getRetreatByGuid,
   getWebsite,
@@ -128,27 +125,12 @@ export function useAttendeeLandingPageName(
   pageName: string
 ) {
   let dispatch = useDispatch()
-<<<<<<< HEAD
-=======
   let [loading, setLoading] = useState(true)
->>>>>>> andrew/landing-pages-fixes
   let page = useSelector((state: RootState) => {
     return Object.values(state.retreat.pages).find(
       (page) => page?.title.toLowerCase() === pageName.toLowerCase()
     )
   })
-<<<<<<< HEAD
-  useEffect(() => {
-    if (!page) {
-      dispatch(getPageByName(websiteId, pageName))
-    }
-  }, [page, dispatch, pageName, websiteId])
-
-  return page
-}
-
-export function useAttendeeLandingWebsiteName(websiteName: string) {
-=======
 
   useEffect(() => {
     async function loadPage() {
@@ -168,7 +150,6 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
 
 export function useAttendeeLandingWebsiteName(websiteName: string) {
   let [loading, setLoading] = useState(true)
->>>>>>> andrew/landing-pages-fixes
   let website = useSelector((state: RootState) => {
     return Object.values(state.retreat.websites).find(
       (website) => website?.name.toLowerCase() === websiteName.toLowerCase()
@@ -176,14 +157,6 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
   })
   let dispatch = useDispatch()
   useEffect(() => {
-<<<<<<< HEAD
-    if (!website) {
-      dispatch(getWebsiteByName(websiteName))
-    }
-  }, [website, dispatch, websiteName])
-
-  return website
-=======
     async function loadWebsite() {
       setLoading(true)
       await dispatch(getWebsiteByName(websiteName))
@@ -220,5 +193,4 @@ export function useRetreat(retreatId: number) {
   }, [retreat, dispatch, retreatId])
 
   return [retreat, loading] as const
->>>>>>> andrew/landing-pages-fixes
 }

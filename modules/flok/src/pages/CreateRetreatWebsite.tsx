@@ -1,22 +1,20 @@
-import { Box, Button, makeStyles, TextField, Typography } from "@material-ui/core"
-import { push } from "connected-react-router"
-import { useFormik } from "formik"
-import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
-import { RouteComponentProps } from "react-router-dom"
+import {Box, Button, makeStyles, TextField, Typography} from "@material-ui/core"
+import {push} from "connected-react-router"
+import {useFormik} from "formik"
+import {useEffect, useState} from "react"
+import {useDispatch} from "react-redux"
+import {RouteComponentProps} from "react-router-dom"
 import * as yup from "yup"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
-import PageSidenav from "../components/page/PageSidenav"
-import { UploadImage } from "../components/retreat-website/EditWebsiteForm"
-import { ImageModel } from "../models"
-import { AppRoutes } from "../Stack"
-import { ApiAction } from "../store/actions/api"
-import { postPage } from "../store/actions/retreat"
-import { getTextFieldErrorProps } from "../utils"
-import { useAttendeeLandingWebsite } from "../utils/retreatUtils"
-import { useRetreat } from "./misc/RetreatProvider"
-
+import {UploadImage} from "../components/retreat-website/EditWebsiteForm"
+import {ImageModel} from "../models"
+import {AppRoutes} from "../Stack"
+import {ApiAction} from "../store/actions/api"
+import {postInitialWebsite, postPage} from "../store/actions/retreat"
+import {getTextFieldErrorProps} from "../utils"
+import {useAttendeeLandingWebsite} from "../utils/retreatUtils"
+import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -43,8 +41,7 @@ type CreateRetreatWebsiteProps = RouteComponentProps<{
   retreatIdx: string
 }>
 function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
-  let retreat = useRetreat()
-  let retreatIdx = parseInt(props.match.params.retreatIdx)
+  let [retreat, retreatIdx] = useRetreat()
   let classes = useStyles()
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)
   let dispatch = useDispatch()
@@ -109,7 +106,6 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
 
   return (
     <PageContainer>
-      <PageSidenav retreatIdx={retreatIdx} />
       <PageBody appBar>
         <div className={classes.root}>
           <Typography variant="h1">Create a Website</Typography>
@@ -132,6 +128,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                   setImages({...images, [image.id]: image})
                 }}
                 headerText="Banner Image"
+                tooltipText="Choose a banner image.  Large images with a landscape view work best"
               />
               <UploadImage
                 value={images[formik.values.logo_image_id]}
@@ -141,6 +138,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
                   setImages({...images, [image.id]: image})
                 }}
                 headerText="Logo Image"
+                tooltipText="Choose a Logo for your Website. PNG's with a transparent background work best"
               />
             </Box>
             <Button

@@ -13,12 +13,13 @@ import { useDispatch } from "react-redux"
 import * as yup from "yup"
 import config, { IMAGE_SERVER_BASE_URL_KEY } from "../../config"
 import { ImageModel } from "../../models"
+import { enqueueSnackbar } from "../../notistack-lib/actions"
 import { AppRoutes } from "../../Stack"
 import { ApiAction } from "../../store/actions/api"
-import { patchWebsite, postImage } from "../../store/actions/retreat"
+import { patchWebsite } from "../../store/actions/retreat"
 import { getTextFieldErrorProps } from "../../utils"
 import { useAttendeeLandingWebsite } from "../../utils/retreatUtils"
-
+import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -112,35 +113,26 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
         />
         <UploadImage
           value={images[formik.values.banner_image_id]}
+          tooltipText="Choose a banner image.  Large images with a landscape view work best"
           id="banner_image"
           handleChange={(image) => {
             formik.setFieldValue("banner_image_id", image.id)
             setImages({...images, [image.id]: image})
+            console.log(formik.values)
           }}
           headerText="Banner Image"
         />
         <UploadImage
           value={images[formik.values.logo_image_id]}
+          tooltipText="Choose a Logo for your Website. PNG's with a transparent background work best"
           id="logo_image"
           handleChange={(image) => {
             formik.setFieldValue("logo_image_id", image.id)
             setImages({...images, [image.id]: image})
+            console.log(formik.values)
           }}
           headerText="Logo Image"
         />
-        {/* <UploadImage
-          value={formik.values.company_logo}
-          id="company_logo"
-          handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            if (e.target.files) {
-              // in practice we need to dispatch action to send image to image server, then use the response to update the website object which will trigger a change to the formik object
-              formik.setFieldValue("company_logo", e.target.value)
-              // (e.target.files[0])
-            }
-          }}
-          headerText="Company Logo"
-
-        /> */}
         <Button
           type="submit"
           color="primary"
@@ -172,33 +164,29 @@ let useImageStyles = makeStyles((theme) => ({
 type UploadImageProps = {
   value: ImageModel | undefined
   handleChange: (image: ImageModel) => void
-
   id: string
   headerText: string
+  tooltipText?: string
 }
 
 export function UploadImage(props: UploadImageProps) {
-
   const [loading, setLoading] = useState(false)
   let dispatch = useDispatch()
   var splitTest = function (str: string) {
     // @ts-ignore
     return str.split("\\").pop().split("/").pop()
   }
-  async function handlePostImage(values: {file: any}) {
-    setLoading(true)
-    let returnValue = (await dispatch(
-      postImage(values)
-    )) as unknown as ApiAction
-    setLoading(false)
-    if (!returnValue.error) {
-      props.handleChange(returnValue.payload.image as ImageModel)
-    }
-  }
+
   let classes = useImageStyles()
   return (
     <div className={classes.uploadImageContainer}>
-      <Typography className={classes.header}>{props.headerText}</Typography>
+      <div style={{display: "flex", alignItems: "center"}}>
+        <Typography className={classes.header}>{props.headerText}</Typography>
+        {props.tooltipText && (
+          <AppMoreInfoIcon tooltipText={props.tooltipText} />
+        )}
+      </div>
+
       {loading ? (
         <CircularProgress size="20px" className={classes.loader} />
       ) : (
@@ -212,18 +200,32 @@ export function UploadImage(props: UploadImageProps) {
             <input
               type="file"
               accept="image/png, image/gif, image/jpeg"
-              // value={props.value}
-              // id={props.id}
               hidden
               onChange={(e) => {
-                handlePostImage({file: "none"})
                 let data = new FormData()
                 data.append("file", e.target?.files![0])
+                setLoading(true)
                 fetch(`${config.get(IMAGE_SERVER_BASE_URL_KEY)}/api/images`, {
                   body: data,
                   method: "POST",
                   mode: "cors",
-                }).then((res) => console.log(res))
+                })
+                  .then((res) => res.json())
+                  .then((resdata) => {
+                    props.handleChange(resdata.image)
+                    setLoading(false)
+                  })
+                  .catch((error) => {
+                    setLoading(false)
+                    dispatch(
+                      enqueueSnackbar({
+                        message: "Oops, something went wrong",
+                        options: {
+                          variant: "error",
+                        },
+                      })
+                    )
+                  })
               }}
             />
           </Button>
