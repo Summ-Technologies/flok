@@ -144,7 +144,6 @@ let useStyles = makeStyles((theme) => ({
   warningChip: {
     borderColor: theme.palette.error.main,
     color: theme.palette.error.main,
-    marginLeft: theme.spacing(2),
     height: "25px",
   },
 }))
