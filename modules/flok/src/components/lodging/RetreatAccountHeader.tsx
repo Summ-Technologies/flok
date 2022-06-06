@@ -23,7 +23,6 @@ type RetreatAccountHeaderProps = {
 }
 export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
   let classes = useStyles(props)
-  let retreatName = useRetreatName(props.retreat)
   // let datesString: string | undefined = undefined
   // if (props.retreat.preferences_is_dates_flexible) {
   //   let dates: Date[] = []
@@ -91,7 +90,7 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
   return (
     <div className={classes.root}>
       <AppTypography variant="body1" fontWeight="bold" noWrap>
-        {retreatName}
+        {useRetreatName(props.retreat)}
       </AppTypography>
       {/* {datesString != null ? (
         <AppTypography variant="body1" noWrap>

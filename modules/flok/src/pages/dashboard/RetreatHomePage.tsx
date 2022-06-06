@@ -10,6 +10,7 @@ import {
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import AppTypography from "../../components/base/AppTypography"
+import EditRetreatButtonModal from "../../components/forms/EditRetreatButtonModal"
 import AppOverviewCard, {
   AppOverviewCardList,
 } from "../../components/overview/AppOverviewCard"
@@ -222,7 +223,10 @@ export default function RetreatHomePage() {
       <div className={classes.section}>
         <div className={classes.overviewHeader}>
           <Typography variant="h1">Overview</Typography>
-          <Typography variant="body1">{useRetreatName(retreat)}</Typography>
+          <div style={{display: "flex", alignItems: "center"}}>
+            <Typography variant="body1">{useRetreatName(retreat)}</Typography>
+            <EditRetreatButtonModal retreat={retreat} />
+          </div>
           <Typography variant="body1">{datesOverview}</Typography>
         </div>
         <AppOverviewCardList>
