@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -139,6 +140,12 @@ let useStyles = makeStyles((theme) => ({
     marginRight: "auto",
     marginBottom: "8px",
     textAlign: "center",
+  },
+  warningChip: {
+    borderColor: theme.palette.error.main,
+    color: theme.palette.error.main,
+    marginLeft: theme.spacing(2),
+    height: "25px",
   },
 }))
 
@@ -324,7 +331,10 @@ function AttendeesPage() {
             View invitees not coming (
             {attendeeTravelInfo &&
               attendeeTravelInfo.filter((attendee) => {
-                return attendee.info_status === "NOT_ATTENDING"
+                return (
+                  attendee.info_status === "NOT_ATTENDING" ||
+                  attendee.info_status === "CANCELLED"
+                )
               }).length}
             )
           </Link>
@@ -399,7 +409,9 @@ function AttendeesPage() {
             attendeeTravelInfo !== undefined
               ? attendeeTravelInfo
                   .filter(
-                    (attendee) => attendee.info_status !== "NOT_ATTENDING"
+                    (attendee) =>
+                      attendee.info_status !== "NOT_ATTENDING" &&
+                      attendee.info_status !== "CANCELLED"
                   )
                   .sort((a, b) => {
                     let getVal = (val: RetreatAttendeeModel) => {
@@ -637,7 +649,10 @@ function AttendeesPage() {
           <DialogContent dividers className={classes.notAttendingDialogBody}>
             {attendeeTravelInfo &&
             attendeeTravelInfo.filter((attendee) => {
-              return attendee.info_status === "NOT_ATTENDING"
+              return (
+                attendee.info_status === "NOT_ATTENDING" ||
+                attendee.info_status == "CANCELLED"
+              )
             }).length ? (
               <TableContainer component={Paper}>
                 <Table aria-label="simple table">
@@ -645,8 +660,16 @@ function AttendeesPage() {
                     {attendeeTravelInfo &&
                       attendeeTravelInfo
                         .filter((attendee) => {
-                          return attendee.info_status === "NOT_ATTENDING"
+                          return (
+                            attendee.info_status === "NOT_ATTENDING" ||
+                            attendee.info_status == "CANCELLED"
+                          )
                         })
+                        .sort((attendeeA, attendeeB) =>
+                          attendeeA.info_status.localeCompare(
+                            attendeeB.info_status
+                          )
+                        )
                         .map((attendee) => (
                           <TableRow key={attendee.id}>
                             <TableCell
@@ -655,9 +678,22 @@ function AttendeesPage() {
                               scope="row">
                               {attendee.first_name + " " + attendee.last_name}
                             </TableCell>
-                            <TableCell align="right">
+                            <TableCell
+                              width={"100%"}
+                              component="th"
+                              scope="row">
                               {attendee.email_address}
                             </TableCell>
+                            <TableCell align="right">
+                              {attendee.info_status === "CANCELLED" && (
+                                <Chip
+                                  variant="outlined"
+                                  label={"Cancelled"}
+                                  className={classes.warningChip}
+                                />
+                              )}
+                            </TableCell>
+
                             <TableCell>
                               <Button
                                 variant="contained"
