@@ -630,3 +630,19 @@ export function postRetreatAttendeesBatch(
     }
   )
 }
+
+export const GET_WEBSITE_BY_ATTENDEE_REQUEST = "GET_WEBSITE_BY_ATTENDEE_REQUEST"
+export const GET_WEBSITE_BY_ATTENDEE_SUCCESS = "GET_WEBSITE_BY_ATTENDEE_SUCCESS"
+export const GET_WEBSITE_BY_ATTENDEE_FAILURE = "GET_WEBSITE_BY_ATTENDEE_FAILURE"
+export function getWebsiteByAttendee(attendeeId: number) {
+  let endpoint = `/v1.0/attendees/${attendeeId}/website`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_WEBSITE_BY_ATTENDEE_REQUEST},
+      {type: GET_WEBSITE_BY_ATTENDEE_SUCCESS, meta: {attendeeId}},
+      {type: GET_WEBSITE_BY_ATTENDEE_FAILURE, meta: {attendeeId}},
+    ],
+  })
+}

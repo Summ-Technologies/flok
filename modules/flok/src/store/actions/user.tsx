@@ -12,7 +12,7 @@ export const POST_USER_SIGNIN_REQUEST = "POST_USER_SIGNIN_REQUEST"
 export const POST_USER_SIGNIN_SUCCESS = "POST_USER_SIGNIN_SUCCESS"
 export const POST_USER_SIGNIN_FAILURE = "POST_USER_SIGNIN_FAILURE"
 
-export function postUserSignin(email: string, password: string) {
+export function postUserSignin(email: string, password: string, next?: string) {
   let endpoint = "/v1.0/auth/signin"
   return createApiAction(
     {
@@ -29,7 +29,11 @@ export function postUserSignin(email: string, password: string) {
       errorMessage: "Failed to login",
       onSuccess: (dispatch) => {
         dispatch(setUserLoggedIn())
-        dispatch(push(AppRoutes.getPath("HomeRoutingPage")))
+        if (next) {
+          dispatch(push(decodeURIComponent(next)))
+        } else {
+          dispatch(push(AppRoutes.getPath("HomeRoutingPage")))
+        }
       },
     }
   )

@@ -10,6 +10,7 @@ import AuthForm from "../../components/forms/AuthForm"
 import PageContainer from "../../components/page/PageContainer"
 import {AppRoutes} from "../../Stack"
 import {postUserSignin} from "../../store/actions/user"
+import {useQuery} from "../../utils"
 
 let useStyles = makeStyles((theme) => ({
   footer: {
@@ -48,10 +49,15 @@ let useStyles = makeStyles((theme) => ({
 
 type SigninPageProps = RouteComponentProps<{}>
 function SigninPage(props: SigninPageProps) {
+  let [nextQueryParam] = useQuery("next")
   let classes = useStyles(props)
   let dispatch = useDispatch()
   const handleLogin = (vals: {email: string; password: string}) => {
-    dispatch(postUserSignin(vals.email, vals.password))
+    if (nextQueryParam) {
+      dispatch(postUserSignin(vals.email, vals.password, nextQueryParam))
+    } else {
+      dispatch(postUserSignin(vals.email, vals.password))
+    }
   }
   return (
     <PageContainer>
