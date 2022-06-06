@@ -15,7 +15,7 @@ import {useDispatch} from "react-redux"
 import {RetreatModel} from "../../models/retreat"
 import {ApiAction} from "../../store/actions/api"
 import {patchRetreat} from "../../store/actions/retreat"
-import {useRetreatName} from "../../utils/retreatUtils"
+import {getRetreatName} from "../../utils/retreatUtils"
 import AppLoadingScreen from "../base/AppLoadingScreen"
 
 type EditRetreatButtonModalProps = {
@@ -27,7 +27,7 @@ function EditRetreatButtonModal(props: EditRetreatButtonModalProps) {
   let dispatch = useDispatch()
   let formik = useFormik({
     initialValues: {
-      retreat_name: useRetreatName(props.retreat),
+      retreat_name: getRetreatName(props.retreat),
     },
     onSubmit: async (values) => {
       setLoading(true)
@@ -41,16 +41,18 @@ function EditRetreatButtonModal(props: EditRetreatButtonModalProps) {
       setLoading(false)
       if (!response.error) {
         setEditModalOpen(false)
+        if (!response.payload.retreat.retreat_name) {
+          formik.resetForm()
+        }
       }
     },
     enableReinitialize: true,
   })
   return (
     <div>
-      <IconButton onClick={() => setEditModalOpen(true)}>
+      <IconButton onClick={() => setEditModalOpen(true)} size="small">
         <Edit fontSize="small" />
       </IconButton>
-
       <Dialog
         open={editModalOpen}
         fullWidth

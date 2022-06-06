@@ -26,7 +26,7 @@ import {
 import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
 import {putRetreatTask} from "../../store/actions/retreat"
-import {useRetreatAttendees, useRetreatName} from "../../utils/retreatUtils"
+import {getRetreatName, useRetreatAttendees} from "../../utils/retreatUtils"
 import {useRetreat} from "../misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -60,6 +60,7 @@ let useStyles = makeStyles((theme) => ({
     textDecoration: "underline",
     cursor: "pointer",
   },
+  retreatNameLine: {display: "flex", alignItems: "center"},
 }))
 
 export default function RetreatHomePage() {
@@ -223,8 +224,9 @@ export default function RetreatHomePage() {
       <div className={classes.section}>
         <div className={classes.overviewHeader}>
           <Typography variant="h1">Overview</Typography>
-          <div style={{display: "flex", alignItems: "center"}}>
-            <Typography variant="body1">{useRetreatName(retreat)}</Typography>
+          <div className={classes.retreatNameLine}>
+            <Typography variant="body1">{getRetreatName(retreat)}</Typography>
+            &nbsp;
             <EditRetreatButtonModal retreat={retreat} />
           </div>
           <Typography variant="body1">{datesOverview}</Typography>

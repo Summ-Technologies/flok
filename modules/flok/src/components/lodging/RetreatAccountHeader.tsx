@@ -1,7 +1,7 @@
 import {makeStyles} from "@material-ui/core"
 import React from "react"
 import {RetreatModel} from "../../models/retreat"
-import {useRetreatName} from "../../utils/retreatUtils"
+import {getRetreatName} from "../../utils/retreatUtils"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -90,7 +90,7 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
   return (
     <div className={classes.root}>
       <AppTypography variant="body1" fontWeight="bold" noWrap>
-        {useRetreatName(props.retreat)}
+        {getRetreatName(props.retreat)}
       </AppTypography>
       {/* {datesString != null ? (
         <AppTypography variant="body1" noWrap>

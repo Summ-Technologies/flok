@@ -153,7 +153,7 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
   return website
 }
 
-export function useRetreatName(retreat: RetreatModel) {
+export function getRetreatName(retreat: RetreatModel) {
   if (retreat.retreat_name != undefined) {
     return retreat.retreat_name
   } else return `${retreat.company_name}'s Retreat`
