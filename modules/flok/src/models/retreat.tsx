@@ -113,6 +113,7 @@ export type RetreatModel = {
   id: number
   guid: string
   company_name: string
+  retreat_name?: string
   state: RetreatProgressState
 
   // Retreat data related to the intake form

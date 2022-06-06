@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Constants} from "../config"
-import {RetreatToTask} from "../models/retreat"
+import {RetreatModel, RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getBlock,
@@ -151,4 +151,10 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
   }, [website, dispatch, websiteName])
 
   return website
+}
+
+export function useRetreatName(retreat: RetreatModel) {
+  if (retreat.retreat_name != undefined) {
+    return retreat.retreat_name
+  } else return `${retreat.company_name}'s Retreat`
 }

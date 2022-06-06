@@ -1,6 +1,7 @@
 import {makeStyles} from "@material-ui/core"
 import React from "react"
 import {RetreatModel} from "../../models/retreat"
+import {useRetreatName} from "../../utils/retreatUtils"
 import AppTypography from "../base/AppTypography"
 
 let useStyles = makeStyles((theme) => ({
@@ -22,7 +23,7 @@ type RetreatAccountHeaderProps = {
 }
 export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
   let classes = useStyles(props)
-  let retreatName = `${props.retreat.company_name}'s Retreat`
+  let retreatName = useRetreatName(props.retreat)
   // let datesString: string | undefined = undefined
   // if (props.retreat.preferences_is_dates_flexible) {
   //   let dates: Date[] = []

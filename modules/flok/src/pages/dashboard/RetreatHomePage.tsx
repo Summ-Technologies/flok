@@ -25,7 +25,7 @@ import {
 import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
 import {putRetreatTask} from "../../store/actions/retreat"
-import {useRetreatAttendees} from "../../utils/retreatUtils"
+import {useRetreatAttendees, useRetreatName} from "../../utils/retreatUtils"
 import {useRetreat} from "../misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
@@ -222,9 +222,7 @@ export default function RetreatHomePage() {
       <div className={classes.section}>
         <div className={classes.overviewHeader}>
           <Typography variant="h1">Overview</Typography>
-          <Typography variant="body1">
-            {retreat.company_name}'s Retreat
-          </Typography>
+          <Typography variant="body1">{useRetreatName(retreat)}</Typography>
           <Typography variant="body1">{datesOverview}</Typography>
         </div>
         <AppOverviewCardList>
