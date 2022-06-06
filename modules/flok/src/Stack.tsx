@@ -2,6 +2,7 @@ import React from "react"
 import {Route, Switch} from "react-router-dom"
 import PageContainer from "./components/page/PageContainer"
 import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
+import AttendeeRegFormPage from "./pages/AttendeeRegFormPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
@@ -70,6 +71,7 @@ export class AppRoutes {
     // Not in sidebar yet
     RetreatWebsiteHome: "/retreats/:retreatName",
     RetreatWebsitePage: "/retreats/:retreatName/:pageName",
+    RetreatAttendeesRegFormPage: "/retreats/:retreatName/registration",
     LandingPageGeneratorHome: "/r/:retreatIdx/landing",
     LandingPageGeneratorPage: "/r/:retreatIdx/landing/:currentPageId",
     LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:currentPageId/config",
@@ -152,6 +154,9 @@ export default function Stack() {
         exact
         component={ForgotPasswordPage}
       />
+      <Route exact path={AppRoutes.getPath("RetreatAttendeesRegFormPage")}>
+        <AttendeeRegFormPage />
+      </Route>
       <Route
         path={[
           AppRoutes.getPath("RetreatWebsiteHome"),

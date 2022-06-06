@@ -84,7 +84,9 @@ let useQuestionStyles = makeStyles((theme) => ({
   },
 }))
 
-type RegFormBuilderQuestionProps = {}
+type RegFormBuilderQuestionProps = {
+  editable?: boolean
+}
 export function RegFormBuilderQuestion(props: RegFormBuilderQuestionProps) {
   let classes = useQuestionStyles()
   let [editActive, setEditActive] = useState(false)
@@ -125,7 +127,7 @@ export function RegFormBuilderQuestion(props: RegFormBuilderQuestionProps) {
             title={question.title}
             description={question.description ?? ""}
             questionId={question.id}
-            editable={true}
+            editable={props.editable}
             editActive={editActive}
           />
         </div>
@@ -207,44 +209,6 @@ export function RegFormBuilderQuestion(props: RegFormBuilderQuestionProps) {
   )
 }
 
-type RegFormViewerQuestionProps = {
-  value: string
-  onChange: (newVal: string) => void
-  onLoad: (question: FormQuestionModel) => void
-}
-
-/**
- * Needs to be rendered in a FormQuestionProvider
- */
-export function RegFormViewerQuestion(props: RegFormViewerQuestionProps) {
-  let classes = useQuestionStyles()
-  let question = useFormQuestion()
-
-  useEffect(() => {
-    props.onLoad(question)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  return (
-    <div className={classes.root}>
-      <div className={classes.questionHeaderContainer}>
-        <div className={classes.questionTitleSubtitle}>
-          <FormQuestionHeader
-            required={question.required}
-            title={question.title}
-            description={question.description ?? ""}
-            questionId={question.id}
-          />
-        </div>
-      </div>
-      <RegFormViewerQuestionSwitch
-        question={question}
-        value={props.value}
-        onChange={props.onChange}
-      />
-    </div>
-  )
-}
-
 function RegFormBuilderQuestionSwitch(props: {question: FormQuestionModel}) {
   function render(questionType: typeof props.question.type) {
     switch (questionType) {
@@ -286,73 +250,6 @@ function RegFormBuilderQuestionSwitch(props: {question: FormQuestionModel}) {
   }
   return render(props.question.type)
 }
-type RegFormViewerQuestionSwitchProps = {
-  question: FormQuestionModel
-  value: string
-  onChange: (newVal: string) => void
-}
-
-function RegFormViewerQuestionSwitch(props: RegFormViewerQuestionSwitchProps) {
-  function render(questionType: typeof props.question.type) {
-    switch (questionType) {
-      case FormQuestionTypeEnum.SHORT_ANSWER:
-        return (
-          <RegFormViewerTextQuestion
-            type={FormQuestionTypeEnum.SHORT_ANSWER}
-            value={props.value}
-            onChange={props.onChange}
-          />
-        )
-      case FormQuestionTypeEnum.LONG_ANSWER:
-        return (
-          <RegFormViewerTextQuestion
-            type={FormQuestionTypeEnum.LONG_ANSWER}
-            value={props.value}
-            onChange={props.onChange}
-          />
-        )
-      case FormQuestionTypeEnum.SINGLE_SELECT:
-        return (
-          <RegFormViewerSelectQuestion
-            value={props.value}
-            onChange={props.onChange}
-            type={FormQuestionTypeEnum.SINGLE_SELECT}
-            optionIds={props.question.select_options}
-            questionId={props.question.id}
-          />
-        )
-      case FormQuestionTypeEnum.MULTI_SELECT:
-        return (
-          <RegFormViewerSelectQuestion
-            value={props.value}
-            onChange={props.onChange}
-            type={FormQuestionTypeEnum.MULTI_SELECT}
-            optionIds={props.question.select_options}
-            questionId={props.question.id}
-          />
-        )
-      case FormQuestionTypeEnum.DATE:
-        return (
-          <RegFormViewerDateQuestion
-            value={props.value}
-            onChange={props.onChange}
-            type={FormQuestionTypeEnum.DATE}
-          />
-        )
-      case FormQuestionTypeEnum.DATETIME:
-        return (
-          <RegFormViewerDateQuestion
-            value={props.value}
-            onChange={props.onChange}
-            type={FormQuestionTypeEnum.DATETIME}
-          />
-        )
-      default:
-        return <div>Something went wrong</div>
-    }
-  }
-  return render(props.question.type)
-}
 
 let useTextQuestionStyles = makeStyles((theme) => ({
   root: {},
@@ -370,30 +267,6 @@ function RegFormBuilderTextQuestion(props: RegFormBuilderTextQuestionProps) {
     <TextField
       variant="outlined"
       disabled
-      fullWidth
-      InputProps={{
-        className: classes.formQuestionTextInput,
-      }}
-      multiline={props.type === FormQuestionTypeEnum.LONG_ANSWER}
-      rows={props.type === FormQuestionTypeEnum.LONG_ANSWER ? 3 : undefined}
-      rowsMax={props.type === FormQuestionTypeEnum.LONG_ANSWER ? 3 : undefined}
-      placeholder={`${FormQuestionTypeName[props.type]}`}
-    />
-  )
-}
-
-type RegFormViewerTextQuestionProps = {
-  type: FormQuestionTypeEnum.SHORT_ANSWER | FormQuestionTypeEnum.LONG_ANSWER
-  value: string
-  onChange: (newVal: string) => void
-}
-function RegFormViewerTextQuestion(props: RegFormViewerTextQuestionProps) {
-  let classes = useTextQuestionStyles()
-  return (
-    <TextField
-      onChange={(e) => props.onChange(e.target.value)}
-      value={props.value}
-      variant="outlined"
       fullWidth
       InputProps={{
         className: classes.formQuestionTextInput,
@@ -459,38 +332,6 @@ export function RegFormBuilderSelectQuestion(
   )
 }
 
-type RegFormViewerSelectQuestionProps = {
-  value: string
-  onChange: (newVal: string) => void
-  type: FormQuestionTypeEnum.MULTI_SELECT | FormQuestionTypeEnum.SINGLE_SELECT
-  optionIds: number[]
-  questionId: number
-}
-export function RegFormViewerSelectQuestion(
-  props: RegFormViewerSelectQuestionProps
-) {
-  let [selectedOptions, setSelectedOptions] = useState(props.value.split(","))
-  useEffect(() => {
-    setSelectedOptions(props.value.split(","))
-  }, [props.value])
-  return (
-    <FormControl>
-      <FormGroup>
-        {props.optionIds.map((optionId, i) => {
-          return (
-            <SelectQuestionViewerLabel
-              onChange={(newVal) => props.onChange(newVal.join(","))}
-              value={selectedOptions}
-              optionId={optionId}
-              type={props.type}
-            />
-          )
-        })}
-      </FormGroup>
-    </FormControl>
-  )
-}
-
 let useSelectOptionStyles = makeStyles((theme) => ({
   label: {
     flex: 1,
@@ -510,6 +351,7 @@ let useSelectOptionStyles = makeStyles((theme) => ({
 }))
 
 function SelectQuestionLabel(props: {
+  editActive?: boolean
   optionId: number
   type:
     | typeof FormQuestionTypeEnum.MULTI_SELECT
@@ -593,76 +435,6 @@ function SelectQuestionLabel(props: {
   )
 }
 
-function SelectQuestionViewerLabel(props: {
-  value: string[]
-  onChange: (newVal: string[]) => void
-  optionId: number
-  type:
-    | typeof FormQuestionTypeEnum.MULTI_SELECT
-    | typeof FormQuestionTypeEnum.SINGLE_SELECT
-}) {
-  let classes = useSelectOptionStyles()
-  let dispatch = useDispatch()
-  let [loadingOption, setLoadingOption] = useState(false)
-  let option = useSelector(
-    (state: RootState) => state.form.questionOptions[props.optionId]
-  )
-  useEffect(() => {
-    async function loadOption() {
-      setLoadingOption(true)
-      await dispatch(getFormQuestionOption(props.optionId))
-      setLoadingOption(false)
-    }
-    if (!option) {
-      loadOption()
-    }
-  }, [option, props.optionId, dispatch])
-
-  return option ? (
-    <FormControlLabel
-      classes={{label: classes.label}}
-      onChange={(e, checked) => {
-        if (checked) {
-          if (props.type === FormQuestionTypeEnum.MULTI_SELECT) {
-            props.onChange([...props.value, option!.option])
-          } else {
-            props.onChange([option!.option])
-          }
-        } else {
-          props.onChange(props.value.filter((val) => val !== option!.option))
-        }
-      }}
-      control={
-        props.type === FormQuestionTypeEnum.MULTI_SELECT ? (
-          <Checkbox checked={props.value.includes(option.option)} />
-        ) : (
-          <Radio checked={props.value.includes(option.option)} />
-        )
-      }
-      label={option.option}
-    />
-  ) : loadingOption ? (
-    <FormControlLabel
-      disabled
-      value={""}
-      control={
-        props.type === FormQuestionTypeEnum.MULTI_SELECT ? (
-          <Checkbox checked={false} />
-        ) : (
-          <Radio checked={false} />
-        )
-      }
-      label={
-        <Box height="50px" width="100px" position="relative">
-          <CircularProgress />
-        </Box>
-      }
-    />
-  ) : (
-    <></>
-  )
-}
-
 type RegFormBuilderDateQuestionProps = {
   type: FormQuestionTypeEnum.DATE | FormQuestionTypeEnum.DATETIME
 }
@@ -677,24 +449,6 @@ function RegFormBuilderDateQuestion(props: RegFormBuilderDateQuestionProps) {
         endAdornment: <CalendarToday fontSize="inherit" />,
       }}
       disabled
-    />
-  )
-}
-
-type RegFormViewerDateQuestionProps = {
-  type: FormQuestionTypeEnum.DATE | FormQuestionTypeEnum.DATETIME
-  value: string
-  onChange: (newVal: string) => void
-}
-function RegFormViewerDateQuestion(props: RegFormViewerDateQuestionProps) {
-  return (
-    <TextField
-      value={props.value}
-      onChange={(e) => props.onChange(e.target.value)}
-      variant="outlined"
-      type={
-        props.type === FormQuestionTypeEnum.DATETIME ? "datetime-local" : "date"
-      }
     />
   )
 }

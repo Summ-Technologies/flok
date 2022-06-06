@@ -48,7 +48,7 @@ export default function FormBuilder(props: FormBuilderProps) {
       {form.questions.map((questionId) => (
         <div className={classes.formSection}>
           <FormQuestionProvider questionId={questionId}>
-            <RegFormBuilderQuestion key={questionId} editable />
+            <RegFormBuilderQuestion key={questionId} />
           </FormQuestionProvider>
         </div>
       ))}

@@ -95,7 +95,7 @@ export function FormHeader(props: FormHeaderProps) {
         }
       }}
       tabIndex={0}>
-      {editActive ? (
+      {editActive && props.editable ? (
         <ClickAwayListener onClickAway={() => setEditActive(false)}>
           <form className={classes.root}>
             <TextField
@@ -143,7 +143,7 @@ export function FormHeader(props: FormHeaderProps) {
               classes.formDescription,
               props.editable ? classes.editableText : undefined
             )}>
-            {descriptionFormik.values.description ? (
+            {descriptionFormik.values.description || !props.editable ? (
               descriptionFormik.values.description
             ) : (
               <Typography
@@ -273,7 +273,7 @@ export function FormQuestionHeader(props: FormQuestionHeaderProps) {
           classes.questionTitle,
           props.editable ? classes.editableText : undefined
         )}>
-        {titleFormik.values.title ? (
+        {titleFormik.values.title || !props.editable ? (
           titleFormik.values.title
         ) : (
           <Typography variant="inherit" component="span" color="textSecondary">
@@ -293,7 +293,7 @@ export function FormQuestionHeader(props: FormQuestionHeaderProps) {
           classes.questionDescription,
           props.editable ? classes.editableText : undefined
         )}>
-        {descriptionFormik.values.description ? (
+        {descriptionFormik.values.description || !props.editable ? (
           descriptionFormik.values.description
         ) : (
           <Typography variant="inherit" component="span" color="textSecondary">
