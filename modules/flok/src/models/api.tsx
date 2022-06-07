@@ -38,6 +38,11 @@ export type AttendeeLandingWebsitePageApiResponse = {
 export type AttendeeLandingWebsitePageBlockApiResponse = {
   block: AttendeeLandingWebsiteBlockModel
 }
+export type AttendeeLandingWebsiteInitializeApiResponse = {
+  website: AttendeeLandingWebsiteModel
+  page: AttendeeLandingWebsitePageModel
+  block: AttendeeLandingWebsiteBlockModel
+}
 export type AttendeeBatchUploadApiResponse = {
   attendees: RetreatAttendeeModel[]
   errors: (Pick<

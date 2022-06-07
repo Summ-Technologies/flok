@@ -1,16 +1,21 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
+import {ResourceNotFound} from "../models"
 import {AppRoutes} from "../Stack"
+import {ImageUtils} from "../utils/imageUtils"
 import {
   useAttendeeLandingPageBlock,
   useAttendeeLandingPageName,
   useAttendeeLandingWebsiteName,
+  useRetreat,
 } from "../utils/retreatUtils"
+import LoadingPage from "./misc/LoadingPage"
 import NotFound404Page from "./misc/NotFound404Page"
 
 let useStyles = makeStyles((theme) => ({
@@ -44,6 +49,7 @@ type RetreatWebsiteProps = RouteComponentProps<{
 
 function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
+  let dispatch = useDispatch()
   let classes = useStyles()
   function replaceDashes(str: string) {
     let strArray = str.split("")
@@ -54,12 +60,19 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     })
     return strArray.join("")
   }
-  let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
-  let page = useAttendeeLandingPageName(
+  let [website, websiteLoading] = useAttendeeLandingWebsiteName(
+    replaceDashes(retreatName)
+  )
+  let [page, pageLoading] = useAttendeeLandingPageName(
     website?.id ?? 0,
     replaceDashes(pageName ?? "home")
   )
-  return !page || !website ? (
+  let [retreat, retreatLoading] = useRetreat(website?.retreat_id ?? -1)
+  const titleTag = document.getElementById("titleTag")
+  titleTag!.innerHTML = `${website?.name} | ${page?.title}`
+  return websiteLoading || pageLoading || retreatLoading ? (
+    <LoadingPage />
+  ) : !page || !website || !retreat || retreat === ResourceNotFound ? (
     <NotFound404Page />
   ) : (
     <PageContainer>
@@ -68,14 +81,17 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
           <RetreatWebsiteHeader
             logo={
               website.company_logo_img ??
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Brex_logo_black.svg/1200px-Brex_logo_black.svg.png"
+              ImageUtils.getImageUrl("logoIconTextTrans")
             }
             pageIds={website.page_ids}
             retreatName={retreatName}
             homeRoute={AppRoutes.getPath("RetreatWebsiteHome", {
               retreatName: retreatName,
             })}
-            selectedPage={pageName ?? "home"}></RetreatWebsiteHeader>
+            selectedPage={pageName ?? "home"}
+            registrationLink={
+              retreat.attendees_registration_form_link
+            }></RetreatWebsiteHeader>
           <img
             src={
               website.banner_img ??

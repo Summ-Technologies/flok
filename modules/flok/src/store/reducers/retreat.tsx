@@ -38,10 +38,10 @@ import {
   PATCH_TRIP_SUCCESS,
   PATCH_WEBSITE_SUCCESS,
   POST_BLOCK_SUCCESS,
+  POST_INITIAL_WEBSITE_SUCCESS,
   POST_PAGE_SUCCESS,
   POST_RETREAT_ATTENDEES_BATCH_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
-  POST_WEBSITE_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
@@ -185,7 +185,7 @@ export default function retreatReducer(
       return state
     case GET_WEBSITE_SUCCESS:
     case PATCH_WEBSITE_SUCCESS:
-    case POST_WEBSITE_SUCCESS:
+    case POST_INITIAL_WEBSITE_SUCCESS:
       payload = (action as ApiAction)
         .payload as AttendeeLandingWebsiteApiResponse
       return {

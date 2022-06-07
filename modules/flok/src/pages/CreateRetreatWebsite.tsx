@@ -9,7 +9,7 @@ import PageBody from "../components/page/PageBody"
 import {UploadImage} from "../components/retreat-website/EditWebsiteForm"
 import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
-import {postPage, postWebsite} from "../store/actions/retreat"
+import {postInitialWebsite, postPage} from "../store/actions/retreat"
 import {getTextFieldErrorProps} from "../utils"
 import {useAttendeeLandingWebsite} from "../utils/retreatUtils"
 import {useRetreat} from "./misc/RetreatProvider"
@@ -59,25 +59,17 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
     retreat_id: number
   }) {
     let websiteResponse = (await dispatch(
-      postWebsite(values)
+      postInitialWebsite(values)
     )) as unknown as ApiAction
     if (!websiteResponse.error) {
-      let pageResponse = (await dispatch(
-        postPage({
-          title: "Home",
-          website_id: websiteResponse.payload.website.id,
-        })
-      )) as unknown as ApiAction
-      if (!pageResponse.error) {
-        dispatch(
-          push(
-            AppRoutes.getPath("LandingPageGeneratorPage", {
-              retreatIdx: retreatIdx.toString(),
-              currentPageId: pageResponse.payload.page.id,
-            })
-          )
+      dispatch(
+        push(
+          AppRoutes.getPath("LandingPageGeneratorPage", {
+            retreatIdx: retreatIdx.toString(),
+            currentPageId: websiteResponse.payload.website.page_ids[0],
+          })
         )
-      }
+      )
     }
   }
 
