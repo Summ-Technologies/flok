@@ -22,9 +22,9 @@ let useStyles = makeStyles((theme) => ({
   bannerImg: {
     width: "100%",
     maxHeight: "325px",
+    objectFit: "cover",
     [theme.breakpoints.down("sm")]: {
       minHeight: "130px",
-      objectFit: "cover",
     },
   },
   websiteBody: {
@@ -80,7 +80,7 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
         <div className={classes.overallPage}>
           <RetreatWebsiteHeader
             logo={
-              website.company_logo_img ??
+              website.logo_image?.image_url ??
               ImageUtils.getImageUrl("logoIconTextTrans")
             }
             pageIds={website.page_ids}
@@ -94,7 +94,7 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             }></RetreatWebsiteHeader>
           <img
             src={
-              website.banner_img ??
+              website.banner_image?.image_url ??
               "https://upload.wikimedia.org/wikipedia/commons/b/bb/Table_Rock_scenery_banner.jpg"
             }
             className={classes.bannerImg}

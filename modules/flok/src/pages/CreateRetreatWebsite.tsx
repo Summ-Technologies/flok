@@ -1,12 +1,14 @@
 import {Box, Button, makeStyles, TextField, Typography} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useFormik} from "formik"
-import {useEffect} from "react"
+import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import * as yup from "yup"
 import PageBody from "../components/page/PageBody"
+import PageContainer from "../components/page/PageContainer"
 import {UploadImage} from "../components/retreat-website/EditWebsiteForm"
+import {ImageModel} from "../models"
 import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
 import {postInitialWebsite, postPage} from "../store/actions/retreat"
@@ -43,6 +45,7 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
   let classes = useStyles()
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)
   let dispatch = useDispatch()
+  let [images, setImages] = useState<{[key: number]: ImageModel}>({})
   useEffect(() => {
     if (website && !website.page_ids[0]) {
       dispatch(
@@ -75,13 +78,18 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
 
   let formik = useFormik({
     initialValues: {
-      header_image: "",
-      company_logo: "",
+      banner_image_id: -1,
+      logo_image_id: -1,
       name: "",
     },
     onSubmit: (values) => {
+      for (let k in values) {
+        if (values[k as keyof typeof values] === -1) {
+          delete values[k as keyof typeof values]
+        }
+      }
       handleCreateWebsite({
-        name: values.name,
+        ...values,
         retreat_id: retreat.id,
       })
     },
@@ -97,55 +105,54 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
   })
 
   return (
-    <PageBody appBar>
-      <div className={classes.root}>
-        <Typography variant="h1">Create a Website</Typography>
-        <form onSubmit={formik.handleSubmit} className={classes.form}>
-          <Box className={classes.body}>
-            <TextField
-              required
-              value={formik.values.name}
-              id={`name`}
-              onChange={formik.handleChange}
-              variant="outlined"
-              label="Website Name"
-              {...getTextFieldErrorProps(formik, "name")}
-            />
-            <UploadImage
-              value={formik.values.header_image}
-              id="header_image"
-              handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                if (e.target.files) {
-                  // formik.setFieldValue("header_image", e.target.files[0])
-                  formik.setFieldValue("header_image", e.target.value)
-                  // console.log(e.target.files[0])
-                }
-              }}
-              headerText="Header Image"
-            />
-            <UploadImage
-              value={formik.values.company_logo}
-              id="company_logo"
-              handleChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                if (e.target.files) {
-                  formik.setFieldValue("company_logo", e.target.value)
-                  // (e.target.files[0])
-                }
-              }}
-              headerText="Company Logo"
-            />
-          </Box>
-          <Button
-            type="submit"
-            color="primary"
-            variant="contained"
-            className={classes.submitButton}
-            disabled={formik.values.name === ""}>
-            Create
-          </Button>
-        </form>
-      </div>
-    </PageBody>
+    <PageContainer>
+      <PageBody appBar>
+        <div className={classes.root}>
+          <Typography variant="h1">Create a Website</Typography>
+          <form onSubmit={formik.handleSubmit} className={classes.form}>
+            <Box className={classes.body}>
+              <TextField
+                required
+                value={formik.values.name}
+                id={`name`}
+                onChange={formik.handleChange}
+                variant="outlined"
+                label="Website Name"
+                {...getTextFieldErrorProps(formik, "name")}
+              />
+              <UploadImage
+                value={images[formik.values.banner_image_id]}
+                id="banner_image"
+                handleChange={(image) => {
+                  formik.setFieldValue("banner_image_id", image.id)
+                  setImages({...images, [image.id]: image})
+                }}
+                headerText="Banner Image"
+                tooltipText="Choose a banner image.  Large images with a landscape view work best"
+              />
+              <UploadImage
+                value={images[formik.values.logo_image_id]}
+                id="logo_image"
+                handleChange={(image) => {
+                  formik.setFieldValue("logo_image_id", image.id)
+                  setImages({...images, [image.id]: image})
+                }}
+                headerText="Logo Image"
+                tooltipText="Choose a Logo for your Website. PNG's with a transparent background work best"
+              />
+            </Box>
+            <Button
+              type="submit"
+              color="primary"
+              variant="contained"
+              className={classes.submitButton}
+              disabled={formik.values.name === ""}>
+              Create
+            </Button>
+          </form>
+        </div>
+      </PageBody>
+    </PageContainer>
   )
 }
 export default CreateRetreatWebsite
