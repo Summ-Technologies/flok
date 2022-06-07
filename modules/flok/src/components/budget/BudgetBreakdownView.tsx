@@ -254,7 +254,7 @@ export default function BudgetBreakdownView(props: {
               }
               cost={props.breakdown.ground_transport
                 .map((o) => o.cost)
-                .reduce((p, c) => p + c)}
+                .reduce((p, c) => p + c, 0)}
               subRows={props.breakdown.ground_transport.map((obj) => ({
                 name: obj.name,
                 end: currencyFormatter.format(obj.cost) + " per person",

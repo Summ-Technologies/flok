@@ -207,7 +207,11 @@ export type RetreatTravelModel = {
   dep_trip?: RetreatTripModel
   arr_trip?: RetreatTripModel
 }
-export type AttendeeInfoStatus = "CREATED" | "INFO_ENTERED" | "NOT_ATTENDING"
+export type AttendeeInfoStatus =
+  | "CREATED"
+  | "INFO_ENTERED"
+  | "NOT_ATTENDING"
+  | "CANCELLED"
 export type RetreatAttendeeModel = {
   id: number
   email_address: string

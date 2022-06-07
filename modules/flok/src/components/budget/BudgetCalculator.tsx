@@ -152,7 +152,7 @@ export default function BudgetCalculator(props: {
               }}>
               {[3, 4, 5, 6, 7, 8].map((d) => (
                 <MenuItem key={d} value={d}>
-                  {d} days
+                  {d} days / {d - 1} nights
                 </MenuItem>
               ))}
             </TextField>

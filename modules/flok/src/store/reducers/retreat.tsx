@@ -40,6 +40,7 @@ import {
   POST_BLOCK_SUCCESS,
   POST_INITIAL_WEBSITE_SUCCESS,
   POST_PAGE_SUCCESS,
+  POST_RETREAT_ATTENDEES_BATCH_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
@@ -284,6 +285,32 @@ export default function retreatReducer(
         },
         pages: newPages,
       }
+    case POST_RETREAT_ATTENDEES_BATCH_SUCCESS:
+      retreatId = (action as unknown as {meta: {retreatId: number}}).meta
+        .retreatId
+      payload = (action as ApiAction).payload as RetreatAttendeesApiResponse
+      let newState = {...state}
+      if (payload) {
+        newState.retreatAttendees = {
+          ...state.retreatAttendees,
+          [retreatId]: [
+            ...(state.retreatAttendees[retreatId] !== undefined
+              ? state.retreatAttendees[retreatId]!
+              : []),
+            ...payload.attendees.map((attendee) => attendee.id),
+          ],
+        }
+        newState.attendees = {
+          ...state.attendees,
+          ...payload.attendees.reduce(
+            (last: any, curr: RetreatAttendeeModel) => {
+              return {...last, [curr.id]: curr}
+            },
+            {}
+          ),
+        }
+      }
+      return newState
     default:
       return state
   }

@@ -5,10 +5,11 @@ import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
-import {theme} from "../../theme"
 import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
+import AppShareableLinkButton from "../base/AppShareableLinkButton"
 import AppTypography from "../base/AppTypography"
+import PageLockedModal from "../page/PageLockedModal"
 import ProposalListRow from "./ProposalListRow"
 
 let useStyles = makeStyles((theme) => ({
@@ -20,7 +21,11 @@ let useStyles = makeStyles((theme) => ({
     flex: 1,
     height: "100%",
   },
-  header: {},
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+  },
   proposalsList: {
     display: "flex",
     flexDirection: "column",
@@ -117,19 +122,31 @@ export default function ProposalsListPageBody(
   return (
     <div className={classes.root}>
       <div className={classes.header}>
-        <Typography variant="h1">
-          Lodging
-          <Typography
-            variant="inherit"
-            style={{fontWeight: theme.typography.fontWeightLight}}>
-            {" "}
-            - Hotel Proposals
+        <div>
+          <Typography variant="h1">
+            Lodging
+            <AppTypography variant="inherit" fontWeight="light">
+              {" "}
+              - Hotel Proposals
+            </AppTypography>
           </Typography>
-        </Typography>
-        <Typography variant="body1">
-          Review the following hotel proposals with negotiated prices from our
-          team.
-        </Typography>
+          <Typography variant="body1">
+            Review the following hotel proposals with negotiated prices from our
+            team.
+          </Typography>
+        </div>
+        <div>
+          <AppShareableLinkButton
+            link={
+              new URL(
+                AppRoutes.getPath("DeprecatedProposalsListPage", {
+                  retreatGuid: retreat.guid,
+                }),
+                window.location.origin
+              ).href
+            }
+          />
+        </div>
       </div>
       <Box overflow="auto" width="100%">
         {groupedSelectedHotels.length + unavailableSelectedHotels.length ===
@@ -137,10 +154,7 @@ export default function ProposalsListPageBody(
           loadingHotels ? (
             <AppTypography variant="body1">Loading...</AppTypography>
           ) : (
-            <AppTypography variant="body1">
-              Check back soon. We're currently working on collecting hotel
-              proposals on your behalf!
-            </AppTypography>
+            <PageLockedModal pageDesc="We're currently working on collecting hotel proposals on your behalf and will let you know they are ready to view!" />
           )
         ) : undefined}
         {/* Available hotels render */}
