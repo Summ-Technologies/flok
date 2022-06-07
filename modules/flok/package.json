@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babel/core": "^7.17.9",
-    "@babel/preset-env": "^7.16.11",
     "@date-io/date-fns": "1.x",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
@@ -69,8 +67,6 @@
     ]
   },
   "devDependencies": {
-    "@types/babel__core": "^7.1.19",
-    "@types/babel__preset-env": "^7.9.2",
     "@types/draft-js": "^0.11.9",
     "@types/draftjs-to-html": "^0.8.1",
     "@types/lodash": "^4.14.168",

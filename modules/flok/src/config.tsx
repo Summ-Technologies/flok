@@ -29,7 +29,6 @@ class Config {
     [MIXPANEL_TOKEN_KEY]: "BOGUS_KEY", // use default key to prevent error's from non-initialized mixpanel instance
     [GOOGLE_MAPS_ID_HOTEL_PAGE_KEY]: "209c3e9f6984bce3",
     [MAX_TASKS]: 10,
-    [IMAGE_SERVER_BASE_URL_KEY]: "http://localhost:4444",
   }
   constructor() {
     this.appConfig = {}
