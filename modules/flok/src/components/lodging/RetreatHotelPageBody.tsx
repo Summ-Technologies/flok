@@ -15,6 +15,7 @@ import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
 import AppImageGrid from "../base/AppImageGrid"
 import AppLoadingScreen from "../base/AppLoadingScreen"
+import PageLockedModal from "../page/PageLockedModal"
 
 let useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +36,7 @@ let useStyles = makeStyles((theme) => ({
       justifyContent: "center",
     },
     height: "100%",
+    minHeight: 0,
   },
   hotelDetailsSection: {
     boxShadow: theme.shadows[0],
@@ -137,7 +139,7 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
       {loadingHotel ? (
         <AppLoadingScreen />
       ) : hotel === undefined ? (
-        "Something went wrong."
+        <PageLockedModal pageDesc="This page will unlock once your hotel contract is finalized and signed!" />
       ) : (
         <Grid container className={classes.hotelBody}>
           <Grid
@@ -167,18 +169,6 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
                     </Typography>
                   </div>
                 ) : undefined}
-                {retreat.lodging_final_contract_notes ? (
-                  <div className={classes.hotelDetail}>
-                    <Typography variant="body2">
-                      <strong>Contract notes</strong>
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      dangerouslySetInnerHTML={{
-                        __html: retreat.lodging_final_contract_notes,
-                      }}></Typography>
-                  </div>
-                ) : undefined}
                 {retreat.lodging_final_contract_url ? (
                   <div className={classes.hotelDetail}>
                     <Typography variant="body2">
@@ -192,6 +182,18 @@ export default function RetreatHotelPageBody(props: RetreatHotelPageBodyProps) {
                       target="_blank">
                       View
                     </Button>
+                  </div>
+                ) : undefined}
+                {retreat.lodging_final_contract_notes ? (
+                  <div className={classes.hotelDetail}>
+                    <Typography variant="body2">
+                      <strong>Contract notes</strong>
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      dangerouslySetInnerHTML={{
+                        __html: retreat.lodging_final_contract_notes,
+                      }}></Typography>
                   </div>
                 ) : undefined}
               </Paper>

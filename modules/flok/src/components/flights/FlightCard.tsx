@@ -110,7 +110,7 @@ let useStyles = makeStyles((theme) => ({
     width: "50%",
   },
   singleColumnContainer: {
-    width: "30%",
+    width: "35%",
   },
   columnInSingle: {
     width: "fit-content",
@@ -137,6 +137,14 @@ function FlightCard(props: FlightCardProps) {
     return string.substring(0, string.length - 1)
   }
 
+  function differenceInDays(arr_datetime: Date, dep_datetime: Date) {
+    dep_datetime.setHours(0, 0, 0, 0)
+    arr_datetime.setHours(0, 0, 0, 0)
+    return Math.ceil(
+      (arr_datetime.getTime() - dep_datetime.getTime()) / (1000 * 3600 * 24)
+    )
+  }
+
   let dep_datetime = flight.dep_datetime
     ? new Date(flight.dep_datetime)
     : undefined
@@ -161,6 +169,7 @@ function FlightCard(props: FlightCardProps) {
         <div className={`${classes.column} ${classes.columnInSingle}`}>
           {flight?.dep_datetime ? (
             <Typography className={classes.bold}>
+              {/* TODO fix this logic. Way too many substrings and splits */}
               {(!isSmallScreen
                 ? new Intl.DateTimeFormat("en-US", {
                     dateStyle: "full",
@@ -171,7 +180,7 @@ function FlightCard(props: FlightCardProps) {
                     .substring(0, 3)
                 : "") +
                 " " +
-                chop(
+                (chop(
                   new Intl.DateTimeFormat("en-US", {
                     dateStyle: "full",
                     timeStyle: undefined,
@@ -180,7 +189,20 @@ function FlightCard(props: FlightCardProps) {
                     .split(" ")
                     .slice(1, 3)
                     .join(" ")
-                )}
+                )
+                  .split(" ")[0]
+                  .substring(0, 3) +
+                  " " +
+                  chop(
+                    new Intl.DateTimeFormat("en-US", {
+                      dateStyle: "full",
+                      timeStyle: undefined,
+                    })
+                      .format(dep_datetime)
+                      .split(" ")
+                      .slice(1, 3)
+                      .join(" ")
+                  ).split(" ")[1])}
             </Typography>
           ) : (
             "N/A"
@@ -191,15 +213,26 @@ function FlightCard(props: FlightCardProps) {
       <div className={`${classes.twoColumns} ${classes.columnInDouble}`}>
         <div className={`${classes.column} ${classes.columnInDouble}`}>
           {dep_datetime && arr_datetime ? (
-            <Typography>
-              {new Intl.DateTimeFormat("en-GB", {
-                timeStyle: "short",
-              }).format(dep_datetime)}
-              {" - "}
-              {new Intl.DateTimeFormat("en-GB", {
-                timeStyle: "short",
-              }).format(arr_datetime)}
-            </Typography>
+            <>
+              <Typography>
+                {new Intl.DateTimeFormat("en-GB", {
+                  timeStyle: "short",
+                }).format(dep_datetime)}
+                {" - "}
+                {new Intl.DateTimeFormat("en-GB", {
+                  timeStyle: "short",
+                }).format(arr_datetime)}
+                {arr_datetime &&
+                  dep_datetime &&
+                  differenceInDays(arr_datetime, dep_datetime) > 0 && (
+                    <sup>
+                      &nbsp;
+                      {"+" +
+                        differenceInDays(arr_datetime, dep_datetime).toString()}
+                    </sup>
+                  )}
+              </Typography>
+            </>
           ) : (
             "N/A"
           )}

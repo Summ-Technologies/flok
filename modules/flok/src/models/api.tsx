@@ -43,3 +43,10 @@ export type AttendeeLandingWebsiteInitializeApiResponse = {
   page: AttendeeLandingWebsitePageModel
   block: AttendeeLandingWebsiteBlockModel
 }
+export type AttendeeBatchUploadApiResponse = {
+  attendees: RetreatAttendeeModel[]
+  errors: (Pick<
+    RetreatAttendeeModel,
+    "email_address" | "first_name" | "last_name"
+  > & {error: string})[]
+}

@@ -88,7 +88,10 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             homeRoute={AppRoutes.getPath("RetreatWebsiteHome", {
               retreatName: retreatName,
             })}
-            selectedPage={pageName ?? "home"}></RetreatWebsiteHeader>
+            selectedPage={pageName ?? "home"}
+            registrationLink={
+              retreat.attendees_registration_form_link
+            }></RetreatWebsiteHeader>
           <img
             src={
               website.banner_image?.image_url ??

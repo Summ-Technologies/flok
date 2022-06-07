@@ -546,6 +546,7 @@ export function deletePage(pageId: number) {
     {errorMessage: "Something went wrong"}
   )
 }
+
 export const PATCH_WEBSITE_REQUEST = "PATCH_WEBSITE_REQUEST"
 export const PATCH_WEBSITE_SUCCESS = "PATCH_WEBSITE_SUCCESS"
 export const PATCH_WEBSITE_FAILURE = "PATCH_WEBSITE_FAILURE"
@@ -588,6 +589,44 @@ export function postInitialWebsite(
         {type: POST_INITIAL_WEBSITE_REQUEST},
         {type: POST_INITIAL_WEBSITE_SUCCESS},
         {type: POST_INITIAL_WEBSITE_FAILURE},
+      ],
+    },
+    {
+      errorMessage: "Something went wrong",
+    }
+  )
+}
+
+export const POST_RETREAT_ATTENDEES_BATCH_REQUEST =
+  "POST_RETREAT_ATTENDEES_BATCH_REQUEST"
+export const POST_RETREAT_ATTENDEES_BATCH_SUCCESS =
+  "POST_RETREAT_ATTENDEES_BATCH_SUCCESS"
+export const POST_RETREAT_ATTENDEES_BATCH_FAILURE =
+  "POST_RETREAT_ATTENDEES_BATCH_FAILURE"
+export function postRetreatAttendeesBatch(
+  values: {
+    attendees: Partial<RetreatAttendeeModel>[]
+  },
+  retreatId: number
+) {
+  let endpoint = `/v1.0/attendees/batch`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {
+          type: POST_RETREAT_ATTENDEES_BATCH_REQUEST,
+        },
+        {
+          type: POST_RETREAT_ATTENDEES_BATCH_SUCCESS,
+          meta: {retreatId},
+        },
+        {
+          type: POST_RETREAT_ATTENDEES_BATCH_FAILURE,
+          meta: {retreatId},
+        },
       ],
     },
     {
