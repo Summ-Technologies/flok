@@ -1,3 +1,5 @@
+import {ImageModel} from "."
+
 export type RetreatSelectedHotelProposalState =
   | "SELECTED"
   | "PENDING"
@@ -138,6 +140,7 @@ export type RetreatModel = {
   // Retreat data related to attendees
   attendees_state?: RetreatAttendeesState
   attendees_website_id?: number
+  attendees_registration_form_link?: string
 
   // Retreat data related to flights
   flights_state?: RetreatFlightsState
@@ -180,9 +183,9 @@ export type AttendeeLandingWebsiteBlockModel = {
 }
 
 export type AttendeeLandingWebsiteModel = {
-  banner_img?: string
+  banner_image?: ImageModel
   name: string
-  company_logo_img?: string
+  logo_image?: ImageModel
   retreat_id: number
   id: number
   page_ids: number[]
@@ -206,7 +209,11 @@ export type RetreatTravelModel = {
   dep_trip?: RetreatTripModel
   arr_trip?: RetreatTripModel
 }
-export type AttendeeInfoStatus = "CREATED" | "INFO_ENTERED" | "NOT_ATTENDING"
+export type AttendeeInfoStatus =
+  | "CREATED"
+  | "INFO_ENTERED"
+  | "NOT_ATTENDING"
+  | "CANCELLED"
 export type RetreatAttendeeModel = {
   id: number
   email_address: string

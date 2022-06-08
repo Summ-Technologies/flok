@@ -87,9 +87,6 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
   //   }
   // }
 
-  let numAttendees = props.retreat.preferences_num_attendees_lower
-    ? props.retreat.preferences_num_attendees_lower
-    : undefined
   return (
     <div className={classes.root}>
       <AppTypography variant="body1" fontWeight="bold" noWrap>
@@ -100,11 +97,6 @@ export default function RetreatAccountHeader(props: RetreatAccountHeaderProps) {
           {datesString}
         </AppTypography>
       ) : undefined} */}
-      {numAttendees != null ? (
-        <AppTypography variant="body1" noWrap>
-          ~{numAttendees} attendees
-        </AppTypography>
-      ) : undefined}
       {/*
       Disabling change button for now
       <AppTypography variant="body1">

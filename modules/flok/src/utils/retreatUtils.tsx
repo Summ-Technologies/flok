@@ -1,12 +1,14 @@
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Constants} from "../config"
+import {ResourceNotFound} from "../models"
 import {RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getBlock,
   getPage,
   getPageByName,
+  getRetreat,
   getRetreatAttendees,
   getRetreatByGuid,
   getWebsite,
@@ -123,21 +125,31 @@ export function useAttendeeLandingPageName(
   pageName: string
 ) {
   let dispatch = useDispatch()
+  let [loading, setLoading] = useState(true)
   let page = useSelector((state: RootState) => {
     return Object.values(state.retreat.pages).find(
       (page) => page?.title.toLowerCase() === pageName.toLowerCase()
     )
   })
+
   useEffect(() => {
+    async function loadPage() {
+      setLoading(true)
+      await dispatch(getPageByName(websiteId, pageName))
+      setLoading(false)
+    }
     if (!page) {
-      dispatch(getPageByName(websiteId, pageName))
+      loadPage()
+    } else {
+      setLoading(false)
     }
   }, [page, dispatch, pageName, websiteId])
 
-  return page
+  return [page, loading] as const
 }
 
 export function useAttendeeLandingWebsiteName(websiteName: string) {
+  let [loading, setLoading] = useState(true)
   let website = useSelector((state: RootState) => {
     return Object.values(state.retreat.websites).find(
       (website) => website?.name.toLowerCase() === websiteName.toLowerCase()
@@ -145,10 +157,40 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
   })
   let dispatch = useDispatch()
   useEffect(() => {
+    async function loadWebsite() {
+      setLoading(true)
+      await dispatch(getWebsiteByName(websiteName))
+      setLoading(false)
+    }
     if (!website) {
-      dispatch(getWebsiteByName(websiteName))
+      loadWebsite()
+    } else {
+      setLoading(false)
     }
   }, [website, dispatch, websiteName])
 
-  return website
+  return [website, loading] as const
+}
+export function useRetreat(retreatId: number) {
+  let [loading, setLoading] = useState(true)
+  let retreat = useSelector((state: RootState) => {
+    return Object.values(state.retreat.retreats).find(
+      (retreat) => retreat !== ResourceNotFound && retreat.id === retreatId
+    )
+  })
+  let dispatch = useDispatch()
+  useEffect(() => {
+    async function loadRetreat() {
+      setLoading(true)
+      await dispatch(getRetreat(retreatId))
+      setLoading(false)
+    }
+    if (!retreat) {
+      loadRetreat()
+    } else {
+      setLoading(false)
+    }
+  }, [retreat, dispatch, retreatId])
+
+  return [retreat, loading] as const
 }

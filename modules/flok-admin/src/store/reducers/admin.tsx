@@ -43,6 +43,7 @@ import {
   PATCH_RETREAT_TASK_SUCCESS,
   PATCH_TASK_SUCCESS,
   PATCH_USER_SUCCESS,
+  POST_DESTINATION_SUCCESS,
   POST_HOTEL_SUCCESS,
   POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
   POST_RETREAT_ATTENDEE_SUCCESS,
@@ -411,6 +412,25 @@ export default function AdminReducer(
           ...state.tasks,
           [payload.task.id]: payload.task,
         },
+      }
+    case POST_DESTINATION_SUCCESS:
+      action = action as unknown as ApiAction
+      payload = (action as unknown as ApiAction).payload as {
+        destination: AdminDestinationModel
+      }
+
+      let allDestinationsArray = Object.values(state.destinations).filter(
+        (destination) => destination !== undefined
+      ) as AdminDestinationModel[]
+      return {
+        ...state,
+        destinations: {
+          ...state.destinations,
+          [payload.destination.id]: payload.destination,
+        },
+        allDestinations: allDestinationsArray
+          .sort((a, b) => (a.location > b.location ? 0 : 1))
+          .map((dest) => dest.id),
       }
     default:
       return state
