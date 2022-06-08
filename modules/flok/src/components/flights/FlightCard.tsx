@@ -132,11 +132,6 @@ function FlightCard(props: FlightCardProps) {
 
   let classes = useStyles(props)
 
-  function chop(string: string) {
-    //removes the last character from a string
-    return string.substring(0, string.length - 1)
-  }
-
   function differenceInDays(arr_datetime: Date, dep_datetime: Date) {
     dep_datetime.setHours(0, 0, 0, 0)
     arr_datetime.setHours(0, 0, 0, 0)
@@ -169,40 +164,11 @@ function FlightCard(props: FlightCardProps) {
         <div className={`${classes.column} ${classes.columnInSingle}`}>
           {flight?.dep_datetime ? (
             <Typography className={classes.bold}>
-              {/* TODO fix this logic. Way too many substrings and splits */}
-              {(!isSmallScreen
-                ? new Intl.DateTimeFormat("en-US", {
-                    dateStyle: "full",
-                    timeStyle: undefined,
-                  })
-                    .format(dep_datetime)
-                    .split(" ")[0]
-                    .substring(0, 3)
-                : "") +
-                " " +
-                (chop(
-                  new Intl.DateTimeFormat("en-US", {
-                    dateStyle: "full",
-                    timeStyle: undefined,
-                  })
-                    .format(dep_datetime)
-                    .split(" ")
-                    .slice(1, 3)
-                    .join(" ")
-                )
-                  .split(" ")[0]
-                  .substring(0, 3) +
-                  " " +
-                  chop(
-                    new Intl.DateTimeFormat("en-US", {
-                      dateStyle: "full",
-                      timeStyle: undefined,
-                    })
-                      .format(dep_datetime)
-                      .split(" ")
-                      .slice(1, 3)
-                      .join(" ")
-                  ).split(" ")[1])}
+              {new Intl.DateTimeFormat("en-US", {
+                weekday: isSmallScreen ? undefined : "short",
+                month: "short",
+                day: "numeric",
+              }).format(dep_datetime)}
             </Typography>
           ) : (
             "N/A"
