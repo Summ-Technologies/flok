@@ -40,12 +40,16 @@ let useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 }))
-export type AuthResetPageProps = RouteComponentProps<{}>
+export type AuthResetPageProps = RouteComponentProps<{
+  next: string
+}>
 function AuthResetPage(props: AuthResetPageProps) {
   let dispatch = useDispatch()
-  let {loginToken}: {loginToken: string} = apiToModel(
+
+  let {loginToken, next}: {loginToken: string; next: string} = apiToModel(
     querystring.parse(props.location.search)
   )
+  console.log(next)
   let loginTokenUserEmail = useSelector(
     UserGetters.getUserForLoginToken(loginToken)
   )
@@ -60,7 +64,11 @@ function AuthResetPage(props: AuthResetPageProps) {
       postUserReset(loginToken, vals.password)
     )) as unknown as ApiAction
     if (!authResponse.error) {
-      dispatch(push(AppRoutes.getPath("RetreatHomePage", {retreatIdx: "0"})))
+      if (next) {
+        dispatch(push(decodeURIComponent(next)))
+      } else {
+        dispatch(push(AppRoutes.getPath("RetreatHomePage", {retreatIdx: "0"})))
+      }
     } else {
       dispatch(
         enqueueSnackbar(

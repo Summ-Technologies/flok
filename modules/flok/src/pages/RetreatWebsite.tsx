@@ -1,22 +1,18 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
-import {useEffect} from "react"
-import {useDispatch, useSelector} from "react-redux"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
 import {AppRoutes} from "../Stack"
-import {RootState} from "../store"
-import {getUserHome} from "../store/actions/user"
 import {
   useAttendeeLandingPageBlock,
   useAttendeeLandingPageName,
   useAttendeeLandingWebsiteName,
 } from "../utils/retreatUtils"
 import NotFound404Page from "./misc/NotFound404Page"
-import RedirectPage from "./misc/RedirectPage"
 
 let useStyles = makeStyles((theme) => ({
   bannerImg: {
@@ -60,31 +56,31 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     })
     return strArray.join("")
   }
-  useEffect(() => {
-    dispatch(getUserHome())
-  }, [dispatch])
-  let loginStatus = useSelector((state: RootState) => {
-    return state.user.loginStatus
-  })
+  // useEffect(() => {
+  //   dispatch(getUserHome())
+  // }, [dispatch])
+  // let loginStatus = useSelector((state: RootState) => {
+  //   return state.user.loginStatus
+  // })
   let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
   let page = useAttendeeLandingPageName(
     website?.id ?? 0,
     replaceDashes(pageName ?? "home")
   )
-  if (loginStatus === "LOGGED_OUT") {
-    return (
-      <RedirectPage
-        pageName="SigninPage"
-        queryParams={{
-          next: encodeURIComponent(
-            AppRoutes.getPath("RetreatWebsiteHome", {
-              retreatName: retreatName,
-            })
-          ),
-        }}
-      />
-    )
-  }
+  // if (loginStatus === "LOGGED_OUT") {
+  //   return (
+  //     <RedirectPage
+  //       pageName="SigninPage"
+  //       queryParams={{
+  //         next: encodeURIComponent(
+  //           AppRoutes.getPath("RetreatWebsiteHome", {
+  //             retreatName: retreatName,
+  //           })
+  //         ),
+  //       }}
+  //     />
+  //   )
+  // }
   return !page || !website ? (
     <NotFound404Page />
   ) : (
