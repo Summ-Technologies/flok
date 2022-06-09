@@ -118,13 +118,13 @@ let navItems: NavItem[] = [
       },
       {
         title: "Site Inspection",
-        activeRoutes: ["RetreatLodgingContractPage"],
+        activeRoutes: [],
         redirect: (retreat) =>
           retreat.lodging_site_inspection_url
             ? {url: retreat.lodging_site_inspection_url, external: true}
             : undefined,
         hidden: (retreat) => {
-          return retreat.lodging_site_inspection_url != null
+          return !!retreat.lodging_site_inspection_url
         },
       },
     ],
@@ -241,8 +241,8 @@ export default function PageSidenav() {
       <List>
         {navItems
           .filter((navItem) => {
-            if (navItem.hidden !== undefined) {
-              return navItem.hidden(retreat)
+            if (navItem.hidden) {
+              return !navItem.hidden(retreat)
             } else {
               return true
             }
