@@ -174,9 +174,9 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
 export function useRetreat(retreatId: number) {
   let [loading, setLoading] = useState(true)
   let retreat = useSelector((state: RootState) => {
-    return Object.values(state.retreat.retreats).find(
-      (retreat) => retreat !== ResourceNotFound && retreat.id === retreatId
-    )
+    if (state.retreat.retreats[retreatId] !== ResourceNotFound) {
+      return state.retreat.retreats[retreatId]
+    }
   })
   let dispatch = useDispatch()
   useEffect(() => {
