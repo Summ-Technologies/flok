@@ -15,6 +15,7 @@ import AppLoadingScreen from "../components/base/AppLoadingScreen"
 import AppLogo from "../components/base/AppLogo"
 import AppTypography from "../components/base/AppTypography"
 import PageContainer from "../components/page/PageContainer"
+import {replaceDashes} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
 import {postAttendeePasswordReset} from "../store/actions/user"
@@ -76,16 +77,7 @@ const useStyles = makeStyles((theme) => ({
 type AttendeeCreateAccountPageProps = RouteComponentProps<{
   retreatName: string
 }>
-// Remove this and have as util function
-function replaceDashes(str: string) {
-  let strArray = str.split("")
-  strArray.forEach((char, i) => {
-    if (char === "-") {
-      strArray[i] = " "
-    }
-  })
-  return strArray.join("")
-}
+
 function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
   let dispatch = useDispatch()
   let classes = useStyles()

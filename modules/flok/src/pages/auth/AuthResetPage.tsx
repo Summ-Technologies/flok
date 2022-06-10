@@ -40,9 +40,7 @@ let useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 }))
-export type AuthResetPageProps = RouteComponentProps<{
-  next: string
-}>
+export type AuthResetPageProps = RouteComponentProps<{}>
 function AuthResetPage(props: AuthResetPageProps) {
   let dispatch = useDispatch()
 

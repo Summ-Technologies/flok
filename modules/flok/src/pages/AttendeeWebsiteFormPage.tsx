@@ -2,6 +2,7 @@ import {useEffect} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
+import {replaceDashes} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getUserHome} from "../store/actions/user"
@@ -13,15 +14,6 @@ type AttendeeWebsiteFormPageProps = RouteComponentProps<{
 }>
 function AttendeeWebsiteFormPage(props: AttendeeWebsiteFormPageProps) {
   let dispatch = useDispatch()
-  function replaceDashes(str: string) {
-    let strArray = str.split("")
-    strArray.forEach((char, i) => {
-      if (char === "-") {
-        strArray[i] = " "
-      }
-    })
-    return strArray.join("")
-  }
   let {retreatName} = props.match.params
   let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
   let user = useSelector((state: RootState) => state.user)

@@ -6,6 +6,7 @@ import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
+import {replaceDashes} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {
   useAttendeeLandingPageBlock,
@@ -47,40 +48,11 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
   let dispatch = useDispatch()
   let classes = useStyles()
-  function replaceDashes(str: string) {
-    let strArray = str.split("")
-    strArray.forEach((char, i) => {
-      if (char === "-") {
-        strArray[i] = " "
-      }
-    })
-    return strArray.join("")
-  }
-  // useEffect(() => {
-  //   dispatch(getUserHome())
-  // }, [dispatch])
-  // let loginStatus = useSelector((state: RootState) => {
-  //   return state.user.loginStatus
-  // })
   let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
   let page = useAttendeeLandingPageName(
     website?.id ?? 0,
     replaceDashes(pageName ?? "home")
   )
-  // if (loginStatus === "LOGGED_OUT") {
-  //   return (
-  //     <RedirectPage
-  //       pageName="SigninPage"
-  //       queryParams={{
-  //         next: encodeURIComponent(
-  //           AppRoutes.getPath("RetreatWebsiteHome", {
-  //             retreatName: retreatName,
-  //           })
-  //         ),
-  //       }}
-  //     />
-  //   )
-  // }
   return !page || !website ? (
     <NotFound404Page />
   ) : (
