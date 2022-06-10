@@ -50,6 +50,7 @@ let useStyles = makeStyles((theme) => ({
 type SigninPageProps = RouteComponentProps<{}>
 function SigninPage(props: SigninPageProps) {
   let [nextQueryParam] = useQuery("next")
+  let [loginTypeQueryParam] = useQuery("login-type")
   let classes = useStyles(props)
   let dispatch = useDispatch()
   const handleLogin = (vals: {email: string; password: string}) => {
@@ -76,7 +77,13 @@ function SigninPage(props: SigninPageProps) {
               <Link
                 color="inherit"
                 underline="always"
-                to={AppRoutes.getPath("DeprecatedNewRetreatFormPage")}
+                to={
+                  loginTypeQueryParam === "attendee"
+                    ? AppRoutes.getPath("AttendeeSignUpPage", {
+                        retreatName: "yoga",
+                      })
+                    : AppRoutes.getPath("DeprecatedNewRetreatFormPage")
+                }
                 component={ReactRouterLink}>
                 Don't have an account?
               </Link>

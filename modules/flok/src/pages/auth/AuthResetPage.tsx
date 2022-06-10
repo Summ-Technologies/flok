@@ -49,7 +49,6 @@ function AuthResetPage(props: AuthResetPageProps) {
   let {loginToken, next}: {loginToken: string; next: string} = apiToModel(
     querystring.parse(props.location.search)
   )
-  console.log(next)
   let loginTokenUserEmail = useSelector(
     UserGetters.getUserForLoginToken(loginToken)
   )

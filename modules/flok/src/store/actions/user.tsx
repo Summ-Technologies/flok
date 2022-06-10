@@ -174,3 +174,22 @@ export function postForgotPassword(email: string) {
     body: JSON.stringify({email}),
   })
 }
+
+// Send Password Reset Email
+export const POST_ATTENDEE_PW_RESET_REQUEST = "POST_ATTENDEE_PW_RESET_REQUEST"
+export const POST_ATTENDEE_PW_RESET_SUCCESS = "POST_ATTENDEE_PW_RESET_SUCCESS"
+export const POST_ATTENDEE_PW_RESET_FAILURE = "POST_ATTENDEE_PW_RESET_FAILURE"
+
+export function postAttendeePasswordReset(email: string, retreat_id: number) {
+  let endpoint = `/v1.0/attendees/sign-up-attendee`
+  return createApiAction({
+    endpoint,
+    method: "POST",
+    types: [
+      POST_ATTENDEE_PW_RESET_REQUEST,
+      POST_ATTENDEE_PW_RESET_SUCCESS,
+      POST_ATTENDEE_PW_RESET_FAILURE,
+    ],
+    body: JSON.stringify({email: email, retreat_id: retreat_id}),
+  })
+}

@@ -97,7 +97,8 @@ export class AppRoutes {
 
   static getPath(
     name: FlokPageName,
-    pathParams: {[key: string]: string} = {}
+    pathParams: {[key: string]: string} = {},
+    queryParams: {[key: string]: string} = {}
   ): string {
     let path = this.pages[name]
     Object.keys(pathParams).forEach((key) => {
@@ -105,6 +106,12 @@ export class AppRoutes {
       let toReplace = ":" + key
       path = path.replace(toReplace, value)
     })
+    if (Object.keys(queryParams).length > 0) {
+      path += "?"
+    }
+    let queryString = new URLSearchParams(queryParams).toString()
+    path += queryString
+
     return path
   }
 }

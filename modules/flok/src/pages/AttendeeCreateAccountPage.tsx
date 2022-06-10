@@ -9,12 +9,15 @@ import {
 import {Alert} from "@material-ui/lab"
 import {useFormik} from "formik"
 import {useState} from "react"
+import {useDispatch} from "react-redux"
 import {Link as ReactRouterLink, RouteComponentProps} from "react-router-dom"
 import AppLoadingScreen from "../components/base/AppLoadingScreen"
 import AppLogo from "../components/base/AppLogo"
 import AppTypography from "../components/base/AppTypography"
 import PageContainer from "../components/page/PageContainer"
 import {AppRoutes} from "../Stack"
+import {ApiAction} from "../store/actions/api"
+import {postAttendeePasswordReset} from "../store/actions/user"
 import {useAttendeeLandingWebsiteName} from "../utils/retreatUtils"
 
 const useStyles = makeStyles((theme) => ({
@@ -84,6 +87,7 @@ function replaceDashes(str: string) {
   return strArray.join("")
 }
 function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
+  let dispatch = useDispatch()
   let classes = useStyles()
   let {retreatName} = props.match.params
   const [loading, setLoading] = useState(false)
@@ -95,32 +99,14 @@ function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
     initialValues: {
       email: "",
     },
-    // validationSchema: SigninFormSchema,
-    onSubmit: (values) => {
-      // props.submitForm(values)
+    onSubmit: async (values) => {
       if (website) {
         setLoading(true)
-        fetch(
-          `http://localhost:5001/api/v1.0/retreats/${website.retreat_id}/sign-up-attendee`,
-          {
-            method: "POST",
-            body: JSON.stringify(values),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data)
-            setLoading(false)
-            setResponse("success")
-          })
-          .catch((err) => {
-            setLoading(false)
-            setResponse("error")
-          })
+        let apiResponse = (await dispatch(
+          postAttendeePasswordReset(values.email, website.retreat_id)
+        )) as unknown as ApiAction
+        setLoading(false)
+        setResponse(apiResponse.error ? "error" : "success")
       }
     },
   })
@@ -128,7 +114,6 @@ function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
     variant: "standard",
     fullWidth: true,
   }
-  console.log(encodeURIComponent("http://localhost:8080/retreats/yoga"))
   return (
     <PageContainer>
       <div className={classes.body}>
@@ -192,11 +177,20 @@ function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
               <Link
                 color="inherit"
                 underline="always"
-                to={`${AppRoutes.getPath(
-                  "SigninPage"
-                )}?next=${AppRoutes.getPath("RetreatWebsiteFormPage", {
-                  retreatName: retreatName,
-                })}`}
+                to={AppRoutes.getPath(
+                  "SigninPage",
+                  {
+                    retreatName: retreatName,
+                  },
+                  {
+                    next: encodeURIComponent(
+                      AppRoutes.getPath("RetreatWebsiteFormPage", {
+                        retreatName: retreatName,
+                      })
+                    ),
+                    "login-type": "attendee",
+                  }
+                )}
                 component={ReactRouterLink}>
                 Already have an account?
               </Link>
