@@ -10,19 +10,19 @@ on:
           - flok
           - flok-admin
 jobs:
-  deploy-flok:
-    if: ${{ github.event.inputs.app == 'flok' && github.ref == 'refs/heads/master' }}
+  deploy-flok-staging:
+    if: ${{ github.event.inputs.app == 'flok' && github.ref == 'refs/heads/staging' }}
     uses: ./.github/workflows/deploy.yaml
     with:
       module: flok
-      heroku-app: flok-frontend
+      heroku-app: flok-staging
     secrets:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-  deploy-flok-admin:
-    if: ${{ github.event.inputs.app == 'flok-admin' && github.ref == 'refs/heads/master' }}
+  deploy-flok-admin-staging:
+    if: ${{ github.event.inputs.app == 'flok-admin' && github.ref == 'refs/heads/staging' }}
     uses: ./.github/workflows/deploy.yaml
     with:
       module: flok-admin
-      heroku-app: flok-admin
+      heroku-app: flok-admin-staging
     secrets:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
