@@ -46,7 +46,6 @@ function EditFlightForm(props: EditFlightFormProps) {
       <div className={classes.tripLegRow}>
         <TextField
           {...textFieldProps}
-          required
           id={`${idPrefix}.dep_airport`}
           value={flightLegValues.dep_airport}
           label="Departing Airport"
@@ -54,7 +53,6 @@ function EditFlightForm(props: EditFlightFormProps) {
         <ArrowForward />
         <TextField
           {...textFieldProps}
-          required
           id={`${idPrefix}.arr_airport`}
           value={flightLegValues.arr_airport}
           label="Arriving Airport"
@@ -63,7 +61,6 @@ function EditFlightForm(props: EditFlightFormProps) {
       <div className={classes.tripLegRow}>
         <TextField
           {...textFieldProps}
-          required
           type="datetime-local"
           id={`${idPrefix}.dep_datetime`}
           value={flightLegValues.dep_datetime}
@@ -72,7 +69,6 @@ function EditFlightForm(props: EditFlightFormProps) {
         />
         <TextField
           {...textFieldProps}
-          required
           type="datetime-local"
           id={`${idPrefix}.arr_datetime`}
           value={flightLegValues.arr_datetime}

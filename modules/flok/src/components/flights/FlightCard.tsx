@@ -162,13 +162,13 @@ function FlightCard(props: FlightCardProps) {
       )}
       <div className={`${classes.twoColumns} ${classes.singleColumnContainer}`}>
         <div className={`${classes.column} ${classes.columnInSingle}`}>
-          {flight?.dep_datetime ? (
+          {dep_datetime || arr_datetime ? (
             <Typography className={classes.bold}>
               {new Intl.DateTimeFormat("en-US", {
                 weekday: isSmallScreen ? undefined : "short",
                 month: "short",
                 day: "numeric",
-              }).format(dep_datetime)}
+              }).format(dep_datetime ?? arr_datetime)}
             </Typography>
           ) : (
             "N/A"
@@ -178,30 +178,30 @@ function FlightCard(props: FlightCardProps) {
       </div>
       <div className={`${classes.twoColumns} ${classes.columnInDouble}`}>
         <div className={`${classes.column} ${classes.columnInDouble}`}>
-          {dep_datetime && arr_datetime ? (
-            <>
-              <Typography>
-                {new Intl.DateTimeFormat("en-GB", {
-                  timeStyle: "short",
-                }).format(dep_datetime)}
-                {" - "}
-                {new Intl.DateTimeFormat("en-GB", {
-                  timeStyle: "short",
-                }).format(arr_datetime)}
-                {arr_datetime &&
-                  dep_datetime &&
-                  differenceInDays(arr_datetime, dep_datetime) > 0 && (
-                    <sup>
-                      &nbsp;
-                      {"+" +
-                        differenceInDays(arr_datetime, dep_datetime).toString()}
-                    </sup>
-                  )}
-              </Typography>
-            </>
-          ) : (
-            "N/A"
-          )}
+          <>
+            <Typography>
+              {dep_datetime
+                ? new Intl.DateTimeFormat("en-GB", {
+                    timeStyle: "short",
+                  }).format(dep_datetime)
+                : "N/A"}
+              {" - "}
+              {arr_datetime
+                ? new Intl.DateTimeFormat("en-GB", {
+                    timeStyle: "short",
+                  }).format(arr_datetime)
+                : "N/A"}
+              {arr_datetime &&
+                dep_datetime &&
+                differenceInDays(arr_datetime, dep_datetime) > 0 && (
+                  <sup>
+                    &nbsp;
+                    {"+" +
+                      differenceInDays(arr_datetime, dep_datetime).toString()}
+                  </sup>
+                )}
+            </Typography>
+          </>
         </div>
         <div className={classes.rightColumn}>
           <Typography>

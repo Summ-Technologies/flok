@@ -246,6 +246,28 @@ export const PATCH_TRIP_SUCCESS = "PATCH_TRIP_SUCCESS"
 export const PATCH_TRIP_FAILURE = "PATCH_TRIP_FAILURE"
 export function patchTrip(tripId: number, values: Partial<RetreatTripModel>) {
   let endpoint = `/v1.0/trips/${tripId}`
+  let newValues = {...values}
+  if (newValues.trip_legs) {
+    newValues.trip_legs = newValues.trip_legs.map((tripLeg) => {
+      let newTripLeg = tripLeg as {
+        trip_id: number
+        airline?: string
+        dep_airport?: string
+        dep_datetime?: string | null
+        arr_airport?: string
+        arr_datetime?: string | null
+        flight_num?: string
+        duration?: number
+      }
+      if (newTripLeg.arr_datetime === undefined) {
+        newTripLeg.arr_datetime = null
+      }
+      if (newTripLeg.dep_datetime === undefined) {
+        newTripLeg.dep_datetime = null
+      }
+      return tripLeg
+    })
+  }
   return createApiAction(
     {
       method: "PATCH",
