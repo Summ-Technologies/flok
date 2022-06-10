@@ -40,6 +40,7 @@ export type AdminRetreatModel = {
   lodging_final_hotel_id?: number
   lodging_final_contract_notes?: string
   lodging_final_contract_url?: string
+  lodging_site_inspection_url?: string
 
   // Retreat data related to flights
   attendees_state?: RetreatAttendeesState

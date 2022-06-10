@@ -136,6 +136,7 @@ export type RetreatModel = {
   lodging_final_contract_url?: string
   selected_hotels_ids: number[]
   selected_hotels: RetreatSelectedHotelProposal[]
+  lodging_site_inspection_url?: string
 
   // Retreat data related to attendees
   attendees_state?: RetreatAttendeesState
