@@ -79,7 +79,6 @@ function EditFlightModal(props: EditFlightModalProps) {
         }
         return leg
       })
-      console.log(updatedValues)
       setOpen(false)
       dispatch(patchTrip(flights.id, {trip_legs: updatedValues}))
       setSelectedFlight(undefined)
