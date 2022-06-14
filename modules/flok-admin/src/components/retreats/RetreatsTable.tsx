@@ -109,6 +109,12 @@ export default function RetreatsTable(props: RetreatsTableProps) {
     },
     {
       ...commonColDefs,
+      field: "contactEmail",
+      headerName: "Email",
+      width: 150,
+    },
+    {
+      ...commonColDefs,
       field: "intake_state",
       headerName: "Intake State",
       width: 200,
