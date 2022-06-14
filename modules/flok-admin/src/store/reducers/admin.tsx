@@ -17,6 +17,7 @@ import {
 } from "../../models"
 import {
   ADD_RETREAT_TASKS_SUCCESS,
+  DELETE_HOTEL_GROUP_SUCCESS,
   DELETE_RETREAT_ATTENDEES_SUCCESS,
   DELETE_RETREAT_HOTEL_PROPOSAL_SUCCESS,
   DELETE_SELECTED_HOTEL_SUCCESS,
@@ -37,6 +38,7 @@ import {
   GET_TASKS_LIST_SUCCESS,
   GET_TASK_SUCCESS,
   GET_USERS_SUCCESS,
+  PATCH_HOTEL_GROUP_SUCCESS,
   PATCH_HOTEL_SUCCESS,
   PATCH_RETREAT_ATTENDEE_SUCCESS,
   PATCH_RETREAT_DETAILS_FAILURE,
@@ -46,6 +48,7 @@ import {
   PATCH_TASK_SUCCESS,
   PATCH_USER_SUCCESS,
   POST_DESTINATION_SUCCESS,
+  POST_HOTEL_GROUP_SUCCESS,
   POST_HOTEL_SUCCESS,
   POST_HOTEL_TEMPLATE_PROPOSAL_SUCCESS,
   POST_RETREAT_ATTENDEE_SUCCESS,
@@ -452,6 +455,27 @@ export default function AdminReducer(
             {}
           ),
         },
+      }
+    case POST_HOTEL_GROUP_SUCCESS:
+    case PATCH_HOTEL_GROUP_SUCCESS:
+      action = action as unknown as ApiAction
+      payload = (action as unknown as ApiAction).payload as {
+        group: HotelGroup
+      }
+      return {
+        ...state,
+        hotelGroups: {
+          ...state.hotelGroups,
+          [payload.group.id]: payload.group,
+        },
+      }
+    case DELETE_HOTEL_GROUP_SUCCESS:
+      meta = (action as unknown as {meta: {groupId: number}}).meta
+      let newHotelGroups = {...state.hotelGroups}
+      delete newHotelGroups[meta.groupId]
+      return {
+        ...state,
+        hotelGroups: newHotelGroups,
       }
     default:
       return state

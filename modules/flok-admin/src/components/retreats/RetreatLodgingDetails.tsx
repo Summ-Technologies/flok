@@ -40,6 +40,7 @@ import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 import ConfirmationModal from "../base/ConfirmationModal"
 import CreateHotelGroupForm from "../lodging/CreateHotelGroupForm"
+import HotelGroupTitle from "../lodging/HotelGroupTitle"
 import HotelSelectModal from "../lodging/HotelSelectModal"
 import HotelProposalForm from "./HotelProposalForm"
 
@@ -57,6 +58,7 @@ function HotelAccordionItem(props: {
 }) {
   let classes = useAccordionItemStyles()
   let dispatch = useDispatch()
+  let [expanded, setExpanded] = useState(false)
   let [activeProposalIndex, setActiveProposalIndex] = useState(0)
 
   let [newProposalModalOpen, setNewProposalModalOpen] = useState(false)
@@ -74,13 +76,17 @@ function HotelAccordionItem(props: {
         putSelectedHotel(
           props.selectedHotel.retreat_id,
           props.selectedHotel.hotel_id,
-          values.state
+          {state: values.state}
         )
       )
     },
   })
   return (
-    <Accordion>
+    <Accordion
+      expanded={expanded}
+      onChange={(e, newState) => {
+        setExpanded(newState)
+      }}>
       <AccordionSummary>
         <Box display="flex" justifyContent="space-between" width="100%">
           <AppTypography variant="body1">
@@ -102,230 +108,232 @@ function HotelAccordionItem(props: {
           )}
         </Box>
       </AccordionSummary>
-      <AccordionDetails className={classes.accordionDetails}>
-        <Box display="flex" alignItems="center">
-          <Link
-            component={ReactRouterLink}
-            to={AppRoutes.getPath("HotelPage", {
-              hotelId: props.selectedHotel.hotel_id.toString(),
-            })}
-            target="_blank">
-            <AppTypography variant="h3" fontWeight="bold">
-              {props.hotel.name}
-            </AppTypography>
-          </Link>
-          <Button
-            onClick={() => setRemoveSelectedHotelModalOpen(true)}
-            style={{marginLeft: 8}}
-            color="secondary"
-            variant="outlined"
-            size="small">
-            Remove Hotel
-          </Button>
-          {removeSelectedHotelModalOpen ? (
-            <ConfirmationModal
-              onSubmit={() => {
-                dispatch(
-                  deleteSelectedHotel(
-                    props.selectedHotel.retreat_id,
-                    props.selectedHotel.hotel_id
-                  )
-                )
-              }}
-              onClose={() => setRemoveSelectedHotelModalOpen(false)}
-              confirmationText={`Are you sure you want to remove ${props.hotel.name}?`}
-            />
-          ) : undefined}
-        </Box>
-        <form onSubmit={proposalStateFormik.handleSubmit}>
-          <Box display="flex" alignItems="center" marginY={2}>
-            <TextField
-              id="state"
-              value={proposalStateFormik.values.state}
-              onChange={proposalStateFormik.handleChange}
-              select
-              SelectProps={{native: true}}
-              InputLabelProps={{shrink: true, style: {whiteSpace: "nowrap"}}}
-              label="Current Proposal State">
-              {props.selectedHotel.state === "SELECTED" && (
-                <option value={"SELECTED"}>Initial</option>
-              )}
-              <option value={"PENDING"}>Pending</option>
-              <option value={"REVIEW"}>Ready</option>
-              <option value={"NOT_AVAILABLE"}>No availability</option>
-            </TextField>
-            {proposalStateFormik.values.state !==
-              proposalStateFormik.initialValues.state && (
-              <Button
-                style={{marginLeft: 8}}
-                type="submit"
-                size="small"
-                variant="contained"
-                color="primary">
-                Save State
-              </Button>
-            )}
-          </Box>
-        </form>
-        <Box display="flex" alignItems="center">
-          <AppTypography variant="h3" fontWeight="bold">
-            Proposals (
-            {props.selectedHotel.hotel_proposals
-              ? props.selectedHotel.hotel_proposals.length
-              : 0}
-            )
-          </AppTypography>
-          <Button
-            style={{marginLeft: 8}}
-            size="small"
-            color="primary"
-            variant="outlined"
-            onClick={() => setNewProposalModalOpen(true)}>
-            New Proposal
-          </Button>
-          <Modal
-            open={newProposalModalOpen}
-            onClose={() => {
-              setNewProposalModalOpen(false)
-              setNewProposalDates(undefined)
-            }}>
-            <Box
-              maxWidth={400}
-              minWidth={300}
-              position="fixed"
-              top="50%"
-              left="50%"
-              style={{
-                transform: "translate(-50%, -50%)",
-              }}>
-              <Paper>
-                <Box
-                  paddingY={4}
-                  paddingX={2}
-                  display="flex"
-                  flexDirection="column">
-                  <AppTypography variant="body1" fontWeight="bold">
-                    New Proposal
-                  </AppTypography>
-                  <AppTypography variant="body2" paragraph>
-                    If {props.hotel.name} has a proposal template in the
-                    proposals database, we'll copy those values. If not, the
-                    proposal will require you to fill in all the values. To
-                    check the proposals database, click{" "}
-                    <Link
-                      component={ReactRouterLink}
-                      underline="always"
-                      to={
-                        AppRoutes.getPath("HotelPage", {
-                          hotelId: props.selectedHotel.hotel_id.toString(),
-                        }) + `?${querystring.stringify({tab: "proposal"})}`
-                      }
-                      target="_blank">
-                      here
-                    </Link>
-                    .
-                  </AppTypography>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault()
-                      setNewProposalModalOpen(false)
-                      setNewProposalDates(undefined)
-                    }}>
-                    <TextField
-                      fullWidth
-                      type="text"
-                      label="Dates"
-                      required
-                      InputLabelProps={{shrink: true}}
-                      value={newProposalDates ?? ""}
-                      onChange={(e) =>
-                        setNewProposalDates(e.currentTarget.value)
-                      }
-                    />
-                    <br />
-                    <br />
-                    <Box display="flex" justifyContent={"space-between"}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        onClick={() => {
-                          dispatch(
-                            postHotelProposal(
-                              props.selectedHotel.retreat_id,
-                              props.selectedHotel.hotel_id,
-                              nullifyEmptyString({
-                                dates: newProposalDates,
-                              })
-                            )
-                          )
-                        }}>
-                        Submit
-                      </Button>
-                    </Box>
-                  </form>
-                </Box>
-              </Paper>
-            </Box>
-          </Modal>
-        </Box>
-        {props.selectedHotel.hotel_proposals?.length ? (
-          <>
-            <Tabs
-              value={activeProposalIndex}
-              onChange={(e, val) => {
-                setActiveProposalIndex(val)
-              }}>
-              {props.selectedHotel.hotel_proposals!.map((proposal, i) => (
-                <Tab
-                  key={i}
-                  value={i}
-                  label={proposal.dates ? proposal.dates : `Proposal ${i}`}
-                />
-              ))}
-            </Tabs>
-            {props.selectedHotel.hotel_proposals![activeProposalIndex] ? (
-              <>
-                <HotelProposalForm
-                  onSave={(values) => {
-                    dispatch(
-                      putRetreatHotelProposal(
-                        props.selectedHotel.retreat_id,
-                        props.selectedHotel.hotel_id,
-                        props.selectedHotel.hotel_proposals![
-                          activeProposalIndex
-                        ].id,
-                        nullifyEmptyString(values)
-                      )
+      {expanded && (
+        <AccordionDetails className={classes.accordionDetails}>
+          <Box display="flex" alignItems="center">
+            <Link
+              component={ReactRouterLink}
+              to={AppRoutes.getPath("HotelPage", {
+                hotelId: props.selectedHotel.hotel_id.toString(),
+              })}
+              target="_blank">
+              <AppTypography variant="h3" fontWeight="bold">
+                {props.hotel.name}
+              </AppTypography>
+            </Link>
+            <Button
+              onClick={() => setRemoveSelectedHotelModalOpen(true)}
+              style={{marginLeft: 8}}
+              color="secondary"
+              variant="outlined"
+              size="small">
+              Remove Hotel
+            </Button>
+            {removeSelectedHotelModalOpen ? (
+              <ConfirmationModal
+                onSubmit={() => {
+                  dispatch(
+                    deleteSelectedHotel(
+                      props.selectedHotel.retreat_id,
+                      props.selectedHotel.hotel_id
                     )
-                  }}
-                  onDelete={() => setDeleteProposalModalOpen(true)}
-                  proposal={
-                    props.selectedHotel.hotel_proposals![activeProposalIndex]
-                  }
-                />
-                {deleteProposalModalOpen ? (
-                  <ConfirmationModal
-                    confirmationText="Are you sure you want to delete this proposal?"
-                    onClose={() => setDeleteProposalModalOpen(false)}
-                    onSubmit={() => {
+                  )
+                }}
+                onClose={() => setRemoveSelectedHotelModalOpen(false)}
+                confirmationText={`Are you sure you want to remove ${props.hotel.name}?`}
+              />
+            ) : undefined}
+          </Box>
+          <form onSubmit={proposalStateFormik.handleSubmit}>
+            <Box display="flex" alignItems="center" marginY={2}>
+              <TextField
+                id="state"
+                value={proposalStateFormik.values.state}
+                onChange={proposalStateFormik.handleChange}
+                select
+                SelectProps={{native: true}}
+                InputLabelProps={{shrink: true, style: {whiteSpace: "nowrap"}}}
+                label="Current Proposal State">
+                {props.selectedHotel.state === "SELECTED" && (
+                  <option value={"SELECTED"}>Initial</option>
+                )}
+                <option value={"PENDING"}>Pending</option>
+                <option value={"REVIEW"}>Ready</option>
+                <option value={"NOT_AVAILABLE"}>No availability</option>
+              </TextField>
+              {proposalStateFormik.values.state !==
+                proposalStateFormik.initialValues.state && (
+                <Button
+                  style={{marginLeft: 8}}
+                  type="submit"
+                  size="small"
+                  variant="contained"
+                  color="primary">
+                  Save State
+                </Button>
+              )}
+            </Box>
+          </form>
+          <Box display="flex" alignItems="center">
+            <AppTypography variant="h3" fontWeight="bold">
+              Proposals (
+              {props.selectedHotel.hotel_proposals
+                ? props.selectedHotel.hotel_proposals.length
+                : 0}
+              )
+            </AppTypography>
+            <Button
+              style={{marginLeft: 8}}
+              size="small"
+              color="primary"
+              variant="outlined"
+              onClick={() => setNewProposalModalOpen(true)}>
+              New Proposal
+            </Button>
+            <Modal
+              open={newProposalModalOpen}
+              onClose={() => {
+                setNewProposalModalOpen(false)
+                setNewProposalDates(undefined)
+              }}>
+              <Box
+                maxWidth={400}
+                minWidth={300}
+                position="fixed"
+                top="50%"
+                left="50%"
+                style={{
+                  transform: "translate(-50%, -50%)",
+                }}>
+                <Paper>
+                  <Box
+                    paddingY={4}
+                    paddingX={2}
+                    display="flex"
+                    flexDirection="column">
+                    <AppTypography variant="body1" fontWeight="bold">
+                      New Proposal
+                    </AppTypography>
+                    <AppTypography variant="body2" paragraph>
+                      If {props.hotel.name} has a proposal template in the
+                      proposals database, we'll copy those values. If not, the
+                      proposal will require you to fill in all the values. To
+                      check the proposals database, click{" "}
+                      <Link
+                        component={ReactRouterLink}
+                        underline="always"
+                        to={
+                          AppRoutes.getPath("HotelPage", {
+                            hotelId: props.selectedHotel.hotel_id.toString(),
+                          }) + `?${querystring.stringify({tab: "proposal"})}`
+                        }
+                        target="_blank">
+                        here
+                      </Link>
+                      .
+                    </AppTypography>
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault()
+                        setNewProposalModalOpen(false)
+                        setNewProposalDates(undefined)
+                      }}>
+                      <TextField
+                        fullWidth
+                        type="text"
+                        label="Dates"
+                        required
+                        InputLabelProps={{shrink: true}}
+                        value={newProposalDates ?? ""}
+                        onChange={(e) =>
+                          setNewProposalDates(e.currentTarget.value)
+                        }
+                      />
+                      <br />
+                      <br />
+                      <Box display="flex" justifyContent={"space-between"}>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          onClick={() => {
+                            dispatch(
+                              postHotelProposal(
+                                props.selectedHotel.retreat_id,
+                                props.selectedHotel.hotel_id,
+                                nullifyEmptyString({
+                                  dates: newProposalDates,
+                                })
+                              )
+                            )
+                          }}>
+                          Submit
+                        </Button>
+                      </Box>
+                    </form>
+                  </Box>
+                </Paper>
+              </Box>
+            </Modal>
+          </Box>
+          {props.selectedHotel.hotel_proposals?.length ? (
+            <>
+              <Tabs
+                value={activeProposalIndex}
+                onChange={(e, val) => {
+                  setActiveProposalIndex(val)
+                }}>
+                {props.selectedHotel.hotel_proposals!.map((proposal, i) => (
+                  <Tab
+                    key={i}
+                    value={i}
+                    label={proposal.dates ? proposal.dates : `Proposal ${i}`}
+                  />
+                ))}
+              </Tabs>
+              {props.selectedHotel.hotel_proposals![activeProposalIndex] ? (
+                <>
+                  <HotelProposalForm
+                    onSave={(values) => {
                       dispatch(
-                        deleteRetreatHotelProposal(
+                        putRetreatHotelProposal(
                           props.selectedHotel.retreat_id,
                           props.selectedHotel.hotel_id,
                           props.selectedHotel.hotel_proposals![
                             activeProposalIndex
-                          ].id
+                          ].id,
+                          nullifyEmptyString(values)
                         )
                       )
-                      setActiveProposalIndex(-1)
                     }}
+                    onDelete={() => setDeleteProposalModalOpen(true)}
+                    proposal={
+                      props.selectedHotel.hotel_proposals![activeProposalIndex]
+                    }
                   />
-                ) : undefined}
-              </>
-            ) : undefined}
-          </>
-        ) : undefined}
-      </AccordionDetails>
+                  {deleteProposalModalOpen ? (
+                    <ConfirmationModal
+                      confirmationText="Are you sure you want to delete this proposal?"
+                      onClose={() => setDeleteProposalModalOpen(false)}
+                      onSubmit={() => {
+                        dispatch(
+                          deleteRetreatHotelProposal(
+                            props.selectedHotel.retreat_id,
+                            props.selectedHotel.hotel_id,
+                            props.selectedHotel.hotel_proposals![
+                              activeProposalIndex
+                            ].id
+                          )
+                        )
+                        setActiveProposalIndex(-1)
+                      }}
+                    />
+                  ) : undefined}
+                </>
+              ) : undefined}
+            </>
+          ) : undefined}
+        </AccordionDetails>
+      )}
     </Accordion>
   )
 }
@@ -364,6 +372,19 @@ export default function RetreatLodgingDetails(
       return 0
     })
   )
+
+  useEffect(() => {
+    setHotelsTest(
+      props.retreat.selected_hotels.sort((a, b) => {
+        let hotelA = hotels[a.hotel_id]
+        let hotelB = hotels[b.hotel_id]
+        if (hotelA && hotelB) {
+          return hotelA.destination_id - hotelB.destination_id
+        }
+        return 0
+      })
+    )
+  }, [props.retreat.selected_hotels])
   useEffect(() => {
     let missingHotels: number[] = []
     props.retreat.selected_hotels.forEach((selectedHotel) => {
@@ -447,10 +468,9 @@ export default function RetreatLodgingDetails(
           </AppTypography>
         ) : undefined}
         {/* here for reference */}
-        <CreateHotelGroupForm />
+        <CreateHotelGroupForm retreatId={props.retreat.id} />
         <DragDropContext
-          onDragEnd={(result) => {
-            console.log(result)
+          onDragEnd={async (result) => {
             if (!result.destination) return
             const items = Array.from([...hotelsTest])
             const [reorderedItem] = items.splice(
@@ -459,21 +479,63 @@ export default function RetreatLodgingDetails(
               ),
               1
             )
-
-            if (result.destination.droppableId !== "ungrouped") {
-              reorderedItem.group_id = parseInt(result.destination.droppableId)
+            if (result.destination.droppableId !== result.source.droppableId) {
+              let originalGroup = reorderedItem.group_id
+              if (result.destination.droppableId !== "ungrouped") {
+                reorderedItem.group_id = parseInt(
+                  result.destination.droppableId
+                )
+                let putResult = (await dispatch(
+                  putSelectedHotel(
+                    reorderedItem.retreat_id,
+                    reorderedItem.hotel_id,
+                    {group_id: parseInt(result.destination.droppableId)}
+                  )
+                )) as unknown as ApiAction
+                console.log(putResult)
+                if (putResult.error) {
+                  reorderedItem.group_id = originalGroup
+                }
+              } else {
+                reorderedItem.group_id = undefined
+                let putResult = (await dispatch(
+                  putSelectedHotel(
+                    reorderedItem.retreat_id,
+                    reorderedItem.hotel_id,
+                    {group_id: undefined}
+                  )
+                )) as unknown as ApiAction
+                if (putResult.error) {
+                  reorderedItem.group_id = originalGroup
+                }
+              }
             }
 
             items.splice(result.destination.index, 0, reorderedItem)
-            console.log(items)
-            setHotelsTest(items)
+            setHotelsTest(
+              items.sort((a, b) => {
+                let hotelA = hotels[a.hotel_id]
+                let hotelB = hotels[b.hotel_id]
+                if (hotelA && hotelB) {
+                  return hotelA.destination_id - hotelB.destination_id
+                }
+                return 0
+              })
+            )
           }}>
           {groups
             .filter((group) => group)
+            .sort((a, b) => a!.id - b!.id)
             .map((group) => {
               return (
                 <div>
-                  <Typography variant="h3"> {group!.title}</Typography>
+                  {group && (
+                    <HotelGroupTitle
+                      group={group}
+                      hotels={hotelsTest}
+                      setHotels={setHotelsTest}
+                    />
+                  )}
                   <Droppable droppableId={group!.id.toString()}>
                     {(provided) => (
                       <ul
@@ -489,6 +551,7 @@ export default function RetreatLodgingDetails(
                               index={index}>
                               {(provided) => (
                                 <li
+                                  style={{willChange: "transform, opacity"}}
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}>
@@ -528,7 +591,7 @@ export default function RetreatLodgingDetails(
                 </div>
               )
             })}
-          <Typography variant="h3">Ungrouped</Typography>
+          <Typography variant="h4">Ungrouped</Typography>
           <Droppable droppableId="ungrouped">
             {(provided) => (
               <ul

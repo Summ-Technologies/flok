@@ -7,7 +7,9 @@ import {
   AdminRetreatAttendeeUpdateModel,
   AdminRetreatListType,
   AdminRetreatModel,
+  AdminSelectedHotelProposalModel,
   AdminSelectedHotelStateTypes,
+  HotelGroup,
   RetreatTask,
   RetreatToTaskState,
 } from "../../models"
@@ -259,13 +261,20 @@ export const PUT_SELECTED_HOTEL_FAILURE = "PUT_SELECTED_HOTEL_FAILURE"
 export function putSelectedHotel(
   retreatId: number,
   hotelId: number,
-  newState: AdminSelectedHotelStateTypes
+  values: Partial<AdminSelectedHotelProposalModel>
 ) {
   let endpoint = `/v1.0/admin/retreats/${retreatId}/hotels/${hotelId}`
+  let newValues: {
+    state?: AdminSelectedHotelStateTypes
+    group_id?: number | null
+  } = {...values}
+  if (newValues.group_id === undefined) {
+    newValues.group_id = null
+  }
   return createApiAction({
     endpoint,
     method: "PUT",
-    body: JSON.stringify({state: newState}),
+    body: JSON.stringify(newValues),
     types: [
       PUT_SELECTED_HOTEL_REQUEST,
       PUT_SELECTED_HOTEL_SUCCESS,
@@ -756,6 +765,58 @@ export function getHotelGroups(retreatId: number) {
       {type: GET_HOTEL_GROUPS_REQUEST},
       {type: GET_HOTEL_GROUPS_SUCCESS},
       {type: GET_HOTEL_GROUPS_FAILURE},
+    ],
+  })
+}
+
+export const POST_HOTEL_GROUP_REQUEST = "POST_HOTEL_GROUP_REQUEST"
+export const POST_HOTEL_GROUP_SUCCESS = "POST_HOTEL_GROUP_SUCCESS"
+export const POST_HOTEL_GROUP_FAILURE = "POST_HOTEL_GROUP_FAILURE"
+
+export function postHotelGroup(values: Partial<HotelGroup>) {
+  let endpoint = `/v1.0/admin/hotel-groups`
+  return createApiAction({
+    endpoint,
+    method: "POST",
+    body: JSON.stringify(values),
+    types: [
+      {type: POST_HOTEL_GROUP_REQUEST},
+      {type: POST_HOTEL_GROUP_SUCCESS},
+      {type: POST_HOTEL_GROUP_FAILURE},
+    ],
+  })
+}
+
+export const PATCH_HOTEL_GROUP_REQUEST = "PATCH_HOTEL_GROUP_REQUEST"
+export const PATCH_HOTEL_GROUP_SUCCESS = "PATCH_HOTEL_GROUP_SUCCESS"
+export const PATCH_HOTEL_GROUP_FAILURE = "PATCH_HOTEL_GROUP_FAILURE"
+
+export function patchHotelGroup(groupId: number, values: Partial<HotelGroup>) {
+  let endpoint = `/v1.0/admin/hotel-groups/${groupId}`
+  return createApiAction({
+    endpoint,
+    method: "PATCH",
+    body: JSON.stringify(values),
+    types: [
+      {type: PATCH_HOTEL_GROUP_REQUEST},
+      {type: PATCH_HOTEL_GROUP_SUCCESS},
+      {type: PATCH_HOTEL_GROUP_FAILURE},
+    ],
+  })
+}
+
+export const DELETE_HOTEL_GROUP_REQUEST = "DELETE_HOTEL_GROUP_REQUEST"
+export const DELETE_HOTEL_GROUP_SUCCESS = "DELETE_HOTEL_GROUP_SUCCESS"
+export const DELETE_HOTEL_GROUP_FAILURE = "DELETE_HOTEL_GROUP_FAILURE"
+export function deleteHotelGroup(groupId: number) {
+  let endpoint = `/v1.0/admin/hotel-groups/${groupId}`
+  return createApiAction({
+    endpoint,
+    method: "DELETE",
+    types: [
+      {type: DELETE_HOTEL_GROUP_REQUEST, meta: {groupId}},
+      {type: DELETE_HOTEL_GROUP_SUCCESS, meta: {groupId}},
+      {type: DELETE_HOTEL_GROUP_FAILURE, meta: {groupId}},
     ],
   })
 }
