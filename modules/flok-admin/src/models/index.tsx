@@ -115,6 +115,7 @@ export type AdminSelectedHotelProposalModel = {
   hotel_id: number
   state: AdminSelectedHotelStateTypes
   hotel_proposals?: AdminLodgingProposalModel[]
+  group_id?: number
 }
 
 export type AdminLodgingProposalModel = {
@@ -344,3 +345,9 @@ export const OrderedRetreatItineraryState = [
 ] as const
 export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
 /****************** End retreat states types ******************/
+
+export type HotelGroup = {
+  id: number
+  title: string
+  retreat_id: number
+}

@@ -9,6 +9,7 @@ import {
   AdminRetreatListModel,
   AdminRetreatListType,
   AdminRetreatModel,
+  HotelGroup,
   RetreatNoteModel,
   RetreatTask,
   RetreatToTask,
@@ -24,6 +25,7 @@ import {
   GET_HOTELS_BY_ID_SUCCESS,
   GET_HOTELS_SEARCH_SUCCESS,
   GET_HOTEL_DETAILS_SUCCESS,
+  GET_HOTEL_GROUPS_SUCCESS,
   GET_LOGIN_TOKEN_SUCCESS,
   GET_RETREATS_LIST_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
@@ -108,6 +110,9 @@ export type AdminState = {
   tasks: {
     [id: number]: RetreatTask | undefined
   }
+  hotelGroups: {
+    [id: number]: HotelGroup | undefined
+  }
 }
 
 const initialState: AdminState = {
@@ -132,6 +137,7 @@ const initialState: AdminState = {
   usersByRetreat: {},
   userLoginTokens: {},
   tasks: {},
+  hotelGroups: {},
 }
 
 export default function AdminReducer(
@@ -431,6 +437,21 @@ export default function AdminReducer(
         allDestinations: allDestinationsArray
           .sort((a, b) => (a.location > b.location ? 0 : 1))
           .map((dest) => dest.id),
+      }
+    case GET_HOTEL_GROUPS_SUCCESS:
+      action = action as unknown as ApiAction
+      payload = (action as unknown as ApiAction).payload as {
+        groups: HotelGroup[]
+      }
+      return {
+        ...state,
+        hotelGroups: {
+          ...state.hotelGroups,
+          ...payload.groups.reduce(
+            (last, curr) => ({...last, [curr.id]: curr}),
+            {}
+          ),
+        },
       }
     default:
       return state

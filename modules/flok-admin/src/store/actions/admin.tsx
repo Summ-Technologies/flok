@@ -742,3 +742,20 @@ export function postDestination(values: Partial<AdminDestinationModel>) {
     ],
   })
 }
+
+export const GET_HOTEL_GROUPS_REQUEST = "GET_HOTEL_GROUPS_REQUEST"
+export const GET_HOTEL_GROUPS_SUCCESS = "GET_HOTEL_GROUPS_SUCCESS"
+export const GET_HOTEL_GROUPS_FAILURE = "GET_HOTEL_GROUPS_FAILURE"
+
+export function getHotelGroups(retreatId: number) {
+  let endpoint = `/v1.0/admin/retreats/${retreatId}/hotel-groups`
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [
+      {type: GET_HOTEL_GROUPS_REQUEST},
+      {type: GET_HOTEL_GROUPS_SUCCESS},
+      {type: GET_HOTEL_GROUPS_FAILURE},
+    ],
+  })
+}

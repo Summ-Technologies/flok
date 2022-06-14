@@ -17,6 +17,7 @@ import {
 import {useFormik} from "formik"
 import querystring from "querystring"
 import React, {useEffect, useState} from "react"
+import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import {useDispatch, useSelector} from "react-redux"
 import {Link as ReactRouterLink} from "react-router-dom"
 import config, {FLOK_BASE_URL_KEY} from "../../config"
@@ -27,6 +28,7 @@ import {
   deleteRetreatHotelProposal,
   deleteSelectedHotel,
   getDestinations,
+  getHotelGroups,
   getHotelsByHotelId,
   postHotelProposal,
   postSelectedHotel,
@@ -37,6 +39,7 @@ import {ApiAction} from "../../store/actions/api"
 import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 import ConfirmationModal from "../base/ConfirmationModal"
+import CreateHotelGroupForm from "../lodging/CreateHotelGroupForm"
 import HotelSelectModal from "../lodging/HotelSelectModal"
 import HotelProposalForm from "./HotelProposalForm"
 
@@ -345,6 +348,22 @@ export default function RetreatLodgingDetails(
     (state: RootState) => state.admin.allDestinations
   )
 
+  let groups = useSelector((state: RootState) => {
+    return Object.values(state.admin.hotelGroups).filter(
+      (group) => group?.retreat_id === props.retreat.id
+    )
+  })
+
+  let [hotelsTest, setHotelsTest] = useState(
+    props.retreat.selected_hotels.sort((a, b) => {
+      let hotelA = hotels[a.hotel_id]
+      let hotelB = hotels[b.hotel_id]
+      if (hotelA && hotelB) {
+        return hotelA.destination_id - hotelB.destination_id
+      }
+      return 0
+    })
+  )
   useEffect(() => {
     let missingHotels: number[] = []
     props.retreat.selected_hotels.forEach((selectedHotel) => {
@@ -374,6 +393,9 @@ export default function RetreatLodgingDetails(
       dispatch(getDestinations())
     }
   }, [destinationsList, dispatch])
+  useEffect(() => {
+    dispatch(getHotelGroups(props.retreat.id))
+  }, [props.retreat.id, dispatch])
 
   return (
     <div className={classes.root}>
@@ -424,37 +446,139 @@ export default function RetreatLodgingDetails(
             No hotel proposals created yet. Add a hotel to start.
           </AppTypography>
         ) : undefined}
-        {props.retreat.selected_hotels
-          .sort((a, b) => {
-            let hotelA = hotels[a.hotel_id]
-            let hotelB = hotels[b.hotel_id]
-            if (hotelA && hotelB) {
-              return hotelA.destination_id - hotelB.destination_id
+        {/* here for reference */}
+        <CreateHotelGroupForm />
+        <DragDropContext
+          onDragEnd={(result) => {
+            console.log(result)
+            if (!result.destination) return
+            const items = Array.from([...hotelsTest])
+            const [reorderedItem] = items.splice(
+              items.findIndex(
+                (item) => item.hotel_id === parseInt(result.draggableId)
+              ),
+              1
+            )
+
+            if (result.destination.droppableId !== "ungrouped") {
+              reorderedItem.group_id = parseInt(result.destination.droppableId)
             }
-            return 0
-          })
-          .map((selectedHotel) => (
-            <HotelAccordionItem
-              hotel={{
-                name: hotels[selectedHotel.hotel_id]?.name
-                  ? hotels[selectedHotel.hotel_id]!.name
-                  : "",
-                location:
-                  hotels[selectedHotel.hotel_id]?.destination_id &&
-                  destinations[
-                    hotels[selectedHotel.hotel_id]!.destination_id
-                  ] &&
-                  destinations[hotels[selectedHotel.hotel_id]!.destination_id]
-                    ?.location
-                    ? destinations[
-                        hotels[selectedHotel.hotel_id]!.destination_id
-                      ]?.location!
-                    : "",
-              }}
-              selectedHotel={selectedHotel}
-              key={selectedHotel.hotel_id}
-            />
-          ))}
+
+            items.splice(result.destination.index, 0, reorderedItem)
+            console.log(items)
+            setHotelsTest(items)
+          }}>
+          {groups
+            .filter((group) => group)
+            .map((group) => {
+              return (
+                <div>
+                  <Typography variant="h3"> {group!.title}</Typography>
+                  <Droppable droppableId={group!.id.toString()}>
+                    {(provided) => (
+                      <ul
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        style={{listStyleType: "none"}}>
+                        {hotelsTest
+                          .filter((hotel) => hotel.group_id == group!.id)
+                          .map((selectedHotel, index: number) => (
+                            <Draggable
+                              key={selectedHotel.hotel_id}
+                              draggableId={selectedHotel.hotel_id.toString()}
+                              index={index}>
+                              {(provided) => (
+                                <li
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}>
+                                  <HotelAccordionItem
+                                    hotel={{
+                                      name: hotels[selectedHotel.hotel_id]?.name
+                                        ? hotels[selectedHotel.hotel_id]!.name
+                                        : "",
+                                      location:
+                                        hotels[selectedHotel.hotel_id]
+                                          ?.destination_id &&
+                                        destinations[
+                                          hotels[selectedHotel.hotel_id]!
+                                            .destination_id
+                                        ] &&
+                                        destinations[
+                                          hotels[selectedHotel.hotel_id]!
+                                            .destination_id
+                                        ]?.location
+                                          ? destinations[
+                                              hotels[selectedHotel.hotel_id]!
+                                                .destination_id
+                                            ]?.location!
+                                          : "",
+                                    }}
+                                    selectedHotel={selectedHotel}
+                                    key={selectedHotel.hotel_id}
+                                  />
+                                </li>
+                              )}
+                            </Draggable>
+                          ))}
+                        {provided.placeholder}
+                      </ul>
+                    )}
+                  </Droppable>
+                </div>
+              )
+            })}
+          <Typography variant="h3">Ungrouped</Typography>
+          <Droppable droppableId="ungrouped">
+            {(provided) => (
+              <ul
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                style={{listStyleType: "none"}}>
+                {hotelsTest
+                  .filter((hotel) => !hotel.group_id)
+                  .map((selectedHotel, index: number) => (
+                    <Draggable
+                      key={selectedHotel.hotel_id}
+                      draggableId={selectedHotel.hotel_id.toString()}
+                      index={index}>
+                      {(provided) => (
+                        <li
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}>
+                          <HotelAccordionItem
+                            hotel={{
+                              name: hotels[selectedHotel.hotel_id]?.name
+                                ? hotels[selectedHotel.hotel_id]!.name
+                                : "",
+                              location:
+                                hotels[selectedHotel.hotel_id]
+                                  ?.destination_id &&
+                                destinations[
+                                  hotels[selectedHotel.hotel_id]!.destination_id
+                                ] &&
+                                destinations[
+                                  hotels[selectedHotel.hotel_id]!.destination_id
+                                ]?.location
+                                  ? destinations[
+                                      hotels[selectedHotel.hotel_id]!
+                                        .destination_id
+                                    ]?.location!
+                                  : "",
+                            }}
+                            selectedHotel={selectedHotel}
+                            key={selectedHotel.hotel_id}
+                          />
+                        </li>
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
+              </ul>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
     </div>
   )
