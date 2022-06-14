@@ -69,7 +69,14 @@ function EditFlightModal(props: EditFlightModalProps) {
     },
     onSubmit: (values) => {
       let updatedValues = values.trip_legs.map((leg: RetreatTripLeg) => {
+        leg = {...leg}
         delete leg.duration
+        if (leg.dep_datetime === "") {
+          leg.dep_datetime = undefined
+        }
+        if (leg.arr_datetime === "") {
+          leg.arr_datetime = undefined
+        }
         return leg
       })
       setOpen(false)
