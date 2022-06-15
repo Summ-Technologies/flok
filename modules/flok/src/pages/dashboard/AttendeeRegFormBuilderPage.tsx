@@ -1,8 +1,12 @@
-import {makeStyles, Typography} from "@material-ui/core"
+import {Button, makeStyles, Typography} from "@material-ui/core"
+import {useState} from "react"
+import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
 import FormBuilder from "../../components/forms/FormBuilder"
 import FormProvider from "../../components/forms/FormProvider"
 import PageBody from "../../components/page/PageBody"
+import {initializeRegForm} from "../../store/actions/form"
+import {useRetreat} from "../misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -11,37 +15,43 @@ let useStyles = makeStyles((theme) => ({
       margin: theme.spacing(0.5),
     },
   },
-  builderForm: {
-    margin: theme.spacing(1),
-    "& > :not(:first-child)": {marginTop: theme.spacing(2)},
-  },
-  formSection: {
-    padding: theme.spacing(2),
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[1],
-    borderRadius: theme.shape.borderRadius,
-  },
-  formQuestionTitleInput: {
-    ...theme.typography.body1,
-    fontWeight: theme.typography.fontWeightBold,
-  },
-  formQuestionDescriptionInput: {
-    ...theme.typography.body2,
+  createFormButton: {
+    marginTop: theme.spacing(2),
   },
 }))
 
 type AttendeesRegFormBuilderProps = RouteComponentProps<{retreatIdx: string}>
 function AttendeesRegFormBuilderPage(props: AttendeesRegFormBuilderProps) {
+  let dispatch = useDispatch()
   let classes = useStyles()
-  let formId = 1
+  let [loadingCreateForm, setLoadingCreateForm] = useState(false)
+  let [retreat] = useRetreat()
 
   return (
     <PageBody appBar>
       <div className={classes.body}>
         <Typography variant="h1">Attendee Registration Form</Typography>
-        <FormProvider formId={formId}>
-          <FormBuilder />
-        </FormProvider>
+        {retreat.attendees_reg_form_id != null ? (
+          <FormProvider formId={retreat.attendees_reg_form_id}>
+            <FormBuilder />
+          </FormProvider>
+        ) : (
+          <Button
+            className={classes.createFormButton}
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              async function postNewForm() {
+                setLoadingCreateForm(true)
+                await dispatch(initializeRegForm(retreat.id))
+                setLoadingCreateForm(false)
+              }
+              postNewForm()
+            }}
+            disabled={loadingCreateForm}>
+            Create Registration Form
+          </Button>
+        )}
       </div>
     </PageBody>
   )

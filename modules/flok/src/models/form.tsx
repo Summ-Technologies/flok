@@ -1,3 +1,9 @@
+export enum FormCreationTypeEnum {
+  ATTENDEE_REGISTRATION = "ATTENDEE_REGISTRATION",
+}
+
+export type FormCreationType = `${FormCreationTypeEnum}`
+
 export type FormModel = {
   id: number
   title: string

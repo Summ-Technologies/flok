@@ -1,10 +1,47 @@
 import {ThunkDispatch} from "redux-thunk"
 import {
+  FormCreationTypeEnum,
   FormModel,
   FormQuestionModel,
   FormQuestionSelectOptionModel,
 } from "../../models/form"
 import {ApiAction, createApiAction} from "./api"
+
+export const POST_FORM_REQUEST = "POST_FORM_REQUEST"
+export const POST_FORM_SUCCESS = "POST_FORM_SUCCESS"
+export const POST_FORM_FAILURE = "POST_FORM_FAILURE"
+
+export function postForm(
+  formType?: FormCreationTypeEnum,
+  initialValues?: {title?: string; description?: string}
+) {
+  let endpoint = `/v1.0/forms${
+    formType ? `?${new URLSearchParams({type: formType!}).toString()}` : ""
+  }`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify(initialValues),
+    types: [POST_FORM_REQUEST, POST_FORM_SUCCESS, POST_FORM_FAILURE],
+  })
+}
+
+export const INITIALIZE_REG_FORM_REQUEST = "INITIALIZE_REG_FORM_REQUEST"
+export const INITIALIZE_REG_FORM_SUCCESS = "INITIALIZE_REG_FORM_SUCCESS"
+export const INITIALIZE_REG_FORM_FAILURE = "INITIALIZE_REG_FORM_FAILURE"
+
+export function initializeRegForm(retreatId: number) {
+  return async (dispatch: ThunkDispatch<any, any, any>) => {
+    let postFormResponse = (await dispatch(
+      postForm(FormCreationTypeEnum.ATTENDEE_REGISTRATION)
+    )) as unknown as ApiAction
+    if (!postFormResponse.error) {
+      let newFormId = postFormResponse.payload.form.id as number
+      alert(newFormId)
+      // Patch retreat to add this one to the retreat model
+    }
+  }
+}
 
 export const GET_FORM_REQUEST = "GET_FORM_REQUEST"
 export const GET_FORM_SUCCESS = "GET_FORM_SUCCESS"
