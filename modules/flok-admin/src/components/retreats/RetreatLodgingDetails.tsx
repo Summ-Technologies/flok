@@ -39,7 +39,7 @@ import {ApiAction} from "../../store/actions/api"
 import {nullifyEmptyString} from "../../utils"
 import AppTypography from "../base/AppTypography"
 import ConfirmationModal from "../base/ConfirmationModal"
-import CreateHotelGroupForm from "../lodging/CreateHotelGroupForm"
+import CreateHotelGroupModalButton from "../lodging/CreateHotelGroupModalButton"
 import HotelGroupTitle from "../lodging/HotelGroupTitle"
 import HotelSelectModal from "../lodging/HotelSelectModal"
 import HotelProposalForm from "./HotelProposalForm"
@@ -341,6 +341,10 @@ function HotelAccordionItem(props: {
 let useStyles = makeStyles((theme) => ({
   root: {height: "100%"},
   hotelsList: {},
+  addGroupButton: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
 }))
 
 type RetreatLodgingDetailsProps = {retreat: AdminRetreatModel}
@@ -467,8 +471,10 @@ export default function RetreatLodgingDetails(
             No hotel proposals created yet. Add a hotel to start.
           </AppTypography>
         ) : undefined}
-        {/* here for reference */}
-        <CreateHotelGroupForm retreatId={props.retreat.id} />
+        {/* here */}
+        <div className={classes.addGroupButton}>
+          <CreateHotelGroupModalButton retreatId={props.retreat.id} />
+        </div>
         <DragDropContext
           onDragEnd={async (result) => {
             if (!result.destination) return

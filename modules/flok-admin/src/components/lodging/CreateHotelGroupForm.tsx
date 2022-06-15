@@ -2,16 +2,21 @@ import {Button, makeStyles, TextField} from "@material-ui/core"
 import {useFormik} from "formik"
 import {useDispatch} from "react-redux"
 import {postHotelGroup} from "../../store/actions/admin"
+import {ApiAction} from "../../store/actions/api"
 
 let useStyles = makeStyles((theme) => ({
   form: {
     display: "flex",
-    margin: theme.spacing(1),
+    marginBottom: theme.spacing(2),
     alignItems: "center",
+  },
+  textField: {
+    marginRight: theme.spacing(2),
   },
 }))
 type CreateHotelGroupFormProps = {
   retreatId: number
+  onSubmit?: () => void
 }
 function CreateHotelGroupForm(props: CreateHotelGroupFormProps) {
   let classes = useStyles()
@@ -21,8 +26,13 @@ function CreateHotelGroupForm(props: CreateHotelGroupFormProps) {
     initialValues: {
       title: "",
     },
-    onSubmit: (values) => {
-      dispatch(postHotelGroup({...values, retreat_id: props.retreatId}))
+    onSubmit: async (values) => {
+      let response = (await dispatch(
+        postHotelGroup({...values, retreat_id: props.retreatId})
+      )) as unknown as ApiAction
+      if (!response.error && props.onSubmit) {
+        props.onSubmit()
+      }
     },
   })
   return (
@@ -30,7 +40,9 @@ function CreateHotelGroupForm(props: CreateHotelGroupFormProps) {
       <TextField
         onChange={formik.handleChange}
         id="title"
-        label="Grouping Title"
+        label="Group Title"
+        fullWidth
+        className={classes.textField}
       />
       <Button type="submit" variant="outlined" color="primary">
         Submit
