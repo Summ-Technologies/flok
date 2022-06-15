@@ -85,9 +85,6 @@ export default function ProposalsListPageBody(
 
   let destinations = useDestinations()[0]
 
-  let [groupedSelectedHotels, setGroupedSelectedHotels] = useState<
-    {destinationId: number; selectedHotels: RetreatSelectedHotelProposal[]}[]
-  >([])
   useEffect(() => {
     let byDestinationId: {[key: number]: RetreatSelectedHotelProposal[]} = {}
     let reviewableHotels = hotelsById
@@ -102,19 +99,7 @@ export default function ProposalsListPageBody(
       }
       byDestinationId[destinationId].push(selectedHotel)
     })
-
-    setGroupedSelectedHotels(
-      Object.keys(byDestinationId)
-        .sort()
-        .map((destId) => {
-          let _destId = parseInt(destId)
-          return {
-            destinationId: _destId,
-            selectedHotels: byDestinationId[_destId],
-          }
-        })
-    )
-  }, [selectedHotels, setGroupedSelectedHotels, hotelsById, retreat])
+  }, [selectedHotels, hotelsById, retreat])
 
   // Set unavailable hotels bucket
   let [unavailableSelectedHotels, setUnavailableSelectedHotels] = useState<
