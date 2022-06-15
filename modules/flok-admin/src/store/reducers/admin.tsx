@@ -26,7 +26,7 @@ import {
   GET_HOTELS_BY_ID_SUCCESS,
   GET_HOTELS_SEARCH_SUCCESS,
   GET_HOTEL_DETAILS_SUCCESS,
-  GET_HOTEL_GROUPS_SUCCESS,
+  GET_HOTEL_GROUP_SUCCESS,
   GET_LOGIN_TOKEN_SUCCESS,
   GET_RETREATS_LIST_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
@@ -441,22 +441,8 @@ export default function AdminReducer(
           .sort((a, b) => (a.location > b.location ? 0 : 1))
           .map((dest) => dest.id),
       }
-    case GET_HOTEL_GROUPS_SUCCESS:
-      action = action as unknown as ApiAction
-      payload = (action as unknown as ApiAction).payload as {
-        groups: HotelGroup[]
-      }
-      return {
-        ...state,
-        hotelGroups: {
-          ...state.hotelGroups,
-          ...payload.groups.reduce(
-            (last, curr) => ({...last, [curr.id]: curr}),
-            {}
-          ),
-        },
-      }
     case POST_HOTEL_GROUP_SUCCESS:
+    case GET_HOTEL_GROUP_SUCCESS:
     case PATCH_HOTEL_GROUP_SUCCESS:
       action = action as unknown as ApiAction
       payload = (action as unknown as ApiAction).payload as {

@@ -28,7 +28,7 @@ import {
   deleteRetreatHotelProposal,
   deleteSelectedHotel,
   getDestinations,
-  getHotelGroups,
+  getHotelGroup,
   getHotelsByHotelId,
   postHotelProposal,
   postSelectedHotel,
@@ -341,9 +341,8 @@ function HotelAccordionItem(props: {
 let useStyles = makeStyles((theme) => ({
   root: {height: "100%"},
   hotelsList: {},
-  addGroupButton: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+  addHotelButton: {
+    marginRight: theme.spacing(2),
   },
 }))
 
@@ -419,8 +418,14 @@ export default function RetreatLodgingDetails(
     }
   }, [destinationsList, dispatch])
   useEffect(() => {
-    dispatch(getHotelGroups(props.retreat.id))
-  }, [props.retreat.id, dispatch])
+    for (let groupId of props.retreat.group_ids) {
+      if (
+        !groups.filter((group) => group).find((group) => group!.id == groupId)
+      ) {
+        dispatch(getHotelGroup(groupId))
+      }
+    }
+  }, [dispatch])
 
   return (
     <div className={classes.root}>
@@ -445,12 +450,16 @@ export default function RetreatLodgingDetails(
             See client view
           </Typography>
         </Box>
-        <Button
-          color="primary"
-          variant="outlined"
-          onClick={() => setNewHotelOpen(true)}>
-          Add Hotel
-        </Button>
+        <div>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => setNewHotelOpen(true)}
+            className={classes.addHotelButton}>
+            Add Hotel
+          </Button>
+          <CreateHotelGroupModalButton retreatId={props.retreat.id} />
+        </div>
         {newHotelOpen && (
           <HotelSelectModal
             onSubmit={async (hotelId) => {
@@ -471,10 +480,6 @@ export default function RetreatLodgingDetails(
             No hotel proposals created yet. Add a hotel to start.
           </AppTypography>
         ) : undefined}
-        {/* here */}
-        <div className={classes.addGroupButton}>
-          <CreateHotelGroupModalButton retreatId={props.retreat.id} />
-        </div>
         <DragDropContext
           onDragEnd={async (result) => {
             if (!result.destination) return

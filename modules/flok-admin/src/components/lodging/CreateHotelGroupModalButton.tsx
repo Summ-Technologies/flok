@@ -12,7 +12,6 @@ function CreateHotelGroupModalButton(props: CreateHotelGroupModalButtonProps) {
       <Button
         variant="outlined"
         color="primary"
-        size="small"
         onClick={() => {
           setModalOpen(true)
         }}>

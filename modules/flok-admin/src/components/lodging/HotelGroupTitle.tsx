@@ -1,4 +1,5 @@
-import {Button, makeStyles, TextField} from "@material-ui/core"
+import {Button, IconButton, makeStyles, TextField} from "@material-ui/core"
+import {Edit} from "@material-ui/icons"
 import {useFormik} from "formik"
 import _ from "lodash"
 import {useState} from "react"
@@ -113,15 +114,13 @@ function HotelGroupTitle(props: HotelGroupTitleProps) {
           <AppTypography variant="h4" className={classes.titleText}>
             {props.group.title}
           </AppTypography>
-          <Button
-            variant="outlined"
-            color="primary"
+          <IconButton
             size="small"
             onClick={() => {
               setEditing((editing) => !editing)
             }}>
-            Edit
-          </Button>
+            <Edit fontSize="small" />
+          </IconButton>
         </>
       )}
     </div>
