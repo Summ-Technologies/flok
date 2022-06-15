@@ -5,7 +5,8 @@ import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
-import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
+import {getHotelGroups} from "../../store/actions/retreat"
+import {useDestinations} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppShareableLinkButton from "../base/AppShareableLinkButton"
 import AppTypography from "../base/AppTypography"
@@ -46,8 +47,18 @@ export default function ProposalsListPageBody(
   let classes = useStyles(props)
   let dispatch = useDispatch()
 
+  useEffect(() => {
+    dispatch(getHotelGroups(retreat.id))
+  }, [dispatch])
+
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
   let selectedHotels = retreat.selected_hotels
+
+  let hotelGroups = useSelector((state: RootState) => {
+    return Object.values(state.retreat.hotelGroups).filter(
+      (group) => group?.retreat_id === props.retreat.id
+    )
+  })
 
   // Probably not the best way to set loading state, but will do for now
   let [loadingHotels, setLoadingHotels] = useState(false)
@@ -158,7 +169,62 @@ export default function ProposalsListPageBody(
           )
         ) : undefined}
         {/* Available hotels render */}
-        {groupedSelectedHotels.map((destList) => {
+        {/* here */}
+        {hotelGroups
+          .sort((a, b) => a.id - b.id)
+          .map((group) => {
+            return (
+              <div className={classes.proposalsList}>
+                <AppTypography variant="h2">{group.title}</AppTypography>
+                {selectedHotels
+                  .filter(
+                    (hotel) =>
+                      hotel.group_id === group.id && hotelsById[hotel.hotel_id]
+                  )
+                  .map((selectedHotel) => {
+                    let hotel = hotelsById[selectedHotel.hotel_id]
+                    let destination = destinations[hotel.destination_id]
+                    let proposals = selectedHotel.hotel_proposals || []
+                    return (
+                      <ProposalListRow
+                        hotel={hotel}
+                        destination={destination}
+                        proposals={proposals}
+                        proposalUrl={AppRoutes.getPath(
+                          "RetreatLodgingProposalPage",
+                          {
+                            retreatIdx: retreatIdx.toString(),
+                            hotelGuid: hotel.guid,
+                          }
+                        )}
+                      />
+                    )
+                  })}
+              </div>
+            )
+          })}
+        <div className={classes.proposalsList}>
+          <AppTypography variant="h2">Other</AppTypography>
+          {selectedHotels
+            .filter((hotel) => !hotel.group_id && hotelsById[hotel.hotel_id])
+            .map((selectedHotel) => {
+              let hotel = hotelsById[selectedHotel.hotel_id]
+              let destination = destinations[hotel.destination_id]
+              let proposals = selectedHotel.hotel_proposals || []
+              return (
+                <ProposalListRow
+                  hotel={hotel}
+                  destination={destination}
+                  proposals={proposals}
+                  proposalUrl={AppRoutes.getPath("RetreatLodgingProposalPage", {
+                    retreatIdx: retreatIdx.toString(),
+                    hotelGuid: hotel.guid,
+                  })}
+                />
+              )
+            })}
+        </div>
+        {/* {groupedSelectedHotels.map((destList) => {
           let destination = destinations[destList.destinationId]
           if (destination && destList.selectedHotels.length) {
             return (
@@ -189,7 +255,7 @@ export default function ProposalsListPageBody(
           } else {
             return undefined
           }
-        })}
+        })} */}
         {/* Unavailable hotels render */}
         <div className={classes.proposalsList}>
           {unavailableSelectedHotels.length ? (

@@ -47,6 +47,7 @@ export type RetreatSelectedHotelProposal = {
   hotel_id: number
   state: RetreatSelectedHotelProposalState
   hotel_proposals?: HotelLodgingProposal[]
+  group_id?: number
 }
 
 export type RetreatProgressState = // Deprecated
@@ -445,3 +446,9 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     email_address: "tp@123.com",
   },
 ]
+
+export type HotelGroup = {
+  id: number
+  title: string
+  retreat_id: number
+}

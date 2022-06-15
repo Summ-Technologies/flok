@@ -12,6 +12,7 @@ import {
   AttendeeLandingWebsiteBlockModel,
   AttendeeLandingWebsiteModel,
   AttendeeLandingWebsitePageModel,
+  HotelGroup,
   RetreatAttendeeModel,
   RetreatModel,
   RetreatTripModel,
@@ -22,6 +23,7 @@ import {
   DELETE_RETREAT_ATTENDEES_SUCCESS,
   GET_ATTENDEE_SUCCESS,
   GET_BLOCK_SUCCESS,
+  GET_HOTEL_GROUPS_SUCCESS,
   GET_PAGE_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_BY_GUID_FAILURE,
@@ -69,6 +71,9 @@ export type RetreatState = {
   blocks: {
     [id: number]: AttendeeLandingWebsiteBlockModel | undefined
   }
+  hotelGroups: {
+    [id: number]: HotelGroup
+  }
 }
 
 const initialState: RetreatState = {
@@ -80,6 +85,7 @@ const initialState: RetreatState = {
   websites: {},
   pages: {},
   blocks: {},
+  hotelGroups: {},
 }
 
 export default function retreatReducer(
@@ -311,6 +317,21 @@ export default function retreatReducer(
         }
       }
       return newState
+    case GET_HOTEL_GROUPS_SUCCESS:
+      action = action as unknown as ApiAction
+      payload = (action as unknown as ApiAction).payload as {
+        groups: HotelGroup[]
+      }
+      return {
+        ...state,
+        hotelGroups: {
+          ...state.hotelGroups,
+          ...payload.groups.reduce(
+            (last, curr) => ({...last, [curr.id]: curr}),
+            {}
+          ),
+        },
+      }
     default:
       return state
   }
