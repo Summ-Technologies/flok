@@ -149,7 +149,7 @@ export default function ProposalsListPageBody(
         </div>
       </div>
       <Box overflow="auto" width="100%">
-        {selectedHotels.filter((hotel) => hotel.state === "PENDING").length ===
+        {selectedHotels.filter((hotel) => hotel.state !== "PENDING").length ===
         0 ? (
           loadingHotels ? (
             <AppTypography variant="body1">Loading...</AppTypography>
@@ -158,42 +158,46 @@ export default function ProposalsListPageBody(
           )
         ) : undefined}
         {/* Available hotels render */}
-        {hotelGroups
-          .sort((a, b) => a.id - b.id)
-          .map((group) => {
-            return (
-              <div className={classes.proposalsList}>
-                <AppTypography variant="h2">{group.title}</AppTypography>
-                {selectedHotels
-                  .filter(
-                    (hotel) =>
-                      hotel.group_id === group.id &&
-                      hotelsById[hotel.hotel_id] &&
-                      hotel.state !== "NOT_AVAILABLE" &&
-                      hotel.state !== "PENDING"
-                  )
-                  .map((selectedHotel) => {
-                    let hotel = hotelsById[selectedHotel.hotel_id]
-                    let destination = destinations[hotel.destination_id]
-                    let proposals = selectedHotel.hotel_proposals || []
-                    return (
-                      <ProposalListRow
-                        hotel={hotel}
-                        destination={destination}
-                        proposals={proposals}
-                        proposalUrl={AppRoutes.getPath(
-                          "RetreatLodgingProposalPage",
-                          {
-                            retreatIdx: retreatIdx.toString(),
-                            hotelGuid: hotel.guid,
-                          }
-                        )}
-                      />
+        {selectedHotels.filter((hotel) => hotel.state !== "PENDING").length !==
+          0 &&
+          hotelGroups
+            .sort((a, b) => a.id - b.id)
+            .map((group) => {
+              return (
+                <div className={classes.proposalsList}>
+                  <AppTypography variant="h2">{group.title}</AppTypography>
+                  {selectedHotels
+                    .filter(
+                      (hotel) =>
+                        hotel.group_id === group.id &&
+                        hotelsById[hotel.hotel_id] &&
+                        hotel.state !== "NOT_AVAILABLE" &&
+                        hotel.state !== "PENDING"
                     )
-                  })}
-              </div>
-            )
-          })}
+                    .map((selectedHotel) => {
+                      let hotel = hotelsById[selectedHotel.hotel_id]
+                      let destination = destinations[hotel.destination_id]
+                      let proposals = selectedHotel.hotel_proposals || []
+                      return (
+                        destination && (
+                          <ProposalListRow
+                            hotel={hotel}
+                            destination={destination}
+                            proposals={proposals}
+                            proposalUrl={AppRoutes.getPath(
+                              "RetreatLodgingProposalPage",
+                              {
+                                retreatIdx: retreatIdx.toString(),
+                                hotelGuid: hotel.guid,
+                              }
+                            )}
+                          />
+                        )
+                      )
+                    })}
+                </div>
+              )
+            })}
         {selectedHotels.filter(
           (hotel) =>
             !hotel.group_id &&
@@ -216,18 +220,20 @@ export default function ProposalsListPageBody(
                 let destination = destinations[hotel.destination_id]
                 let proposals = selectedHotel.hotel_proposals || []
                 return (
-                  <ProposalListRow
-                    hotel={hotel}
-                    destination={destination}
-                    proposals={proposals}
-                    proposalUrl={AppRoutes.getPath(
-                      "RetreatLodgingProposalPage",
-                      {
-                        retreatIdx: retreatIdx.toString(),
-                        hotelGuid: hotel.guid,
-                      }
-                    )}
-                  />
+                  destination && (
+                    <ProposalListRow
+                      hotel={hotel}
+                      destination={destination}
+                      proposals={proposals}
+                      proposalUrl={AppRoutes.getPath(
+                        "RetreatLodgingProposalPage",
+                        {
+                          retreatIdx: retreatIdx.toString(),
+                          hotelGuid: hotel.guid,
+                        }
+                      )}
+                    />
+                  )
                 )
               })}
           </div>
