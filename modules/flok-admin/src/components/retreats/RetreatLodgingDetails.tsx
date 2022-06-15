@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core"
+import {Menu} from "@material-ui/icons"
 import {useFormik} from "formik"
 import querystring from "querystring"
 import React, {useEffect, useState} from "react"
@@ -49,6 +50,9 @@ let useAccordionItemStyles = makeStyles((theme) => ({
     width: "100%",
     display: "flex",
     flexDirection: "column",
+  },
+  menuIcon: {
+    marginLeft: theme.spacing(2),
   },
 }))
 
@@ -93,19 +97,22 @@ function HotelAccordionItem(props: {
             <strong>{props.hotel.name}</strong>
             {props.hotel.location ? `, ${props.hotel.location}` : ""}
           </AppTypography>
-          {props.selectedHotel.state === "REVIEW" ? (
-            <Chip
-              label="Ready for review"
-              style={{color: "white", backgroundColor: "green"}}
-            />
-          ) : props.selectedHotel.state === "NOT_AVAILABLE" ? (
-            <Chip
-              label="Not available"
-              style={{color: "white", backgroundColor: "red"}}
-            />
-          ) : (
-            <Chip label="Pending" style={{backgroundColor: "yellow"}} />
-          )}
+          <div>
+            {props.selectedHotel.state === "REVIEW" ? (
+              <Chip
+                label="Ready for review"
+                style={{color: "white", backgroundColor: "green"}}
+              />
+            ) : props.selectedHotel.state === "NOT_AVAILABLE" ? (
+              <Chip
+                label="Not available"
+                style={{color: "white", backgroundColor: "red"}}
+              />
+            ) : (
+              <Chip label="Pending" style={{backgroundColor: "yellow"}} />
+            )}
+            <Menu className={classes.menuIcon} />
+          </div>
         </Box>
       </AccordionSummary>
       {expanded && (
@@ -503,7 +510,6 @@ export default function RetreatLodgingDetails(
                     {group_id: parseInt(result.destination.droppableId)}
                   )
                 )) as unknown as ApiAction
-                console.log(putResult)
                 if (putResult.error) {
                   reorderedItem.group_id = originalGroup
                 }

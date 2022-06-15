@@ -15,7 +15,9 @@ let useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   titleText: {
-    margin: theme.spacing(1),
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
   form: {
     display: "flex",

@@ -8,7 +8,6 @@ import {
   AdminRetreatListType,
   AdminRetreatModel,
   AdminSelectedHotelProposalModel,
-  AdminSelectedHotelStateTypes,
   HotelGroup,
   RetreatTask,
   RetreatToTaskState,
@@ -264,17 +263,12 @@ export function putSelectedHotel(
   values: Partial<AdminSelectedHotelProposalModel>
 ) {
   let endpoint = `/v1.0/admin/retreats/${retreatId}/hotels/${hotelId}`
-  let newValues: {
-    state?: AdminSelectedHotelStateTypes
-    group_id?: number | null
-  } = {...values}
-  if (newValues.group_id === undefined) {
-    newValues.group_id = null
-  }
   return createApiAction({
     endpoint,
     method: "PUT",
-    body: JSON.stringify(newValues),
+    body: JSON.stringify(values, (key, value) =>
+      typeof value === "undefined" ? null : value
+    ),
     types: [
       PUT_SELECTED_HOTEL_REQUEST,
       PUT_SELECTED_HOTEL_SUCCESS,
