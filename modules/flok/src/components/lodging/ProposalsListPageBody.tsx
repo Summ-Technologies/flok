@@ -169,7 +169,6 @@ export default function ProposalsListPageBody(
           )
         ) : undefined}
         {/* Available hotels render */}
-        {/* here */}
         {hotelGroups
           .sort((a, b) => a.id - b.id)
           .map((group) => {
