@@ -164,7 +164,7 @@ export default function ProposalsListPageBody(
         </div>
       </div>
       <Box overflow="auto" width="100%">
-        {groupedSelectedHotels.length + unavailableSelectedHotels.length ===
+        {selectedHotels.filter((hotel) => hotel.state === "PENDING").length ===
         0 ? (
           loadingHotels ? (
             <AppTypography variant="body1">Loading...</AppTypography>
@@ -209,65 +209,46 @@ export default function ProposalsListPageBody(
               </div>
             )
           })}
-        <div className={classes.proposalsList}>
-          <AppTypography variant="h2">Other</AppTypography>
-          {selectedHotels
-            .filter(
-              (hotel) =>
-                !hotel.group_id &&
-                hotelsById[hotel.hotel_id] &&
-                hotel.state !== "NOT_AVAILABLE" &&
-                hotel.state !== "PENDING"
-            )
-            .map((selectedHotel) => {
-              let hotel = hotelsById[selectedHotel.hotel_id]
-              let destination = destinations[hotel.destination_id]
-              let proposals = selectedHotel.hotel_proposals || []
-              return (
-                <ProposalListRow
-                  hotel={hotel}
-                  destination={destination}
-                  proposals={proposals}
-                  proposalUrl={AppRoutes.getPath("RetreatLodgingProposalPage", {
-                    retreatIdx: retreatIdx.toString(),
-                    hotelGuid: hotel.guid,
-                  })}
-                />
+        {selectedHotels.filter(
+          (hotel) =>
+            !hotel.group_id &&
+            hotelsById[hotel.hotel_id] &&
+            hotel.state !== "NOT_AVAILABLE" &&
+            hotel.state !== "PENDING"
+        ).length ? (
+          <div className={classes.proposalsList}>
+            <AppTypography variant="h2">Other</AppTypography>
+            {selectedHotels
+              .filter(
+                (hotel) =>
+                  !hotel.group_id &&
+                  hotelsById[hotel.hotel_id] &&
+                  hotel.state !== "NOT_AVAILABLE" &&
+                  hotel.state !== "PENDING"
               )
-            })}
-        </div>
-        {/* {groupedSelectedHotels.map((destList) => {
-          let destination = destinations[destList.destinationId]
-          if (destination && destList.selectedHotels.length) {
-            return (
-              <div className={classes.proposalsList}>
-                <AppTypography variant="h2">
-                  {DestinationUtils.getLocationName(destination)}
-                </AppTypography>
-                {destList.selectedHotels.map((selectedHotel) => {
-                  let hotel = hotelsById[selectedHotel.hotel_id]
-                  let proposals = selectedHotel.hotel_proposals || []
-                  return (
-                    <ProposalListRow
-                      hotel={hotel}
-                      destination={destination}
-                      proposals={proposals}
-                      proposalUrl={AppRoutes.getPath(
-                        "RetreatLodgingProposalPage",
-                        {
-                          retreatIdx: retreatIdx.toString(),
-                          hotelGuid: hotel.guid,
-                        }
-                      )}
-                    />
-                  )
-                })}
-              </div>
-            )
-          } else {
-            return undefined
-          }
-        })} */}
+              .map((selectedHotel) => {
+                let hotel = hotelsById[selectedHotel.hotel_id]
+                let destination = destinations[hotel.destination_id]
+                let proposals = selectedHotel.hotel_proposals || []
+                return (
+                  <ProposalListRow
+                    hotel={hotel}
+                    destination={destination}
+                    proposals={proposals}
+                    proposalUrl={AppRoutes.getPath(
+                      "RetreatLodgingProposalPage",
+                      {
+                        retreatIdx: retreatIdx.toString(),
+                        hotelGuid: hotel.guid,
+                      }
+                    )}
+                  />
+                )
+              })}
+          </div>
+        ) : (
+          ""
+        )}
         {/* Unavailable hotels render */}
         <div className={classes.proposalsList}>
           {unavailableSelectedHotels.length ? (
