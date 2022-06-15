@@ -635,20 +635,19 @@ export function postRetreatAttendeesBatch(
   )
 }
 
-// Replace with more restful version
-export const GET_HOTEL_GROUPS_REQUEST = "GET_HOTEL_GROUPS_REQUEST"
-export const GET_HOTEL_GROUPS_SUCCESS = "GET_HOTEL_GROUPS_SUCCESS"
-export const GET_HOTEL_GROUPS_FAILURE = "GET_HOTEL_GROUPS_FAILURE"
+export const GET_HOTEL_GROUP_REQUEST = "GET_HOTEL_GROUP_REQUEST"
+export const GET_HOTEL_GROUP_SUCCESS = "GET_HOTEL_GROUP_SUCCESS"
+export const GET_HOTEL_GROUP_FAILURE = "GET_HOTEL_GROUP_FAILURE"
 
-export function getHotelGroups(retreatId: number) {
-  let endpoint = `/v1.0/admin/retreats/${retreatId}/hotel-groups`
+export function getHotelGroup(groupId: number) {
+  let endpoint = `/v1.0/hotel-groups/${groupId}`
   return createApiAction({
     endpoint,
     method: "GET",
     types: [
-      {type: GET_HOTEL_GROUPS_REQUEST},
-      {type: GET_HOTEL_GROUPS_SUCCESS},
-      {type: GET_HOTEL_GROUPS_FAILURE},
+      {type: GET_HOTEL_GROUP_REQUEST},
+      {type: GET_HOTEL_GROUP_SUCCESS},
+      {type: GET_HOTEL_GROUP_FAILURE},
     ],
   })
 }

@@ -5,7 +5,7 @@ import {RetreatModel, RetreatSelectedHotelProposal} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
-import {getHotelGroups} from "../../store/actions/retreat"
+import {getHotelGroup} from "../../store/actions/retreat"
 import {useDestinations} from "../../utils/lodgingUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 import AppShareableLinkButton from "../base/AppShareableLinkButton"
@@ -48,7 +48,11 @@ export default function ProposalsListPageBody(
   let dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getHotelGroups(retreat.id))
+    for (let groupId of retreat.group_ids) {
+      if (!hotelGroups.find((group) => group.id == groupId)) {
+        dispatch(getHotelGroup(groupId))
+      }
+    }
   }, [dispatch])
 
   let hotelsById = useSelector((state: RootState) => state.lodging.hotels)
@@ -178,7 +182,10 @@ export default function ProposalsListPageBody(
                 {selectedHotels
                   .filter(
                     (hotel) =>
-                      hotel.group_id === group.id && hotelsById[hotel.hotel_id]
+                      hotel.group_id === group.id &&
+                      hotelsById[hotel.hotel_id] &&
+                      hotel.state !== "NOT_AVAILABLE" &&
+                      hotel.state !== "PENDING"
                   )
                   .map((selectedHotel) => {
                     let hotel = hotelsById[selectedHotel.hotel_id]
@@ -205,7 +212,13 @@ export default function ProposalsListPageBody(
         <div className={classes.proposalsList}>
           <AppTypography variant="h2">Other</AppTypography>
           {selectedHotels
-            .filter((hotel) => !hotel.group_id && hotelsById[hotel.hotel_id])
+            .filter(
+              (hotel) =>
+                !hotel.group_id &&
+                hotelsById[hotel.hotel_id] &&
+                hotel.state !== "NOT_AVAILABLE" &&
+                hotel.state !== "PENDING"
+            )
             .map((selectedHotel) => {
               let hotel = hotelsById[selectedHotel.hotel_id]
               let destination = destinations[hotel.destination_id]

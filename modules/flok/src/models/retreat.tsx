@@ -160,6 +160,9 @@ export type RetreatModel = {
   //Retreat itinerary links
   itinerary_first_draft_link?: string
   itinerary_final_draft_link?: string
+
+  // hotel groups
+  group_ids: number[]
 }
 
 export type RetreatTripModel = {
