@@ -5,6 +5,7 @@ import {
   IconButton,
   Link,
   makeStyles,
+  Tabs,
   Typography,
 } from "@material-ui/core"
 import {Add, ArrowBack, Delete, Settings} from "@material-ui/icons"
@@ -25,6 +26,7 @@ import AddPageForm from "../components/retreat-website/AddPageForm"
 import EditPageForm from "../components/retreat-website/EditPageForm"
 import EditWebsiteForm from "../components/retreat-website/EditWebsiteForm"
 import LandingPageEditForm from "../components/retreat-website/LandingPageEditForm"
+import LandingPageGeneratorTab from "../components/retreat-website/LandingPageGeneratorTab"
 import PageWebsiteLink from "../components/retreat-website/PageWebsiteLink"
 import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
@@ -295,6 +297,22 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
               </IconButton>
             </div>
           </div>
+          <Tabs
+            value={page?.id}
+            onChange={() => {}}
+            indicatorColor="primary"
+            textColor="primary">
+            {website.page_ids.map((pageId) => {
+              return (
+                <LandingPageGeneratorTab
+                  pageId={pageId}
+                  value={pageId}
+                  retreatIdx={retreatIdx}
+                />
+              )
+            })}
+            asdf;lkm
+          </Tabs>
           {page && <LandingPageEditForm pageId={page?.id} config={config} />}
         </div>
       </Box>
@@ -393,7 +411,6 @@ function EditPageToolBar(props: EditPageToolBarProps) {
           </IconButton>
         )}
       </div>
-
       <div className={classes.editWebsiteFormWrapper}>
         <EditPageForm
           pageId={pageId}
