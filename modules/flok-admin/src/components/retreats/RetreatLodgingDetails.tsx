@@ -365,7 +365,7 @@ export default function RetreatLodgingDetails(
     )
   })
 
-  let [hotelsTest, setHotelsTest] = useState(
+  let [selectedHotelsState, setSelectedHotelsState] = useState(
     props.retreat.selected_hotels.sort((a, b) => {
       let hotelA = hotels[a.hotel_id]
       let hotelB = hotels[b.hotel_id]
@@ -377,7 +377,7 @@ export default function RetreatLodgingDetails(
   )
 
   useEffect(() => {
-    setHotelsTest(
+    setSelectedHotelsState(
       props.retreat.selected_hotels.sort((a, b) => {
         let hotelA = hotels[a.hotel_id]
         let hotelB = hotels[b.hotel_id]
@@ -483,7 +483,7 @@ export default function RetreatLodgingDetails(
         <DragDropContext
           onDragEnd={async (result) => {
             if (!result.destination) return
-            const items = Array.from([...hotelsTest])
+            const items = Array.from([...selectedHotelsState])
             const [reorderedItem] = items.splice(
               items.findIndex(
                 (item) => item.hotel_id === parseInt(result.draggableId)
@@ -523,7 +523,7 @@ export default function RetreatLodgingDetails(
             }
 
             items.splice(result.destination.index, 0, reorderedItem)
-            setHotelsTest(
+            setSelectedHotelsState(
               items.sort((a, b) => {
                 let hotelA = hotels[a.hotel_id]
                 let hotelB = hotels[b.hotel_id]
@@ -543,8 +543,8 @@ export default function RetreatLodgingDetails(
                   {group && (
                     <HotelGroupTitle
                       group={group}
-                      hotels={hotelsTest}
-                      setHotels={setHotelsTest}
+                      hotels={selectedHotelsState}
+                      setHotels={setSelectedHotelsState}
                     />
                   )}
                   <Droppable droppableId={group!.id.toString()}>
@@ -553,7 +553,7 @@ export default function RetreatLodgingDetails(
                         {...provided.droppableProps}
                         ref={provided.innerRef}
                         style={{listStyleType: "none"}}>
-                        {hotelsTest
+                        {selectedHotelsState
                           .filter((hotel) => hotel.group_id == group!.id)
                           .map((selectedHotel, index: number) => (
                             <Draggable
@@ -609,7 +609,7 @@ export default function RetreatLodgingDetails(
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 style={{listStyleType: "none"}}>
-                {hotelsTest
+                {selectedHotelsState
                   .filter((hotel) => !hotel.group_id)
                   .map((selectedHotel, index: number) => (
                     <Draggable
