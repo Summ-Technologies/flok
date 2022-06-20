@@ -1,27 +1,44 @@
-import {Link, Tab} from "@material-ui/core"
+import {Link, makeStyles} from "@material-ui/core"
 import {Link as RouterLink} from "react-router-dom"
 import {AppRoutes} from "../../Stack"
 import {useAttendeeLandingPage} from "../../utils/retreatUtils"
+import AppTypography from "../base/AppTypography"
+
+let useStyles = makeStyles((theme) => ({
+  tabText: {
+    color: theme.palette.common.black,
+  },
+  link: {
+    "&:hover": {
+      textDecoration: "none",
+    },
+  },
+}))
 
 type LandingPageGeneratorTabProps = {
   pageId: number
-  value: number
   retreatIdx: number
+  selected: boolean
 }
 
 function LandingPageGeneratorTab(props: LandingPageGeneratorTabProps) {
   let page = useAttendeeLandingPage(props.pageId)
-  console.log(props.pageId)
+  let classes = useStyles()
 
   return (
     <Link
-      // className={classes.pageTitleText}
       component={RouterLink}
+      className={classes.link}
       to={AppRoutes.getPath("LandingPageGeneratorPage", {
         retreatIdx: props.retreatIdx.toString(),
         currentPageId: props.pageId.toString(),
       })}>
-      <Tab value={props.pageId} label={page?.title} />
+      <AppTypography
+        className={classes.tabText}
+        fontWeight="bold"
+        underline={props.selected}>
+        {page?.title}
+      </AppTypography>
     </Link>
   )
 }
