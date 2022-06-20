@@ -20,6 +20,7 @@ import {patchWebsite} from "../../store/actions/retreat"
 import {getTextFieldErrorProps} from "../../utils"
 import {useAttendeeLandingWebsite} from "../../utils/retreatUtils"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
+import UploadImageWithTemplate from "./UploadImageWithTemplate"
 
 let useStyles = makeStyles((theme) => ({
   body: {
@@ -80,12 +81,14 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
       name: website?.name ?? "",
     },
     onSubmit: (values) => {
-      for (let k in values) {
-        if (values[k as keyof typeof values] === -1) {
-          delete values[k as keyof typeof values]
+      let newValues = {...values}
+      for (let k in newValues) {
+        if (newValues[k as keyof typeof newValues] === -1) {
+          //@ts-ignore
+          newValues[k as keyof typeof newValues] = null
         }
       }
-      handlePatchWebsite(values)
+      handlePatchWebsite(newValues)
     },
     validationSchema: yup.object({
       name: yup
@@ -111,13 +114,16 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
           className={classes.textField}
           {...getTextFieldErrorProps(formik, "name")}
         />
-        <UploadImage
+        <UploadImageWithTemplate
           value={images[formik.values.banner_image_id]}
           tooltipText="Choose a banner image.  Large images with a landscape view work best"
           id="banner_image"
           handleChange={(image) => {
             formik.setFieldValue("banner_image_id", image.id)
             setImages({...images, [image.id]: image})
+          }}
+          handleClear={() => {
+            formik.setFieldValue("banner_image_id", -1)
           }}
           headerText="Banner Image"
         />

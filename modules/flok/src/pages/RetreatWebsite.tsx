@@ -92,13 +92,12 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             registrationLink={
               retreat.attendees_registration_form_link
             }></RetreatWebsiteHeader>
-          <img
-            src={
-              website.banner_image?.image_url ??
-              "https://upload.wikimedia.org/wikipedia/commons/b/bb/Table_Rock_scenery_banner.jpg"
-            }
-            className={classes.bannerImg}
-            alt="Banner"></img>
+          {website.banner_image && (
+            <img
+              src={website.banner_image?.image_url}
+              className={classes.bannerImg}
+              alt="Banner"></img>
+          )}
           {page?.block_ids[0] && (
             <WYSIWYGBlockRenderer blockId={page.block_ids[0]} />
           )}

@@ -634,3 +634,19 @@ export function postRetreatAttendeesBatch(
     }
   )
 }
+
+export const GET_PRESET_IMAGES_REQUEST = "GET_PRESET_IMAGES_REQUEST"
+export const GET_PRESET_IMAGES_SUCCESS = "GET_PRESET_IMAGES_SUCCESS"
+export const GET_PRESET_IMAGES_FAILURE = "GET_PRESET_IMAGES_FAILURE"
+export function getPresetImages(type: string) {
+  let endpoint = `/v1.0/preset-images?type=${type}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_PRESET_IMAGES_REQUEST},
+      {type: GET_PRESET_IMAGES_SUCCESS},
+      {type: GET_PRESET_IMAGES_FAILURE},
+    ],
+  })
+}
