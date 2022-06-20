@@ -159,19 +159,6 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
                 <Typography variant="h4" className={classes.pagesTitle}>
                   Pages
                 </Typography>
-                {/* <IconButton
-                  onClick={() => {
-                    dispatch(
-                      push(
-                        AppRoutes.getPath("LandingPageGeneratorConfigAddPage", {
-                          retreatIdx: retreatIdx.toString(),
-                          currentPageId: currentPageId,
-                        })
-                      )
-                    )
-                  }}>
-                  <Add fontSize="small" />
-                </IconButton> */}
               </div>
               {website.page_ids.map((pageId) => {
                 return (
@@ -203,19 +190,6 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
           <Route path={AppRoutes.getPath("LandingPageGeneratorConfigAddPage")}>
             <div className={classes.toolbarPage}>
               <div className={classes.pageTitleContainer}>
-                {/* <IconButton
-                  onClick={() => {
-                    dispatch(
-                      push(
-                        AppRoutes.getPath("LandingPageGeneratorConfig", {
-                          retreatIdx: retreatIdx.toString(),
-                          currentPageId: currentPageId,
-                        })
-                      )
-                    )
-                  }}>
-                  <ArrowBack fontSize="small" />
-                </IconButton> */}
                 <Typography variant="h4" className={classes.pagesTitle}>
                   Add New Page
                 </Typography>

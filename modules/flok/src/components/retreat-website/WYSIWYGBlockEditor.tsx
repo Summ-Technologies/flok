@@ -43,7 +43,6 @@ let useStyles = makeStyles((theme) => ({
     width: "90%",
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
-    // marginTop: 30,
     [theme.breakpoints.down("sm")]: {
       width: "100%",
     },
