@@ -2,7 +2,7 @@ import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Constants} from "../config"
 import {ResourceNotFound} from "../models"
-import {RetreatToTask} from "../models/retreat"
+import {RetreatModel, RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
 import {
   getBlock,
@@ -193,4 +193,10 @@ export function useRetreat(retreatId: number) {
   }, [retreat, dispatch, retreatId])
 
   return [retreat, loading] as const
+}
+
+export function getRetreatName(retreat: RetreatModel) {
+  if (retreat.retreat_name != undefined) {
+    return retreat.retreat_name
+  } else return `${retreat.company_name}'s Retreat`
 }
