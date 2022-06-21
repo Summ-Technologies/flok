@@ -547,27 +547,7 @@ export function deletePage(pageId: number) {
     {errorMessage: "Something went wrong"}
   )
 }
-export const POST_WEBSITE_REQUEST = "POST_WEBSITE_REQUEST"
-export const POST_WEBSITE_SUCCESS = "POST_WEBSITE_SUCCESS"
-export const POST_WEBSITE_FAILURE = "POST_WEBSITE_FAILURE"
-export function postWebsite(values: Partial<AttendeeLandingWebsiteModel>) {
-  let endpoint = `/v1.0/websites`
-  return createApiAction(
-    {
-      method: "POST",
-      endpoint,
-      body: JSON.stringify(values),
-      types: [
-        {type: POST_WEBSITE_REQUEST},
-        {type: POST_WEBSITE_SUCCESS},
-        {type: POST_WEBSITE_FAILURE},
-      ],
-    },
-    {
-      errorMessage: "Something went wrong.",
-    }
-  )
-}
+
 export const PATCH_WEBSITE_REQUEST = "PATCH_WEBSITE_REQUEST"
 export const PATCH_WEBSITE_SUCCESS = "PATCH_WEBSITE_SUCCESS"
 export const PATCH_WEBSITE_FAILURE = "PATCH_WEBSITE_FAILURE"
@@ -589,6 +569,30 @@ export function patchWebsite(
     },
     {
       successMessage: "Succesfully updated website",
+      errorMessage: "Something went wrong",
+    }
+  )
+}
+
+export const POST_INITIAL_WEBSITE_REQUEST = "POST_INITIAL_WEBSITE_REQUEST"
+export const POST_INITIAL_WEBSITE_SUCCESS = "POST_INITIAL_WEBSITE_SUCCESS"
+export const POST_INITIAL_WEBSITE_FAILURE = "POST_INITIAL_WEBSITE_FAILURE"
+export function postInitialWebsite(
+  values: Partial<AttendeeLandingWebsiteModel>
+) {
+  let endpoint = `/v1.0/websites/initialize`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: POST_INITIAL_WEBSITE_REQUEST},
+        {type: POST_INITIAL_WEBSITE_SUCCESS},
+        {type: POST_INITIAL_WEBSITE_FAILURE},
+      ],
+    },
+    {
       errorMessage: "Something went wrong",
     }
   )
@@ -627,7 +631,7 @@ export function postRetreatAttendeesBatch(
       ],
     },
     {
-      errorMessage: "Something went wrong",
+      errorMessage: "Something went wrong.",
     }
   )
 }

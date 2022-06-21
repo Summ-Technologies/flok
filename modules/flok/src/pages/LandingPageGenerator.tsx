@@ -119,7 +119,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)
   let page = useAttendeeLandingPage(parseInt(currentPageId))
 
-  if (!website || !website.page_ids[0] || !website.page_ids[0]) {
+  if (!website || !website.page_ids[0]) {
     return <CreateRetreatWebsite {...props} />
   }
   if (!currentPageId) {
@@ -271,10 +271,10 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
               <Link
                 className={classes.viewPageLink}
                 href={AppRoutes.getPath("RetreatWebsitePage", {
-                  retreatName: website.name,
+                  retreatName: titleToNavigation(website.name),
                   pageName: titleToNavigation(page?.title ?? "home"),
                 })}
-                target="_blank">
+                target="landing-page">
                 <Button variant="outlined" color="primary" size="small">
                   View Page
                 </Button>

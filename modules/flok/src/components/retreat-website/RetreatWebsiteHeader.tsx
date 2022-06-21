@@ -75,6 +75,7 @@ type RetreatWebsiteHeaderProps = {
   retreatName: string
   selectedPage: string
   homeRoute: string
+  registrationLink?: string
 }
 
 function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
@@ -105,13 +106,15 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
             })}
           </div>
           <div className={classes.registerWrapper}>
-            <Button
-              color="primary"
-              variant="contained"
-              size="small"
-              className={classes.registerButton}>
-              Register Now
-            </Button>
+            <Link
+              href={props.registrationLink}
+              target="__blank"
+              className={classes.registerButton}
+              underline="none">
+              <Button size="large" color="primary" variant="contained">
+                Register Now
+              </Button>
+            </Link>
           </div>
         </>
       ) : (
@@ -137,13 +140,15 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
                 )
               })}
             </div>
-            <Button
-              size="large"
-              color="primary"
-              variant="contained"
+
+            <Link
+              href={props.registrationLink}
+              target="__blank"
               className={classes.registerButton}>
-              Register Now
-            </Button>
+              <Button size="large" color="primary" variant="contained">
+                Register Now
+              </Button>
+            </Link>
           </Drawer>
         </>
       )}
