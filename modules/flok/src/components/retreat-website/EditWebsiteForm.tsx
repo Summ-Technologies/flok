@@ -173,7 +173,17 @@ let useImageStyles = makeStyles((theme) => ({
   loader: {
     height: 20,
   },
-  imageUploadFlex: {display: "flex", alignItems: "center"},
+  imageUploadFlex: {
+    display: "flex",
+    alignItems: "center",
+  },
+  fileNameText: {
+    marginLeft: theme.spacing(0.5),
+    maxWidth: 129.5,
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+  },
 }))
 type UploadImageProps = {
   value: ImageModel | undefined
@@ -248,13 +258,7 @@ export function UploadImage(props: UploadImageProps) {
               }}
             />
           </Button>
-          <Typography
-            style={{
-              width: 134,
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-            }}>
+          <Typography className={classes.fileNameText}>
             {props.value?.image_url
               ? splitFileName(props.value?.image_url)
               : "No file chosen"}
