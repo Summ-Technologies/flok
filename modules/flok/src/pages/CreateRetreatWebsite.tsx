@@ -1,4 +1,11 @@
-import {Box, Button, makeStyles, TextField, Typography} from "@material-ui/core"
+import {
+  Box,
+  Button,
+  makeStyles,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@material-ui/core"
 import {push} from "connected-react-router"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
@@ -8,6 +15,7 @@ import * as yup from "yup"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import {UploadImage} from "../components/retreat-website/EditWebsiteForm"
+import UploadImageWithTemplate from "../components/retreat-website/UploadImageWithTemplate"
 import {ImageModel} from "../models"
 import {AppRoutes} from "../Stack"
 import {ApiAction} from "../store/actions/api"
@@ -75,12 +83,11 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
       )
     }
   }
-
   let formik = useFormik({
     initialValues: {
       banner_image_id: -1,
       logo_image_id: -1,
-      name: "",
+      name: retreat.company_name,
     },
     onSubmit: (values) => {
       for (let k in values) {
@@ -111,28 +118,39 @@ function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
           <Typography variant="h1">Create a Website</Typography>
           <form onSubmit={formik.handleSubmit} className={classes.form}>
             <Box className={classes.body}>
-              <TextField
-                required
-                value={formik.values.name}
-                id={`name`}
-                onChange={formik.handleChange}
-                variant="outlined"
-                label="Website Name"
-                {...getTextFieldErrorProps(formik, "name")}
-              />
-              <UploadImage
+              <Tooltip
+                title="The website name determines the URL that attendees will use to access the landing page"
+                placement="top-start">
+                <TextField
+                  required
+                  value={formik.values.name}
+                  id={`name`}
+                  onChange={formik.handleChange}
+                  variant="outlined"
+                  label="Website Name"
+                  {...getTextFieldErrorProps(formik, "name")}
+                />
+              </Tooltip>
+              <UploadImageWithTemplate
                 value={images[formik.values.banner_image_id]}
                 id="banner_image"
                 handleChange={(image) => {
                   formik.setFieldValue("banner_image_id", image.id)
                   setImages({...images, [image.id]: image})
                 }}
+                handleClear={() => {
+                  formik.setFieldValue("banner_image_id", -1)
+                }}
                 headerText="Banner Image"
                 tooltipText="Choose a banner image.  Large images with a landscape view work best"
+                type="BANNER"
               />
               <UploadImage
                 value={images[formik.values.logo_image_id]}
                 id="logo_image"
+                handleClear={() => {
+                  formik.setFieldValue("logo_image_id", -1)
+                }}
                 handleChange={(image) => {
                   formik.setFieldValue("logo_image_id", image.id)
                   setImages({...images, [image.id]: image})
