@@ -1,7 +1,6 @@
 export enum FormCreationTypeEnum {
   ATTENDEE_REGISTRATION = "ATTENDEE_REGISTRATION",
 }
-
 export type FormCreationType = `${FormCreationTypeEnum}`
 
 export type FormModel = {
@@ -47,3 +46,30 @@ export type FormQuestionSelectOptionModel = {
   id: number
   form_question_id: number
 }
+export enum FormResponseType {
+  ATTENDEE_REGISTRATION = "ATTENDEE_REGISTRATION",
+}
+
+// Model used when getting a form response
+export type FormResponseModel = {
+  id: number
+  form_id: number
+  answers: FormQuestionResponseModel[]
+}
+// Model used for posting to the api
+export type FormResponsePostModel = Pick<FormResponseModel, "form_id"> & {
+  answers: FormQuestionResponsePostModel[]
+}
+// Model used for getting question response
+export type FormQuestionResponseModel = {
+  id: number
+  form_question_id: number
+  form_response_id: number
+  form_question_snapshot: any
+  answer: string
+}
+// Model used for posting question response to the api
+export type FormQuestionResponsePostModel = Pick<
+  FormQuestionResponseModel,
+  "answer" | "form_question_id"
+>

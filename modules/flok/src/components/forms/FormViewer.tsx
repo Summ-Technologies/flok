@@ -2,7 +2,14 @@ import {Button, makeStyles} from "@material-ui/core"
 import clsx from "clsx"
 import {useFormik} from "formik"
 import React from "react"
+import {useDispatch} from "react-redux"
 import * as yup from "yup"
+import {
+  FormQuestionResponsePostModel,
+  FormResponsePostModel,
+  FormResponseType,
+} from "../../models/form"
+import {postFormResponse} from "../../store/actions/form"
 import {useForm} from "./FormProvider"
 import FormQuestionProvider from "./FormQuestionProvider"
 import {FormHeader} from "./Headers"
@@ -39,13 +46,30 @@ let useStyles = makeStyles((theme) => ({
 type FormViewerProps = {}
 export default function FormViewer(props: FormViewerProps) {
   let classes = useStyles(props)
+  let dispatch = useDispatch()
   let form = useForm()
   let formik = useFormik<{[key: string]: string}>({
     initialValues: form.questions.reduce(
       (prev, currId) => ({...prev, [currId.toString()]: ""}),
       {}
     ),
-    onSubmit: (values) => console.log(values),
+    onSubmit: (values) => {
+      let answers: FormQuestionResponsePostModel[] = Object.keys(values).map(
+        (questionId) => {
+          return {
+            answer: values[questionId],
+            form_question_id: parseInt(questionId),
+          }
+        }
+      )
+      let formResponse: FormResponsePostModel = {
+        form_id: form.id,
+        answers: answers,
+      }
+      dispatch(
+        postFormResponse(formResponse, FormResponseType.ATTENDEE_REGISTRATION)
+      )
+    },
     validateOnBlur: true,
   })
 
@@ -76,10 +100,6 @@ export default function FormViewer(props: FormViewerProps) {
                 formik.setFieldValue(questionId.toString(), newVal)
               }
               onLoad={(question) => {
-                formik.setFieldValue(
-                  `${questionId.toString()}-schema`,
-                  question
-                )
                 formik.registerField(questionId.toString(), {
                   validate: (val: string) => {
                     let validator = yup.string()

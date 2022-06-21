@@ -4,6 +4,8 @@ import {
   FormModel,
   FormQuestionModel,
   FormQuestionSelectOptionModel,
+  FormResponsePostModel,
+  FormResponseType,
 } from "../../models/form"
 import {ApiAction, createApiAction} from "./api"
 
@@ -250,6 +252,34 @@ export function deleteFormQuestionOption(optionId: number) {
       {type: DELETE_FORM_QUESTION_OPTION_REQUEST, meta: {optionId}},
       {type: DELETE_FORM_QUESTION_OPTION_SUCCESS, meta: {optionId}},
       {type: DELETE_FORM_QUESTION_OPTION_FAILURE, meta: {optionId}},
+    ],
+  })
+}
+
+export const POST_FORM_RESPONSE_REQUEST = "POST_FORM_RESPONSE_REQUEST"
+export const POST_FORM_RESPONSE_SUCCESS = "POST_FORM_RESPONSE_SUCCESS"
+export const POST_FORM_RESPONSE_FAILURE = "POST_FORM_RESPONSE_FAILURE"
+
+export function postFormResponse(
+  formResponse: FormResponsePostModel,
+  responseType?: FormResponseType
+) {
+  let endpoint = "/v1.0/form-responses"
+  let queryParams: Record<string, string> = {}
+  if (responseType) {
+    queryParams.type = responseType
+  }
+  if (Object.keys(queryParams).length > 0) {
+    endpoint += "?" + new URLSearchParams(queryParams).toString()
+  }
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify(formResponse),
+    types: [
+      {type: POST_FORM_RESPONSE_REQUEST},
+      {type: POST_FORM_RESPONSE_SUCCESS},
+      {type: POST_FORM_RESPONSE_FAILURE},
     ],
   })
 }
