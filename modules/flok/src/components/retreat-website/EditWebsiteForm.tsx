@@ -88,11 +88,11 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
         logo_image_id: number | undefined
         name: string
       } = {...values}
-      for (let k in newValues) {
-        if (newValues[k as keyof typeof newValues] === -1) {
-          //@ts-ignore
-          newValues[k as keyof typeof newValues] = undefined
-        }
+      if (newValues.banner_image_id === -1) {
+        newValues.banner_image_id = undefined
+      }
+      if (newValues.logo_image_id === -1) {
+        newValues.logo_image_id = undefined
       }
       handlePatchWebsite(newValues)
     },
