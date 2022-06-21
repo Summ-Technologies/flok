@@ -192,6 +192,7 @@ export type AttendeeLandingWebsiteModel = {
   page_ids: number[]
 }
 
+export type PresetImageType = "BANNER"
 // aka flight
 export type RetreatTripLeg = {
   trip_id: number

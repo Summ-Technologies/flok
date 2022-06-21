@@ -559,7 +559,9 @@ export function patchWebsite(
     {
       method: "PATCH",
       endpoint,
-      body: JSON.stringify(values),
+      body: JSON.stringify(values, (key, value) =>
+        typeof value === "undefined" ? null : value
+      ),
       types: [
         {type: PATCH_WEBSITE_REQUEST},
         {type: PATCH_WEBSITE_SUCCESS, meta: {websiteId}},

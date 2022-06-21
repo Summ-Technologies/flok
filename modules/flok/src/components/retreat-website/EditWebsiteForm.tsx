@@ -1,10 +1,12 @@
 import {
   Button,
   CircularProgress,
+  IconButton,
   makeStyles,
   TextField,
   Typography,
 } from "@material-ui/core"
+import {HighlightOffRounded} from "@material-ui/icons"
 import {push} from "connected-react-router"
 import {useFormik} from "formik"
 import _ from "lodash"
@@ -57,8 +59,8 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
   let [images, setImages] = useState<{[key: number]: ImageModel}>(imageHolder)
   async function handlePatchWebsite(values: {
     name: string
-    banner_image_id: number
-    logo_image_id: number
+    banner_image_id: number | undefined
+    logo_image_id: number | undefined
   }) {
     let patchWebsiteResponse = (await dispatch(
       patchWebsite(props.websiteId, values)
@@ -81,11 +83,15 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
       name: website?.name ?? "",
     },
     onSubmit: (values) => {
-      let newValues = {...values}
+      let newValues: {
+        banner_image_id: number | undefined
+        logo_image_id: number | undefined
+        name: string
+      } = {...values}
       for (let k in newValues) {
         if (newValues[k as keyof typeof newValues] === -1) {
           //@ts-ignore
-          newValues[k as keyof typeof newValues] = null
+          newValues[k as keyof typeof newValues] = undefined
         }
       }
       handlePatchWebsite(newValues)
@@ -126,6 +132,7 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
             formik.setFieldValue("banner_image_id", -1)
           }}
           headerText="Banner Image"
+          type="BANNER"
         />
         <UploadImage
           value={images[formik.values.logo_image_id]}
@@ -134,6 +141,9 @@ function EditWebsiteForm(props: EditWebsiteFormProps) {
           handleChange={(image) => {
             formik.setFieldValue("logo_image_id", image.id)
             setImages({...images, [image.id]: image})
+          }}
+          handleClear={() => {
+            formik.setFieldValue("logo_image_id", -1)
           }}
           headerText="Logo Image"
         />
@@ -171,14 +181,17 @@ type UploadImageProps = {
   id: string
   headerText: string
   tooltipText?: string
+  handleClear?: () => void
 }
 
 export function UploadImage(props: UploadImageProps) {
   const [loading, setLoading] = useState(false)
   let dispatch = useDispatch()
   var splitFileName = function (str: string) {
-    // @ts-ignore
-    return str.split("\\").pop().split("/").pop()
+    let popped = str.split("\\").pop()
+    if (popped) {
+      return popped.split("/").pop()
+    }
   }
 
   let classes = useImageStyles()
@@ -237,7 +250,7 @@ export function UploadImage(props: UploadImageProps) {
           </Button>
           <Typography
             style={{
-              width: 160,
+              width: 134,
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -246,6 +259,11 @@ export function UploadImage(props: UploadImageProps) {
               ? splitFileName(props.value?.image_url)
               : "No file chosen"}
           </Typography>
+          {props.handleClear && (
+            <IconButton onClick={props.handleClear} size="small">
+              <HighlightOffRounded />
+            </IconButton>
+          )}
         </div>
       )}
     </div>

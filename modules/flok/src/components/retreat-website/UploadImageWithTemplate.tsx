@@ -12,15 +12,18 @@ import {
   TableContainer,
   TableRow,
   Typography,
+  useMediaQuery,
 } from "@material-ui/core"
 import {HighlightOffRounded} from "@material-ui/icons"
 import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import config, {IMAGE_SERVER_BASE_URL_KEY} from "../../config"
 import {ImageModel} from "../../models"
+import {PresetImageType} from "../../models/retreat"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
 import {ApiAction} from "../../store/actions/api"
 import {getPresetImages} from "../../store/actions/retreat"
+import {FlokTheme} from "../../theme"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
 
 let useImageStyles = makeStyles((theme) => ({
@@ -35,7 +38,30 @@ let useImageStyles = makeStyles((theme) => ({
   loader: {
     height: 20,
   },
-  imageUploadFlex: {display: "flex", alignItems: "center"},
+  imageUploadFlex: {
+    display: "flex",
+    alignItems: "center",
+  },
+  presetImage: {
+    height: 150,
+    width: 240,
+  },
+  titleDiv: {
+    display: "flex",
+    alignItems: "center",
+  },
+  orText: {
+    marginLeft: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
+  },
+  fileNameText: {
+    width: 200,
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    marginTop: "4px",
+    marginLeft: "8px",
+  },
 }))
 type UploadImageWithTemplateProps = {
   value: ImageModel | undefined
@@ -44,6 +70,7 @@ type UploadImageWithTemplateProps = {
   headerText: string
   tooltipText?: string
   handleClear?: () => void
+  type: PresetImageType
 }
 
 export default function UploadImageWithTemplate(
@@ -52,15 +79,20 @@ export default function UploadImageWithTemplate(
   const [loading, setLoading] = useState(false)
   let dispatch = useDispatch()
   let [presetModalOpen, setPresetModalOpen] = useState(false)
+  const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
+    theme.breakpoints.down("sm")
+  )
   var splitFileName = function (str: string) {
-    // @ts-ignore
-    return str.split("\\").pop().split("/").pop()
+    let popped = str.split("\\").pop()
+    if (popped) {
+      return popped.split("/").pop()
+    }
   }
   let [presetImages, setPresetImages] = useState([])
 
   async function fetchPresetImages() {
     let response = (await dispatch(
-      getPresetImages("BANNER")
+      getPresetImages(props.type)
     )) as unknown as ApiAction
     if (!response.error) {
       setPresetImages(
@@ -75,13 +107,21 @@ export default function UploadImageWithTemplate(
     !presetImages[0] && fetchPresetImages()
   }, [presetImages])
   let classes = useImageStyles()
-  for (let i = 0; i < presetImages.length; i += 2) {
-    if (i < presetImages.length - 1) {
-      rows.push({
-        img1: presetImages[i],
-        img2: presetImages[i + 1],
-      })
-    } else {
+  if (!isSmallScreen) {
+    for (let i = 0; i < presetImages.length; i += 2) {
+      if (i < presetImages.length - 1) {
+        rows.push({
+          img1: presetImages[i],
+          img2: presetImages[i + 1],
+        })
+      } else {
+        rows.push({
+          img1: presetImages[i],
+        })
+      }
+    }
+  } else {
+    for (let i = 0; i < presetImages.length; i++) {
       rows.push({
         img1: presetImages[i],
       })
@@ -108,7 +148,7 @@ export default function UploadImageWithTemplate(
                     <TableCell>
                       <img
                         src={row.img1.image_url}
-                        style={{height: 150, width: 240}}
+                        className={classes.presetImage}
                         onClick={() => {
                           handleImageClick(row.img1)
                         }}></img>
@@ -117,7 +157,7 @@ export default function UploadImageWithTemplate(
                       <TableCell align="right">
                         <img
                           src={row.img2.image_url}
-                          style={{height: 150, width: 240}}
+                          className={classes.presetImage}
                           onClick={() => {
                             row.img2 && handleImageClick(row.img2)
                           }}></img>
@@ -130,7 +170,7 @@ export default function UploadImageWithTemplate(
           </TableContainer>
         </DialogContent>
       </Dialog>
-      <div style={{display: "flex", alignItems: "center"}}>
+      <div className={classes.titleDiv}>
         <Typography className={classes.header}>{props.headerText}</Typography>
         {props.tooltipText && (
           <AppMoreInfoIcon tooltipText={props.tooltipText} />
@@ -181,9 +221,7 @@ export default function UploadImageWithTemplate(
               }}
             />
           </Button>
-          <Typography style={{marginLeft: "4px", marginRight: "4px"}}>
-            or
-          </Typography>
+          <Typography className={classes.orText}>or</Typography>
           <Button
             variant="outlined"
             color="primary"
@@ -194,21 +232,13 @@ export default function UploadImageWithTemplate(
             Choose Preset
           </Button>
           {props.handleClear && (
-            <IconButton onClick={props.handleClear} style={{marginLeft: "4px"}}>
+            <IconButton onClick={props.handleClear} size="small">
               <HighlightOffRounded />
             </IconButton>
           )}
         </div>
       )}
-      <Typography
-        style={{
-          width: 160,
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          marginTop: "4px",
-          marginLeft: "8px",
-        }}>
+      <Typography className={classes.fileNameText}>
         {props.value?.image_url
           ? splitFileName(props.value?.image_url)
           : "No file chosen"}
