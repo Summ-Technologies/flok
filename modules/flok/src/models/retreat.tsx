@@ -49,6 +49,12 @@ export type RetreatSelectedHotelProposal = {
   hotel_proposals?: HotelLodgingProposal[]
 }
 
+export type PresetImageModel = {
+  type: PresetImageType
+  id: number
+  image: ImageModel
+}
+
 export type RetreatProgressState = // Deprecated
 
     | "INTAKE_1"

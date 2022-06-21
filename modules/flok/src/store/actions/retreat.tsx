@@ -647,8 +647,8 @@ export function getPresetImages(type: string) {
     endpoint,
     types: [
       {type: GET_PRESET_IMAGES_REQUEST},
-      {type: GET_PRESET_IMAGES_SUCCESS},
-      {type: GET_PRESET_IMAGES_FAILURE},
+      {type: GET_PRESET_IMAGES_SUCCESS, meta: {type}},
+      {type: GET_PRESET_IMAGES_FAILURE, meta: {type}},
     ],
   })
 }

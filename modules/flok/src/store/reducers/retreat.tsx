@@ -5,6 +5,7 @@ import {
   AttendeeLandingWebsiteApiResponse,
   AttendeeLandingWebsitePageApiResponse,
   AttendeeLandingWebsitePageBlockApiResponse,
+  PresetImagesApiResponse,
   RetreatAttendeesApiResponse,
   TripApiResponse,
 } from "../../models/api"
@@ -12,6 +13,8 @@ import {
   AttendeeLandingWebsiteBlockModel,
   AttendeeLandingWebsiteModel,
   AttendeeLandingWebsitePageModel,
+  PresetImageModel,
+  PresetImageType,
   RetreatAttendeeModel,
   RetreatModel,
   RetreatTripModel,
@@ -23,6 +26,7 @@ import {
   GET_ATTENDEE_SUCCESS,
   GET_BLOCK_SUCCESS,
   GET_PAGE_SUCCESS,
+  GET_PRESET_IMAGES_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_BY_GUID_FAILURE,
   GET_RETREAT_BY_GUID_SUCCESS,
@@ -69,6 +73,9 @@ export type RetreatState = {
   blocks: {
     [id: number]: AttendeeLandingWebsiteBlockModel | undefined
   }
+  presetImages: {
+    BANNER: PresetImageModel[]
+  }
 }
 
 const initialState: RetreatState = {
@@ -80,6 +87,9 @@ const initialState: RetreatState = {
   websites: {},
   pages: {},
   blocks: {},
+  presetImages: {
+    BANNER: [],
+  },
 }
 
 export default function retreatReducer(
@@ -311,6 +321,18 @@ export default function retreatReducer(
         }
       }
       return newState
+    case GET_PRESET_IMAGES_SUCCESS:
+      let type = (action as unknown as {meta: {type: PresetImageType}}).meta
+        .type
+      payload = (action as ApiAction).payload as PresetImagesApiResponse
+      let newPresetState = {...state}
+      if (payload) {
+        newPresetState = {
+          ...newPresetState,
+          presetImages: {[type]: payload.preset_images},
+        }
+      }
+      return newPresetState
     default:
       return state
   }

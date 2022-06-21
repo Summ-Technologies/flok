@@ -16,12 +16,12 @@ import {
 } from "@material-ui/core"
 import {HighlightOffRounded} from "@material-ui/icons"
 import {useEffect, useState} from "react"
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import config, {IMAGE_SERVER_BASE_URL_KEY} from "../../config"
 import {ImageModel} from "../../models"
 import {PresetImageType} from "../../models/retreat"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
-import {ApiAction} from "../../store/actions/api"
+import {RootState} from "../../store"
 import {getPresetImages} from "../../store/actions/retreat"
 import {FlokTheme} from "../../theme"
 import AppMoreInfoIcon from "../base/AppMoreInfoIcon"
@@ -88,42 +88,32 @@ export default function UploadImageWithTemplate(
       return popped.split("/").pop()
     }
   }
-  let [presetImages, setPresetImages] = useState([])
+  let presetImages = useSelector((state: RootState) => {
+    return state.retreat.presetImages[props.type]
+  })
 
-  async function fetchPresetImages() {
-    let response = (await dispatch(
-      getPresetImages(props.type)
-    )) as unknown as ApiAction
-    if (!response.error) {
-      setPresetImages(
-        response.payload.preset_images.map(
-          (presetImage: any) => presetImage.image
-        )
-      )
-    }
-  }
   let rows: {img1: ImageModel; img2?: ImageModel}[] = []
   useEffect(() => {
-    !presetImages[0] && fetchPresetImages()
-  }, [presetImages])
+    !presetImages[0] && getPresetImages(props.type)
+  }, [presetImages, props.type])
   let classes = useImageStyles()
   if (!isSmallScreen) {
     for (let i = 0; i < presetImages.length; i += 2) {
       if (i < presetImages.length - 1) {
         rows.push({
-          img1: presetImages[i],
-          img2: presetImages[i + 1],
+          img1: presetImages[i].image,
+          img2: presetImages[i + 1].image,
         })
       } else {
         rows.push({
-          img1: presetImages[i],
+          img1: presetImages[i].image,
         })
       }
     }
   } else {
     for (let i = 0; i < presetImages.length; i++) {
       rows.push({
-        img1: presetImages[i],
+        img1: presetImages[i].image,
       })
     }
   }
@@ -149,6 +139,7 @@ export default function UploadImageWithTemplate(
                       <img
                         src={row.img1.image_url}
                         className={classes.presetImage}
+                        alt="preset"
                         onClick={() => {
                           handleImageClick(row.img1)
                         }}></img>
@@ -157,6 +148,7 @@ export default function UploadImageWithTemplate(
                       <TableCell align="right">
                         <img
                           src={row.img2.image_url}
+                          alt="preset"
                           className={classes.presetImage}
                           onClick={() => {
                             row.img2 && handleImageClick(row.img2)
