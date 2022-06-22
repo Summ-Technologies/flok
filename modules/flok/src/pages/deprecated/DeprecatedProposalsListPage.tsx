@@ -15,7 +15,7 @@ import {RootState} from "../../store"
 import {getHotels} from "../../store/actions/lodging"
 import {getHotelGroup} from "../../store/actions/retreat"
 import {convertGuid} from "../../utils"
-import {useDestinations} from "../../utils/lodgingUtils"
+import {DestinationUtils, useDestinations} from "../../utils/lodgingUtils"
 import {useRetreatByGuid} from "../../utils/retreatUtils"
 
 let useStyles = makeStyles((theme) => ({
@@ -77,6 +77,23 @@ function ProposalsListPage(props: ProposalsListPageProps) {
       }
     }
   }, [dispatch, retreat])
+  let [groupedSelectedHotels, setGroupedSelectedHotels] = useState<
+    {destinationId: number; selectedHotels: RetreatSelectedHotelProposal[]}[]
+  >([])
+  let [showOld, setShowOld] = useState(true)
+  useEffect(() => {
+    for (let hotel of selectedHotels) {
+      if (
+        hotel.group_id &&
+        hotel.state !== "NOT_AVAILABLE" &&
+        hotel.state !== "PENDING"
+      ) {
+        setShowOld(false)
+        console.log(hotel)
+        break
+      }
+    }
+  }, [selectedHotels])
 
   let hotelGroups = useSelector((state: RootState) => {
     return Object.values(state.retreat.hotelGroups).filter((group) => {
@@ -120,7 +137,18 @@ function ProposalsListPage(props: ProposalsListPageProps) {
       }
       byDestinationId[destinationId].push(selectedHotel)
     })
-  }, [selectedHotels, hotelsById, retreat])
+    setGroupedSelectedHotels(
+      Object.keys(byDestinationId)
+        .sort()
+        .map((destId) => {
+          let _destId = parseInt(destId)
+          return {
+            destinationId: _destId,
+            selectedHotels: byDestinationId[_destId],
+          }
+        })
+    )
+  }, [selectedHotels, hotelsById, retreat, setGroupedSelectedHotels])
   // Set unavailable hotels bucket
   let [unavailableSelectedHotels, setUnavailableSelectedHotels] = useState<
     RetreatSelectedHotelProposal[]
@@ -169,8 +197,9 @@ function ProposalsListPage(props: ProposalsListPageProps) {
               )
             ) : undefined}
             {/* Available hotels render */}
-            {selectedHotels.filter((hotel) => hotel.state !== "PENDING")
-              .length !== 0 &&
+            {!showOld &&
+              selectedHotels.filter((hotel) => hotel.state !== "PENDING")
+                .length !== 0 &&
               hotelGroups
                 .sort((a, b) => a.id - b.id)
                 .map((group) => {
@@ -216,7 +245,8 @@ function ProposalsListPage(props: ProposalsListPageProps) {
                     </div>
                   )
                 })}
-            {selectedHotels.filter(
+            {!showOld &&
+            selectedHotels.filter(
               (hotel) =>
                 !hotel.group_id &&
                 hotelsById[hotel.hotel_id] &&
@@ -259,6 +289,41 @@ function ProposalsListPage(props: ProposalsListPageProps) {
             ) : (
               ""
             )}
+            {/* Old way hotels render */}
+            {showOld &&
+              groupedSelectedHotels.map((destList) => {
+                let destination = destinations[destList.destinationId]
+                if (destination && destList.selectedHotels.length) {
+                  return (
+                    <div className={classes.proposalsList}>
+                      <AppTypography variant="h2">
+                        {DestinationUtils.getLocationName(destination)}
+                      </AppTypography>
+                      {destList.selectedHotels.map((selectedHotel) => {
+                        let hotel = hotelsById[selectedHotel.hotel_id]
+                        let proposals = selectedHotel.hotel_proposals || []
+                        return (
+                          <ProposalListRow
+                            hotel={hotel}
+                            destination={destination}
+                            proposals={proposals}
+                            openInTab
+                            proposalUrl={AppRoutes.getPath(
+                              "DeprecatedProposalPage",
+                              {
+                                retreatGuid: retreatGuid,
+                                hotelGuid: hotel.guid,
+                              }
+                            )}
+                          />
+                        )
+                      })}
+                    </div>
+                  )
+                } else {
+                  return undefined
+                }
+              })}
             {/* Unavailable hotels render */}
             {unavailableSelectedHotels.length ? (
               <AppTypography variant="h2">
