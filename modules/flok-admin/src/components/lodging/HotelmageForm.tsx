@@ -12,10 +12,11 @@ import {
   TextFieldProps,
   Typography,
 } from "@material-ui/core"
-import {Add, ArrowDownward, ArrowUpward, Delete} from "@material-ui/icons"
+import {Add, Delete, Menu} from "@material-ui/icons"
 import {useFormik} from "formik"
 import _ from "lodash"
 import {useState} from "react"
+import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd"
 import {useDispatch} from "react-redux"
 import config, {IMAGE_SERVER_BASE_URL_KEY} from "../../config"
 import {
@@ -25,6 +26,7 @@ import {
 } from "../../models/index"
 import {enqueueSnackbar} from "../../notistack-lib/actions"
 import {patchHotel, PATCH_HOTEL_SUCCESS} from "../../store/actions/admin"
+import {ApiAction} from "../../store/actions/api"
 import {nullifyEmptyString} from "../../utils"
 import AppLoadingScreen from "../base/AppLoadingScreen"
 import AppTypography from "../base/AppTypography"
@@ -48,6 +50,13 @@ let useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     "& > *:not(:first-child)": {marginTop: theme.spacing(2)},
     minHeight: 400,
+  },
+  dragHandle: {
+    marginTop: 50,
+    marginRight: theme.spacing(2),
+  },
+  rowWrapper: {
+    display: "flex",
   },
 }))
 
@@ -86,10 +95,13 @@ export default function HotelImageForm(props: HotelImageFormType) {
       imgs: props.hotel.imgs,
       spotlight_img: props.hotel.spotlight_img,
     },
-    onSubmit: (values) => {
-      dispatch(
+    onSubmit: async (values, formikHelpers) => {
+      let result = (await dispatch(
         patchHotel(props.hotel.id, values as Partial<AdminHotelDetailsModel>)
-      )
+      )) as unknown as ApiAction
+      if (result.error) {
+        formikHelpers.resetForm()
+      }
     },
   })
 
@@ -136,29 +148,60 @@ export default function HotelImageForm(props: HotelImageFormType) {
         <AppTypography variant="h4">
           Gallery images ({formik.values.imgs.length})
         </AppTypography>
-        {formik.values.imgs.map((img, i) => (
-          <>
-            <ImageFormRow
-              key={img.id}
-              img={img}
-              onDelete={() =>
-                formik.setFieldValue(
-                  "imgs",
-                  formik.values.imgs.filter((val, j) => j !== i)
-                )
+        <DragDropContext
+          onDragEnd={(result) => {
+            if (result.destination) {
+              const items = Array.from(formik.values.imgs)
+              const originalItems = [...items]
+              const [reorderedItem] = items.splice(result.source.index, 1)
+              items.splice(result.destination.index, 0, reorderedItem)
+              formik.setFieldValue("imgs", items)
+              if (!_.isEqual(items, originalItems)) {
+                formik.handleSubmit()
               }
-              textFieldProps={textFieldProps}
-              formId={`imgs[${i}]`}
-              onReorderDown={
-                i + 1 !== formik.values.imgs.length
-                  ? () => reorderImgs("down", i)
-                  : undefined
-              }
-              onReorderUp={i !== 0 ? () => reorderImgs("up", i) : undefined}
-            />
-            <Divider />
-          </>
-        ))}
+            }
+          }}>
+          <Droppable droppableId="gallery-images">
+            {(provided) => (
+              <div
+                className="gallery-images"
+                {...provided.droppableProps}
+                ref={provided.innerRef}>
+                {formik.values.imgs.map((img, i) => (
+                  <Draggable
+                    key={img.id}
+                    index={i}
+                    draggableId={img.id.toString()}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}>
+                        <div className={classes.rowWrapper}>
+                          <Menu className={classes.dragHandle} />
+                          <ImageFormRow
+                            key={img.id}
+                            img={img}
+                            onDelete={() =>
+                              formik.setFieldValue(
+                                "imgs",
+                                formik.values.imgs.filter((val, j) => j !== i)
+                              )
+                            }
+                            textFieldProps={textFieldProps}
+                            formId={`imgs[${i}]`}
+                          />
+                          <Divider />
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </Paper>
       <Box
         display="flex"
@@ -223,8 +266,6 @@ let useRowStyles = makeStyles((theme) => ({
 type ImageFormRowProps = {
   img: AdminImageModel
   formId: string
-  onReorderDown?: () => void
-  onReorderUp?: () => void
   onDelete?: () => void
   textFieldProps: TextFieldProps
 }
@@ -291,16 +332,6 @@ function ImageFormRow(props: ImageFormRowProps) {
           ) : undefined}
         </TextField>
         <Box display="flex" justifyContent="flex-end" alignItems="flex-end">
-          {props.onReorderDown && (
-            <IconButton onClick={props.onReorderDown}>
-              <ArrowDownward />
-            </IconButton>
-          )}
-          {props.onReorderUp && (
-            <IconButton onClick={props.onReorderUp}>
-              <ArrowUpward />
-            </IconButton>
-          )}
           {props.onDelete && (
             <IconButton onClick={props.onDelete}>
               <Delete />
