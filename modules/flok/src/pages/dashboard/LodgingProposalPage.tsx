@@ -307,16 +307,16 @@ export default function LodgingProposalPage() {
                       </AppTypography>
                     </div>
                   )}
-                  <div className={classes.detail}>
-                    <AppTypography variant="body2" fontWeight="bold">
-                      Guests
-                    </AppTypography>
-                    <AppTypography variant="body1">
-                      {proposal.num_guests
-                        ? proposal.num_guests
-                        : retreat.preferences_num_attendees_lower}
-                    </AppTypography>
-                  </div>
+                  {proposal.num_guests && (
+                    <div className={classes.detail}>
+                      <AppTypography variant="body2" fontWeight="bold">
+                        Guests
+                      </AppTypography>
+                      <AppTypography variant="body1">
+                        {proposal.num_guests}
+                      </AppTypography>
+                    </div>
+                  )}
                   {hotel.airport_travel_time && (
                     <div className={classes.detail}>
                       <AppTypography variant="body2" fontWeight="bold">

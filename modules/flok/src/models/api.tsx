@@ -3,6 +3,7 @@ import {
   AttendeeLandingWebsiteBlockModel,
   AttendeeLandingWebsiteModel,
   AttendeeLandingWebsitePageModel,
+  PresetImageModel,
   RetreatAttendeeModel,
   RetreatTripModel,
 } from "./retreat"
@@ -26,6 +27,10 @@ export type AttendeeApiResponse = {
   attendee: RetreatAttendeeModel
 }
 
+export type PresetImagesApiResponse = {
+  preset_images: PresetImageModel[]
+}
+
 export type TripApiResponse = {
   trip: RetreatTripModel
 }
@@ -36,6 +41,11 @@ export type AttendeeLandingWebsitePageApiResponse = {
   page: AttendeeLandingWebsitePageModel
 }
 export type AttendeeLandingWebsitePageBlockApiResponse = {
+  block: AttendeeLandingWebsiteBlockModel
+}
+export type AttendeeLandingWebsiteInitializeApiResponse = {
+  website: AttendeeLandingWebsiteModel
+  page: AttendeeLandingWebsitePageModel
   block: AttendeeLandingWebsiteBlockModel
 }
 export type AttendeeBatchUploadApiResponse = {

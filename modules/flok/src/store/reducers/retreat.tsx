@@ -5,6 +5,7 @@ import {
   AttendeeLandingWebsiteApiResponse,
   AttendeeLandingWebsitePageApiResponse,
   AttendeeLandingWebsitePageBlockApiResponse,
+  PresetImagesApiResponse,
   RetreatAttendeesApiResponse,
   TripApiResponse,
 } from "../../models/api"
@@ -12,6 +13,8 @@ import {
   AttendeeLandingWebsiteBlockModel,
   AttendeeLandingWebsiteModel,
   AttendeeLandingWebsitePageModel,
+  PresetImageModel,
+  PresetImageType,
   RetreatAttendeeModel,
   RetreatModel,
   RetreatTripModel,
@@ -23,6 +26,7 @@ import {
   GET_ATTENDEE_SUCCESS,
   GET_BLOCK_SUCCESS,
   GET_PAGE_SUCCESS,
+  GET_PRESET_IMAGES_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
   GET_RETREAT_BY_GUID_FAILURE,
   GET_RETREAT_BY_GUID_SUCCESS,
@@ -36,13 +40,14 @@ import {
   PATCH_ATTENDEE_TRAVEL_SUCCESS,
   PATCH_BLOCK_SUCCESS,
   PATCH_PAGE_SUCCESS,
+  PATCH_RETREAT_SUCCESS,
   PATCH_TRIP_SUCCESS,
   PATCH_WEBSITE_SUCCESS,
   POST_BLOCK_SUCCESS,
+  POST_INITIAL_WEBSITE_SUCCESS,
   POST_PAGE_SUCCESS,
   POST_RETREAT_ATTENDEES_BATCH_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
-  POST_WEBSITE_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
@@ -70,6 +75,9 @@ export type RetreatState = {
   blocks: {
     [id: number]: AttendeeLandingWebsiteBlockModel | undefined
   }
+  presetImages: {
+    BANNER: PresetImageModel[]
+  }
 }
 
 const initialState: RetreatState = {
@@ -81,6 +89,9 @@ const initialState: RetreatState = {
   websites: {},
   pages: {},
   blocks: {},
+  presetImages: {
+    BANNER: [],
+  },
 }
 
 export default function retreatReducer(
@@ -94,6 +105,7 @@ export default function retreatReducer(
     case GET_RETREAT_SUCCESS:
     case PUT_RETREAT_PREFERENCES_SUCCESS:
     case PUT_RETREAT_TASK_SUCCESS:
+    case PATCH_RETREAT_SUCCESS:
       retreat = ((action as ApiAction).payload as {retreat: RetreatModel})
         .retreat
       retreatId = retreat.id
@@ -187,7 +199,7 @@ export default function retreatReducer(
     case GET_WEBSITE_SUCCESS:
     case GET_WEBSITE_BY_ATTENDEE_SUCCESS:
     case PATCH_WEBSITE_SUCCESS:
-    case POST_WEBSITE_SUCCESS:
+    case POST_INITIAL_WEBSITE_SUCCESS:
       payload = (action as ApiAction)
         .payload as AttendeeLandingWebsiteApiResponse
       return {
@@ -313,6 +325,18 @@ export default function retreatReducer(
         }
       }
       return newState
+    case GET_PRESET_IMAGES_SUCCESS:
+      let type = (action as unknown as {meta: {type: PresetImageType}}).meta
+        .type
+      payload = (action as ApiAction).payload as PresetImagesApiResponse
+      let newPresetState = {...state}
+      if (payload) {
+        newPresetState = {
+          ...newPresetState,
+          presetImages: {[type]: payload.preset_images},
+        }
+      }
+      return newPresetState
     default:
       return state
   }

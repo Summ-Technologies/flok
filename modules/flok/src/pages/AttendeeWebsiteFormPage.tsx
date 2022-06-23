@@ -6,6 +6,7 @@ import {replaceDashes} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {RootState} from "../store"
 import {getUserHome} from "../store/actions/user"
+import {ImageUtils} from "../utils/imageUtils"
 import {useAttendeeLandingWebsiteName} from "../utils/retreatUtils"
 import RedirectPage from "./misc/RedirectPage"
 
@@ -15,7 +16,7 @@ type AttendeeWebsiteFormPageProps = RouteComponentProps<{
 function AttendeeWebsiteFormPage(props: AttendeeWebsiteFormPageProps) {
   let dispatch = useDispatch()
   let {retreatName} = props.match.params
-  let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
+  let [website] = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
   let user = useSelector((state: RootState) => state.user)
   useEffect(() => {
     dispatch(getUserHome())
@@ -33,8 +34,8 @@ function AttendeeWebsiteFormPage(props: AttendeeWebsiteFormPageProps) {
       {website && (
         <RetreatWebsiteHeader
           logo={
-            website.company_logo_img ??
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Brex_logo_black.svg/1200px-Brex_logo_black.svg.png"
+            website.logo_image?.image_url ??
+            ImageUtils.getImageUrl("logoIconTextTrans")
           }
           pageIds={website.page_ids}
           retreatName={retreatName}

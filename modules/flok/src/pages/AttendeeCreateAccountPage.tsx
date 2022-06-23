@@ -86,7 +86,7 @@ function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
   const [response, setResponse] = useState<"success" | "error" | undefined>(
     undefined
   )
-  let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
+  let [website] = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
   let formik = useFormik({
     initialValues: {
       email: "",
