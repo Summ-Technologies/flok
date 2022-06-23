@@ -49,6 +49,12 @@ export type RetreatSelectedHotelProposal = {
   hotel_proposals?: HotelLodgingProposal[]
 }
 
+export type PresetImageModel = {
+  type: PresetImageType
+  id: number
+  image: ImageModel
+}
+
 export type RetreatProgressState = // Deprecated
 
     | "INTAKE_1"
@@ -193,6 +199,7 @@ export type AttendeeLandingWebsiteModel = {
   page_ids: number[]
 }
 
+export type PresetImageType = "BANNER"
 // aka flight
 export type RetreatTripLeg = {
   trip_id: number

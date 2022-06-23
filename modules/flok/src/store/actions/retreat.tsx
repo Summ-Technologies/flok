@@ -560,7 +560,9 @@ export function patchWebsite(
     {
       method: "PATCH",
       endpoint,
-      body: JSON.stringify(values),
+      body: JSON.stringify(values, (key, value) =>
+        typeof value === "undefined" ? null : value
+      ),
       types: [
         {type: PATCH_WEBSITE_REQUEST},
         {type: PATCH_WEBSITE_SUCCESS, meta: {websiteId}},
@@ -674,4 +676,20 @@ export function patchRetreat(
       errorMessage: "Something went wrong",
     }
   )
+}
+
+export const GET_PRESET_IMAGES_REQUEST = "GET_PRESET_IMAGES_REQUEST"
+export const GET_PRESET_IMAGES_SUCCESS = "GET_PRESET_IMAGES_SUCCESS"
+export const GET_PRESET_IMAGES_FAILURE = "GET_PRESET_IMAGES_FAILURE"
+export function getPresetImages(type: string) {
+  let endpoint = `/v1.0/preset-images?type=${type}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_PRESET_IMAGES_REQUEST},
+      {type: GET_PRESET_IMAGES_SUCCESS, meta: {type}},
+      {type: GET_PRESET_IMAGES_FAILURE, meta: {type}},
+    ],
+  })
 }
