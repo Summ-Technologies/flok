@@ -188,6 +188,7 @@ export type AdminHotelDetailsModel = {
   spotlight_img?: AdminImageModel
   website_url: string
   sub_location: string
+  lodging_tags: LodgingTagModel[]
 }
 
 export type AdminHotelModel = Pick<
@@ -344,3 +345,9 @@ export const OrderedRetreatItineraryState = [
 ] as const
 export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
 /****************** End retreat states types ******************/
+
+// Hotel Tags
+export type LodgingTagModel = {
+  id: number
+  name: string
+}

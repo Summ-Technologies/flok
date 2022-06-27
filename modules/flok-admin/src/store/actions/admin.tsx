@@ -742,3 +742,20 @@ export function postDestination(values: Partial<AdminDestinationModel>) {
     ],
   })
 }
+
+export const GET_LODGING_TAGS_REQUEST = "GET_LODGING_TAGS_REQUEST"
+export const GET_LODGING_TAGS_SUCCESS = "GET_LODGING_TAGS_SUCCESS"
+export const GET_LODGING_TAGS_FAILURE = "GET_LODGING_TAGS_FAILURE"
+
+export function getLodgingTags() {
+  let endpoint = `/v1.0/lodging-tags`
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [
+      GET_LODGING_TAGS_REQUEST,
+      GET_LODGING_TAGS_SUCCESS,
+      GET_LODGING_TAGS_FAILURE,
+    ],
+  })
+}

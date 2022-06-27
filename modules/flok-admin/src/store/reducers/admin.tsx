@@ -9,6 +9,7 @@ import {
   AdminRetreatListModel,
   AdminRetreatListType,
   AdminRetreatModel,
+  LodgingTagModel,
   RetreatNoteModel,
   RetreatTask,
   RetreatToTask,
@@ -24,6 +25,7 @@ import {
   GET_HOTELS_BY_ID_SUCCESS,
   GET_HOTELS_SEARCH_SUCCESS,
   GET_HOTEL_DETAILS_SUCCESS,
+  GET_LODGING_TAGS_SUCCESS,
   GET_LOGIN_TOKEN_SUCCESS,
   GET_RETREATS_LIST_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
@@ -108,6 +110,9 @@ export type AdminState = {
   tasks: {
     [id: number]: RetreatTask | undefined
   }
+  lodgingTags: {
+    [id: number]: LodgingTagModel
+  }
 }
 
 const initialState: AdminState = {
@@ -132,6 +137,7 @@ const initialState: AdminState = {
   usersByRetreat: {},
   userLoginTokens: {},
   tasks: {},
+  lodgingTags: {},
 }
 
 export default function AdminReducer(
@@ -431,6 +437,20 @@ export default function AdminReducer(
         allDestinations: allDestinationsArray
           .sort((a, b) => (a.location > b.location ? 0 : 1))
           .map((dest) => dest.id),
+      }
+    case GET_LODGING_TAGS_SUCCESS:
+      let lodgingTags = (
+        (action as ApiAction).payload as {lodging_tags: LodgingTagModel[]}
+      ).lodging_tags
+      let newTags = lodgingTags.reduce((last: any, curr: LodgingTagModel) => {
+        return {...last, [curr.id]: curr}
+      }, {})
+      return {
+        ...state,
+        lodgingTags: {
+          ...state.lodgingTags,
+          ...newTags,
+        },
       }
     default:
       return state

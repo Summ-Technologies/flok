@@ -7,13 +7,15 @@ import {
   TextFieldProps,
   Typography,
 } from "@material-ui/core"
+import {Autocomplete} from "@material-ui/lab"
 import {useFormik} from "formik"
 import _ from "lodash"
-import React, {useState} from "react"
-import {useDispatch} from "react-redux"
+import React, {useEffect, useState} from "react"
+import {useDispatch, useSelector} from "react-redux"
 import * as yup from "yup"
 import {AdminHotelDetailsModel} from "../../models"
-import {patchHotel} from "../../store/actions/admin"
+import {RootState} from "../../store"
+import {getLodgingTags, patchHotel} from "../../store/actions/admin"
 import {
   getTextFieldErrorProps,
   nullifyEmptyString,
@@ -49,6 +51,13 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
   let dispatch = useDispatch()
   let [destinations, destinationsLoading] = useDestinations()
   let [loadingUpdate, setLoadingUpdate] = useState(false)
+  let lodgingTags = useSelector((state: RootState) => {
+    return Object.values(state.admin.lodgingTags)
+  })
+
+  useEffect(() => {
+    !lodgingTags[0] && dispatch(getLodgingTags())
+  }, [])
   async function updateHotelProfile(values: Partial<AdminHotelDetailsModel>) {
     setLoadingUpdate(true)
     await dispatch(patchHotel(props.hotel.id, values))
@@ -64,6 +73,7 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
       description_short: props.hotel.description_short,
       website_url: props.hotel.website_url,
       sub_location: props.hotel.sub_location,
+      lodging_tags: props.hotel.lodging_tags,
     }),
     validationSchema: yup.object({website_url: yup.string().url().nullable()}),
     onSubmit: updateHotelProfile,
@@ -152,6 +162,38 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
           label="Aiport travel time (in mins)"
           value={formik.values.airport_travel_time ?? ""}
           fullWidth
+        />
+        <Autocomplete
+          id="retreatIds"
+          value={formik.values.lodging_tags}
+          multiple
+          getOptionLabel={(tag) => tag.name}
+          filterSelectedOptions
+          selectOnFocus
+          clearOnBlur
+          handleHomeEndKeys
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              {...commonTextFieldProps}
+              inputProps={{
+                ...params.inputProps,
+                onKeyPress: (e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault()
+                    return false
+                  }
+                },
+              }}
+              onChange={undefined}
+              label="Retreat(s)"
+              placeholder="Select a retreat"
+            />
+          )}
+          options={lodgingTags}
+          onChange={async (e, newVals) => {
+            formik.setFieldValue("lodging_tags", newVals)
+          }}
         />
       </Paper>
       <Box width="100%" display="flex" justifyContent="flex-end">
