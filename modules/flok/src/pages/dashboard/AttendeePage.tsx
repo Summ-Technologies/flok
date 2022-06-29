@@ -421,4 +421,5 @@ const RetreatAttendeeInfoStatusOptions: {
   {value: "CREATED", text: "Pending"},
   {value: "INFO_ENTERED", text: "Registered"},
   {value: "NOT_ATTENDING", text: "Not Attending"},
+  {value: "CANCELLED", text: "Cancelled"},
 ]

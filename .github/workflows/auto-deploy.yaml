@@ -2,7 +2,7 @@ name: Auto deploy (production)
 on:
   push:
     branches:
-      - master
+      - staging
 jobs:
   changes:
     runs-on: ubuntu-latest
@@ -20,21 +20,21 @@ jobs:
               - 'modules/flok/**'
             flok-admin:
               - 'modules/flok-admin/**'
-  auto-deploy-flok:
+  auto-deploy-flok-staging:
     needs: changes
-    if: ${{ needs.changes.outputs.flok == 'true' }}
+    if: ${{ needs.changes.outputs.flok== 'true' && github.ref == 'refs/heads/staging' }}
     uses: ./.github/workflows/deploy.yaml
     with:
       module: flok
-      heroku-app: flok-frontend
+      heroku-app: flok-staging
     secrets:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-  auto-deploy-flok-admin:
+  auto-deploy-flok-admin-staging:
     needs: changes
-    if: ${{ needs.changes.outputs.flok-admin == 'true' }}
+    if: ${{ needs.changes.outputs.flok-admin== 'true' && github.ref == 'refs/heads/staging' }}
     uses: ./.github/workflows/deploy.yaml
     with:
       module: flok-admin
-      heroku-app: flok-admin
+      heroku-app: flok-admin-staging
     secrets:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}

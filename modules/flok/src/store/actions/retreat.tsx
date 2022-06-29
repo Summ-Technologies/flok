@@ -547,27 +547,7 @@ export function deletePage(pageId: number) {
     {errorMessage: "Something went wrong"}
   )
 }
-export const POST_WEBSITE_REQUEST = "POST_WEBSITE_REQUEST"
-export const POST_WEBSITE_SUCCESS = "POST_WEBSITE_SUCCESS"
-export const POST_WEBSITE_FAILURE = "POST_WEBSITE_FAILURE"
-export function postWebsite(values: Partial<AttendeeLandingWebsiteModel>) {
-  let endpoint = `/v1.0/websites`
-  return createApiAction(
-    {
-      method: "POST",
-      endpoint,
-      body: JSON.stringify(values),
-      types: [
-        {type: POST_WEBSITE_REQUEST},
-        {type: POST_WEBSITE_SUCCESS},
-        {type: POST_WEBSITE_FAILURE},
-      ],
-    },
-    {
-      errorMessage: "Something went wrong.",
-    }
-  )
-}
+
 export const PATCH_WEBSITE_REQUEST = "PATCH_WEBSITE_REQUEST"
 export const PATCH_WEBSITE_SUCCESS = "PATCH_WEBSITE_SUCCESS"
 export const PATCH_WEBSITE_FAILURE = "PATCH_WEBSITE_FAILURE"
@@ -580,7 +560,9 @@ export function patchWebsite(
     {
       method: "PATCH",
       endpoint,
-      body: JSON.stringify(values),
+      body: JSON.stringify(values, (key, value) =>
+        typeof value === "undefined" ? null : value
+      ),
       types: [
         {type: PATCH_WEBSITE_REQUEST},
         {type: PATCH_WEBSITE_SUCCESS, meta: {websiteId}},
@@ -589,6 +571,30 @@ export function patchWebsite(
     },
     {
       successMessage: "Succesfully updated website",
+      errorMessage: "Something went wrong",
+    }
+  )
+}
+
+export const POST_INITIAL_WEBSITE_REQUEST = "POST_INITIAL_WEBSITE_REQUEST"
+export const POST_INITIAL_WEBSITE_SUCCESS = "POST_INITIAL_WEBSITE_SUCCESS"
+export const POST_INITIAL_WEBSITE_FAILURE = "POST_INITIAL_WEBSITE_FAILURE"
+export function postInitialWebsite(
+  values: Partial<AttendeeLandingWebsiteModel>
+) {
+  let endpoint = `/v1.0/websites/initialize`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: POST_INITIAL_WEBSITE_REQUEST},
+        {type: POST_INITIAL_WEBSITE_SUCCESS},
+        {type: POST_INITIAL_WEBSITE_FAILURE},
+      ],
+    },
+    {
       errorMessage: "Something went wrong",
     }
   )
@@ -627,7 +633,7 @@ export function postRetreatAttendeesBatch(
       ],
     },
     {
-      errorMessage: "Something went wrong",
+      errorMessage: "Something went wrong.",
     }
   )
 }
@@ -647,6 +653,7 @@ export function patchRetreat(
       | "lodging_final_hotel_id"
       | "lodging_final_destination"
       | "lodging_final_contract_url"
+      | "retreat_name"
     >
   >
 ) {
@@ -669,4 +676,36 @@ export function patchRetreat(
       errorMessage: "Something went wrong",
     }
   )
+}
+
+export const GET_WEBSITE_BY_ATTENDEE_REQUEST = "GET_WEBSITE_BY_ATTENDEE_REQUEST"
+export const GET_WEBSITE_BY_ATTENDEE_SUCCESS = "GET_WEBSITE_BY_ATTENDEE_SUCCESS"
+export const GET_WEBSITE_BY_ATTENDEE_FAILURE = "GET_WEBSITE_BY_ATTENDEE_FAILURE"
+export function getWebsiteByAttendee(attendeeId: number) {
+  let endpoint = `/v1.0/attendees/${attendeeId}/website`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_WEBSITE_BY_ATTENDEE_REQUEST},
+      {type: GET_WEBSITE_BY_ATTENDEE_SUCCESS, meta: {attendeeId}},
+      {type: GET_WEBSITE_BY_ATTENDEE_FAILURE, meta: {attendeeId}},
+    ],
+  })
+}
+
+export const GET_PRESET_IMAGES_REQUEST = "GET_PRESET_IMAGES_REQUEST"
+export const GET_PRESET_IMAGES_SUCCESS = "GET_PRESET_IMAGES_SUCCESS"
+export const GET_PRESET_IMAGES_FAILURE = "GET_PRESET_IMAGES_FAILURE"
+export function getPresetImages(type: string) {
+  let endpoint = `/v1.0/preset-images?type=${type}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_PRESET_IMAGES_REQUEST},
+      {type: GET_PRESET_IMAGES_SUCCESS, meta: {type}},
+      {type: GET_PRESET_IMAGES_FAILURE, meta: {type}},
+    ],
+  })
 }

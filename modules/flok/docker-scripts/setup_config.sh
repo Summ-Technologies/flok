@@ -24,6 +24,12 @@ else
     echo "window.appConfig.google_tag_manager_id=\"$GOOGLE_TAG_MANAGER_ID\"" >> /usr/share/nginx/html/config.js
 fi
 
+if [[ -z "$IMAGE_SERVER_BASE_URL" ]]; then
+    echo "IMAGE_SERVER_BASE_URL environment variable not set, upload image calls won't work."
+else
+    echo "window.appConfig.image_server_base_url=\"$IMAGE_SERVER_BASE_URL\"" >> /usr/share/nginx/html/config.js
+fi
+
 ####### Google & google maps config #######
 [[ ! -z "$GOOGLE_MAPS_ID_HOTEL_PAGE" ]] && echo "window.appConfig.google_maps_id_hotel_page=\"$GOOGLE_MAPS_ID_HOTEL_PAGE\"" >> /usr/share/nginx/html/config.js
 [[ ! -z "$GOOGLE_API_KEY" ]] && echo "window.appConfig.google_api_key=\"$GOOGLE_API_KEY\"" >> /usr/share/nginx/html/config.js
