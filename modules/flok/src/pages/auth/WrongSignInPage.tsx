@@ -59,7 +59,7 @@ function WrongSignInPage(props: WrongSignInPageProps) {
                   <li className={classes.listItem}>
                     <Link
                       component={ReactRouterLink}
-                      to={AppRoutes.getPath("RetreatWebsiteHome", {
+                      to={AppRoutes.getPath("AttendeeSiteHome", {
                         retreatName: website!.name,
                       })}>
                       <Typography>{website!.name}</Typography>

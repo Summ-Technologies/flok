@@ -132,8 +132,32 @@ let navItems: NavItem[] = [
   {
     title: "Attendees",
     icon: PeopleAlt,
-    activeRoutes: ["RetreatAttendeesPage", "RetreatAttendeePage"],
+    activeRoutes: [],
     redirect: redirectFlok("RetreatAttendeesPage"),
+    navSubItems: [
+      {
+        title: "Attendees",
+        activeRoutes: ["RetreatAttendeePage", "RetreatAttendeesPage"],
+        redirect: redirectFlok("RetreatAttendeesPage"),
+      },
+      {
+        title: "Registration",
+        activeRoutes: [],
+        redirect: () => undefined,
+      },
+      {
+        title: "Website",
+        activeRoutes: [
+          "LandingPageGeneratorConfig",
+          "LandingPageGeneratorConfigAddPage",
+          "LandingPageGeneratorConfigWebsiteSettings",
+          "LandingPageGeneratorConfigPageSettings",
+          "LandingPageGeneratorHome",
+          "LandingPageGeneratorPage",
+        ],
+        redirect: redirectFlok("LandingPageGeneratorHome"),
+      },
+    ],
   },
   {
     title: "Flights",
@@ -157,8 +181,8 @@ let navItems: NavItem[] = [
   {
     title: "Budget",
     icon: LocalAtm,
-    activeRoutes: ["RetreatBudgetPage"],
-    redirect: redirectFlok("RetreatBudgetPage"),
+    activeRoutes: [],
+    redirect: redirectFlok("RetreatBudgetEstimatePage"),
     navSubItems: [
       {
         title: "Estimate",
@@ -167,12 +191,12 @@ let navItems: NavItem[] = [
       },
       {
         title: "Actual",
-        activeRoutes: [],
+        activeRoutes: ["RetreatBudgetPage"],
         redirect: (retreat, retreatIdx) =>
           retreat.budget_link
             ? {url: retreat.budget_link, external: true}
             : {
-                url: AppRoutes.getPath("RetreatBudgetLinkPage", {
+                url: AppRoutes.getPath("RetreatBudgetPage", {
                   retreatIdx: retreatIdx.toString(),
                 }),
               },

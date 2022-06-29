@@ -11,15 +11,15 @@ import {useFormik} from "formik"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {Link as ReactRouterLink, RouteComponentProps} from "react-router-dom"
-import AppLoadingScreen from "../components/base/AppLoadingScreen"
-import AppLogo from "../components/base/AppLogo"
-import AppTypography from "../components/base/AppTypography"
-import PageContainer from "../components/page/PageContainer"
-import {replaceDashes} from "../notistack-lib/utils"
-import {AppRoutes} from "../Stack"
-import {ApiAction} from "../store/actions/api"
-import {postAttendeePasswordReset} from "../store/actions/user"
-import {useAttendeeLandingWebsiteName} from "../utils/retreatUtils"
+import AppLoadingScreen from "../../components/base/AppLoadingScreen"
+import AppLogo from "../../components/base/AppLogo"
+import AppTypography from "../../components/base/AppTypography"
+import PageContainer from "../../components/page/PageContainer"
+import {AppRoutes} from "../../Stack"
+import {ApiAction} from "../../store/actions/api"
+import {postAttendeePasswordReset} from "../../store/actions/user"
+import {replaceDashes} from "../../utils"
+import {useAttendeeLandingWebsiteName} from "../../utils/retreatUtils"
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -176,7 +176,7 @@ function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
                   },
                   {
                     next: encodeURIComponent(
-                      AppRoutes.getPath("RetreatWebsiteFormPage", {
+                      AppRoutes.getPath("AttendeeSiteFormPage", {
                         retreatName: retreatName,
                       })
                     ),

@@ -650,7 +650,7 @@ function AttendeesPage() {
             attendeeTravelInfo.filter((attendee) => {
               return (
                 attendee.info_status === "NOT_ATTENDING" ||
-                attendee.info_status == "CANCELLED"
+                attendee.info_status === "CANCELLED"
               )
             }).length ? (
               <TableContainer component={Paper}>
@@ -661,7 +661,7 @@ function AttendeesPage() {
                         .filter((attendee) => {
                           return (
                             attendee.info_status === "NOT_ATTENDING" ||
-                            attendee.info_status == "CANCELLED"
+                            attendee.info_status === "CANCELLED"
                           )
                         })
                         .sort((attendeeA, attendeeB) =>

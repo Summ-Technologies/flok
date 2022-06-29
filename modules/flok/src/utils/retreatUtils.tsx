@@ -196,7 +196,7 @@ export function useRetreat(retreatId: number) {
 }
 
 export function getRetreatName(retreat: RetreatModel) {
-  if (retreat.retreat_name != undefined) {
+  if (retreat.retreat_name != null) {
     return retreat.retreat_name
   } else return `${retreat.company_name}'s Retreat`
 }

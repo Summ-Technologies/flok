@@ -18,24 +18,24 @@ import {
   Switch,
   useRouteMatch,
 } from "react-router-dom"
-import AppConfirmationModal from "../components/base/ConfirmationModal"
-import PageBody from "../components/page/PageBody"
-import AddPageForm from "../components/retreat-website/AddPageForm"
-import EditPageForm from "../components/retreat-website/EditPageForm"
-import EditWebsiteForm from "../components/retreat-website/EditWebsiteForm"
-import LandingPageEditForm from "../components/retreat-website/LandingPageEditForm"
-import LandingPageGeneratorNavTool from "../components/retreat-website/LandingPageGeneratorNavTool"
-import PageWebsiteLink from "../components/retreat-website/PageWebsiteLink"
-import {AppRoutes} from "../Stack"
-import {ApiAction} from "../store/actions/api"
-import {deletePage} from "../store/actions/retreat"
+import AddPageForm from "../../components/attendee-site/AddPageForm"
+import EditPageForm from "../../components/attendee-site/EditPageForm"
+import EditWebsiteForm from "../../components/attendee-site/EditWebsiteForm"
+import LandingPageEditForm from "../../components/attendee-site/LandingPageEditForm"
+import LandingPageGeneratorNavTool from "../../components/attendee-site/LandingPageGeneratorNavTool"
+import PageWebsiteLink from "../../components/attendee-site/PageWebsiteLink"
+import AppConfirmationModal from "../../components/base/ConfirmationModal"
+import PageBody from "../../components/page/PageBody"
+import {AppRoutes} from "../../Stack"
+import {ApiAction} from "../../store/actions/api"
+import {deletePage} from "../../store/actions/retreat"
 import {
   useAttendeeLandingPage,
   useAttendeeLandingWebsite,
-} from "../utils/retreatUtils"
+} from "../../utils/retreatUtils"
+import RedirectPage from "../misc/RedirectPage"
+import {useRetreat} from "../misc/RetreatProvider"
 import CreateRetreatWebsite from "./CreateRetreatWebsite"
-import RedirectPage from "./misc/RedirectPage"
-import {useRetreat} from "./misc/RetreatProvider"
 
 let useStyles = makeStyles((theme) => ({
   root: {

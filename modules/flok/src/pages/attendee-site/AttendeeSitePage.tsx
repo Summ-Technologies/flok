@@ -1,23 +1,22 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
-import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
-import PageBody from "../components/page/PageBody"
-import PageContainer from "../components/page/PageContainer"
-import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
-import {ResourceNotFound} from "../models"
-import {replaceDashes} from "../notistack-lib/utils"
-import {AppRoutes} from "../Stack"
-import {ImageUtils} from "../utils/imageUtils"
+import RetreatWebsiteHeader from "../../components/attendee-site/RetreatWebsiteHeader"
+import PageBody from "../../components/page/PageBody"
+import PageContainer from "../../components/page/PageContainer"
+import {ResourceNotFound} from "../../models"
+import {AppRoutes} from "../../Stack"
+import {replaceDashes} from "../../utils"
+import {ImageUtils} from "../../utils/imageUtils"
 import {
   useAttendeeLandingPageBlock,
   useAttendeeLandingPageName,
   useAttendeeLandingWebsiteName,
   useRetreat,
-} from "../utils/retreatUtils"
-import LoadingPage from "./misc/LoadingPage"
-import NotFound404Page from "./misc/NotFound404Page"
+} from "../../utils/retreatUtils"
+import LoadingPage from "../misc/LoadingPage"
+import NotFound404Page from "../misc/NotFound404Page"
 
 let useStyles = makeStyles((theme) => ({
   bannerImg: {
@@ -48,9 +47,8 @@ type RetreatWebsiteProps = RouteComponentProps<{
   pageName?: string
 }>
 
-function RetreatWebsite(props: RetreatWebsiteProps) {
+export default function AttendeeSite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
-  let dispatch = useDispatch()
   let classes = useStyles()
   let [website, websiteLoading] = useAttendeeLandingWebsiteName(
     replaceDashes(retreatName)
@@ -77,7 +75,7 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             }
             pageIds={website.page_ids}
             retreatName={retreatName}
-            homeRoute={AppRoutes.getPath("RetreatWebsiteHome", {
+            homeRoute={AppRoutes.getPath("AttendeeSiteHome", {
               retreatName: retreatName,
             })}
             selectedPage={pageName ?? "home"}
@@ -98,8 +96,6 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     </PageContainer>
   )
 }
-
-export default RetreatWebsite
 
 let useBlockRendererStyles = makeStyles((theme) => ({
   websiteBody: {

@@ -117,7 +117,7 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
               onClick={() => {
                 dispatch(
                   push(
-                    AppRoutes.getPath("RetreatWebsiteFormPage", {
+                    AppRoutes.getPath("AttendeeSiteFormPage", {
                       retreatName: props.retreatName,
                     })
                   )
@@ -196,7 +196,7 @@ function RetreatWebsiteHeaderLink(props: RetreatWebsiteHeaderLinkProps) {
           ? "always"
           : "none"
       }
-      href={AppRoutes.getPath("RetreatWebsitePage", {
+      href={AppRoutes.getPath("AttendeeSitePage", {
         retreatName: props.retreatName,
         pageName: titleToNavigation(page?.title ?? "home"),
       })}
