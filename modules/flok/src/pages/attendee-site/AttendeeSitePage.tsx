@@ -2,24 +2,29 @@ import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
 import {RouteComponentProps} from "react-router-dom"
-import PageBody from "../components/page/PageBody"
-import PageContainer from "../components/page/PageContainer"
-import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
-import {AppRoutes} from "../Stack"
+import RetreatWebsiteHeader from "../../components/attendee-site/RetreatWebsiteHeader"
+import PageBody from "../../components/page/PageBody"
+import PageContainer from "../../components/page/PageContainer"
+import {ResourceNotFound} from "../../models"
+import {AppRoutes} from "../../Stack"
+import {replaceDashes} from "../../utils"
+import {ImageUtils} from "../../utils/imageUtils"
 import {
   useAttendeeLandingPageBlock,
   useAttendeeLandingPageName,
   useAttendeeLandingWebsiteName,
-} from "../utils/retreatUtils"
-import NotFound404Page from "./misc/NotFound404Page"
+  useRetreat,
+} from "../../utils/retreatUtils"
+import LoadingPage from "../misc/LoadingPage"
+import NotFound404Page from "../misc/NotFound404Page"
 
 let useStyles = makeStyles((theme) => ({
   bannerImg: {
     width: "100%",
     maxHeight: "325px",
+    objectFit: "cover",
     [theme.breakpoints.down("sm")]: {
       minHeight: "130px",
-      objectFit: "cover",
     },
   },
   websiteBody: {
@@ -42,24 +47,22 @@ type RetreatWebsiteProps = RouteComponentProps<{
   pageName?: string
 }>
 
-function RetreatWebsite(props: RetreatWebsiteProps) {
+export default function AttendeeSite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
   let classes = useStyles()
-  function replaceDashes(str: string) {
-    let strArray = str.split("")
-    strArray.forEach((char, i) => {
-      if (char === "-") {
-        strArray[i] = " "
-      }
-    })
-    return strArray.join("")
-  }
-  let website = useAttendeeLandingWebsiteName(replaceDashes(retreatName))
-  let page = useAttendeeLandingPageName(
+  let [website, websiteLoading] = useAttendeeLandingWebsiteName(
+    replaceDashes(retreatName)
+  )
+  let [page, pageLoading] = useAttendeeLandingPageName(
     website?.id ?? 0,
     replaceDashes(pageName ?? "home")
   )
-  return !page || !website ? (
+  let [retreat, retreatLoading] = useRetreat(website?.retreat_id ?? -1)
+  const titleTag = document.getElementById("titleTag")
+  titleTag!.innerHTML = `${website?.name} | ${page?.title}`
+  return websiteLoading || pageLoading || retreatLoading ? (
+    <LoadingPage />
+  ) : !page || !website || !retreat || retreat === ResourceNotFound ? (
     <NotFound404Page />
   ) : (
     <PageContainer>
@@ -67,22 +70,24 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
         <div className={classes.overallPage}>
           <RetreatWebsiteHeader
             logo={
-              website.company_logo_img ??
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Brex_logo_black.svg/1200px-Brex_logo_black.svg.png"
+              website.logo_image?.image_url ??
+              ImageUtils.getImageUrl("logoIconTextTrans")
             }
             pageIds={website.page_ids}
             retreatName={retreatName}
-            homeRoute={AppRoutes.getPath("RetreatWebsiteHome", {
+            homeRoute={AppRoutes.getPath("AttendeeSiteHome", {
               retreatName: retreatName,
             })}
-            selectedPage={pageName ?? "home"}></RetreatWebsiteHeader>
-          <img
-            src={
-              website.banner_img ??
-              "https://upload.wikimedia.org/wikipedia/commons/b/bb/Table_Rock_scenery_banner.jpg"
-            }
-            className={classes.bannerImg}
-            alt="Banner"></img>
+            selectedPage={pageName ?? "home"}
+            registrationLink={
+              retreat.attendees_registration_form_link
+            }></RetreatWebsiteHeader>
+          {website.banner_image && (
+            <img
+              src={website.banner_image?.image_url}
+              className={classes.bannerImg}
+              alt="Banner"></img>
+          )}
           {page?.block_ids[0] && (
             <WYSIWYGBlockRenderer blockId={page.block_ids[0]} />
           )}
@@ -91,8 +96,6 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
     </PageContainer>
   )
 }
-
-export default RetreatWebsite
 
 let useBlockRendererStyles = makeStyles((theme) => ({
   websiteBody: {

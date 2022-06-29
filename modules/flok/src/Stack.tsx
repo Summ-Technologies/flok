@@ -2,6 +2,9 @@ import React from "react"
 import {Route, Switch} from "react-router-dom"
 import PageContainer from "./components/page/PageContainer"
 import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
+import AttendeeCreateAccountPage from "./pages/attendee-site/AttendeeCreateAccountPage"
+import AttendeeSiteFormPage from "./pages/attendee-site/AttendeeSiteFormPage"
+import AttendeeSite from "./pages/attendee-site/AttendeeSitePage"
 import AttendeeRegFormPage from "./pages/AttendeeRegFormPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
@@ -10,8 +13,10 @@ import AttendeePage from "./pages/dashboard/AttendeePage"
 import AttendeesRegFormBuilderPage from "./pages/dashboard/AttendeeRegFormBuilderPage"
 import AttendeesPage from "./pages/dashboard/AttendeesPage"
 import BudgetEstimatePage from "./pages/dashboard/BudgetEstimatePage"
-import BudgetPage from "./pages/dashboard/BudgetPage"
+import RetreatBudgetPage from "./pages/dashboard/BudgetPage"
 import FlightsPage from "./pages/dashboard/FlightsPage"
+import ItineraryPage from "./pages/dashboard/ItineraryPage"
+import LandingPageGenerator from "./pages/dashboard/LandingPageGenerator"
 import LodgingContractPage from "./pages/dashboard/LodgingContractPage"
 import LodgingPage from "./pages/dashboard/LodgingPage"
 import LodgingProposalPage from "./pages/dashboard/LodgingProposalPage"
@@ -22,14 +27,12 @@ import DeprecatedProposalPage from "./pages/deprecated/DeprecatedProposalPage"
 import DeprecatedProposalsListPage from "./pages/deprecated/DeprecatedProposalsListPage"
 import DeprecatedRetreatPreferencesFormPage from "./pages/deprecated/DeprecatedRetreatPreferencesFormPage"
 import HomeRoutingPage from "./pages/HomeRoutingPage"
-import LandingPageGenerator from "./pages/LandingPageGenerator"
 import NotFound404Page from "./pages/misc/NotFound404Page"
 import ProtectedRoute from "./pages/misc/ProtectedRoute"
 import RetreatProvider from "./pages/misc/RetreatProvider"
 import PretripHomePage from "./pages/pretrip/PretripHomePage"
 import PretripProposalPage from "./pages/pretrip/PretripProposalPage"
 import PretripProposalsPage from "./pages/pretrip/PretripProposalsPage"
-import RetreatWebsite from "./pages/RetreatWebsite"
 
 export type FlokPageName = keyof typeof AppRoutes.pages
 
@@ -63,24 +66,29 @@ export class AppRoutes {
     RetreatAttendeeFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
     RetreatAttendeesRegFormBuilderPage: "/r/:retreatIdx/attendees/reg-form",
 
+    // AttendeelLanding page
+    LandingPageGeneratorHome: "/r/:retreatIdx/attendees/landing",
+    LandingPageGeneratorPage: "/r/:retreatIdx/attendees/landing/:currentPageId",
+    LandingPageGeneratorConfig:
+      "/r/:retreatIdx/attendees/landing/:currentPageId/config",
+    LandingPageGeneratorConfigWebsiteSettings:
+      "/r/:retreatIdx/attendees/landing/:currentPageId/config/website-settings",
+    LandingPageGeneratorConfigPageSettings:
+      "/r/:retreatIdx/attendees/landing/:currentPageId/config/page-settings/:pageId",
+    LandingPageGeneratorConfigAddPage:
+      "/r/:retreatIdx/attendees/landing/:currentPageId/config/add-page",
+
     RetreatFlightsPage: "/r/:retreatIdx/flights",
 
     RetreatBudgetPage: "/r/:retreatIdx/budget",
     RetreatBudgetEstimatePage: "/r/:retreatIdx/budget/estimate",
+    RetreatItineraryPage: "/r/:retreatIdx/itinerary",
 
     // Not in sidebar yet
-    RetreatWebsiteHome: "/retreats/:retreatName",
-    RetreatWebsitePage: "/retreats/:retreatName/:pageName",
-    RetreatAttendeesRegFormPage: "/retreats/:retreatName/registration",
-    LandingPageGeneratorHome: "/r/:retreatIdx/landing",
-    LandingPageGeneratorPage: "/r/:retreatIdx/landing/:currentPageId",
-    LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:currentPageId/config",
-    LandingPageGeneratorConfigWebsiteSettings:
-      "/r/:retreatIdx/landing/:currentPageId/config/website-settings",
-    LandingPageGeneratorConfigPageSettings:
-      "/r/:retreatIdx/landing/:currentPageId/config/page-settings/:pageId",
-    LandingPageGeneratorConfigAddPage:
-      "/r/:retreatIdx/landing/:currentPageId/config/add-page",
+    AttendeeSiteHome: "/sites/:retreatName",
+    AttendeeSitePage: "/sites/:retreatName/:pageName",
+    AttendeeSiteFormPage: "/sites/:retreatName/form-page",
+    AttendeeSignUpPage: "/sites/:retreatName/sign-up",
 
     // PRETRIP DEMO
     PretripHomePage: "/r/demo",
@@ -97,7 +105,8 @@ export class AppRoutes {
 
   static getPath(
     name: FlokPageName,
-    pathParams: {[key: string]: string} = {}
+    pathParams: {[key: string]: string} = {},
+    queryParams: {[key: string]: string} = {}
   ): string {
     let path = this.pages[name]
     Object.keys(pathParams).forEach((key) => {
@@ -105,6 +114,12 @@ export class AppRoutes {
       let toReplace = ":" + key
       path = path.replace(toReplace, value)
     })
+    if (Object.keys(queryParams).length > 0) {
+      path += "?"
+    }
+    let queryString = new URLSearchParams(queryParams).toString()
+    path += queryString
+
     return path
   }
 }
@@ -154,16 +169,26 @@ export default function Stack() {
         exact
         component={ForgotPasswordPage}
       />
-      <Route exact path={AppRoutes.getPath("RetreatAttendeesRegFormPage")}>
+      <Route exact path={AppRoutes.getPath("AttendeeSiteFormPage")}>
         <AttendeeRegFormPage />
       </Route>
       <Route
+        path={[AppRoutes.getPath("AttendeeSiteFormPage")]}
+        exact
+        component={AttendeeSiteFormPage}
+      />
+      <Route
+        path={[AppRoutes.getPath("AttendeeSignUpPage")]}
+        exact
+        component={AttendeeCreateAccountPage}
+      />
+      <Route
         path={[
-          AppRoutes.getPath("RetreatWebsiteHome"),
-          AppRoutes.getPath("RetreatWebsitePage"),
+          AppRoutes.getPath("AttendeeSiteHome"),
+          AppRoutes.getPath("AttendeeSitePage"),
         ]}
         exact
-        component={RetreatWebsite}
+        component={AttendeeSite}
       />
       {/* Dashboard routes */}
       <Route path="/r/demo">
@@ -252,13 +277,17 @@ export default function Stack() {
               </Route>
 
               {/* Budget */}
-              <Route exact path={AppRoutes.getPath("RetreatBudgetPage")}>
-                <BudgetPage />
-              </Route>
               <Route
                 exact
                 path={AppRoutes.getPath("RetreatBudgetEstimatePage")}>
                 <BudgetEstimatePage />
+              </Route>
+              <Route exact path={AppRoutes.getPath("RetreatBudgetPage")}>
+                <RetreatBudgetPage />
+              </Route>
+              {/* Itinerary */}
+              <Route exact path={AppRoutes.getPath("RetreatItineraryPage")}>
+                <ItineraryPage />
               </Route>
               <Route path={"*"} component={NotFound404Page} />
             </Switch>

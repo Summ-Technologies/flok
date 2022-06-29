@@ -5,6 +5,7 @@ import {
   AttendeeLandingWebsiteModel,
   AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
+  RetreatModel,
   RetreatToTaskState,
   RetreatTravelModel,
   RetreatTripModel,
@@ -546,27 +547,7 @@ export function deletePage(pageId: number) {
     {errorMessage: "Something went wrong"}
   )
 }
-export const POST_WEBSITE_REQUEST = "POST_WEBSITE_REQUEST"
-export const POST_WEBSITE_SUCCESS = "POST_WEBSITE_SUCCESS"
-export const POST_WEBSITE_FAILURE = "POST_WEBSITE_FAILURE"
-export function postWebsite(values: Partial<AttendeeLandingWebsiteModel>) {
-  let endpoint = `/v1.0/websites`
-  return createApiAction(
-    {
-      method: "POST",
-      endpoint,
-      body: JSON.stringify(values),
-      types: [
-        {type: POST_WEBSITE_REQUEST},
-        {type: POST_WEBSITE_SUCCESS},
-        {type: POST_WEBSITE_FAILURE},
-      ],
-    },
-    {
-      errorMessage: "Something went wrong.",
-    }
-  )
-}
+
 export const PATCH_WEBSITE_REQUEST = "PATCH_WEBSITE_REQUEST"
 export const PATCH_WEBSITE_SUCCESS = "PATCH_WEBSITE_SUCCESS"
 export const PATCH_WEBSITE_FAILURE = "PATCH_WEBSITE_FAILURE"
@@ -579,7 +560,9 @@ export function patchWebsite(
     {
       method: "PATCH",
       endpoint,
-      body: JSON.stringify(values),
+      body: JSON.stringify(values, (key, value) =>
+        typeof value === "undefined" ? null : value
+      ),
       types: [
         {type: PATCH_WEBSITE_REQUEST},
         {type: PATCH_WEBSITE_SUCCESS, meta: {websiteId}},
@@ -588,6 +571,30 @@ export function patchWebsite(
     },
     {
       successMessage: "Succesfully updated website",
+      errorMessage: "Something went wrong",
+    }
+  )
+}
+
+export const POST_INITIAL_WEBSITE_REQUEST = "POST_INITIAL_WEBSITE_REQUEST"
+export const POST_INITIAL_WEBSITE_SUCCESS = "POST_INITIAL_WEBSITE_SUCCESS"
+export const POST_INITIAL_WEBSITE_FAILURE = "POST_INITIAL_WEBSITE_FAILURE"
+export function postInitialWebsite(
+  values: Partial<AttendeeLandingWebsiteModel>
+) {
+  let endpoint = `/v1.0/websites/initialize`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: POST_INITIAL_WEBSITE_REQUEST},
+        {type: POST_INITIAL_WEBSITE_SUCCESS},
+        {type: POST_INITIAL_WEBSITE_FAILURE},
+      ],
+    },
+    {
       errorMessage: "Something went wrong",
     }
   )
@@ -626,7 +633,79 @@ export function postRetreatAttendeesBatch(
       ],
     },
     {
+      errorMessage: "Something went wrong.",
+    }
+  )
+}
+
+export const PATCH_RETREAT_REQUEST = "PATCH_RETREAT_REQUEST"
+export const PATCH_RETREAT_SUCCESS = "PATCH_RETREAT_SUCCESS"
+export const PATCH_RETREAT_FAILURE = "PATCH_RETREAT_FAILURE"
+export function patchRetreat(
+  retreatId: number,
+  values: Partial<
+    Pick<
+      RetreatModel,
+      | "budget_link"
+      | "itinerary_final_draft_link"
+      | "lodging_final_end_date"
+      | "lodging_final_start_date"
+      | "lodging_final_hotel_id"
+      | "lodging_final_destination"
+      | "lodging_final_contract_url"
+      | "retreat_name"
+    >
+  >
+) {
+  let endpoint = `/v1.0/retreats/${retreatId}`
+  return createApiAction(
+    {
+      method: "PATCH",
+      endpoint,
+      body: JSON.stringify(values, (key, value) =>
+        typeof value === "undefined" ? null : value
+      ),
+      types: [
+        {type: PATCH_RETREAT_REQUEST},
+        {type: PATCH_RETREAT_SUCCESS, meta: {retreatId: retreatId}},
+        {type: PATCH_RETREAT_FAILURE, meta: {retreatId: retreatId}},
+      ],
+    },
+    {
+      successMessage: "Successfully updated retreat",
       errorMessage: "Something went wrong",
     }
   )
+}
+
+export const GET_WEBSITE_BY_ATTENDEE_REQUEST = "GET_WEBSITE_BY_ATTENDEE_REQUEST"
+export const GET_WEBSITE_BY_ATTENDEE_SUCCESS = "GET_WEBSITE_BY_ATTENDEE_SUCCESS"
+export const GET_WEBSITE_BY_ATTENDEE_FAILURE = "GET_WEBSITE_BY_ATTENDEE_FAILURE"
+export function getWebsiteByAttendee(attendeeId: number) {
+  let endpoint = `/v1.0/attendees/${attendeeId}/website`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_WEBSITE_BY_ATTENDEE_REQUEST},
+      {type: GET_WEBSITE_BY_ATTENDEE_SUCCESS, meta: {attendeeId}},
+      {type: GET_WEBSITE_BY_ATTENDEE_FAILURE, meta: {attendeeId}},
+    ],
+  })
+}
+
+export const GET_PRESET_IMAGES_REQUEST = "GET_PRESET_IMAGES_REQUEST"
+export const GET_PRESET_IMAGES_SUCCESS = "GET_PRESET_IMAGES_SUCCESS"
+export const GET_PRESET_IMAGES_FAILURE = "GET_PRESET_IMAGES_FAILURE"
+export function getPresetImages(type: string) {
+  let endpoint = `/v1.0/preset-images?type=${type}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_PRESET_IMAGES_REQUEST},
+      {type: GET_PRESET_IMAGES_SUCCESS, meta: {type}},
+      {type: GET_PRESET_IMAGES_FAILURE, meta: {type}},
+    ],
+  })
 }
