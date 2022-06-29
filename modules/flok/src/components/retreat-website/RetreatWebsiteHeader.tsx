@@ -7,7 +7,9 @@ import {
   useMediaQuery,
 } from "@material-ui/core"
 import {Menu} from "@material-ui/icons"
+import {push} from "connected-react-router"
 import {useState} from "react"
+import {useDispatch} from "react-redux"
 import {AppRoutes} from "../../Stack"
 import {FlokTheme} from "../../theme"
 import {titleToNavigation} from "../../utils"
@@ -79,6 +81,7 @@ type RetreatWebsiteHeaderProps = {
 }
 
 function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
+  let dispatch = useDispatch()
   let classes = useStyles()
   const isSmallScreen = useMediaQuery((theme: FlokTheme) =>
     theme.breakpoints.down("sm")
@@ -106,15 +109,22 @@ function RetreatWebsiteHeader(props: RetreatWebsiteHeaderProps) {
             })}
           </div>
           <div className={classes.registerWrapper}>
-            <Link
-              href={props.registrationLink}
-              target="__blank"
+            <Button
+              color="primary"
+              variant="contained"
+              size="small"
               className={classes.registerButton}
-              underline="none">
-              <Button size="large" color="primary" variant="contained">
-                Register Now
-              </Button>
-            </Link>
+              onClick={() => {
+                dispatch(
+                  push(
+                    AppRoutes.getPath("RetreatWebsiteFormPage", {
+                      retreatName: props.retreatName,
+                    })
+                  )
+                )
+              }}>
+              Register Now
+            </Button>
           </div>
         </>
       ) : (

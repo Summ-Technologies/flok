@@ -33,6 +33,7 @@ import {
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
   GET_TRIP_SUCCESS,
+  GET_WEBSITE_BY_ATTENDEE_SUCCESS,
   GET_WEBSITE_SUCCESS,
   INSTANTIATE_ATTENDEE_TRIPS_SUCCESS,
   PATCH_ATTENDEE_SUCCESS,
@@ -196,6 +197,7 @@ export default function retreatReducer(
       }
       return state
     case GET_WEBSITE_SUCCESS:
+    case GET_WEBSITE_BY_ATTENDEE_SUCCESS:
     case PATCH_WEBSITE_SUCCESS:
     case POST_INITIAL_WEBSITE_SUCCESS:
       payload = (action as ApiAction)

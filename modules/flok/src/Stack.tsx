@@ -2,6 +2,8 @@ import React from "react"
 import {Route, Switch} from "react-router-dom"
 import PageContainer from "./components/page/PageContainer"
 import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
+import AttendeeCreateAccountPage from "./pages/AttendeeCreateAccountPage"
+import AttendeeWebsiteFormPage from "./pages/AttendeeWebsiteFormPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
@@ -68,6 +70,8 @@ export class AppRoutes {
     // Not in sidebar yet
     RetreatWebsiteHome: "/retreats/:retreatName",
     RetreatWebsitePage: "/retreats/:retreatName/:pageName",
+    RetreatWebsiteFormPage: "/retreats/:retreatName/form-page",
+    AttendeeSignUpPage: "/retreats/:retreatName/sign-up",
     LandingPageGeneratorHome: "/r/:retreatIdx/landing",
     LandingPageGeneratorPage: "/r/:retreatIdx/landing/:currentPageId",
     LandingPageGeneratorConfig: "/r/:retreatIdx/landing/:currentPageId/config",
@@ -93,7 +97,8 @@ export class AppRoutes {
 
   static getPath(
     name: FlokPageName,
-    pathParams: {[key: string]: string} = {}
+    pathParams: {[key: string]: string} = {},
+    queryParams: {[key: string]: string} = {}
   ): string {
     let path = this.pages[name]
     Object.keys(pathParams).forEach((key) => {
@@ -101,6 +106,12 @@ export class AppRoutes {
       let toReplace = ":" + key
       path = path.replace(toReplace, value)
     })
+    if (Object.keys(queryParams).length > 0) {
+      path += "?"
+    }
+    let queryString = new URLSearchParams(queryParams).toString()
+    path += queryString
+
     return path
   }
 }
@@ -149,6 +160,16 @@ export default function Stack() {
         path={AppRoutes.getPath("ForgotPasswordPage")}
         exact
         component={ForgotPasswordPage}
+      />
+      <Route
+        path={[AppRoutes.getPath("RetreatWebsiteFormPage")]}
+        exact
+        component={AttendeeWebsiteFormPage}
+      />
+      <Route
+        path={[AppRoutes.getPath("AttendeeSignUpPage")]}
+        exact
+        component={AttendeeCreateAccountPage}
       />
       <Route
         path={[

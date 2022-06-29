@@ -7,6 +7,7 @@ import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
 import RetreatWebsiteHeader from "../components/retreat-website/RetreatWebsiteHeader"
 import {ResourceNotFound} from "../models"
+import {replaceDashes} from "../notistack-lib/utils"
 import {AppRoutes} from "../Stack"
 import {ImageUtils} from "../utils/imageUtils"
 import {
@@ -51,15 +52,6 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
   let dispatch = useDispatch()
   let classes = useStyles()
-  function replaceDashes(str: string) {
-    let strArray = str.split("")
-    strArray.forEach((char, i) => {
-      if (char === "-") {
-        strArray[i] = " "
-      }
-    })
-    return strArray.join("")
-  }
   let [website, websiteLoading] = useAttendeeLandingWebsiteName(
     replaceDashes(retreatName)
   )
