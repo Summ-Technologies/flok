@@ -16,8 +16,6 @@ import AppExpandableTable from "../../components/base/AppExpandableTable"
 import AppMoreInfoIcon from "../../components/base/AppMoreInfoIcon"
 import AppTypography from "../../components/base/AppTypography"
 import PageBody from "../../components/page/PageBody"
-import PageLockedModal from "../../components/page/PageLockedModal"
-import {SampleLockedAttendees} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
 import {getTrip} from "../../store/actions/retreat"
@@ -85,10 +83,6 @@ export default function FlightsPage() {
 
   let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
-  if (retreat.flights_state !== "BOOKING") {
-    attendeeTravelInfo = SampleLockedAttendees
-  }
-
   attendeeTravelInfo = attendeeTravelInfo.filter((attendee) =>
     ["CREATED", "INFO_ENTERED"].includes(attendee.info_status)
   )
@@ -120,9 +114,6 @@ export default function FlightsPage() {
           justifyContent="space-between"
           alignItems="flex-end">
           <Typography variant="h1">Flights</Typography>
-          {retreat.flights_state !== "BOOKING" && (
-            <PageLockedModal pageDesc="This page will be unlocked when flight booking begins" />
-          )}
           <Link
             variant="body1"
             underline="always"

@@ -142,8 +142,8 @@ let navItems: NavItem[] = [
       },
       {
         title: "Registration",
-        activeRoutes: [],
-        redirect: () => undefined,
+        activeRoutes: ["RetreatAttendeesRegFormBuilderPage"],
+        redirect: redirectFlok("RetreatAttendeesRegFormBuilderPage"),
       },
       {
         title: "Website",

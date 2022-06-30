@@ -31,8 +31,8 @@ function AttendeesRegFormBuilderPage(props: AttendeesRegFormBuilderProps) {
     <PageBody appBar>
       <div className={classes.body}>
         <Typography variant="h1">Attendee Registration Form</Typography>
-        {retreat.attendees_reg_form_id != null ? (
-          <FormProvider formId={retreat.attendees_reg_form_id}>
+        {retreat.attendees_registration_form_id != null ? (
+          <FormProvider formId={retreat.attendees_registration_form_id}>
             <FormBuilder />
           </FormProvider>
         ) : (

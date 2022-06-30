@@ -5,7 +5,6 @@ import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
 import AttendeeCreateAccountPage from "./pages/attendee-site/AttendeeCreateAccountPage"
 import AttendeeSiteFormPage from "./pages/attendee-site/AttendeeSiteFormPage"
 import AttendeeSite from "./pages/attendee-site/AttendeeSitePage"
-import AttendeeRegFormPage from "./pages/AttendeeRegFormPage"
 import AuthResetPage from "./pages/auth/AuthResetPage"
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage"
 import SigninPage from "./pages/auth/SigninPage"
@@ -64,7 +63,7 @@ export class AppRoutes {
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatAttendeePage: "/r/:retreatIdx/attendees/:attendeeId/profile",
     RetreatAttendeeFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
-    RetreatAttendeesRegFormBuilderPage: "/r/:retreatIdx/attendees/reg-form",
+    RetreatAttendeesRegFormBuilderPage: "/r/:retreatIdx/attendees/registration",
 
     // AttendeelLanding page
     LandingPageGeneratorHome: "/r/:retreatIdx/attendees/landing",
@@ -170,7 +169,7 @@ export default function Stack() {
         component={ForgotPasswordPage}
       />
       <Route exact path={AppRoutes.getPath("AttendeeSiteFormPage")}>
-        <AttendeeRegFormPage />
+        <AttendeeSiteFormPage />
       </Route>
       <Route
         path={[AppRoutes.getPath("AttendeeSiteFormPage")]}

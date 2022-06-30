@@ -148,7 +148,7 @@ export type RetreatModel = {
   // Retreat data related to attendees
   attendees_state?: RetreatAttendeesState
   attendees_website_id?: number
-  attendees_reg_form_id?: number
+  attendees_registration_form_id?: number
 
   // Retreat data related to flights
   flights_state?: RetreatFlightsState

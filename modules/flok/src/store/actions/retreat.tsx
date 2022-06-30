@@ -654,6 +654,7 @@ export function patchRetreat(
       | "lodging_final_destination"
       | "lodging_final_contract_url"
       | "retreat_name"
+      | "attendees_registration_form_id"
     >
   >
 ) {

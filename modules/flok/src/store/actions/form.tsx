@@ -8,6 +8,7 @@ import {
   FormResponseType,
 } from "../../models/form"
 import {ApiAction, createApiAction} from "./api"
+import {patchRetreat} from "./retreat"
 
 export const POST_FORM_REQUEST = "POST_FORM_REQUEST"
 export const POST_FORM_SUCCESS = "POST_FORM_SUCCESS"
@@ -39,8 +40,9 @@ export function initializeRegForm(retreatId: number) {
     )) as unknown as ApiAction
     if (!postFormResponse.error) {
       let newFormId = postFormResponse.payload.form.id as number
-      alert(newFormId)
-      // Patch retreat to add this one to the retreat model
+      await dispatch(
+        patchRetreat(retreatId, {attendees_registration_form_id: newFormId})
+      )
     }
   }
 }

@@ -5,7 +5,6 @@ import {RouteComponentProps} from "react-router-dom"
 import RetreatWebsiteHeader from "../../components/attendee-site/RetreatWebsiteHeader"
 import PageBody from "../../components/page/PageBody"
 import PageContainer from "../../components/page/PageContainer"
-import {ResourceNotFound} from "../../models"
 import {AppRoutes} from "../../Stack"
 import {replaceDashes} from "../../utils"
 import {ImageUtils} from "../../utils/imageUtils"
@@ -13,7 +12,6 @@ import {
   useAttendeeLandingPageBlock,
   useAttendeeLandingPageName,
   useAttendeeLandingWebsiteName,
-  useRetreat,
 } from "../../utils/retreatUtils"
 import LoadingPage from "../misc/LoadingPage"
 import NotFound404Page from "../misc/NotFound404Page"
@@ -27,27 +25,18 @@ let useStyles = makeStyles((theme) => ({
       minHeight: "130px",
     },
   },
-  websiteBody: {
-    width: "75%",
-    "& > *:not(:first-child)": {
-      margin: "1em 0",
-    },
-    "& > *:not(:first-child) > *:not(:first-child)": {
-      margin: "1em 0",
-    },
-  },
   overallPage: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
 }))
-type RetreatWebsiteProps = RouteComponentProps<{
+type AttendeeSiteProps = RouteComponentProps<{
   retreatName: string
   pageName?: string
 }>
 
-export default function AttendeeSite(props: RetreatWebsiteProps) {
+export default function AttendeeSite(props: AttendeeSiteProps) {
   let {retreatName, pageName} = props.match.params
   let classes = useStyles()
   let [website, websiteLoading] = useAttendeeLandingWebsiteName(
@@ -57,12 +46,11 @@ export default function AttendeeSite(props: RetreatWebsiteProps) {
     website?.id ?? 0,
     replaceDashes(pageName ?? "home")
   )
-  let [retreat, retreatLoading] = useRetreat(website?.retreat_id ?? -1)
   const titleTag = document.getElementById("titleTag")
   titleTag!.innerHTML = `${website?.name} | ${page?.title}`
-  return websiteLoading || pageLoading || retreatLoading ? (
+  return websiteLoading || pageLoading ? (
     <LoadingPage />
-  ) : !page || !website || !retreat || retreat === ResourceNotFound ? (
+  ) : !page || !website ? (
     <NotFound404Page />
   ) : (
     <PageContainer>
@@ -79,9 +67,8 @@ export default function AttendeeSite(props: RetreatWebsiteProps) {
               retreatName: retreatName,
             })}
             selectedPage={pageName ?? "home"}
-            registrationLink={
-              retreat.attendees_registration_form_link
-            }></RetreatWebsiteHeader>
+            registrationLink={AppRoutes.getPath("AttendeeSiteFormPage")}
+          />
           {website.banner_image && (
             <img
               src={website.banner_image?.image_url}

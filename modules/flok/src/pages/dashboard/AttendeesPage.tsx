@@ -35,9 +35,8 @@ import AppCsvXlsxUpload from "../../components/base/AppCsvXlsxUpload"
 import AppExpandableTable from "../../components/base/AppExpandableTable"
 import AppTypography from "../../components/base/AppTypography"
 import PageBody from "../../components/page/PageBody"
-import PageLockedModal from "../../components/page/PageLockedModal"
 import {AttendeeBatchUploadApiResponse} from "../../models/api"
-import {RetreatAttendeeModel, SampleLockedAttendees} from "../../models/retreat"
+import {RetreatAttendeeModel} from "../../models/retreat"
 import {AppRoutes} from "../../Stack"
 import {ApiAction} from "../../store/actions/api"
 import {
@@ -165,9 +164,6 @@ function AttendeesPage() {
     lastName: false,
     email: false,
   })
-  if (retreat.attendees_state !== "REGISTRATION_OPEN") {
-    attendeeTravelInfo = SampleLockedAttendees
-  }
 
   const [openNotAttendingModal, setOpenNotAttendingModal] = useState(false)
   const [batchUploadingPage, setBatchUploadingPage] = useState(false)
@@ -311,10 +307,6 @@ function AttendeesPage() {
   return (
     <PageBody appBar>
       <div className={classes.section}>
-        {retreat.attendees_state !== "REGISTRATION_OPEN" && (
-          <PageLockedModal pageDesc="This page will be unlocked when attendee registration opens" />
-        )}
-
         <Box
           display="flex"
           justifyContent="space-between"
