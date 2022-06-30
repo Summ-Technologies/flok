@@ -186,8 +186,8 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
                 },
               }}
               onChange={undefined}
-              label="Retreat(s)"
-              placeholder="Select a retreat"
+              label="Hotel Tags"
+              placeholder="Select Hotel Tags"
             />
           )}
           options={lodgingTags}

@@ -84,7 +84,12 @@ function HotelAccordionItem(props: {
             <strong>{props.hotel.name}</strong>
             {props.hotel.location ? `, ${props.hotel.location}` : ""}
           </AppTypography>
-          {props.selectedHotel.state === "REVIEW" ? (
+          {props.selectedHotel.state === "REQUESTED" ? (
+            <Chip
+              label="Requested"
+              style={{color: "white", backgroundColor: "blue"}}
+            />
+          ) : props.selectedHotel.state === "REVIEW" ? (
             <Chip
               label="Ready for review"
               style={{color: "white", backgroundColor: "green"}}

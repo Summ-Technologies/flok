@@ -109,6 +109,7 @@ export type AdminSelectedHotelStateTypes =
   | "PENDING"
   | "NOT_AVAILABLE"
   | "REVIEW"
+  | "REQUESTED"
 
 export type AdminSelectedHotelProposalModel = {
   retreat_id: number
