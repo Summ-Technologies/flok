@@ -18,6 +18,7 @@ import {
   RetreatAttendeeModel,
   RetreatModel,
   RetreatTripModel,
+  RFPModel,
 } from "../../models/retreat"
 import {ApiAction} from "../actions/api"
 import {
@@ -47,6 +48,8 @@ import {
   POST_PAGE_SUCCESS,
   POST_RETREAT_ATTENDEES_BATCH_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
+  POST_RFP_SUCCESS,
+  POST_SELECTED_HOTEL_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
@@ -104,6 +107,7 @@ export default function retreatReducer(
     case GET_RETREAT_SUCCESS:
     case PUT_RETREAT_PREFERENCES_SUCCESS:
     case PUT_RETREAT_TASK_SUCCESS:
+    case POST_SELECTED_HOTEL_SUCCESS:
     case PATCH_RETREAT_SUCCESS:
       retreat = ((action as ApiAction).payload as {retreat: RetreatModel})
         .retreat
@@ -335,6 +339,22 @@ export default function retreatReducer(
         }
       }
       return newPresetState
+    case POST_RFP_SUCCESS:
+      payload = (action as ApiAction).payload as {
+        request_for_proposal: RFPModel
+      }
+      let newRetreatId = payload.request_for_proposal.retreat_id
+      let newRFPState = {...state}
+      let newRetreat = newRFPState.retreats[newRetreatId]
+
+      if (newRetreat !== ResourceNotFound) {
+        newRetreat.request_for_proposal = payload.request_for_proposal
+      }
+      newRFPState.retreats = {
+        ...newRFPState.retreats,
+        [newRetreatId]: newRetreat,
+      }
+      return newRFPState
     default:
       return state
   }

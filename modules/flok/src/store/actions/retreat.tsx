@@ -6,9 +6,11 @@ import {
   AttendeeLandingWebsitePageModel,
   RetreatAttendeeModel,
   RetreatModel,
+  RetreatSelectedHotelProposalState,
   RetreatToTaskState,
   RetreatTravelModel,
   RetreatTripModel,
+  RFPModel,
 } from "../../models/retreat"
 import {closeSnackbar, enqueueSnackbar} from "../../notistack-lib/actions"
 import {apiNotification} from "../../notistack-lib/utils"
@@ -692,4 +694,52 @@ export function getPresetImages(type: string) {
       {type: GET_PRESET_IMAGES_FAILURE, meta: {type}},
     ],
   })
+}
+
+export const POST_RFP_REQUEST = "POST_RFP_REQUEST"
+export const POST_RFP_SUCCESS = "POST_RFP_SUCCESS"
+export const POST_RFP_FAILURE = "POST_RFP_FAILURE"
+export function postRFP(values: Partial<RFPModel>) {
+  let endpoint = `/v1.0/rfps`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify(values),
+      types: [
+        {type: POST_RFP_REQUEST},
+        {type: POST_RFP_SUCCESS},
+        {type: POST_RFP_FAILURE},
+      ],
+    },
+    {
+      errorMessage: "Something went wrong",
+    }
+  )
+}
+
+export const POST_SELECTED_HOTEL_REQUEST = "POST_SELECTED_HOTEL_REQUEST"
+export const POST_SELECTED_HOTEL_SUCCESS = "POST_SELECTED_HOTEL_SUCCESS"
+export const POST_SELECTED_HOTEL_FAILURE = "POST_SELECTED_HOTEL_FAILURE"
+export function postSelectedHotel(
+  state: RetreatSelectedHotelProposalState,
+  retreatId: number,
+  hotelId: number
+) {
+  let endpoint = `/v1.0/retreats/${retreatId}/hotels/${hotelId}`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      body: JSON.stringify({state: state}),
+      types: [
+        {type: POST_SELECTED_HOTEL_REQUEST},
+        {type: POST_SELECTED_HOTEL_SUCCESS},
+        {type: POST_SELECTED_HOTEL_FAILURE},
+      ],
+    },
+    {
+      errorMessage: "Something went wrong",
+    }
+  )
 }

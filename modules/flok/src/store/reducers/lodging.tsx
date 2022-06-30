@@ -1,12 +1,17 @@
 import {Action} from "redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
-import {DestinationModel, HotelModel} from "../../models/lodging"
+import {
+  DestinationModel,
+  HotelModel,
+  LodgingTagModel,
+} from "../../models/lodging"
 import {ApiAction} from "../actions/api"
 import {
   GET_DESTINATIONS_SUCCESS,
   GET_HOTELS_SUCCESS,
   GET_HOTEL_BY_GUID_FAILURE,
   GET_HOTEL_BY_GUID_SUCCESS,
+  GET_LODGING_TAGS_SUCCESS,
 } from "../actions/lodging"
 
 export type LodgingState = {
@@ -22,6 +27,7 @@ export type LodgingState = {
   hotelsGuidMapping: {
     [guid: string]: number | ResourceNotFoundType
   }
+  lodgingTags: {[id: string]: LodgingTagModel}
 }
 
 const initialState: LodgingState = {
@@ -29,6 +35,7 @@ const initialState: LodgingState = {
   destinationsGuidMapping: {},
   hotels: {},
   hotelsGuidMapping: {},
+  lodgingTags: {},
 }
 
 export default function lodgingReducer(
@@ -81,6 +88,20 @@ export default function lodgingReducer(
         ...state,
         hotels: newHotels,
         hotelsGuidMapping: newHotelsGuidMapping,
+      }
+    case GET_LODGING_TAGS_SUCCESS:
+      let lodgingTags = (
+        (action as ApiAction).payload as {lodging_tags: LodgingTagModel[]}
+      ).lodging_tags
+      let newTags = lodgingTags.reduce((last: any, curr: LodgingTagModel) => {
+        return {...last, [curr.id]: curr}
+      }, {})
+      return {
+        ...state,
+        lodgingTags: {
+          ...state.lodgingTags,
+          ...newTags,
+        },
       }
     default:
       return state

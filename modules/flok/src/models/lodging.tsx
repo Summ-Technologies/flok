@@ -34,4 +34,14 @@ export type HotelModel = {
 
   spotlight_img: ImageModel
   imgs: ImageModel[]
+  num_rooms?: number
+  is_flok_recommended?: boolean
+  lodging_tags: LodgingTagModel[]
+  price: "$" | "$$" | "$$$" | "$$$$"
+  lodging_tags_filter_dict: {[id: number]: boolean}
+}
+
+export type LodgingTagModel = {
+  id: number
+  name: string
 }

@@ -5,6 +5,7 @@ export type RetreatSelectedHotelProposalState =
   | "PENDING"
   | "NOT_AVAILABLE"
   | "REVIEW"
+  | "REQUESTED"
 
 export type HotelLodgingProposalLink = {
   link_url: string
@@ -144,6 +145,7 @@ export type RetreatModel = {
   selected_hotels_ids: number[]
   selected_hotels: RetreatSelectedHotelProposal[]
   lodging_site_inspection_url?: string
+  request_for_proposal?: RFPModel
 
   // Retreat data related to attendees
   attendees_state?: RetreatAttendeesState
@@ -453,3 +455,20 @@ export const SampleLockedAttendees: RetreatAttendeeModel[] = [
     email_address: "tp@123.com",
   },
 ]
+
+export type AgendaType = "ALL_WORK" | "ALL_PLAY" | "WORK_AND_PLAY"
+export type RFPModel = {
+  id: number
+  retreat_id: number
+  has_exact_dates: boolean
+  exact_dates_start?: string
+  exact_dates_end?: string
+  flexible_number_of_nights?: number
+  exact_dates_notes?: string
+  flexible_dates_notes?: string
+  agenda_type: AgendaType
+  agenda_notes?: string
+  number_of_rooms: number
+}
+
+export type PriceOption = "$" | "$$" | "$$$" | "$$$$"

@@ -1,5 +1,7 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
+import HotelSourcingPage from "./components/lodging/HotelSourcingPage"
+import RFPFormPage from "./components/lodging/RFPFormPage"
 import PageContainer from "./components/page/PageContainer"
 import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
 import AuthResetPage from "./pages/auth/AuthResetPage"
@@ -77,6 +79,8 @@ export class AppRoutes {
       "/r/:retreatIdx/landing/:currentPageId/config/page-settings/:pageId",
     LandingPageGeneratorConfigAddPage:
       "/r/:retreatIdx/landing/:currentPageId/config/add-page",
+    HotelSourcingPage: "/r/:retreatIdx/venue-sourcing",
+    RFPFormPage: "/r/:retreatIdx/rfp-form",
 
     // PRETRIP DEMO
     PretripHomePage: "/r/demo",
@@ -211,6 +215,12 @@ export default function Stack() {
                 exact
                 path={AppRoutes.getPath("RetreatLodgingContractPage")}>
                 <LodgingContractPage />
+              </Route>
+              <Route exact path={AppRoutes.getPath("HotelSourcingPage")}>
+                <HotelSourcingPage />
+              </Route>
+              <Route exact path={AppRoutes.getPath("RFPFormPage")}>
+                <RFPFormPage />
               </Route>
 
               {/* Attendees */}
