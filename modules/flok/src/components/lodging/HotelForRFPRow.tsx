@@ -91,6 +91,33 @@ let useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
+  lodgingTagsContainer: {
+    display: "flex",
+    gap: theme.spacing(0.6),
+    marginTop: theme.spacing(1),
+    maxWidth: "100%",
+    overflow: "hidden",
+  },
+  attributeTagsContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing(1),
+    flexWrap: "wrap",
+    overflowWrap: "initial",
+  },
+  lodgingTag: {
+    marginTop: 4,
+    color: "white",
+    borderRadius: theme.shape.borderRadius,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    padding: theme.spacing(0.5),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    backgroundColor: theme.palette.grey[300], // matching chip default background color
+  },
 }))
 
 type ProposalListRowProps = {
@@ -123,14 +150,7 @@ function HotelForRFPRow(props: ProposalListRowProps) {
             </AppTypography>
             <AppTypography variant="h4">{hotel.name}</AppTypography>
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              flexWrap: "wrap",
-              overflowWrap: "initial",
-            }}>
+          <div className={classes.attributeTagsContainer}>
             {hotel.airport_travel_time && (
               <div className={classes.attributeTag}>
                 <AppTypography variant="body2" noWrap uppercase>
@@ -171,27 +191,16 @@ function HotelForRFPRow(props: ProposalListRowProps) {
               </div>
             )}
           </div>
-          <div
-            style={{
-              display: "flex",
-              gap: "5px",
-              marginTop: "8px",
-              maxWidth: "100%",
-              overflow: "hidden",
-            }}>
+          <div className={classes.lodgingTagsContainer}>
             {hotel.lodging_tags.map((tag) => {
               return (
-                <div
-                  className={classes.attributeTag}
-                  style={{marginTop: 4, color: "white"}}>
+                <div className={classes.lodgingTag}>
                   <AppTypography fontWeight="bold">{tag.name}</AppTypography>
                 </div>
               )
             })}
             {hotel.is_flok_recommended && (
-              <div
-                className={classes.attributeTag}
-                style={{marginTop: 4, color: "white"}}>
+              <div className={classes.lodgingTag}>
                 <AppTypography fontWeight="bold">
                   Flok Recommended
                 </AppTypography>
@@ -200,7 +209,6 @@ function HotelForRFPRow(props: ProposalListRowProps) {
           </div>
         </div>
       </div>
-      <div style={{marginLeft: 24}}></div>
 
       <Button
         className={classes.viewProposalButton}

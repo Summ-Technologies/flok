@@ -7,9 +7,8 @@ import {
   FormControlLabel,
   IconButton,
   Link,
-  MenuItem,
+  makeStyles,
   Paper,
-  Select,
   Slider,
   TextField,
   Typography,
@@ -35,7 +34,75 @@ import PageBody from "../page/PageBody"
 import PageHeader from "../page/PageHeader"
 import HotelForRFPRow from "./HotelForRFPRow"
 
+let useStyles = makeStyles((theme) => ({
+  pageBody: {
+    margin: theme.spacing(2),
+  },
+  RFPModal: {
+    display: "flex",
+    flexDirection: "column",
+    padding: theme.spacing(3),
+  },
+  RFPModalText: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
+  RFPModalButton: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: theme.spacing(2),
+  },
+  filterBar: {
+    display: "flex",
+    alignItems: "center",
+  },
+  filterOverviewText: {
+    marginLeft: theme.spacing(2),
+  },
+  filterBody: {
+    padding: theme.spacing(2),
+  },
+  filterBodyWrapper: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    overflow: "scroll",
+  },
+  filterLocations: {
+    minWidth: 300,
+    marginBottom: theme.spacing(4),
+  },
+  filterLocationsFilter: {
+    marginLeft: theme.spacing(2),
+  },
+  sliderFiltersDiv: {
+    display: "flex",
+    gap: theme.spacing(8),
+  },
+  slider: {
+    width: 300,
+    marginTop: theme.spacing(4.5),
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+  },
+  priceRangeFilterWrapper: {
+    display: "flex",
+    marginTop: "8px",
+    flexDirection: "column",
+  },
+  hotelTagsWrapper: {
+    maxWidth: 300,
+    overflow: "scroll",
+  },
+  RFPRowWrapper: {
+    marginTop: theme.spacing(2),
+    marginLeft: theme.spacing(3),
+    marginRight: theme.spacing(3),
+  },
+}))
+
 function HotelSourcingPage() {
+  let classes = useStyles()
   const [hotels, setHotels] = useState<HotelModel[]>([])
   let [retreat, retreatIdx] = useRetreat()
 
@@ -99,7 +166,7 @@ function HotelSourcingPage() {
   retreat.selected_hotels.forEach((selectedHotel) => {
     selectedHotelsMap[selectedHotel.hotel_id] = true
   })
-  let [locationList, setLocationList] = useState<number[]>([])
+  let [locationList, setLocationList] = useState<string[]>([])
 
   useEffect(() => {
     if (maxDistanceFromAirportQuery) {
@@ -119,7 +186,7 @@ function HotelSourcingPage() {
 
   useEffect(() => {
     if (locationListQuery) {
-      setLocationList(locationListQuery.map((str) => parseInt(str)))
+      setLocationList(locationListQuery)
     }
   }, [locationListQuery])
 
@@ -148,7 +215,7 @@ function HotelSourcingPage() {
     }
   }, [hotelTagsQuery])
 
-  let [testValue, setTestValue] = useState(undefined)
+  let [testValue, setTestValue] = useState("")
 
   async function getHotels() {
     setLoadingHotels(true)
@@ -195,7 +262,7 @@ function HotelSourcingPage() {
   }
   return (
     <PageBody appBar>
-      <div style={{margin: 16}}>
+      <div className={classes.pageBody}>
         <PageHeader
           header={
             <AppTypography variant="h1" fontWeight="bold">
@@ -209,20 +276,13 @@ function HotelSourcingPage() {
           onClose={() => {
             setFillRFPModalOpen(false)
           }}>
-          <DialogContent
-            style={{display: "flex", flexDirection: "column", padding: 32}}>
-            <AppTypography
-              fontWeight="bold"
-              style={{marginLeft: 16, marginRight: 16}}>
+          <DialogContent className={classes.RFPModal}>
+            <AppTypography fontWeight="bold" className={classes.RFPModalText}>
               You need to fill out an RFP so the hotel has all the information
               they need in order to create their proposal for you.
             </AppTypography>
             <Link
-              style={{
-                marginLeft: "auto",
-                marginRight: "auto",
-                marginTop: 16,
-              }}
+              className={classes.RFPModalButton}
               component={ReactRouterLink}
               variant="inherit"
               underline="none"
@@ -249,14 +309,14 @@ function HotelSourcingPage() {
         </Dialog>
         <div>
           <div
-            style={{display: "flex", alignItems: "center"}}
+            className={classes.filterBar}
             onClick={() => {
               setShowFilters((filters) => !filters)
             }}>
             <Typography>Filters</Typography>
 
             {showFilters ? <ExpandLess /> : <ExpandMore />}
-            <Typography style={{marginLeft: 16}}>
+            <Typography className={classes.filterOverviewText}>
               Rooms: {minNumberOfRooms} - {maxNumberOfRooms} | Max Distance from
               Airport: {maxDistanceFromAirport} min | Price Range:{" "}
               {Object.entries(priceRange)
@@ -279,160 +339,177 @@ function HotelSourcingPage() {
               }).length === 1
                 ? ""
                 : "s"}{" "}
-              Selected
+              Selected{" "}
+              {locationList[0]
+                ? locationList.length === 1
+                  ? `| ${
+                      destinations[parseInt(locationList[0].split(":")[0])]
+                        .location
+                    }`
+                  : `| ${locationList.length} locations`
+                : ""}
             </Typography>
           </div>
           {showFilters && (
-            <Paper
-              style={{
-                padding: 16,
-              }}>
-              <div style={{display: "flex", justifyContent: "space-between"}}>
-                <div style={{minWidth: 300}}>
-                  <Typography>Locations</Typography>
-                  <Autocomplete
-                    value={testValue}
-                    selectOnFocus
-                    disableClearable
-                    onChange={(e, value, reason) => {
-                      // @ts-ignore
-                      setTestValue(destinations[0])
-                      if (
-                        reason === "select-option" &&
-                        value &&
-                        locationListQuery.indexOf(value.id.toString()) === -1
-                      ) {
-                        setLocationListQuery([
-                          ...locationListQuery,
-                          value.id.toString(),
-                        ])
-                      }
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        value={testValue}
-                        {...params}
-                        placeholder="Add location"
-                      />
-                    )}
-                    clearOnBlur
-                    options={Object.values(destinations)}
-                    getOptionLabel={(option) => option.location}></Autocomplete>
-                  {locationList.map((id) => {
-                    return (
-                      <LocationItem
-                        location={destinations[id].location}
-                        onDelete={() => {
-                          let locationsCopy = [...locationListQuery]
-                          var index = locationsCopy.indexOf(id.toString())
-                          if (index !== -1) {
-                            locationsCopy.splice(index, 1)
+            <Paper className={classes.filterBody}>
+              <div className={classes.filterBodyWrapper}>
+                <div>
+                  <div className={classes.filterLocations}>
+                    <Typography>Locations</Typography>
+                    <div className={classes.filterLocationsFilter}>
+                      <Autocomplete
+                        disableClearable
+                        selectOnFocus
+                        onInputChange={(e, value, reason) => {
+                          if (reason === "reset") {
+                            setTestValue("")
+                          } else {
+                            setTestValue(value)
                           }
-                          setLocationListQuery([...locationsCopy])
                         }}
-                      />
-                    )
-                  })}
-                </div>
-                <div>
-                  <Typography>Number of Rooms</Typography>
-                  <Slider
-                    style={{
-                      width: 225,
-                      marginTop: 36,
-                      marginLeft: 24,
-                      marginRight: 24,
-                    }}
-                    step={100}
-                    marks={roomNumberMarks}
-                    min={0}
-                    max={1000}
-                    valueLabelDisplay="on"
-                    value={[minNumberOfRooms, maxNumberOfRooms]}
-                    onChange={(event, newValue: number | number[]) => {
-                      let newValueArray = newValue as number[]
-                      if (roomsMaxQuery !== newValueArray[1].toString()) {
-                        setRoomsMaxQuery(newValueArray[1].toString())
-                      }
-                      if (roomsMinQuery !== newValueArray[0].toString()) {
-                        setRoomsMinQuery(newValueArray[0].toString())
-                      }
-                    }}></Slider>
-                  <Typography>Maximum Distance From the Airport</Typography>
-                  <Slider
-                    style={{
-                      maxWidth: 225,
-                      marginTop: 36,
-                      marginLeft: 24,
-                      marginRight: 24,
-                    }}
-                    step={15}
-                    marks={distanceFromAirportMarks}
-                    min={15}
-                    max={180}
-                    valueLabelDisplay="on"
-                    value={maxDistanceFromAirport}
-                    onChange={(event, newValue: number | number[]) => {
-                      setMaxDistanceFromAirportQuery(newValue.toString())
-                    }}></Slider>
-                </div>
-                <div>
-                  <Typography>Price Range</Typography>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      marginTop: "8px",
-                      flexDirection: "column",
-                    }}>
-                    {priceOptions.map((option) => {
-                      return (
-                        <FormControlLabel
-                          style={{marginRight: "24px"}}
-                          control={
-                            <Checkbox
-                              checked={
-                                priceRange[
-                                  option as unknown as keyof typeof priceRange
-                                ]
-                              }
-                              onChange={(e) => {
-                                if (
-                                  !priceRange[
-                                    option as unknown as keyof typeof priceRange
-                                  ]
-                                ) {
-                                  setPriceRangeQuery([
-                                    ...priceRangeQuery,
-                                    option,
-                                  ])
-                                } else {
-                                  let priceRangeQueryCopy = [...priceRangeQuery]
-                                  var index =
-                                    priceRangeQueryCopy.indexOf(option)
-                                  if (index !== -1) {
-                                    priceRangeQueryCopy.splice(index, 1)
-                                  }
-                                  setPriceRangeQuery([...priceRangeQueryCopy])
-                                }
-                              }}
-                              name={option}
-                              color="primary"
-                            />
+                        inputValue={testValue}
+                        onChange={(e, value, reason) => {
+                          if (
+                            reason === "select-option" &&
+                            value &&
+                            locationListQuery
+                              .map(
+                                (locationString) => locationString.split(":")[0]
+                              )
+                              .indexOf(value.id.toString()) === -1
+                          ) {
+                            setLocationListQuery([
+                              ...locationListQuery,
+                              value.id.toString() + ":100",
+                            ])
                           }
-                          label={option}
-                        />
-                      )
-                    })}
+                        }}
+                        renderInput={(params) => (
+                          <TextField {...params} placeholder="Add location" />
+                        )}
+                        clearOnBlur
+                        options={Object.values(destinations)}
+                        getOptionLabel={(option) =>
+                          option.location
+                        }></Autocomplete>
+                      {locationList.map((location, index) => {
+                        let id = location.split(":")[0]
+                        let distance = location.split(":")[1]
+                        return (
+                          <LocationItem
+                            distance={parseInt(distance)}
+                            onChangeDistance={(newDistance) => {
+                              console.log(newDistance)
+                              let locationListCopy = [...locationListQuery]
+                              locationListCopy[index] = `${id}:${newDistance}`
+                              setLocationListQuery([...locationListCopy])
+                            }}
+                            location={destinations[parseInt(id)].location}
+                            onDelete={() => {
+                              let locationsCopy = [...locationListQuery]
+                              let locationsToIds = locationsCopy.map(
+                                (location) => location.split(":")[0]
+                              )
+                              var index = locationsToIds.indexOf(id.toString())
+                              if (index !== -1) {
+                                locationsCopy.splice(index, 1)
+                              }
+                              setLocationListQuery([...locationsCopy])
+                            }}
+                          />
+                        )
+                      })}
+                    </div>
+                  </div>
+                  <div className={classes.sliderFiltersDiv}>
+                    <div>
+                      <Typography>Number of Rooms</Typography>
+                      <Slider
+                        className={classes.slider}
+                        step={100}
+                        marks={roomNumberMarks}
+                        min={0}
+                        max={1000}
+                        valueLabelDisplay="on"
+                        value={[minNumberOfRooms, maxNumberOfRooms]}
+                        onChange={(event, newValue: number | number[]) => {
+                          let newValueArray = newValue as number[]
+                          if (roomsMaxQuery !== newValueArray[1].toString()) {
+                            setRoomsMaxQuery(newValueArray[1].toString())
+                          }
+                          if (roomsMinQuery !== newValueArray[0].toString()) {
+                            setRoomsMinQuery(newValueArray[0].toString())
+                          }
+                        }}></Slider>
+                      <Typography>Maximum Distance From the Airport</Typography>
+                      <Slider
+                        className={classes.slider}
+                        step={15}
+                        marks={distanceFromAirportMarks}
+                        min={15}
+                        max={180}
+                        valueLabelDisplay="on"
+                        value={maxDistanceFromAirport}
+                        onChange={(event, newValue: number | number[]) => {
+                          setMaxDistanceFromAirportQuery(newValue.toString())
+                        }}></Slider>
+                    </div>
+
+                    <div>
+                      <Typography>Price Range</Typography>
+
+                      <div className={classes.priceRangeFilterWrapper}>
+                        {priceOptions.map((option) => {
+                          return (
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={
+                                    priceRange[
+                                      option as unknown as keyof typeof priceRange
+                                    ]
+                                  }
+                                  onChange={(e) => {
+                                    if (
+                                      !priceRange[
+                                        option as unknown as keyof typeof priceRange
+                                      ]
+                                    ) {
+                                      setPriceRangeQuery([
+                                        ...priceRangeQuery,
+                                        option,
+                                      ])
+                                    } else {
+                                      let priceRangeQueryCopy = [
+                                        ...priceRangeQuery,
+                                      ]
+                                      var index =
+                                        priceRangeQueryCopy.indexOf(option)
+                                      if (index !== -1) {
+                                        priceRangeQueryCopy.splice(index, 1)
+                                      }
+                                      setPriceRangeQuery([
+                                        ...priceRangeQueryCopy,
+                                      ])
+                                    }
+                                  }}
+                                  name={option}
+                                  color="primary"
+                                />
+                              }
+                              label={option}
+                            />
+                          )
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div
-                  style={{maxWidth: 300, maxHeight: 200, overflow: "scroll"}}>
+                <div className={classes.hotelTagsWrapper}>
                   <Typography>Hotel Tags</Typography>
                   {lodgingTags.map((tag) => {
                     return (
                       <FormControlLabel
-                        style={{marginRight: "24px"}}
                         control={
                           <Checkbox
                             checked={selectedTags[tag.id]}
@@ -471,7 +548,6 @@ function HotelSourcingPage() {
             let maxRooms =
               maxNumberOfRooms === 1000 ? Infinity : maxNumberOfRooms
             let minRooms = minNumberOfRooms
-            // hotel.num_rooms
             let distanceFromAirport =
               maxDistanceFromAirport === 180 ? Infinity : maxDistanceFromAirport
             let tagged = true
@@ -506,7 +582,7 @@ function HotelSourcingPage() {
             let destination = destinations[hotel.destination_id]
             if (destination) {
               return (
-                <div style={{marginTop: 16, marginLeft: 24, marginRight: 24}}>
+                <div className={classes.RFPRowWrapper}>
                   <HotelForRFPRow
                     setModalOpen={() => {
                       setFillRFPModalOpen(true)
@@ -525,33 +601,47 @@ function HotelSourcingPage() {
 }
 export default HotelSourcingPage
 
+let useLocationItemStyles = makeStyles((theme) => ({
+  locationItem: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: "8px",
+    gap: "8px",
+  },
+}))
 type LocationItemProps = {
   location: string
   onDelete: () => void
-  onChangeDistance?: () => void
+  onChangeDistance: (newDistance: string) => void
+  distance: number
 }
 
 function LocationItem(props: LocationItemProps) {
+  let classes = useLocationItemStyles()
   let [age, setAge] = useState(10)
   const handleChange = (event: any) => {
     setAge(event.target.value)
   }
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        marginTop: "8px",
-        gap: "8px",
-      }}>
-      <AppTypography>{props.location}</AppTypography>
+    <div className={classes.locationItem}>
+      <AppTypography>Within</AppTypography>
       <FormControl>
-        <Select onChange={handleChange} value={age}>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
-        </Select>
+        <TextField
+          select
+          SelectProps={{
+            native: true,
+            onChange: (e) => {
+              props.onChangeDistance(e.target.value as unknown as string)
+            },
+          }}
+          value={props.distance}>
+          <option value={10}>10</option>
+          <option value={25}>25</option>
+          <option value={100}>100</option>
+        </TextField>
       </FormControl>
+      <AppTypography>miles of {props.location}</AppTypography>
+
       <IconButton onClick={props.onDelete} size="small">
         <Cancel fontSize="small" />
       </IconButton>
