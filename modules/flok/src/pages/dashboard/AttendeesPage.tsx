@@ -146,6 +146,11 @@ let useStyles = makeStyles((theme) => ({
     color: theme.palette.error.main,
     height: "25px",
   },
+  successChip: {
+    borderColor: theme.palette.success.main,
+    color: theme.palette.success.main,
+    height: "25px",
+  },
 }))
 
 function AttendeesPage() {
@@ -379,6 +384,29 @@ function AttendeesPage() {
               ),
             },
             {
+              name: "Registration Status",
+              colId: "info_status",
+              renderCell: (val) => {
+                if (val === "INFO_ENTERED") {
+                  return (
+                    <Chip
+                      variant="outlined"
+                      label={"Registered"}
+                      className={classes.successChip}
+                    />
+                  )
+                } else if (val === "CREATED") {
+                  return (
+                    <Chip
+                      variant="outlined"
+                      label={"Incomplete"}
+                      className={classes.warningChip}
+                    />
+                  )
+                } else return <></>
+              },
+            },
+            {
               name: "",
               colId: "notes",
               renderCell: (val) => {
@@ -426,9 +454,6 @@ function AttendeesPage() {
                   .map((info: RetreatAttendeeModel) => ({
                     id: info.id,
                     disabled: !info.info_status.endsWith("INFO_ENTERED"),
-                    tooltip: !info.info_status.endsWith("INFO_ENTERED")
-                      ? "Once the attendee fills out the registration form you will be able to view more of their information here."
-                      : "",
                     item: info,
                   }))
               : []
