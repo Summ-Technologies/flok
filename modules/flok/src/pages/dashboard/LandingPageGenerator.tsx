@@ -36,7 +36,7 @@ import AppConfirmationModal from "../../components/base/ConfirmationModal"
 import PageBody from "../../components/page/PageBody"
 import {AppRoutes} from "../../Stack"
 import {ApiAction} from "../../store/actions/api"
-import {deletePage, postWebsiteLive} from "../../store/actions/retreat"
+import {deletePage, postRegistrationLive} from "../../store/actions/retreat"
 import {
   useAttendeeLandingPage,
   useAttendeeLandingWebsite,
@@ -184,7 +184,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
             onClick={async () => {
               if (website) {
                 let response = (await dispatch(
-                  postWebsiteLive(website.id)
+                  postRegistrationLive(retreat.id)
                 )) as unknown as ApiAction
                 if (!response.error) {
                   setGoLiveModalOpen(false)
@@ -299,10 +299,10 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
         <div className={classes.root}>
           <div className={classes.header}>
             <Typography variant="h1">{retreat.company_name} Website</Typography>
-            {website.is_live ? (
+            {retreat.registration_live ? (
               <Chip
                 variant="outlined"
-                label="Live"
+                label="Active"
                 className={classes.successChip}
               />
             ) : (

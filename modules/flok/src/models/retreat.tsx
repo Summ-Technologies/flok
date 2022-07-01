@@ -149,6 +149,7 @@ export type RetreatModel = {
   attendees_state?: RetreatAttendeesState
   attendees_website_id?: number
   attendees_registration_form_link?: string
+  registration_live: boolean
 
   // Retreat data related to flights
   flights_state?: RetreatFlightsState
@@ -197,7 +198,6 @@ export type AttendeeLandingWebsiteModel = {
   retreat_id: number
   id: number
   page_ids: number[]
-  is_live: boolean
 }
 
 export type PresetImageType = "BANNER"

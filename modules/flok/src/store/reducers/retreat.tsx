@@ -46,9 +46,9 @@ import {
   POST_BLOCK_SUCCESS,
   POST_INITIAL_WEBSITE_SUCCESS,
   POST_PAGE_SUCCESS,
+  POST_REGISTRATION_LIVE_SUCCESS,
   POST_RETREAT_ATTENDEES_BATCH_SUCCESS,
   POST_RETREAT_ATTENDEES_SUCCESS,
-  POST_WEBSITE_LIVE_SUCCESS,
   PUT_RETREAT_PREFERENCES_SUCCESS,
   PUT_RETREAT_TASK_SUCCESS,
 } from "../actions/retreat"
@@ -106,6 +106,7 @@ export default function retreatReducer(
     case GET_RETREAT_SUCCESS:
     case PUT_RETREAT_PREFERENCES_SUCCESS:
     case PUT_RETREAT_TASK_SUCCESS:
+    case POST_REGISTRATION_LIVE_SUCCESS:
     case PATCH_RETREAT_SUCCESS:
       retreat = ((action as ApiAction).payload as {retreat: RetreatModel})
         .retreat
@@ -200,7 +201,6 @@ export default function retreatReducer(
     case GET_WEBSITE_SUCCESS:
     case GET_WEBSITE_BY_ATTENDEE_SUCCESS:
     case PATCH_WEBSITE_SUCCESS:
-    case POST_WEBSITE_LIVE_SUCCESS:
     case POST_INITIAL_WEBSITE_SUCCESS:
       payload = (action as ApiAction)
         .payload as AttendeeLandingWebsiteApiResponse
