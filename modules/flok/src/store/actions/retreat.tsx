@@ -709,3 +709,25 @@ export function getPresetImages(type: string) {
     ],
   })
 }
+
+export const POST_WEBSITE_LIVE_REQUEST = "POST_WEBSITE_LIVE_REQUEST"
+export const POST_WEBSITE_LIVE_SUCCESS = "POST_WEBSITE_LIVE_SUCCESS"
+export const POST_WEBSITE_LIVE_FAILURE = "POST_WEBSITE_LIVE_FAILURE"
+export function postWebsiteLive(websiteId: number) {
+  let endpoint = `/v1.0/websites/${websiteId}/go-live`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      types: [
+        {type: POST_WEBSITE_LIVE_REQUEST},
+        {type: POST_WEBSITE_LIVE_SUCCESS, meta: {websiteId}},
+        {type: POST_WEBSITE_LIVE_FAILURE, meta: {websiteId}},
+      ],
+    },
+    {
+      successMessage: "Website is now live",
+      errorMessage: "Something went wrong",
+    }
+  )
+}

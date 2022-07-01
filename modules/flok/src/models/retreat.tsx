@@ -197,6 +197,7 @@ export type AttendeeLandingWebsiteModel = {
   retreat_id: number
   id: number
   page_ids: number[]
+  is_live: boolean
 }
 
 export type PresetImageType = "BANNER"
