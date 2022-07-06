@@ -77,12 +77,12 @@ let useStyles = makeStyles((theme) => ({
   },
   sliderFiltersDiv: {
     display: "flex",
-    gap: theme.spacing(8),
+    gap: theme.spacing(12),
   },
   slider: {
     width: 300,
     marginTop: theme.spacing(4.5),
-    marginLeft: theme.spacing(3),
+    marginLeft: theme.spacing(4.5),
     marginRight: theme.spacing(3),
   },
   priceRangeFilterWrapper: {
@@ -93,6 +93,9 @@ let useStyles = makeStyles((theme) => ({
   hotelTagsWrapper: {
     maxWidth: 300,
     overflow: "scroll",
+    display: "flex",
+    flexDirection: "column",
+    maxHeight: 320,
   },
   RFPRowWrapper: {
     marginTop: theme.spacing(2),
@@ -355,7 +358,7 @@ function HotelSourcingPage() {
               <div className={classes.filterBodyWrapper}>
                 <div>
                   <div className={classes.filterLocations}>
-                    <Typography>Locations</Typography>
+                    <Typography variant="h4">Locations</Typography>
                     <div className={classes.filterLocationsFilter}>
                       <Autocomplete
                         disableClearable
@@ -423,7 +426,7 @@ function HotelSourcingPage() {
                   </div>
                   <div className={classes.sliderFiltersDiv}>
                     <div>
-                      <Typography>Number of Rooms</Typography>
+                      <Typography variant="h4">Number of Rooms</Typography>
                       <Slider
                         className={classes.slider}
                         step={100}
@@ -441,7 +444,9 @@ function HotelSourcingPage() {
                             setRoomsMinQuery(newValueArray[0].toString())
                           }
                         }}></Slider>
-                      <Typography>Maximum Distance From the Airport</Typography>
+                      <Typography variant="h4">
+                        Maximum Distance From the Airport
+                      </Typography>
                       <Slider
                         className={classes.slider}
                         step={15}
@@ -456,7 +461,7 @@ function HotelSourcingPage() {
                     </div>
 
                     <div>
-                      <Typography>Price Range</Typography>
+                      <Typography variant="h4">Price Range</Typography>
 
                       <div className={classes.priceRangeFilterWrapper}>
                         {priceOptions.map((option) => {
@@ -506,7 +511,7 @@ function HotelSourcingPage() {
                   </div>
                 </div>
                 <div className={classes.hotelTagsWrapper}>
-                  <Typography>Hotel Tags</Typography>
+                  <Typography variant="h4">Hotel Tags</Typography>
                   {lodgingTags.map((tag) => {
                     return (
                       <FormControlLabel
@@ -640,7 +645,10 @@ function LocationItem(props: LocationItemProps) {
           <option value={100}>100</option>
         </TextField>
       </FormControl>
-      <AppTypography>miles of {props.location}</AppTypography>
+      <Typography style={{display: "flex"}}>
+        miles of &nbsp;
+        <AppTypography fontWeight="bold">{props.location}</AppTypography>
+      </Typography>
 
       <IconButton onClick={props.onDelete} size="small">
         <Cancel fontSize="small" />
