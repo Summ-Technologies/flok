@@ -158,9 +158,6 @@ let useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     minHeight: 300,
   },
-  cell: {
-    // backgroundColor: "#FFF",
-  },
 }))
 
 function AttendeesPage() {
@@ -201,11 +198,6 @@ function AttendeesPage() {
   const [batchUploadResponse, setBatchUploadResponse] = useState<
     AttendeeBatchUploadApiResponse | undefined
   >(undefined)
-  // const [anchorEl, setAnchorEl] = useState<Element | null>(null)
-  // const menuOpen = Boolean(anchorEl)
-  // const handleCloseMenu = () => {
-  //   setAnchorEl(null)
-  // }
 
   const handleClose = () => {
     setOpenNotAttendingModal(false)
@@ -463,7 +455,9 @@ function AttendeesPage() {
                 headerName: "Hotel Check In",
                 width: 150,
                 valueGetter: (params) => {
-                  return dateFormat(params.value as string)
+                  if (params.value) {
+                    return dateFormat(params.value as string)
+                  }
                 },
               },
               {
@@ -471,7 +465,9 @@ function AttendeesPage() {
                 headerName: "Hotel Check Out",
                 width: 165,
                 valueGetter: (params) => {
-                  return dateFormat(params.value as string)
+                  if (params.value) {
+                    return dateFormat(params.value as string)
+                  }
                 },
               },
               {
@@ -830,12 +826,3 @@ function CustomToolbarAttendeePage(props: {
     </GridToolbarContainer>
   )
 }
-
-// function CustomColumnMenu(props: any) {
-//   const {hideMenu, currentColumn} = props
-//   return (
-//     <GridColumnMenuContainer hideMenu={hideMenu} currentColumn={currentColumn}>
-//       <SortGridMenuItems onClick={hideMenu} column={currentColumn} />
-//     </GridColumnMenuContainer>
-//   )
-// }
