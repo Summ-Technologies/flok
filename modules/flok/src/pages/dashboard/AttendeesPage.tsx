@@ -759,6 +759,7 @@ function AttendeesPage() {
 
 let useToolbarStyles = makeStyles((theme) => ({
   toolbarButton: {
+    // styles to match default toolbar buttons such as export
     "&:hover": {
       backgroundColor: "rgba(25, 118, 210, 0.04)",
     },
