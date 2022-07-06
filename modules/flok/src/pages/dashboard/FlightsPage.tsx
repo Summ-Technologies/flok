@@ -1,20 +1,10 @@
-import {
-  Box,
-  Chip,
-  Link,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from "@material-ui/core"
-import {Flight} from "@material-ui/icons"
+import {Box, Chip, Link, makeStyles, Typography} from "@material-ui/core"
+import {DataGrid} from "@mui/x-data-grid"
 import {push} from "connected-react-router"
 import {sortBy} from "lodash"
-import {useEffect} from "react"
+import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Link as RouterLink} from "react-router-dom"
-import AppExpandableTable from "../../components/base/AppExpandableTable"
-import AppMoreInfoIcon from "../../components/base/AppMoreInfoIcon"
-import AppTypography from "../../components/base/AppTypography"
 import PageBody from "../../components/page/PageBody"
 import PageLockedModal from "../../components/page/PageLockedModal"
 import {SampleLockedAttendees} from "../../models/retreat"
@@ -23,6 +13,7 @@ import {RootState} from "../../store"
 import {getTrip} from "../../store/actions/retreat"
 import {useRetreatAttendees} from "../../utils/retreatUtils"
 import {useRetreat} from "../misc/RetreatProvider"
+import {CustomToolbar} from "./AttendeesPage"
 
 let useStyles = makeStyles((theme) => ({
   addBtn: {
@@ -35,6 +26,7 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       paddingLeft: theme.spacing(1),
     },
+    flex: 1,
   },
   headerIcon: {
     marginRight: theme.spacing(1),
@@ -61,6 +53,19 @@ let useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.error.main,
     color: theme.palette.error.main,
   },
+  dataGrid: {
+    backgroundColor: theme.palette.common.white,
+  },
+  dataGridRow: {
+    cursor: "pointer",
+  },
+  dataGridWrapper: {
+    height: "90%",
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    minHeight: 300,
+    width: "100%",
+  },
 }))
 
 function currencyFormat(num: Number) {
@@ -84,6 +89,8 @@ export default function FlightsPage() {
   let [retreat, retreatIdx] = useRetreat()
 
   let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
+
+  let [dataGridPageSize, setDataGridPageSize] = useState(10)
 
   if (retreat.flights_state !== "BOOKING") {
     attendeeTravelInfo = SampleLockedAttendees
@@ -133,184 +140,133 @@ export default function FlightsPage() {
             Need to add an attendee?
           </Link>
         </Box>
-        <AppExpandableTable
-          headers={[
-            {
-              name: "Last Name",
-              colId: "last_name",
-              comparator: (r1, r2) => {
-                if (r1.item.last_name === "" || !r1.item.last_name) {
-                  return 1
-                }
-                if (r2.item.last_name === "" || !r2.item.last_name) {
-                  return -1
-                }
-                return r1.item.last_name
-                  .toString()
-                  .localeCompare(r2.item.last_name.toString())
+        <div className={classes.dataGridWrapper}>
+          <DataGrid
+            pageSize={dataGridPageSize}
+            rowsPerPageOptions={[10, 25, 50]}
+            onPageSizeChange={(pageSize) => {
+              setDataGridPageSize(pageSize)
+            }}
+            onRowClick={(params) => {
+              dispatch(
+                push(
+                  AppRoutes.getPath("RetreatAttendeeFlightsPage", {
+                    retreatIdx: retreatIdx.toString(),
+                    attendeeId: params.row.id.toString(),
+                  })
+                )
+              )
+            }}
+            components={{Toolbar: CustomToolbar}}
+            className={classes.dataGrid}
+            classes={{row: classes.dataGridRow}}
+            rows={sortBy(attendeeTravelInfo, (attendee) => {
+              if (attendee.flight_status === "BOOKED") {
+                return 0
+              } else if (attendee.flight_status === "OPT_OUT") {
+                return 1
+              } else {
+                return 2
+              }
+            })}
+            columns={[
+              {
+                field: "first_name",
+                headerName: "First name",
+                width: 100,
               },
-            },
-            {
-              name: "First Name",
-              colId: "first_name",
-              comparator: (r1, r2) => {
-                if (r1.item.first_name === "" || !r1.item.first_name) {
-                  return 1
-                }
-                if (r2.item.first_name === "" || !r2.item.first_name) {
-                  return -1
-                }
-                return r1.item.first_name
-                  .toString()
-                  .localeCompare(r2.item.first_name.toString())
+              {
+                field: "last_name",
+                headerName: "Last name",
+                width: 130,
               },
-            },
-            {
-              name: "Flight Arrival",
-              colId: "arrival",
-              renderCell: (val) => (
-                <AppTypography>
-                  {!isNaN(new Date(val as string).getTime())
-                    ? dateFormat(new Date(val as string))
-                    : undefined}
-                </AppTypography>
-              ),
-            },
-            {
-              name: "Flight Departure",
-              colId: "departure",
-              renderCell: (val) => (
-                <AppTypography>
-                  {!isNaN(new Date(val as string).getTime())
-                    ? dateFormat(new Date(val as string))
-                    : undefined}
-                </AppTypography>
-              ),
-            },
-            {
-              name: "Cost",
-              colId: "cost",
-              renderCell: (val) => (
-                <AppTypography>
-                  {val != null ? currencyFormat(val as number) : undefined}
-                </AppTypography>
-              ),
-            },
-            {
-              name: "Status",
-              colId: "status",
-              renderCell: (val) => {
-                if (val === "BOOKED") {
-                  return (
-                    <Chip
-                      variant="outlined"
-                      label={"Booked"}
-                      className={classes.successChip}
-                    />
-                  )
-                } else if (val === "OPT_OUT") {
-                  return (
-                    <Chip
-                      variant="outlined"
-                      label={
-                        <>
-                          Opt'd Out&nbsp;
-                          <AppMoreInfoIcon tooltipText="This attendee does not require flights to the retreat." />
-                        </>
-                      }
-                      className={classes.infoChip}
-                    />
-                  )
-                } else {
-                  return (
-                    <Chip
-                      variant="outlined"
-                      label={"To Book"}
-                      className={classes.warningChip}
-                    />
-                  )
-                }
-              },
-              comparator: (r1, r2) => {
-                let order = ["BOOKED", "OPT_OUT", "PENDING"]
-                let r1val = order.indexOf(r1.item.status ?? "")
-                let r2val = order.indexOf(r2.item.status ?? "")
-                if (r1val === r2val) {
-                  return 0
-                } else if (r1val > r2val) {
-                  return -1
-                } else {
-                  return 1
-                }
-              },
-            },
-          ]}
-          rows={
-            attendeeTravelInfo !== undefined
-              ? sortBy(attendeeTravelInfo, (attendee) => {
-                  if (attendee.flight_status === "BOOKED") {
-                    return 0
-                  } else if (attendee.flight_status === "OPT_OUT") {
-                    return 1
-                  } else {
-                    return 2
-                  }
-                }).map((attendee) => ({
-                  id: attendee.id ?? -1,
-                  item: {
-                    id: attendee.id ?? -1,
-                    first_name: attendee.first_name,
-                    last_name: attendee.last_name ?? "",
-                    arrival:
-                      attendee.travel &&
-                      attendee.travel.arr_trip &&
-                      attendee.travel.arr_trip.trip_legs.length &&
-                      trips[attendee.travel.arr_trip.id] &&
-                      trips[attendee.travel.arr_trip.id].trip_legs[
+              {
+                field: "arrival",
+                headerName: "Flight Arrival",
+                width: 160,
+                valueGetter: (params) => {
+                  let attendee = params.row
+                  return attendee.travel &&
+                    attendee.travel.arr_trip &&
+                    attendee.travel.arr_trip.trip_legs.length &&
+                    trips[attendee.travel.arr_trip.id] &&
+                    trips[attendee.travel.arr_trip.id].trip_legs[
+                      trips[attendee.travel.arr_trip.id].trip_legs.length - 1
+                    ]
+                    ? trips[attendee.travel.arr_trip.id].trip_legs[
                         trips[attendee.travel.arr_trip.id].trip_legs.length - 1
-                      ]
-                        ? trips[attendee.travel.arr_trip.id].trip_legs[
-                            trips[attendee.travel.arr_trip.id].trip_legs
-                              .length - 1
-                          ].arr_datetime
-                        : undefined,
-                    departure:
-                      attendee.travel &&
-                      attendee.travel.dep_trip &&
-                      trips[attendee.travel.dep_trip.id] &&
-                      trips[attendee.travel.dep_trip.id].trip_legs.length
-                        ? trips[attendee.travel.dep_trip.id].trip_legs[0]
-                            .dep_datetime
-                        : undefined,
-                    cost: attendee.travel ? attendee.travel.cost : undefined,
-                    status: attendee.flight_status
-                      ? attendee.flight_status
-                      : "PENDING",
-                  },
-                }))
-              : []
-          }
-          menuItems={(row) => {
-            let editMenuItem = (
-              <MenuItem
-                onClick={() =>
-                  dispatch(
-                    push(
-                      AppRoutes.getPath("RetreatAttendeeFlightsPage", {
-                        retreatIdx: retreatIdx.toString(),
-                        attendeeId: row.item.id.toString(),
-                      })
+                      ].arr_datetime
+                    : undefined
+                },
+                valueFormatter: (params) => {
+                  return !isNaN(new Date(params.value as string).getTime())
+                    ? dateFormat(new Date(params.value as string))
+                    : undefined
+                },
+              },
+              {
+                field: "departure",
+                headerName: "Flight Departure",
+                width: 160,
+                valueGetter: (params) => {
+                  let attendee = params.row
+                  return attendee.travel &&
+                    attendee.travel.dep_trip &&
+                    trips[attendee.travel.dep_trip.id] &&
+                    trips[attendee.travel.dep_trip.id].trip_legs.length
+                    ? trips[attendee.travel.dep_trip.id].trip_legs[0]
+                        .dep_datetime
+                    : undefined
+                },
+                valueFormatter: (params) => {
+                  return !isNaN(new Date(params.value as string).getTime())
+                    ? dateFormat(new Date(params.value as string))
+                    : undefined
+                },
+              },
+              {
+                field: "cost",
+                headerName: "Cost",
+                width: 130,
+                valueGetter: (params) => params.row.travel?.cost,
+                valueFormatter: (params) => {
+                  return params.value && `$${params.value}`
+                },
+              },
+              {
+                field: "flight_status",
+                headerName: "Status",
+                width: 130,
+                renderCell: (params) => {
+                  if (params.value === "BOOKED") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label="Booked"
+                        className={classes.successChip}
+                      />
                     )
-                  )
-                }>
-                <Flight />
-                Edit
-              </MenuItem>
-            )
-
-            return [editMenuItem]
-          }}
-        />
+                  } else if (params.value === "PENDING") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label="To Book"
+                        className={classes.warningChip}
+                      />
+                    )
+                  } else if (params.value === "OPT_OUT") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label="Opted Out"
+                        className={classes.infoChip}
+                      />
+                    )
+                  }
+                },
+              },
+            ]}></DataGrid>
+        </div>
       </div>
     </PageBody>
   )

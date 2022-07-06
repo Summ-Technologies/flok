@@ -10,7 +10,6 @@ import {
   IconButton,
   Link,
   makeStyles,
-  MenuItem,
   Paper,
   styled,
   Table,
@@ -27,13 +26,17 @@ import {
 import {Delete, DoneAll, Person} from "@material-ui/icons"
 import CloseIcon from "@material-ui/icons/Close"
 import {Alert} from "@material-ui/lab"
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from "@mui/x-data-grid"
 import {push} from "connected-react-router"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {withRouter} from "react-router-dom"
 import AppCsvXlsxUpload from "../../components/base/AppCsvXlsxUpload"
-import AppExpandableTable from "../../components/base/AppExpandableTable"
-import AppTypography from "../../components/base/AppTypography"
 import PageBody from "../../components/page/PageBody"
 import PageLockedModal from "../../components/page/PageLockedModal"
 import {AttendeeBatchUploadApiResponse} from "../../models/api"
@@ -56,7 +59,7 @@ const HtmlTooltip = styled(({className, ...props}) => (
     border: "1px solid #dadde9",
   },
 }))
-
+const ODD_OPACITY = 0.2
 function dateFormat(date?: string) {
   if (date === undefined) {
     return ""
@@ -74,6 +77,7 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       paddingLeft: theme.spacing(1),
     },
+    flex: 1,
   },
   headerIcon: {
     marginRight: theme.spacing(1),
@@ -146,6 +150,24 @@ let useStyles = makeStyles((theme) => ({
     color: theme.palette.error.main,
     height: "25px",
   },
+  successChip: {
+    borderColor: theme.palette.success.main,
+    color: theme.palette.success.main,
+    height: "25px",
+  },
+  dataGrid: {
+    backgroundColor: theme.palette.common.white,
+  },
+  dataGridRow: {
+    cursor: "pointer",
+  },
+  dataGridWrapper: {
+    height: "85%",
+    width: "100%",
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    minHeight: 300,
+  },
 }))
 
 function AttendeesPage() {
@@ -204,6 +226,7 @@ function AttendeesPage() {
         })
     )
   }
+  let [dataGridPageSize, setDataGridPageSize] = useState(10)
 
   function batchAttendeeResponsetoJSX(
     response: AttendeeBatchUploadApiResponse
@@ -338,131 +361,115 @@ function AttendeesPage() {
             )
           </Link>
         </Box>
-
-        <AppExpandableTable
-          headers={[
-            {
-              name: "Last Name",
-              colId: "last_name",
-              comparator: (r1, r2) => {
-                if (!r1.item.last_name) return 1
-                if (!r2.item.last_name) return -1
-                return r1.item.last_name.localeCompare(r2.item.last_name)
-              },
-            },
-            {
-              name: "First Name",
-              colId: "first_name",
-              comparator: (r1, r2) => {
-                if (!r1.item.first_name) return 1
-                if (!r2.item.first_name) return -1
-                return r1.item.first_name.localeCompare(r2.item.first_name)
-              },
-            },
-            {name: "Email", colId: "email_address"},
-            {
-              name: "Hotel check in",
-              colId: "hotel_check_in",
-              renderCell: (val) => (
-                <AppTypography>
-                  {val != null ? dateFormat(val as string) : undefined}
-                </AppTypography>
-              ),
-            },
-            {
-              name: "Hotel check out",
-              colId: "hotel_check_out",
-              renderCell: (val) => (
-                <AppTypography>
-                  {val != null ? dateFormat(val as string) : undefined}
-                </AppTypography>
-              ),
-            },
-            {
-              name: "",
-              colId: "notes",
-              renderCell: (val) => {
-                if (val) {
-                  return (
-                    <HtmlTooltip
-                      placement="left"
-                      title={
-                        <AppTypography
-                          color="textPrimary"
-                          style={{whiteSpace: "pre-wrap"}}>
-                          {val}
-                        </AppTypography>
-                      }>
-                      <div>
-                        <AppTypography underline>Other notes</AppTypography>
-                      </div>
-                    </HtmlTooltip>
-                  )
-                } else {
-                  return <></>
-                }
-              },
-            },
-          ]}
-          rows={
-            attendeeTravelInfo !== undefined
-              ? attendeeTravelInfo
-                  .filter(
-                    (attendee) =>
-                      attendee.info_status !== "NOT_ATTENDING" &&
-                      attendee.info_status !== "CANCELLED"
-                  )
-                  .sort((a, b) => {
-                    let getVal = (val: RetreatAttendeeModel) => {
-                      switch (val.info_status) {
-                        case "INFO_ENTERED":
-                          return 1
-                        default:
-                          return 0
-                      }
-                    }
-                    return getVal(b) - getVal(a)
+        <div className={classes.dataGridWrapper}>
+          <DataGrid
+            classes={{row: classes.dataGridRow}}
+            className={classes.dataGrid}
+            components={{Toolbar: CustomToolbar}}
+            onRowClick={(params) => {
+              dispatch(
+                push(
+                  AppRoutes.getPath("RetreatAttendeePage", {
+                    retreatIdx: retreatIdx.toString(),
+                    attendeeId: params.row.id.toString(),
                   })
-                  .map((info: RetreatAttendeeModel) => ({
-                    id: info.id,
-                    disabled: !info.info_status.endsWith("INFO_ENTERED"),
-                    tooltip: !info.info_status.endsWith("INFO_ENTERED")
-                      ? "Once the attendee fills out the registration form you will be able to view more of their information here."
-                      : "",
-                    item: info,
-                  }))
-              : []
-          }
-          menuItems={(row) => {
-            let editMenuItem = (
-              <MenuItem
-                onClick={() =>
-                  dispatch(
-                    push(
-                      AppRoutes.getPath("RetreatAttendeePage", {
-                        retreatIdx: retreatIdx.toString(),
-                        attendeeId: row.item.id.toString(),
-                      })
+                )
+              )
+            }}
+            rows={attendeeTravelInfo
+              .filter(
+                (attendee) =>
+                  attendee.info_status !== "NOT_ATTENDING" &&
+                  attendee.info_status !== "CANCELLED"
+              )
+              .sort((a, b) => {
+                let getVal = (val: RetreatAttendeeModel) => {
+                  switch (val.info_status) {
+                    case "INFO_ENTERED":
+                      return 1
+                    default:
+                      return 0
+                  }
+                }
+                return getVal(b) - getVal(a)
+              })}
+            columns={[
+              {
+                field: "first_name",
+                headerName: "First name",
+                width: 100,
+              },
+              {
+                field: "last_name",
+                headerName: "Last name",
+                width: 130,
+              },
+              {
+                field: "email_address",
+                headerName: "Email",
+                width: 150,
+              },
+              {
+                field: "hotel_check_in",
+                headerName: "Hotel Check In",
+                width: 150,
+              },
+              {
+                field: "hotel_check_out",
+                headerName: "Hotel Check Out",
+                width: 150,
+              },
+              {
+                field: "info_status",
+                headerName: "Status",
+                width: 150,
+                renderCell: (params) => {
+                  if (params.value === "INFO_ENTERED") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label="Registered"
+                        className={classes.successChip}
+                      />
                     )
-                  )
-                }>
-                <Person />
-                Edit
-              </MenuItem>
-            )
-            let deleteMenuItem = (
-              <MenuItem
-                onClick={() => {
-                  dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
-                }}>
-                <Delete />
-                Delete
-              </MenuItem>
-            )
-
-            return [editMenuItem, deleteMenuItem]
-          }}
-        />
+                  } else if (params.value === "CREATED") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label="Not Registered"
+                        className={classes.warningChip}
+                      />
+                    )
+                  }
+                },
+              },
+              {
+                field: "actions",
+                width: 20,
+                type: "actions",
+                getActions: (params) => {
+                  return [
+                    <GridActionsCellItem
+                      icon={<Delete />}
+                      label="Delete User"
+                      onClick={() => {
+                        dispatch(
+                          deleteRetreatAttendees(retreat.id, params.row.id)
+                        )
+                      }}
+                      showInMenu
+                    />,
+                  ]
+                },
+              },
+            ]}
+            pageSize={dataGridPageSize}
+            rowsPerPageOptions={[10, 25, 50]}
+            onPageSizeChange={(pageSize) => {
+              setDataGridPageSize(pageSize)
+            }}
+          />
+        </div>
         <div className={classes.addBtn}>
           <Button
             variant="contained"
@@ -728,3 +735,10 @@ function AttendeesPage() {
 }
 
 export default withRouter(AttendeesPage)
+export function CustomToolbar() {
+  return (
+    <GridToolbarContainer>
+      <GridToolbarExport />
+    </GridToolbarContainer>
+  )
+}
