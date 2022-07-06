@@ -303,10 +303,12 @@ let useToolbarStyles = makeStyles((theme) => ({
   },
 }))
 
-function CustomToolbarFlightsPage(props: {
+type CustomToolbarFlightsPageProps = {
   searchTerm: string
   setSearchTerm: (newValue: string) => void
-}) {
+}
+
+function CustomToolbarFlightsPage(props: CustomToolbarFlightsPageProps) {
   let classes = useToolbarStyles()
   return (
     <GridToolbarContainer>

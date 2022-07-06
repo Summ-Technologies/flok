@@ -785,14 +785,14 @@ let useToolbarStyles = makeStyles((theme) => ({
     gap: theme.spacing(1.5),
   },
 }))
-
-export default withRouter(AttendeesPage)
-function CustomToolbarAttendeePage(props: {
+type CustomToolbarAttendeePageProps = {
   onAddAttendee: () => void
   onBatchUploadAttendee: () => void
   searchTerm: string
   setSearchTerm: (newValue: string) => void
-}) {
+}
+export default withRouter(AttendeesPage)
+function CustomToolbarAttendeePage(props: CustomToolbarAttendeePageProps) {
   let classes = useToolbarStyles()
   return (
     <GridToolbarContainer className={classes.toolbarContainer}>
