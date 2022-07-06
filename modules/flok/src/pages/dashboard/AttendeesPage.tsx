@@ -384,6 +384,8 @@ function AttendeesPage() {
         </Box>
         <div className={classes.dataGridWrapper}>
           <DataGrid
+            pageSize={50}
+            isRowSelectable={() => false}
             disableColumnSelector
             disableColumnFilter
             disableColumnMenu
@@ -514,7 +516,6 @@ function AttendeesPage() {
                 renderHeader: () => <></>,
               },
             ]}
-            pageSize={10}
           />
         </div>
       </div>
