@@ -10,9 +10,7 @@ import {
   IconButton,
   Link,
   makeStyles,
-  MenuItem,
   Paper,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -21,19 +19,22 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Tooltip,
   Typography,
 } from "@material-ui/core"
-import {Delete, DoneAll, Person} from "@material-ui/icons"
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from "@material-ui/data-grid"
+import {Add, CloudUpload, DoneAll, Person} from "@material-ui/icons"
 import CloseIcon from "@material-ui/icons/Close"
 import {Alert} from "@material-ui/lab"
 import {push} from "connected-react-router"
-import {useState} from "react"
+import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import {withRouter} from "react-router-dom"
 import AppCsvXlsxUpload from "../../components/base/AppCsvXlsxUpload"
-import AppExpandableTable from "../../components/base/AppExpandableTable"
-import AppTypography from "../../components/base/AppTypography"
+import AttendeeDeleteDropDown from "../../components/lodging/AttendeeDeleteDropdown"
 import PageBody from "../../components/page/PageBody"
 import {AttendeeBatchUploadApiResponse} from "../../models/api"
 import {RetreatAttendeeModel} from "../../models/retreat"
@@ -44,17 +45,9 @@ import {
   postRetreatAttendees,
   postRetreatAttendeesBatch,
 } from "../../store/actions/retreat"
+import {useQuery} from "../../utils"
 import {useRetreatAttendees} from "../../utils/retreatUtils"
 import {useRetreat} from "../misc/RetreatProvider"
-
-const HtmlTooltip = styled(({className, ...props}) => (
-  <Tooltip {...props} classes={{popper: className}} />
-))(({theme}) => ({
-  "& .MuiTooltip-tooltip": {
-    backgroundColor: theme.palette.background.default,
-    border: "1px solid #dadde9",
-  },
-}))
 
 function dateFormat(date?: string) {
   if (date === undefined) {
@@ -73,6 +66,7 @@ let useStyles = makeStyles((theme) => ({
     "& > *:not(:first-child)": {
       paddingLeft: theme.spacing(1),
     },
+    flex: 1,
   },
   headerIcon: {
     marginRight: theme.spacing(1),
@@ -145,6 +139,24 @@ let useStyles = makeStyles((theme) => ({
     color: theme.palette.error.main,
     height: "25px",
   },
+  successChip: {
+    borderColor: theme.palette.success.main,
+    color: theme.palette.success.main,
+    height: "25px",
+  },
+  dataGrid: {
+    backgroundColor: theme.palette.common.white,
+  },
+  dataGridRow: {
+    cursor: "pointer",
+  },
+  dataGridWrapper: {
+    height: "90%",
+    width: "100%",
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    minHeight: 300,
+  },
 }))
 
 function AttendeesPage() {
@@ -152,10 +164,14 @@ function AttendeesPage() {
   let dispatch = useDispatch()
 
   let [retreat, retreatIdx] = useRetreat()
+  let [addQueryParam, setAddQueryParam] = useQuery("add")
 
   let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
-  let [addDialogOpen, setAddDialogOpen] = useState(false)
+  let [addDialogOpen, setAddDialogOpen] = useState(
+    addQueryParam?.toLowerCase() === "single" ||
+      addQueryParam?.toLowerCase() === "batch"
+  )
   let [newAttendeeFirstName, setNewAttendeeFirstName] = useState("")
   let [newAttendeeLastName, setNewAttendeeLastName] = useState("")
   let [newAttendeeEmail, setNewAttendeeEmail] = useState("")
@@ -166,7 +182,9 @@ function AttendeesPage() {
   })
 
   const [openNotAttendingModal, setOpenNotAttendingModal] = useState(false)
-  const [batchUploadingPage, setBatchUploadingPage] = useState(false)
+  const [batchUploadingPage, setBatchUploadingPage] = useState(
+    addQueryParam?.toLowerCase() === "batch"
+  )
   const [batchUploadData, setBatchUploadData] = useState<
     (Pick<
       RetreatAttendeeModel,
@@ -200,6 +218,24 @@ function AttendeesPage() {
         })
     )
   }
+  let [attendeeSearchTerm, setAttendeeSearchTerm] = useState("")
+
+  useEffect(() => {
+    if (
+      !(
+        (addQueryParam?.toLowerCase() === "single" ||
+          addQueryParam?.toLowerCase() === "batch") === addDialogOpen
+      )
+    ) {
+      setAddDialogOpen(
+        addQueryParam?.toLowerCase() === "single" ||
+          addQueryParam?.toLowerCase() === "batch"
+      )
+    }
+    if (!((addQueryParam?.toLowerCase() === "batch") === addDialogOpen)) {
+      setBatchUploadingPage(addQueryParam?.toLowerCase() === "batch")
+    }
+  }, [addDialogOpen, addQueryParam])
 
   function batchAttendeeResponsetoJSX(
     response: AttendeeBatchUploadApiResponse
@@ -298,7 +334,7 @@ function AttendeesPage() {
       setNewAttendeeEmail("")
       setNewAttendeeFirstName("")
       setNewAttendeeLastName("")
-      setAddDialogOpen(false)
+      setAddQueryParam(null)
     }
 
     setNewAttendeeErrorState(errorState)
@@ -330,142 +366,149 @@ function AttendeesPage() {
             )
           </Link>
         </Box>
-
-        <AppExpandableTable
-          headers={[
-            {
-              name: "Last Name",
-              colId: "last_name",
-              comparator: (r1, r2) => {
-                if (!r1.item.last_name) return 1
-                if (!r2.item.last_name) return -1
-                return r1.item.last_name.localeCompare(r2.item.last_name)
+        <div className={classes.dataGridWrapper}>
+          <DataGrid
+            pageSize={50}
+            rowsPerPageOptions={[]}
+            isRowSelectable={() => false}
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            classes={{row: classes.dataGridRow}}
+            className={classes.dataGrid}
+            components={{Toolbar: CustomToolbarAttendeePage}}
+            componentsProps={{
+              toolbar: {
+                onAddAttendee: () => {
+                  setAddQueryParam("single")
+                },
+                onBatchUploadAttendee: () => {
+                  setAddQueryParam("batch")
+                },
+                searchTerm: attendeeSearchTerm,
+                setSearchTerm: setAttendeeSearchTerm,
               },
-            },
-            {
-              name: "First Name",
-              colId: "first_name",
-              comparator: (r1, r2) => {
-                if (!r1.item.first_name) return 1
-                if (!r2.item.first_name) return -1
-                return r1.item.first_name.localeCompare(r2.item.first_name)
-              },
-            },
-            {name: "Email", colId: "email_address"},
-            {
-              name: "Hotel check in",
-              colId: "hotel_check_in",
-              renderCell: (val) => (
-                <AppTypography>
-                  {val != null ? dateFormat(val as string) : undefined}
-                </AppTypography>
-              ),
-            },
-            {
-              name: "Hotel check out",
-              colId: "hotel_check_out",
-              renderCell: (val) => (
-                <AppTypography>
-                  {val != null ? dateFormat(val as string) : undefined}
-                </AppTypography>
-              ),
-            },
-            {
-              name: "",
-              colId: "notes",
-              renderCell: (val) => {
-                if (val) {
-                  return (
-                    <HtmlTooltip
-                      placement="left"
-                      title={
-                        <AppTypography
-                          color="textPrimary"
-                          style={{whiteSpace: "pre-wrap"}}>
-                          {val}
-                        </AppTypography>
-                      }>
-                      <div>
-                        <AppTypography underline>Other notes</AppTypography>
-                      </div>
-                    </HtmlTooltip>
+            }}
+            onCellClick={(params) => {
+              if (params.field !== "actions") {
+                dispatch(
+                  push(
+                    AppRoutes.getPath("RetreatAttendeePage", {
+                      retreatIdx: retreatIdx.toString(),
+                      attendeeId: params.row.id.toString(),
+                    })
                   )
-                } else {
-                  return <></>
+                )
+              }
+            }}
+            rows={attendeeTravelInfo
+              .filter((attendee) => {
+                let attendeeName = `${attendee.first_name.toLowerCase()} ${attendee.last_name.toLowerCase()}`
+                return (
+                  attendee.info_status !== "NOT_ATTENDING" &&
+                  attendee.info_status !== "CANCELLED" &&
+                  (attendee.email_address
+                    .toLowerCase()
+                    .includes(attendeeSearchTerm.toLowerCase()) ||
+                    attendeeName
+                      .toLowerCase()
+                      .includes(attendeeSearchTerm.toLowerCase()))
+                )
+              })
+              .sort((a, b) => {
+                let getVal = (val: RetreatAttendeeModel) => {
+                  switch (val.info_status) {
+                    case "INFO_ENTERED":
+                      return 1
+                    default:
+                      return 0
+                  }
                 }
+                return getVal(b) - getVal(a)
+              })}
+            columns={[
+              {
+                field: "first_name",
+                headerName: "First name",
+                width: 130,
               },
-            },
-          ]}
-          rows={
-            attendeeTravelInfo !== undefined
-              ? attendeeTravelInfo
-                  .filter(
-                    (attendee) =>
-                      attendee.info_status !== "NOT_ATTENDING" &&
-                      attendee.info_status !== "CANCELLED"
-                  )
-                  .sort((a, b) => {
-                    let getVal = (val: RetreatAttendeeModel) => {
-                      switch (val.info_status) {
-                        case "INFO_ENTERED":
-                          return 1
-                        default:
-                          return 0
-                      }
-                    }
-                    return getVal(b) - getVal(a)
-                  })
-                  .map((info: RetreatAttendeeModel) => ({
-                    id: info.id,
-                    disabled: !info.info_status.endsWith("INFO_ENTERED"),
-                    tooltip: !info.info_status.endsWith("INFO_ENTERED")
-                      ? "Once the attendee fills out the registration form you will be able to view more of their information here."
-                      : "",
-                    item: info,
-                  }))
-              : []
-          }
-          menuItems={(row) => {
-            let editMenuItem = (
-              <MenuItem
-                onClick={() =>
-                  dispatch(
-                    push(
-                      AppRoutes.getPath("RetreatAttendeePage", {
-                        retreatIdx: retreatIdx.toString(),
-                        attendeeId: row.item.id.toString(),
-                      })
+              {
+                field: "last_name",
+                headerName: "Last name",
+                width: 130,
+              },
+              {
+                field: "email_address",
+                headerName: "Email",
+                width: 150,
+              },
+              {
+                field: "hotel_check_in",
+                headerName: "Hotel Check In",
+                width: 150,
+                valueGetter: (params) => {
+                  if (params.value) {
+                    return dateFormat(params.value as string)
+                  }
+                },
+              },
+              {
+                field: "hotel_check_out",
+                headerName: "Hotel Check Out",
+                width: 165,
+                valueGetter: (params) => {
+                  if (params.value) {
+                    return dateFormat(params.value as string)
+                  }
+                },
+              },
+              {
+                field: "info_status",
+                headerName: "Status",
+                width: 150,
+                renderCell: (params) => {
+                  if (params.value === "INFO_ENTERED") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label="Registered"
+                        className={classes.successChip}
+                      />
                     )
+                  } else if (params.value === "CREATED") {
+                    return (
+                      <Chip
+                        variant="outlined"
+                        label="Not Registered"
+                        className={classes.warningChip}
+                      />
+                    )
+                  }
+                },
+              },
+              {
+                field: "actions",
+                headerName: "",
+                width: 20,
+                sortable: false,
+                renderCell: (params) => {
+                  return (
+                    <AttendeeDeleteDropDown
+                      onDelete={() => {
+                        dispatch(
+                          deleteRetreatAttendees(retreat.id, params.row.id)
+                        )
+                      }}
+                    />
                   )
-                }>
-                <Person />
-                Edit
-              </MenuItem>
-            )
-            let deleteMenuItem = (
-              <MenuItem
-                onClick={() => {
-                  dispatch(deleteRetreatAttendees(retreat.id, row.item.id))
-                }}>
-                <Delete />
-                Delete
-              </MenuItem>
-            )
-
-            return [editMenuItem, deleteMenuItem]
-          }}
-        />
-        <div className={classes.addBtn}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={() => setAddDialogOpen(true)}>
-            Add Attendee
-          </Button>
+                },
+                renderHeader: () => <></>,
+              },
+            ]}
+          />
         </div>
       </div>
-      <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)}>
+      <Dialog open={addDialogOpen} onClose={() => setAddQueryParam(null)}>
         <DialogTitle>
           {batchUploadingPage ? "Batch Upload Attendees" : "Add New Attendee"}
         </DialogTitle>
@@ -563,14 +606,6 @@ function AttendeesPage() {
         </DialogContent>
         <DialogActions>
           <div className={classes.actionButtonsContainer}>
-            {!batchUploadingPage && (
-              <Button
-                onClick={() => {
-                  setBatchUploadingPage(true)
-                }}>
-                Batch Upload
-              </Button>
-            )}
             {batchUploadingPage && batchUploadData[0] && (
               <AppCsvXlsxUpload
                 text="Upload New File"
@@ -596,7 +631,7 @@ function AttendeesPage() {
               {batchUploadResponse === undefined && (
                 <Button
                   onClick={() => {
-                    setAddDialogOpen(false)
+                    setAddQueryParam(null)
                     setBatchUploadingPage(false)
                     setBatchUploadData([])
                   }}>
@@ -606,7 +641,7 @@ function AttendeesPage() {
               {batchUploadResponse !== undefined && (
                 <Button
                   onClick={() => {
-                    setAddDialogOpen(false)
+                    setAddQueryParam(null)
                     setBatchUploadingPage(false)
                     setBatchUploadData([])
                     setBatchUploadResponse(undefined)
@@ -719,4 +754,67 @@ function AttendeesPage() {
   )
 }
 
+let useToolbarStyles = makeStyles((theme) => ({
+  toolbarButton: {
+    // styles to match default toolbar buttons such as export
+    "&:hover": {
+      backgroundColor: "rgba(25, 118, 210, 0.04)",
+    },
+    fontWeight: 500,
+    fontSize: "0.8125rem",
+    lineHeight: "1.75",
+    textTransform: "uppercase",
+    minWidth: "64px",
+    padding: "4px 5px",
+    borderRadius: "4px",
+    color: "#1976d2",
+  },
+  searchBar: {
+    marginLeft: "auto",
+    marginRight: theme.spacing(3),
+  },
+  toolbarContainer: {
+    gap: theme.spacing(1.5),
+  },
+}))
+type CustomToolbarAttendeePageProps = {
+  onAddAttendee: () => void
+  onBatchUploadAttendee: () => void
+  searchTerm: string
+  setSearchTerm: (newValue: string) => void
+}
 export default withRouter(AttendeesPage)
+function CustomToolbarAttendeePage(props: CustomToolbarAttendeePageProps) {
+  let classes = useToolbarStyles()
+  return (
+    <GridToolbarContainer className={classes.toolbarContainer}>
+      <Button onClick={props.onAddAttendee} className={classes.toolbarButton}>
+        <Add fontSize="small" />
+        &nbsp; Add Attendee
+      </Button>
+      <Button
+        onClick={props.onBatchUploadAttendee}
+        className={classes.toolbarButton}>
+        <CloudUpload fontSize="small" />
+        &nbsp; Batch Upload Attendees
+      </Button>
+      <GridToolbarExport className={classes.toolbarButton} />
+      <TextField
+        value={props.searchTerm}
+        onChange={(e) => {
+          props.setSearchTerm(e.target.value)
+        }}
+        className={classes.searchBar}
+        margin="dense"
+        variant="outlined"
+        size="small"
+        placeholder="Search Attendees"
+        inputProps={{
+          style: {
+            height: 28,
+          },
+        }}
+      />
+    </GridToolbarContainer>
+  )
+}
