@@ -1,5 +1,16 @@
-import {Box, Chip, Link, makeStyles, Typography} from "@material-ui/core"
-import {DataGrid} from "@mui/x-data-grid"
+import {
+  Box,
+  Chip,
+  Link,
+  makeStyles,
+  TextField,
+  Typography,
+} from "@material-ui/core"
+import {
+  DataGrid,
+  GridToolbarContainer,
+  GridToolbarExport,
+} from "@mui/x-data-grid"
 import {push} from "connected-react-router"
 import {sortBy} from "lodash"
 import {useEffect, useState} from "react"
@@ -13,7 +24,6 @@ import {RootState} from "../../store"
 import {getTrip} from "../../store/actions/retreat"
 import {useRetreatAttendees} from "../../utils/retreatUtils"
 import {useRetreat} from "../misc/RetreatProvider"
-import {CustomToolbar} from "./AttendeesPage"
 
 let useStyles = makeStyles((theme) => ({
   addBtn: {
@@ -92,6 +102,8 @@ export default function FlightsPage() {
 
   let [dataGridPageSize, setDataGridPageSize] = useState(10)
 
+  let [attendeeSearchTerm, setAttendeeSearchTerm] = useState("")
+
   if (retreat.flights_state !== "BOOKING") {
     attendeeTravelInfo = SampleLockedAttendees
   }
@@ -134,9 +146,13 @@ export default function FlightsPage() {
             variant="body1"
             underline="always"
             component={RouterLink}
-            to={AppRoutes.getPath("RetreatAttendeesPage", {
-              retreatIdx: retreatIdx.toString(),
-            })}>
+            to={AppRoutes.getPath(
+              "RetreatAttendeesPage",
+              {
+                retreatIdx: retreatIdx.toString(),
+              },
+              {add: "single"}
+            )}>
             Need to add an attendee?
           </Link>
         </Box>
@@ -157,7 +173,13 @@ export default function FlightsPage() {
                 )
               )
             }}
-            components={{Toolbar: CustomToolbar}}
+            components={{Toolbar: CustomToolbarFlightsPage}}
+            componentsProps={{
+              toolbar: {
+                searchTerm: attendeeSearchTerm,
+                setSearchTerm: setAttendeeSearchTerm,
+              },
+            }}
             className={classes.dataGrid}
             classes={{row: classes.dataGridRow}}
             rows={sortBy(attendeeTravelInfo, (attendee) => {
@@ -168,6 +190,9 @@ export default function FlightsPage() {
               } else {
                 return 2
               }
+            }).filter((attendee) => {
+              let attendeeName = `${attendee.first_name.toLowerCase()} ${attendee.last_name.toLowerCase()}`
+              return attendeeName.includes(attendeeSearchTerm)
             })}
             columns={[
               {
@@ -230,7 +255,9 @@ export default function FlightsPage() {
                 width: 130,
                 valueGetter: (params) => params.row.travel?.cost,
                 valueFormatter: (params) => {
-                  return params.value && `$${params.value}`
+                  if (params.value) {
+                    return currencyFormat(params.value)
+                  }
                 },
               },
               {
@@ -269,5 +296,39 @@ export default function FlightsPage() {
         </div>
       </div>
     </PageBody>
+  )
+}
+let useToolbarStyles = makeStyles((theme) => ({
+  searchBar: {
+    marginLeft: "auto",
+    marginRight: theme.spacing(3),
+  },
+}))
+
+function CustomToolbarFlightsPage(props: {
+  searchTerm: string
+  setSearchTerm: (newValue: string) => void
+}) {
+  let classes = useToolbarStyles()
+  return (
+    <GridToolbarContainer>
+      <GridToolbarExport />
+      <TextField
+        value={props.searchTerm}
+        onChange={(e) => {
+          props.setSearchTerm(e.target.value)
+        }}
+        className={classes.searchBar}
+        margin="dense"
+        variant="outlined"
+        size="small"
+        placeholder="Search Attendees"
+        inputProps={{
+          style: {
+            height: "11px",
+          },
+        }}
+      />
+    </GridToolbarContainer>
   )
 }
