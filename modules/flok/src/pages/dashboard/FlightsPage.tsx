@@ -10,7 +10,7 @@ import {
   DataGrid,
   GridToolbarContainer,
   GridToolbarExport,
-} from "@mui/x-data-grid"
+} from "@material-ui/data-grid"
 import {push} from "connected-react-router"
 import {sortBy} from "lodash"
 import {useEffect, useState} from "react"
@@ -100,8 +100,6 @@ export default function FlightsPage() {
 
   let [attendeeTravelInfo] = useRetreatAttendees(retreat.id)
 
-  let [dataGridPageSize, setDataGridPageSize] = useState(10)
-
   let [attendeeSearchTerm, setAttendeeSearchTerm] = useState("")
 
   if (retreat.flights_state !== "BOOKING") {
@@ -158,11 +156,10 @@ export default function FlightsPage() {
         </Box>
         <div className={classes.dataGridWrapper}>
           <DataGrid
-            pageSize={dataGridPageSize}
-            rowsPerPageOptions={[10, 25, 50]}
-            onPageSizeChange={(pageSize) => {
-              setDataGridPageSize(pageSize)
-            }}
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            pageSize={10}
             onRowClick={(params) => {
               dispatch(
                 push(
@@ -198,7 +195,7 @@ export default function FlightsPage() {
               {
                 field: "first_name",
                 headerName: "First name",
-                width: 100,
+                width: 130,
               },
               {
                 field: "last_name",
@@ -256,7 +253,7 @@ export default function FlightsPage() {
                 valueGetter: (params) => params.row.travel?.cost,
                 valueFormatter: (params) => {
                   if (params.value) {
-                    return currencyFormat(params.value)
+                    return currencyFormat(params.value as number)
                   }
                 },
               },
@@ -325,7 +322,7 @@ function CustomToolbarFlightsPage(props: {
         placeholder="Search Attendees"
         inputProps={{
           style: {
-            height: "11px",
+            height: "28px",
           },
         }}
       />

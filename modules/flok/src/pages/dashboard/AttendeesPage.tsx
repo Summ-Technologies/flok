@@ -21,20 +21,20 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core"
-import {Add, CloudUpload, Delete, DoneAll, Person} from "@material-ui/icons"
-import CloseIcon from "@material-ui/icons/Close"
-import {Alert} from "@material-ui/lab"
 import {
   DataGrid,
-  GridActionsCellItem,
   GridToolbarContainer,
   GridToolbarExport,
-} from "@mui/x-data-grid"
+} from "@material-ui/data-grid"
+import {Add, CloudUpload, DoneAll, Person} from "@material-ui/icons"
+import CloseIcon from "@material-ui/icons/Close"
+import {Alert} from "@material-ui/lab"
 import {push} from "connected-react-router"
 import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
 import {withRouter} from "react-router-dom"
 import AppCsvXlsxUpload from "../../components/base/AppCsvXlsxUpload"
+import AttendeeDeleteDropDown from "../../components/lodging/AttendeeDeleteDropdown"
 import PageBody from "../../components/page/PageBody"
 import PageLockedModal from "../../components/page/PageLockedModal"
 import {AttendeeBatchUploadApiResponse} from "../../models/api"
@@ -158,6 +158,9 @@ let useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     minHeight: 300,
   },
+  cell: {
+    // backgroundColor: "#FFF",
+  },
 }))
 
 function AttendeesPage() {
@@ -198,6 +201,11 @@ function AttendeesPage() {
   const [batchUploadResponse, setBatchUploadResponse] = useState<
     AttendeeBatchUploadApiResponse | undefined
   >(undefined)
+  // const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+  // const menuOpen = Boolean(anchorEl)
+  // const handleCloseMenu = () => {
+  //   setAnchorEl(null)
+  // }
 
   const handleClose = () => {
     setOpenNotAttendingModal(false)
@@ -222,7 +230,6 @@ function AttendeesPage() {
         })
     )
   }
-  let [dataGridPageSize, setDataGridPageSize] = useState(10)
   let [attendeeSearchTerm, setAttendeeSearchTerm] = useState("")
 
   useEffect(() => {
@@ -377,6 +384,9 @@ function AttendeesPage() {
         </Box>
         <div className={classes.dataGridWrapper}>
           <DataGrid
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
             classes={{row: classes.dataGridRow}}
             className={classes.dataGrid}
             components={{Toolbar: CustomToolbarAttendeePage}}
@@ -392,15 +402,17 @@ function AttendeesPage() {
                 setSearchTerm: setAttendeeSearchTerm,
               },
             }}
-            onRowClick={(params) => {
-              dispatch(
-                push(
-                  AppRoutes.getPath("RetreatAttendeePage", {
-                    retreatIdx: retreatIdx.toString(),
-                    attendeeId: params.row.id.toString(),
-                  })
+            onCellClick={(params) => {
+              if (params.field !== "actions") {
+                dispatch(
+                  push(
+                    AppRoutes.getPath("RetreatAttendeePage", {
+                      retreatIdx: retreatIdx.toString(),
+                      attendeeId: params.row.id.toString(),
+                    })
+                  )
                 )
-              )
+              }
             }}
             rows={attendeeTravelInfo
               .filter((attendee) => {
@@ -431,7 +443,7 @@ function AttendeesPage() {
               {
                 field: "first_name",
                 headerName: "First name",
-                width: 100,
+                width: 130,
               },
               {
                 field: "last_name",
@@ -448,15 +460,15 @@ function AttendeesPage() {
                 headerName: "Hotel Check In",
                 width: 150,
                 valueGetter: (params) => {
-                  return dateFormat(params.value)
+                  return dateFormat(params.value as string)
                 },
               },
               {
                 field: "hotel_check_out",
                 headerName: "Hotel Check Out",
-                width: 150,
+                width: 165,
                 valueGetter: (params) => {
-                  return dateFormat(params.value)
+                  return dateFormat(params.value as string)
                 },
               },
               {
@@ -485,29 +497,24 @@ function AttendeesPage() {
               },
               {
                 field: "actions",
+                headerName: "",
                 width: 20,
-                type: "actions",
-                getActions: (params) => {
-                  return [
-                    <GridActionsCellItem
-                      icon={<Delete />}
-                      label="Delete Attendee"
-                      onClick={() => {
+                sortable: false,
+                renderCell: (params) => {
+                  return (
+                    <AttendeeDeleteDropDown
+                      onDelete={() => {
                         dispatch(
                           deleteRetreatAttendees(retreat.id, params.row.id)
                         )
                       }}
-                      showInMenu
-                    />,
-                  ]
+                    />
+                  )
                 },
+                renderHeader: () => <></>,
               },
             ]}
-            pageSize={dataGridPageSize}
-            rowsPerPageOptions={[10, 25, 50]}
-            onPageSizeChange={(pageSize) => {
-              setDataGridPageSize(pageSize)
-            }}
+            pageSize={10}
           />
         </div>
       </div>
@@ -814,10 +821,19 @@ function CustomToolbarAttendeePage(props: {
         placeholder="Search Attendees"
         inputProps={{
           style: {
-            height: 11,
+            height: 28,
           },
         }}
       />
     </GridToolbarContainer>
   )
 }
+
+// function CustomColumnMenu(props: any) {
+//   const {hideMenu, currentColumn} = props
+//   return (
+//     <GridColumnMenuContainer hideMenu={hideMenu} currentColumn={currentColumn}>
+//       <SortGridMenuItems onClick={hideMenu} column={currentColumn} />
+//     </GridColumnMenuContainer>
+//   )
+// }
