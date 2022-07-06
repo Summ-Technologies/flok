@@ -160,6 +160,7 @@ export default function FlightsPage() {
             disableColumnFilter
             disableColumnMenu
             pageSize={50}
+            rowsPerPageOptions={[]}
             onRowClick={(params) => {
               dispatch(
                 push(
