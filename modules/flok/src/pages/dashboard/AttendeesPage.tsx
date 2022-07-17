@@ -561,10 +561,9 @@ function AttendeesPage() {
           ) : (
             <>
               <DialogContentText>
-                To add a new attendee to your retreat please enter their full
-                name and email address below. We'll reach out to them to confirm
-                and fill in some of their information and when they have
-                confirmed their name will be added here.
+                {retreat.registration_live
+                  ? "To add a new attendee to your retreat please enter their full name and email address below.  They will be automatically emailed to access their attendee registration form."
+                  : "To add a new attendee to your retreat please enter their full name and email address below.  They will be emailed to access their attendee registration form once registration is live."}
               </DialogContentText>
               <TextField
                 autoFocus

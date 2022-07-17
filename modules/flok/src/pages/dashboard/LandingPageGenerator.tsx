@@ -1,12 +1,19 @@
 import {
   Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Drawer,
+  Fab,
   IconButton,
   Link,
   makeStyles,
   Typography,
 } from "@material-ui/core"
-import {ArrowBack, Delete} from "@material-ui/icons"
+import {ArrowBack, Delete, Explore} from "@material-ui/icons"
 import {push} from "connected-react-router"
 import {useState} from "react"
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
@@ -24,11 +31,12 @@ import EditWebsiteForm from "../../components/attendee-site/EditWebsiteForm"
 import LandingPageEditForm from "../../components/attendee-site/LandingPageEditForm"
 import LandingPageGeneratorNavTool from "../../components/attendee-site/LandingPageGeneratorNavTool"
 import PageWebsiteLink from "../../components/attendee-site/PageWebsiteLink"
+import AppTypography from "../../components/base/AppTypography"
 import AppConfirmationModal from "../../components/base/ConfirmationModal"
 import PageBody from "../../components/page/PageBody"
 import {AppRoutes} from "../../Stack"
 import {ApiAction} from "../../store/actions/api"
-import {deletePage} from "../../store/actions/retreat"
+import {deletePage, postRegistrationLive} from "../../store/actions/retreat"
 import {
   useAttendeeLandingPage,
   useAttendeeLandingWebsite,
@@ -107,6 +115,17 @@ let useStyles = makeStyles((theme) => ({
     marginRight: "8%",
     marginTop: "30px",
   },
+  goLiveIcon: {
+    marginRight: theme.spacing(1),
+  },
+  goLiveText: {
+    fontSize: "0.8rem",
+  },
+  successChip: {
+    borderColor: theme.palette.success.main,
+    color: theme.palette.success.main,
+    height: "25px",
+  },
 }))
 
 type LandingPageGeneratorProps = RouteComponentProps<{
@@ -122,6 +141,7 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   let dispatch = useDispatch()
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)
   let page = useAttendeeLandingPage(parseInt(currentPageId))
+  let [goLiveModalOpen, setGoLiveModalOpen] = useState(false)
 
   if (!website || !website.page_ids[0]) {
     return <CreateRetreatWebsite {...props} />
@@ -139,6 +159,42 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
   }
   return (
     <PageBody appBar>
+      <Dialog
+        open={goLiveModalOpen}
+        onClose={() => {
+          setGoLiveModalOpen(false)
+        }}>
+        <DialogTitle>Are you sure you wish to go live?</DialogTitle>
+        <DialogContent>
+          Going live will publish your website and send a registration email to
+          all attendees. This action cannot be undone
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setGoLiveModalOpen(false)
+            }}
+            color="primary"
+            variant="outlined">
+            No
+          </Button>
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={async () => {
+              if (website) {
+                let response = (await dispatch(
+                  postRegistrationLive(retreat.id)
+                )) as unknown as ApiAction
+                if (!response.error) {
+                  setGoLiveModalOpen(false)
+                }
+              }
+            }}>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Drawer
         anchor="right"
         open={config}
@@ -243,6 +299,29 @@ function LandingPageGenerator(props: LandingPageGeneratorProps) {
         <div className={classes.root}>
           <div className={classes.header}>
             <Typography variant="h1">{retreat.company_name} Website</Typography>
+            {retreat.registration_live ? (
+              <Chip
+                variant="outlined"
+                label="Active"
+                className={classes.successChip}
+              />
+            ) : (
+              <Fab
+                variant="extended"
+                size="small"
+                color="primary"
+                onClick={() => {
+                  setGoLiveModalOpen(true)
+                }}>
+                <Explore className={classes.goLiveIcon} />
+                <AppTypography
+                  fontWeight="bold"
+                  uppercase
+                  className={classes.goLiveText}>
+                  Go Live
+                </AppTypography>
+              </Fab>
+            )}
           </div>
           <div className={classes.navToolbarWrapper}>
             {page && (

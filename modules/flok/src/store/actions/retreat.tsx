@@ -710,3 +710,25 @@ export function getPresetImages(type: string) {
     ],
   })
 }
+
+export const POST_REGISTRATION_LIVE_REQUEST = "POST_REGISTRATION_LIVE_REQUEST"
+export const POST_REGISTRATION_LIVE_SUCCESS = "POST_REGISTRATION_LIVE_SUCCESS"
+export const POST_REGISTRATION_LIVE_FAILURE = "POST_REGISTRATION_LIVE_FAILURE"
+export function postRegistrationLive(retreatId: number) {
+  let endpoint = `/v1.0/retreats/${retreatId}/go-live`
+  return createApiAction(
+    {
+      method: "POST",
+      endpoint,
+      types: [
+        {type: POST_REGISTRATION_LIVE_REQUEST},
+        {type: POST_REGISTRATION_LIVE_SUCCESS, meta: {retreatId}},
+        {type: POST_REGISTRATION_LIVE_FAILURE, meta: {retreatId}},
+      ],
+    },
+    {
+      successMessage: "Website is now live",
+      errorMessage: "Something went wrong",
+    }
+  )
+}
