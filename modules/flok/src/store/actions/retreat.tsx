@@ -732,3 +732,21 @@ export function postRegistrationLive(retreatId: number) {
     }
   )
 }
+
+export const GET_MY_ATTENDEE_REQUEST = "GET_MY_ATTENDEE_REQUEST"
+export const GET_MY_ATTENDEE_SUCCESS = "GET_MY_ATTENDEE_SUCCESS"
+export const GET_MY_ATTENDEE_FAILURE = "GET_MY_ATTENDEE_FAILURE"
+export function getMyAttendee(retreatId: number) {
+  let endpoint = `/v1.0/my-attendee?${new URLSearchParams({
+    retreat_id: retreatId.toString(),
+  })}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_MY_ATTENDEE_REQUEST},
+      {type: GET_MY_ATTENDEE_SUCCESS},
+      {type: GET_MY_ATTENDEE_FAILURE},
+    ],
+  })
+}

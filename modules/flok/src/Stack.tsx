@@ -1,7 +1,7 @@
-import React from "react"
 import {Route, Switch} from "react-router-dom"
 import PageContainer from "./components/page/PageContainer"
 import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
+import {Constants} from "./config"
 import AttendeeCreateAccountPage from "./pages/attendee-site/AttendeeCreateAccountPage"
 import AttendeeSiteFormPage from "./pages/attendee-site/AttendeeSiteFormPage"
 import AttendeeSite from "./pages/attendee-site/AttendeeSitePage"
@@ -84,10 +84,10 @@ export class AppRoutes {
     RetreatItineraryPage: "/r/:retreatIdx/itinerary",
 
     // Not in sidebar yet
-    AttendeeSiteHome: "/sites/:retreatName",
-    AttendeeSitePage: "/sites/:retreatName/:pageName",
-    AttendeeSiteFormPage: "/sites/:retreatName/form-page",
-    AttendeeSignUpPage: "/sites/:retreatName/sign-up",
+    AttendeeSiteHome: `${Constants.attendeeSitePathPrefix}/:retreatName`,
+    AttendeeSitePage: `${Constants.attendeeSitePathPrefix}/:retreatName/:pageName`,
+    AttendeeSiteFormPage: `${Constants.attendeeSitePathPrefix}/:retreatName/form-page`,
+    AttendeeSignUpPage: `${Constants.attendeeSitePathPrefix}/:retreatName/sign-up`,
 
     // PRETRIP DEMO
     PretripHomePage: "/r/demo",
@@ -168,27 +168,24 @@ export default function Stack() {
         exact
         component={ForgotPasswordPage}
       />
-      <Route exact path={AppRoutes.getPath("AttendeeSiteFormPage")}>
-        <AttendeeSiteFormPage />
+      <Route path={Constants.attendeeSitePathPrefix}>
+        <Switch>
+          <Route path={[AppRoutes.getPath("AttendeeSiteFormPage")]} exact>
+            <AttendeeSiteFormPage />
+          </Route>
+          <Route path={[AppRoutes.getPath("AttendeeSignUpPage")]} exact>
+            <AttendeeCreateAccountPage />
+          </Route>
+          <Route
+            path={[
+              AppRoutes.getPath("AttendeeSiteHome"),
+              AppRoutes.getPath("AttendeeSitePage"),
+            ]}
+            exact>
+            <AttendeeSite />
+          </Route>
+        </Switch>
       </Route>
-      <Route
-        path={[AppRoutes.getPath("AttendeeSiteFormPage")]}
-        exact
-        component={AttendeeSiteFormPage}
-      />
-      <Route
-        path={[AppRoutes.getPath("AttendeeSignUpPage")]}
-        exact
-        component={AttendeeCreateAccountPage}
-      />
-      <Route
-        path={[
-          AppRoutes.getPath("AttendeeSiteHome"),
-          AppRoutes.getPath("AttendeeSitePage"),
-        ]}
-        exact
-        component={AttendeeSite}
-      />
       {/* Dashboard routes */}
       <Route path="/r/demo">
         <PageContainer>
@@ -266,9 +263,9 @@ export default function Stack() {
                   AppRoutes.getPath("LandingPageGeneratorConfig"),
                   AppRoutes.getPath("LandingPageGeneratorPage"),
                   AppRoutes.getPath("LandingPageGeneratorHome"),
-                ]}
-                component={LandingPageGenerator}
-              />
+                ]}>
+                <LandingPageGenerator />
+              </Route>
 
               {/* Flights */}
               <Route exact path={AppRoutes.getPath("RetreatFlightsPage")}>

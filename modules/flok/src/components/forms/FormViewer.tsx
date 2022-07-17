@@ -1,14 +1,15 @@
 import {Button, makeStyles} from "@material-ui/core"
 import clsx from "clsx"
 import {useFormik} from "formik"
-import React from "react"
 import {useDispatch} from "react-redux"
 import * as yup from "yup"
 import {
   FormQuestionResponsePostModel,
+  FormResponseModel,
   FormResponsePostModel,
   FormResponseType,
 } from "../../models/form"
+import {ApiAction} from "../../store/actions/api"
 import {postFormResponse} from "../../store/actions/form"
 import {useForm} from "./FormProvider"
 import FormQuestionProvider from "./FormQuestionProvider"
@@ -43,7 +44,9 @@ let useStyles = makeStyles((theme) => ({
   },
 }))
 
-type FormViewerProps = {}
+type FormViewerProps = {
+  onSuccess?: (formResponse: FormResponseModel) => void
+}
 export default function FormViewer(props: FormViewerProps) {
   let classes = useStyles(props)
   let dispatch = useDispatch()
@@ -66,9 +69,19 @@ export default function FormViewer(props: FormViewerProps) {
         form_id: form.id,
         answers: answers,
       }
-      dispatch(
-        postFormResponse(formResponse, FormResponseType.ATTENDEE_REGISTRATION)
-      )
+      async function postAttendeeFormResponse() {
+        let formResponseApiResponse = (await dispatch(
+          postFormResponse(formResponse, FormResponseType.ATTENDEE_REGISTRATION)
+        )) as unknown as ApiAction<FormResponseModel>
+        if (
+          !formResponseApiResponse.error &&
+          formResponseApiResponse.payload.id != null &&
+          props.onSuccess
+        ) {
+          props.onSuccess(formResponseApiResponse.payload)
+        }
+      }
+      postAttendeeFormResponse()
     },
     validateOnBlur: true,
   })
@@ -122,7 +135,7 @@ export default function FormViewer(props: FormViewerProps) {
           </FormQuestionProvider>
         </div>
       ))}
-      <Button type="submit" onClick={() => console.log(formik.errors)}>
+      <Button type="submit" variant="contained" color="primary">
         Submit
       </Button>
     </form>

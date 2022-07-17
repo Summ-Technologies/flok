@@ -2,6 +2,7 @@ import {Button, makeStyles, Typography} from "@material-ui/core"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
 import {RouteComponentProps, withRouter} from "react-router-dom"
+import SiteGoLiveButton from "../../components/attendee-site/SiteGoLiveButton"
 import FormBuilder from "../../components/forms/FormBuilder"
 import FormProvider from "../../components/forms/FormProvider"
 import PageBody from "../../components/page/PageBody"
@@ -18,6 +19,11 @@ let useStyles = makeStyles((theme) => ({
   createFormButton: {
     marginTop: theme.spacing(2),
   },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: theme.spacing(2),
+  },
 }))
 
 type AttendeesRegFormBuilderProps = RouteComponentProps<{retreatIdx: string}>
@@ -30,7 +36,13 @@ function AttendeesRegFormBuilderPage(props: AttendeesRegFormBuilderProps) {
   return (
     <PageBody appBar>
       <div className={classes.body}>
-        <Typography variant="h1">Attendee Registration Form</Typography>
+        <div className={classes.header}>
+          <Typography variant="h1">Attendee Registration Form</Typography>
+          <SiteGoLiveButton
+            retreatId={retreat.id}
+            isLive={retreat.registration_live}
+          />
+        </div>
         {retreat.attendees_registration_form_id != null ? (
           <FormProvider formId={retreat.attendees_registration_form_id}>
             <FormBuilder />

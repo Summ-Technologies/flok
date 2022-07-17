@@ -1,7 +1,7 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
-import {RouteComponentProps} from "react-router-dom"
+import {useRouteMatch} from "react-router-dom"
 import RetreatWebsiteHeader from "../../components/attendee-site/RetreatWebsiteHeader"
 import PageBody from "../../components/page/PageBody"
 import PageContainer from "../../components/page/PageContainer"
@@ -29,15 +29,20 @@ let useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    marginLeft: "auto",
+    marginRight: "auto",
+    width: "100%",
+    maxWidth: 1100,
+    margin: theme.spacing(2),
+    [theme.breakpoints.down("sm")]: {
+      margin: theme.spacing(0.5),
+    },
   },
 }))
-type AttendeeSiteProps = RouteComponentProps<{
-  retreatName: string
-  pageName?: string
-}>
 
-export default function AttendeeSite(props: AttendeeSiteProps) {
-  let {retreatName, pageName} = props.match.params
+export default function AttendeeSite() {
+  let router = useRouteMatch<{retreatName: string; pageName: string}>()
+  let {retreatName, pageName} = router.params
   let classes = useStyles()
   let [website, websiteLoading] = useAttendeeLandingWebsiteName(
     replaceDashes(retreatName)

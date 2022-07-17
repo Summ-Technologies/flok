@@ -25,6 +25,7 @@ import {
   DELETE_RETREAT_ATTENDEES_SUCCESS,
   GET_ATTENDEE_SUCCESS,
   GET_BLOCK_SUCCESS,
+  GET_MY_ATTENDEE_SUCCESS,
   GET_PAGE_SUCCESS,
   GET_PRESET_IMAGES_SUCCESS,
   GET_RETREAT_ATTENDEES_SUCCESS,
@@ -157,6 +158,7 @@ export default function retreatReducer(
     case GET_ATTENDEE_SUCCESS:
     case PATCH_ATTENDEE_SUCCESS:
     case PATCH_ATTENDEE_TRAVEL_SUCCESS:
+    case GET_MY_ATTENDEE_SUCCESS:
       payload = (action as ApiAction).payload as AttendeeApiResponse
       if (payload) {
         state.attendees = {

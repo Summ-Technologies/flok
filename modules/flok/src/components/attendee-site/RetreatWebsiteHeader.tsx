@@ -28,7 +28,7 @@ let useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     padding: "20px",
     alignItems: "normal",
-    width: "90%",
+    width: "100%",
     [theme.breakpoints.down("sm")]: {
       alignItems: "center",
       justifyContent: "space-between",

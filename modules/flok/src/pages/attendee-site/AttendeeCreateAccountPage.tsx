@@ -10,7 +10,7 @@ import {Alert} from "@material-ui/lab"
 import {useFormik} from "formik"
 import {useState} from "react"
 import {useDispatch} from "react-redux"
-import {Link as ReactRouterLink, RouteComponentProps} from "react-router-dom"
+import {Link as ReactRouterLink, useRouteMatch} from "react-router-dom"
 import AppLoadingScreen from "../../components/base/AppLoadingScreen"
 import AppLogo from "../../components/base/AppLogo"
 import AppTypography from "../../components/base/AppTypography"
@@ -74,14 +74,12 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
 }))
-type AttendeeCreateAccountPageProps = RouteComponentProps<{
-  retreatName: string
-}>
 
-function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
+export default function AttendeeCreateAccountPage() {
   let dispatch = useDispatch()
   let classes = useStyles()
-  let {retreatName} = props.match.params
+  let router = useRouteMatch<{retreatName: string}>()
+  let {retreatName} = router.params
   const [loading, setLoading] = useState(false)
   const [response, setResponse] = useState<"success" | "error" | undefined>(
     undefined
@@ -193,4 +191,3 @@ function AttendeeCreateAccountPage(props: AttendeeCreateAccountPageProps) {
     </PageContainer>
   )
 }
-export default AttendeeCreateAccountPage

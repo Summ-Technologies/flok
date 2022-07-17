@@ -10,7 +10,6 @@ import {push} from "connected-react-router"
 import {useFormik} from "formik"
 import {useEffect, useState} from "react"
 import {useDispatch} from "react-redux"
-import {RouteComponentProps} from "react-router-dom"
 import * as yup from "yup"
 import {UploadImage} from "../../components/attendee-site/EditWebsiteForm"
 import UploadImageWithTemplate from "../../components/attendee-site/UploadImageWithTemplate"
@@ -45,10 +44,7 @@ let useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
 }))
-type CreateRetreatWebsiteProps = RouteComponentProps<{
-  retreatIdx: string
-}>
-function CreateRetreatWebsite(props: CreateRetreatWebsiteProps) {
+function CreateRetreatWebsite() {
   let [retreat, retreatIdx] = useRetreat()
   let classes = useStyles()
   let website = useAttendeeLandingWebsite(retreat.attendees_website_id ?? -1)

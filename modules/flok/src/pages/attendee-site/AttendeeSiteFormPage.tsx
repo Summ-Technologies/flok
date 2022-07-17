@@ -15,6 +15,7 @@ import {replaceDashes} from "../../utils"
 import {ImageUtils} from "../../utils/imageUtils"
 import {
   useAttendeeLandingWebsiteName,
+  useMyAttendee,
   useRetreat,
 } from "../../utils/retreatUtils"
 import LoadingPage from "../misc/LoadingPage"
@@ -59,6 +60,9 @@ export default function AttendeeSiteFormPage() {
     replaceDashes(retreatName)
   )
   let [retreat, retreatLoading] = useRetreat(website?.retreat_id ?? -1)
+  let [attendee] = useMyAttendee(
+    retreat !== ResourceNotFound && retreat != null ? retreat.id : -1
+  )
   const titleTag = document.getElementById("titleTag")
   titleTag!.innerHTML = `${website?.name} | Attendee Registration`
   useEffect(() => {
@@ -79,24 +83,24 @@ export default function AttendeeSiteFormPage() {
   ) : (
     <PageContainer>
       <PageBody>
+        <RetreatWebsiteHeader
+          logo={
+            website.logo_image?.image_url ??
+            ImageUtils.getImageUrl("logoIconTextTrans")
+          }
+          pageIds={website.page_ids}
+          retreatName={retreatName}
+          homeRoute={AppRoutes.getPath("AttendeeSiteHome", {
+            retreatName: retreatName,
+          })}
+          selectedPage={"form-page"}
+          registrationLink={AppRoutes.getPath("AttendeeSiteFormPage")}
+        />
         <div className={classes.overallPage}>
-          <RetreatWebsiteHeader
-            logo={
-              website.logo_image?.image_url ??
-              ImageUtils.getImageUrl("logoIconTextTrans")
-            }
-            pageIds={website.page_ids}
-            retreatName={retreatName}
-            homeRoute={AppRoutes.getPath("AttendeeSiteHome", {
-              retreatName: retreatName,
-            })}
-            selectedPage={"form-page"}
-            registrationLink={AppRoutes.getPath("AttendeeSiteFormPage")}
-          />
           <div className={classes.body}>
             {retreat.attendees_registration_form_id != null ? (
               <FormProvider formId={retreat.attendees_registration_form_id}>
-                <FormViewer />
+                <FormViewer onSuccess={(formResponse) => {}} />
               </FormProvider>
             ) : (
               <div>Attendee registration isn't live yet</div>

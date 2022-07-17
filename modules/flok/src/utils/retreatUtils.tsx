@@ -5,7 +5,9 @@ import {ResourceNotFound} from "../models"
 import {RetreatModel, RetreatToTask} from "../models/retreat"
 import {RootState} from "../store"
 import {
+  getAttendee,
   getBlock,
+  getMyAttendee,
   getPage,
   getPageByName,
   getRetreat,
@@ -171,6 +173,30 @@ export function useAttendeeLandingWebsiteName(websiteName: string) {
 
   return [website, loading] as const
 }
+
+export function useMyAttendee(retreatId: number) {
+  let dispatch = useDispatch()
+  let attendeeId = useSelector((state: RootState) => {
+    return state.user.myAttendeeByRetreat[retreatId]
+  })
+  useEffect(() => {
+    if (attendeeId == null) {
+      dispatch(getMyAttendee(retreatId))
+    }
+  }, [retreatId, dispatch, attendeeId])
+
+  let attendee = useSelector((state: RootState) => {
+    if (attendeeId != null) return state.retreat.attendees[attendeeId]
+  })
+  useEffect(() => {
+    if (attendeeId != null && attendee == null) {
+      dispatch(getAttendee(attendeeId))
+    }
+  }, [attendeeId, attendee, dispatch])
+
+  return [attendee]
+}
+
 export function useRetreat(retreatId: number) {
   let [loading, setLoading] = useState(true)
   let retreat = useSelector((state: RootState) => {

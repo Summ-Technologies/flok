@@ -100,10 +100,6 @@ export default function FlightsPage() {
 
   let [attendeeSearchTerm, setAttendeeSearchTerm] = useState("")
 
-  if (retreat.flights_state !== "BOOKING") {
-    attendeeTravelInfo = SampleLockedAttendees
-  }
-
   attendeeTravelInfo = attendeeTravelInfo.filter((attendee) =>
     ["CREATED", "INFO_ENTERED"].includes(attendee.info_status)
   )
