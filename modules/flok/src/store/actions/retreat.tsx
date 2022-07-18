@@ -750,3 +750,25 @@ export function getMyAttendee(retreatId: number) {
     ],
   })
 }
+
+export const POST_ATTENDEE_REG_REQUEST = "POST_ATTENDEE_REG_REQUEST"
+export const POST_ATTENDEE_REG_SUCCESS = "POST_ATTENDEE_REG_SUCCESS"
+export const POST_ATTENDEE_REG_FAILURE = "POST_ATTENDEE_REG_FAILURE"
+export function postAttendeeRegRequest(
+  attendeeId: number,
+  formResponseId: number
+) {
+  let endpoint = `/v1.0/attendees/${attendeeId}/registration`
+  return createApiAction({
+    method: "POST",
+    endpoint,
+    body: JSON.stringify({
+      form_response_id: formResponseId,
+    }),
+    types: [
+      {type: POST_ATTENDEE_REG_REQUEST},
+      {type: POST_ATTENDEE_REG_SUCCESS},
+      {type: POST_ATTENDEE_REG_FAILURE},
+    ],
+  })
+}

@@ -44,6 +44,7 @@ import {
   PATCH_RETREAT_SUCCESS,
   PATCH_TRIP_SUCCESS,
   PATCH_WEBSITE_SUCCESS,
+  POST_ATTENDEE_REG_SUCCESS,
   POST_BLOCK_SUCCESS,
   POST_INITIAL_WEBSITE_SUCCESS,
   POST_PAGE_SUCCESS,
@@ -159,6 +160,7 @@ export default function retreatReducer(
     case PATCH_ATTENDEE_SUCCESS:
     case PATCH_ATTENDEE_TRAVEL_SUCCESS:
     case GET_MY_ATTENDEE_SUCCESS:
+    case POST_ATTENDEE_REG_SUCCESS:
       payload = (action as ApiAction).payload as AttendeeApiResponse
       if (payload) {
         state.attendees = {

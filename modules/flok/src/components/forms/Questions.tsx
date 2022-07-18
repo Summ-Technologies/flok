@@ -23,6 +23,7 @@ import React, {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
   FormQuestionModel,
+  FormQuestionSnapshotModel,
   FormQuestionType,
   FormQuestionTypeEnum,
   FormQuestionTypeName,
@@ -211,6 +212,7 @@ type RegFormViewerQuestionProps = {
   value: string
   onChange: (newVal: string) => void
   onLoad: (question: FormQuestionModel) => void
+  readOnly?: boolean
 }
 
 /**
@@ -240,6 +242,45 @@ export function RegFormViewerQuestion(props: RegFormViewerQuestionProps) {
         question={question}
         value={props.value}
         onChange={props.onChange}
+        readOnly={props.readOnly}
+      />
+    </div>
+  )
+}
+
+type RegFormResponseViewerQuestionProps = {
+  question: FormQuestionSnapshotModel
+  value: string
+  onChange: (newVal: string) => void
+  onLoad: (question: FormQuestionModel) => void
+  readOnly?: boolean
+}
+
+/**
+ * Needs to be rendered in a FormQuestionProvider
+ */
+export function RegFormResponseViewerQuestion(
+  props: RegFormResponseViewerQuestionProps
+) {
+  let classes = useQuestionStyles()
+
+  return (
+    <div className={classes.root}>
+      <div className={classes.questionHeaderContainer}>
+        <div className={classes.questionTitleSubtitle}>
+          <FormQuestionHeader
+            required={props.question.required}
+            title={props.question.title}
+            description={props.question.description ?? ""}
+            questionId={props.question.id}
+          />
+        </div>
+      </div>
+      <RegFormViewerQuestionSwitch
+        question={props.question}
+        value={props.value}
+        onChange={props.onChange}
+        readOnly={props.readOnly}
       />
     </div>
   )
@@ -290,6 +331,7 @@ type RegFormViewerQuestionSwitchProps = {
   question: FormQuestionModel
   value: string
   onChange: (newVal: string) => void
+  readOnly?: boolean
 }
 
 function RegFormViewerQuestionSwitch(props: RegFormViewerQuestionSwitchProps) {
@@ -301,6 +343,7 @@ function RegFormViewerQuestionSwitch(props: RegFormViewerQuestionSwitchProps) {
             type={FormQuestionTypeEnum.SHORT_ANSWER}
             value={props.value}
             onChange={props.onChange}
+            readOnly={props.readOnly}
           />
         )
       case FormQuestionTypeEnum.LONG_ANSWER:
@@ -309,6 +352,7 @@ function RegFormViewerQuestionSwitch(props: RegFormViewerQuestionSwitchProps) {
             type={FormQuestionTypeEnum.LONG_ANSWER}
             value={props.value}
             onChange={props.onChange}
+            readOnly={props.readOnly}
           />
         )
       case FormQuestionTypeEnum.SINGLE_SELECT:
@@ -319,6 +363,7 @@ function RegFormViewerQuestionSwitch(props: RegFormViewerQuestionSwitchProps) {
             type={FormQuestionTypeEnum.SINGLE_SELECT}
             optionIds={props.question.select_options}
             questionId={props.question.id}
+            readOnly={props.readOnly}
           />
         )
       case FormQuestionTypeEnum.MULTI_SELECT:
@@ -329,6 +374,7 @@ function RegFormViewerQuestionSwitch(props: RegFormViewerQuestionSwitchProps) {
             type={FormQuestionTypeEnum.MULTI_SELECT}
             optionIds={props.question.select_options}
             questionId={props.question.id}
+            readOnly={props.readOnly}
           />
         )
       case FormQuestionTypeEnum.DATE:
@@ -337,6 +383,7 @@ function RegFormViewerQuestionSwitch(props: RegFormViewerQuestionSwitchProps) {
             value={props.value}
             onChange={props.onChange}
             type={FormQuestionTypeEnum.DATE}
+            readOnly={props.readOnly}
           />
         )
       case FormQuestionTypeEnum.DATETIME:
@@ -345,6 +392,7 @@ function RegFormViewerQuestionSwitch(props: RegFormViewerQuestionSwitchProps) {
             value={props.value}
             onChange={props.onChange}
             type={FormQuestionTypeEnum.DATETIME}
+            readOnly={props.readOnly}
           />
         )
       default:
@@ -386,6 +434,7 @@ type RegFormViewerTextQuestionProps = {
   type: FormQuestionTypeEnum.SHORT_ANSWER | FormQuestionTypeEnum.LONG_ANSWER
   value: string
   onChange: (newVal: string) => void
+  readOnly?: boolean
 }
 function RegFormViewerTextQuestion(props: RegFormViewerTextQuestionProps) {
   let classes = useTextQuestionStyles()
@@ -396,6 +445,7 @@ function RegFormViewerTextQuestion(props: RegFormViewerTextQuestionProps) {
       variant="outlined"
       fullWidth
       InputProps={{
+        readOnly: props.readOnly,
         className: classes.formQuestionTextInput,
       }}
       multiline={props.type === FormQuestionTypeEnum.LONG_ANSWER}
@@ -465,6 +515,7 @@ type RegFormViewerSelectQuestionProps = {
   type: FormQuestionTypeEnum.MULTI_SELECT | FormQuestionTypeEnum.SINGLE_SELECT
   optionIds: number[]
   questionId: number
+  readOnly?: boolean
 }
 export function RegFormViewerSelectQuestion(
   props: RegFormViewerSelectQuestionProps
@@ -483,6 +534,7 @@ export function RegFormViewerSelectQuestion(
               value={selectedOptions}
               optionId={optionId}
               type={props.type}
+              readOnly={props.readOnly}
             />
           )
         })}
@@ -596,6 +648,7 @@ function SelectQuestionLabel(props: {
 function SelectQuestionViewerLabel(props: {
   value: string[]
   onChange: (newVal: string[]) => void
+  readOnly?: boolean
   optionId: number
   type:
     | typeof FormQuestionTypeEnum.MULTI_SELECT
@@ -634,9 +687,15 @@ function SelectQuestionViewerLabel(props: {
       }}
       control={
         props.type === FormQuestionTypeEnum.MULTI_SELECT ? (
-          <Checkbox checked={props.value.includes(option.option)} />
+          <Checkbox
+            readOnly={props.readOnly}
+            checked={props.value.includes(option.option)}
+          />
         ) : (
-          <Radio checked={props.value.includes(option.option)} />
+          <Radio
+            readOnly={props.readOnly}
+            checked={props.value.includes(option.option)}
+          />
         )
       }
       label={option.option}
@@ -685,6 +744,7 @@ type RegFormViewerDateQuestionProps = {
   type: FormQuestionTypeEnum.DATE | FormQuestionTypeEnum.DATETIME
   value: string
   onChange: (newVal: string) => void
+  readOnly?: boolean
 }
 function RegFormViewerDateQuestion(props: RegFormViewerDateQuestionProps) {
   return (
@@ -692,6 +752,9 @@ function RegFormViewerDateQuestion(props: RegFormViewerDateQuestionProps) {
       value={props.value}
       onChange={(e) => props.onChange(e.target.value)}
       variant="outlined"
+      InputProps={{
+        readOnly: props.readOnly,
+      }}
       type={
         props.type === FormQuestionTypeEnum.DATETIME ? "datetime-local" : "date"
       }

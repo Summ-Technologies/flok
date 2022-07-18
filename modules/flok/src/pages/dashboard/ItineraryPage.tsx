@@ -90,19 +90,14 @@ function ItineraryPage() {
         </div>
         <List className={classes.list}>
           <AppListItemStep
-            title="Step 1: Prepare Baking Pans"
-            subtext="Nobody wants their cake to stick to the pan, so it's important to prep your pans before pouring in the batter. With the exception of angel food and chiffon cakes, most recipes call for greasing and flouring the pan or lining the pan with waxed or parchment paper."
+            title="Create Google Document"
+            subtext="Please create your own Google Document and add the link below. Make sure that your Flok event planners have edit access. This itinerary will become available to your retreat attendees on the Attendee Landing Page once it is finalized."
           />
           <AppListItemStep
-            title="Step 2: Allow Ingredients to Reach Room Temperature"
-            subtext="Many recipes require cake ingredients such as eggs and butter to stand at room temperature. This allows the butter to blend easily with other ingredients and the eggs will yield a higher cake volume."
+            title=""
+            subtext="This itinerary will become available to your retreat attendees on the Retreat Landing Page once it is finalized."
           />
-          <AppListItemStep
-            title="Step 3: Preheat the Oven"
-            subtext="When a cake bakes too quickly it can develop tunnels and cracks, too slowly and it can be coarse. Let your oven preheat for at least 10 minutes, and use an oven thermometer ($7, Target) to make sure it reaches the proper temperature. If you're using dark cake pans, you'll want to reduce the oven temperature called for in your recipe by 25°F.
-            "
-          />
-          <AppListItemStep title="Step 4: Upload Itinerary Link" subtext="">
+          <AppListItemStep title="Upload Itinerary Link" subtext="">
             <form
               className={classes.form}
               onSubmit={(e) => {

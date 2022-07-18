@@ -60,26 +60,26 @@ export default function AttendeeSite() {
   ) : (
     <PageContainer>
       <PageBody>
+        <RetreatWebsiteHeader
+          logo={
+            website.logo_image?.image_url ??
+            ImageUtils.getImageUrl("logoIconTextTrans")
+          }
+          pageIds={website.page_ids}
+          retreatName={retreatName}
+          homeRoute={AppRoutes.getPath("AttendeeSiteHome", {
+            retreatName: retreatName,
+          })}
+          selectedPage={pageName ?? "home"}
+          registrationLink={AppRoutes.getPath("AttendeeSiteFormPage")}
+        />
+        {website.banner_image && (
+          <img
+            src={website.banner_image?.image_url}
+            className={classes.bannerImg}
+            alt="Banner"></img>
+        )}
         <div className={classes.overallPage}>
-          <RetreatWebsiteHeader
-            logo={
-              website.logo_image?.image_url ??
-              ImageUtils.getImageUrl("logoIconTextTrans")
-            }
-            pageIds={website.page_ids}
-            retreatName={retreatName}
-            homeRoute={AppRoutes.getPath("AttendeeSiteHome", {
-              retreatName: retreatName,
-            })}
-            selectedPage={pageName ?? "home"}
-            registrationLink={AppRoutes.getPath("AttendeeSiteFormPage")}
-          />
-          {website.banner_image && (
-            <img
-              src={website.banner_image?.image_url}
-              className={classes.bannerImg}
-              alt="Banner"></img>
-          )}
           {page?.block_ids[0] && (
             <WYSIWYGBlockRenderer blockId={page.block_ids[0]} />
           )}

@@ -63,6 +63,8 @@ export class AppRoutes {
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatAttendeePage: "/r/:retreatIdx/attendees/:attendeeId/profile",
     RetreatAttendeeFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
+    RetreatAttendeeRegResponsePage:
+      "/r/:retreatIdx/attendees/:attendeeId/registration",
     RetreatAttendeesRegFormBuilderPage: "/r/:retreatIdx/attendees/registration",
 
     // AttendeelLanding page
@@ -86,7 +88,7 @@ export class AppRoutes {
     // Not in sidebar yet
     AttendeeSiteHome: `${Constants.attendeeSitePathPrefix}/:retreatName`,
     AttendeeSitePage: `${Constants.attendeeSitePathPrefix}/:retreatName/:pageName`,
-    AttendeeSiteFormPage: `${Constants.attendeeSitePathPrefix}/:retreatName/form-page`,
+    AttendeeSiteFormPage: `${Constants.attendeeSitePathPrefix}/:retreatName/registration`,
     AttendeeSignUpPage: `${Constants.attendeeSitePathPrefix}/:retreatName/sign-up`,
 
     // PRETRIP DEMO
@@ -256,6 +258,11 @@ export default function Stack() {
               <Route
                 exact
                 path={AppRoutes.getPath("RetreatAttendeeFlightsPage")}>
+                <AttendeePage />
+              </Route>
+              <Route
+                exact
+                path={AppRoutes.getPath("RetreatAttendeeRegResponsePage")}>
                 <AttendeePage />
               </Route>
               <Route

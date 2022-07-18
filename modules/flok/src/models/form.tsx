@@ -65,7 +65,7 @@ export type FormQuestionResponseModel = {
   id: number
   form_question_id: number
   form_response_id: number
-  form_question_snapshot: any
+  form_question_snapshot: FormQuestionSnapshotModel
   answer: string
 }
 // Model used for posting question response to the api
@@ -73,3 +73,7 @@ export type FormQuestionResponsePostModel = Pick<
   FormQuestionResponseModel,
   "answer" | "form_question_id"
 >
+
+export type FormQuestionSnapshotModel = FormQuestionModel & {
+  select_options_snapshot: FormQuestionSelectOptionModel[]
+}

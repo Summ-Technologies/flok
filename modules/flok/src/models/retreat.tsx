@@ -238,6 +238,7 @@ export type RetreatAttendeeModel = {
   hotel_check_in?: string | null // iso date string
   hotel_check_out?: string | null // iso date string
   retreat_id: number
+  registration_form_response_id?: number
 }
 
 export const SampleLockedAttendees: RetreatAttendeeModel[] = [

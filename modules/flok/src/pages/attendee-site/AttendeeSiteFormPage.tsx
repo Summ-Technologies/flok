@@ -10,6 +10,7 @@ import PageContainer from "../../components/page/PageContainer"
 import {ResourceNotFound} from "../../models"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
+import {postAttendeeRegRequest} from "../../store/actions/retreat"
 import {getUserHome} from "../../store/actions/user"
 import {replaceDashes} from "../../utils"
 import {ImageUtils} from "../../utils/imageUtils"
@@ -100,7 +101,15 @@ export default function AttendeeSiteFormPage() {
           <div className={classes.body}>
             {retreat.attendees_registration_form_id != null ? (
               <FormProvider formId={retreat.attendees_registration_form_id}>
-                <FormViewer onSuccess={(formResponse) => {}} />
+                <FormViewer
+                  onSuccess={(formResponse) => {
+                    if (attendee) {
+                      dispatch(
+                        postAttendeeRegRequest(attendee?.id, formResponse.id)
+                      )
+                    }
+                  }}
+                />
               </FormProvider>
             ) : (
               <div>Attendee registration isn't live yet</div>

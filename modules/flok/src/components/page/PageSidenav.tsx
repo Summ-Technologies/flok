@@ -21,12 +21,7 @@ import {
   PeopleAlt,
   SvgIconComponent,
 } from "@material-ui/icons"
-import React, {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useState,
-} from "react"
+import {createContext, PropsWithChildren, useContext, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {
   Link as ReactRouterLink,
@@ -137,7 +132,11 @@ let navItems: NavItem[] = [
     navSubItems: [
       {
         title: "Attendees",
-        activeRoutes: ["RetreatAttendeePage", "RetreatAttendeesPage"],
+        activeRoutes: [
+          "RetreatAttendeePage",
+          "RetreatAttendeesPage",
+          "RetreatAttendeeRegResponsePage",
+        ],
         redirect: redirectFlok("RetreatAttendeesPage"),
       },
       {

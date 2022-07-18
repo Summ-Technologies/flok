@@ -72,13 +72,14 @@ export default function FormViewer(props: FormViewerProps) {
       async function postAttendeeFormResponse() {
         let formResponseApiResponse = (await dispatch(
           postFormResponse(formResponse, FormResponseType.ATTENDEE_REGISTRATION)
-        )) as unknown as ApiAction<FormResponseModel>
+        )) as unknown as ApiAction<{form_response: FormResponseModel}>
         if (
           !formResponseApiResponse.error &&
-          formResponseApiResponse.payload.id != null &&
+          formResponseApiResponse.payload.form_response != null &&
+          formResponseApiResponse.payload.form_response.id != null &&
           props.onSuccess
         ) {
-          props.onSuccess(formResponseApiResponse.payload)
+          props.onSuccess(formResponseApiResponse.payload.form_response)
         }
       }
       postAttendeeFormResponse()

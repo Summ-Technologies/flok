@@ -285,3 +285,20 @@ export function postFormResponse(
     ],
   })
 }
+
+export const GET_FORM_RESPONSE_REQUEST = "POST_FORM_RESPONSE_REQUEST"
+export const GET_FORM_RESPONSE_SUCCESS = "GET_FORM_RESPONSE_SUCCESS"
+export const GET_FORM_RESPONSE_FAILURE = "GET_FORM_RESPONSE_FAILURE"
+
+export function getFormResponse(formResponseId: number) {
+  let endpoint = `/v1.0/form-responses/${formResponseId}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_FORM_RESPONSE_REQUEST},
+      {type: GET_FORM_RESPONSE_SUCCESS},
+      {type: GET_FORM_RESPONSE_FAILURE},
+    ],
+  })
+}

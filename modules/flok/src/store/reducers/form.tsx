@@ -8,6 +8,7 @@ import {
   FormModel,
   FormQuestionModel,
   FormQuestionSelectOptionModel,
+  FormResponseModel,
 } from "../../models/form"
 import {ApiAction} from "../actions/api"
 import {
@@ -15,12 +16,14 @@ import {
   DELETE_FORM_QUESTION_SUCCESS,
   GET_FORM_QUESTION_OPTION_SUCCESS,
   GET_FORM_QUESTION_SUCCESS,
+  GET_FORM_RESPONSE_SUCCESS,
   GET_FORM_SUCCESS,
   PATCH_FORM_QUESTION_OPTION_SUCCESS,
   PATCH_FORM_QUESTION_SUCCESS,
   PATCH_FORM_SUCCESS,
   POST_FORM_QUESTION_OPTION_SUCCESS,
   POST_FORM_QUESTION_SUCCESS,
+  POST_FORM_RESPONSE_SUCCESS,
 } from "../actions/form"
 
 export type FormState = {
@@ -33,60 +36,16 @@ export type FormState = {
   questionOptions: {
     [id: number]: FormQuestionSelectOptionModel | undefined
   }
+  formResponses: {
+    [id: number]: FormResponseModel
+  }
 }
 
 const initialState: FormState = {
-  forms: {
-    // 1: {
-    //   id: 1,
-    //   questions: [1, 2, 3],
-    //   title: "Flok Retreat Registration",
-    //   description: "Fill out this form by EOD 11/25 to go on the Flok retreat.",
-    // },
-  },
-  formQuestions: {
-    // 1: {
-    //   description: "",
-    //   form_id: 1,
-    //   id: 1,
-    //   required: undefined,
-    //   select_allow_user_input: undefined,
-    //   select_options: [1, 2, 3],
-    //   title: "Single select",
-    //   type: "SINGLE_SELECT",
-    // },
-    // 2: {
-    //   description: "",
-    //   form_id: 1,
-    //   id: 2,
-    //   required: undefined,
-    //   select_allow_user_input: undefined,
-    //   select_options: [4, 5, 6],
-    //   title: "Multi select",
-    //   type: "MULTI_SELECT",
-    // },
-    // 3: {
-    //   description: "",
-    //   form_id: 1,
-    //   id: 3,
-    //   required: undefined,
-    //   select_allow_user_input: undefined,
-    //   select_options: [],
-    //   title: "Short answer",
-    //   type: "SHORT_ANSWER",
-    // },
-    // 4: {
-    //   description: "",
-    //   form_id: 1,
-    //   id: 4,
-    //   required: undefined,
-    //   select_allow_user_input: undefined,
-    //   select_options: [],
-    //   title: "Long answer",
-    //   type: "LONG_ANSWER",
-    // },
-  },
+  forms: {},
+  formQuestions: {},
   questionOptions: {},
+  formResponses: {},
 }
 
 export default function formReducer(
@@ -167,6 +126,18 @@ export default function formReducer(
         ...state,
         questionOptions: newQuestionOptions,
         formQuestions: newFormQuestions,
+      }
+    case GET_FORM_RESPONSE_SUCCESS:
+    case POST_FORM_RESPONSE_SUCCESS:
+      let formResponse = (
+        (action as ApiAction).payload as {form_response: FormResponseModel}
+      ).form_response
+      return {
+        ...state,
+        formResponses: {
+          ...state.formResponses,
+          [formResponse.id]: formResponse,
+        },
       }
     default:
       return state
