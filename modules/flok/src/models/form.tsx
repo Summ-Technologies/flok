@@ -39,6 +39,7 @@ export type FormQuestionModel = {
   required?: boolean
   select_allow_user_input?: boolean
   select_options: number[]
+  form_question_rules: number[]
 }
 
 export type FormQuestionSelectOptionModel = {
@@ -76,4 +77,11 @@ export type FormQuestionResponsePostModel = Pick<
 
 export type FormQuestionSnapshotModel = FormQuestionModel & {
   select_options_snapshot: FormQuestionSelectOptionModel[]
+}
+
+export type FormQuestionRuleModel = {
+  id: number
+  form_question_id: number
+  depends_on_form_question_id: number
+  depends_on_select_option_id: number
 }

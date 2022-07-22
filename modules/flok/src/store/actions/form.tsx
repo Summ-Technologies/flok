@@ -3,6 +3,7 @@ import {
   FormCreationTypeEnum,
   FormModel,
   FormQuestionModel,
+  FormQuestionRuleModel,
   FormQuestionSelectOptionModel,
   FormResponsePostModel,
   FormResponseType,
@@ -254,6 +255,60 @@ export function deleteFormQuestionOption(optionId: number) {
       {type: DELETE_FORM_QUESTION_OPTION_REQUEST, meta: {optionId}},
       {type: DELETE_FORM_QUESTION_OPTION_SUCCESS, meta: {optionId}},
       {type: DELETE_FORM_QUESTION_OPTION_FAILURE, meta: {optionId}},
+    ],
+  })
+}
+
+export const GET_QUESTION_RULE_REQUEST = "GET_QUESTION_RULE_REQUEST"
+export const GET_QUESTION_RULE_SUCCESS = "GET_QUESTION_RULE_SUCCESS"
+export const GET_QUESTION_RULE_FAILURE = "GET_QUESTION_RULE_FAILURE"
+
+export function getFormQuestionRule(formQuestionRuleId: number) {
+  let endpoint = `/v1.0/question-rules/${formQuestionRuleId}`
+  return createApiAction({
+    method: "GET",
+    endpoint,
+    types: [
+      {type: GET_QUESTION_RULE_REQUEST},
+      {type: GET_QUESTION_RULE_SUCCESS},
+      {type: GET_QUESTION_RULE_FAILURE},
+    ],
+  })
+}
+
+export const POST_QUESTION_RULE_REQUEST = "POST_QUESTION_RULE_REQUEST"
+export const POST_QUESTION_RULE_SUCCESS = "POST_QUESTION_RULE_SUCCESS"
+export const POST_QUESTION_RULE_FAILURE = "POST_QUESTION_RULE_FAILURE"
+
+export function postFormQuestionRule(
+  formQuestionRule: Omit<FormQuestionRuleModel, "id">
+) {
+  let endpoint = "/v1.0/question-rules"
+  return createApiAction({
+    method: "POST",
+    body: JSON.stringify(formQuestionRule),
+    endpoint,
+    types: [
+      {type: POST_QUESTION_RULE_REQUEST},
+      {type: POST_QUESTION_RULE_SUCCESS},
+      {type: POST_QUESTION_RULE_FAILURE},
+    ],
+  })
+}
+
+export const DELETE_QUESTION_RULE_REQUEST = "DELETE_QUESTION_RULE_REQUEST"
+export const DELETE_QUESTION_RULE_SUCCESS = "DELETE_QUESTION_RULE_SUCCESS"
+export const DELETE_QUESTION_RULE_FAILURE = "DELETE_QUESTION_RULE_FAILURE"
+
+export function deleteFormQuestionRule(formQuestionRuleId: number) {
+  let endpoint = `/v1.0/question-rules/${formQuestionRuleId}`
+  return createApiAction({
+    method: "DELETE",
+    endpoint,
+    types: [
+      {type: DELETE_QUESTION_RULE_REQUEST},
+      {type: DELETE_QUESTION_RULE_SUCCESS},
+      {type: DELETE_QUESTION_RULE_FAILURE},
     ],
   })
 }
