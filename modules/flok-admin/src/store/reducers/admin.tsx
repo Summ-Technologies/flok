@@ -15,7 +15,9 @@ import {
   RetreatToTask,
   User,
 } from "../../models"
+import {GooglePlace} from "../../notistack-lib/utils"
 import {
+  ADD_GOOGLE_PLACE,
   ADD_RETREAT_TASKS_SUCCESS,
   DELETE_RETREAT_ATTENDEES_SUCCESS,
   DELETE_RETREAT_HOTEL_PROPOSAL_SUCCESS,
@@ -23,6 +25,7 @@ import {
   GET_DESTINATIONS_SUCCESS,
   GET_HOTELS_BY_DEST_SUCCESS,
   GET_HOTELS_BY_ID_SUCCESS,
+  GET_HOTELS_FOR_DATAGRID_SUCCESS,
   GET_HOTELS_SEARCH_SUCCESS,
   GET_HOTEL_DETAILS_SUCCESS,
   GET_LODGING_TAGS_SUCCESS,
@@ -113,6 +116,8 @@ export type AdminState = {
   lodgingTags: {
     [id: number]: LodgingTagModel
   }
+  googlePlaces: {[place_id: string]: GooglePlace}
+  hotelsDataGridTotal: number
 }
 
 const initialState: AdminState = {
@@ -138,6 +143,8 @@ const initialState: AdminState = {
   userLoginTokens: {},
   tasks: {},
   lodgingTags: {},
+  googlePlaces: {},
+  hotelsDataGridTotal: 0,
 }
 
 export default function AdminReducer(
@@ -271,6 +278,23 @@ export default function AdminReducer(
           ...state.hotelsDetails,
           [payload.hotel.id]: payload.hotel,
         },
+      }
+    case GET_HOTELS_FOR_DATAGRID_SUCCESS:
+      meta = (action as unknown as {meta: {id: number}}).meta
+      payload = (action as unknown as ApiAction).payload as {
+        hotels: AdminHotelDetailsModel[]
+        total: number
+      }
+      return {
+        ...state,
+        hotels: {
+          ...state.hotels,
+          ...payload.hotels.reduce(
+            (last, curr) => ({...last, [curr.id]: curr}),
+            {}
+          ),
+        },
+        hotelsDataGridTotal: payload.total,
       }
     case POST_SELECTED_HOTEL_SUCCESS:
     case PUT_SELECTED_HOTEL_SUCCESS:
@@ -450,6 +474,15 @@ export default function AdminReducer(
         lodgingTags: {
           ...state.lodgingTags,
           ...newTags,
+        },
+      }
+    case ADD_GOOGLE_PLACE:
+      let newPlace = action as GooglePlace
+      return {
+        ...state,
+        googlePlaces: {
+          ...state.googlePlaces,
+          [newPlace.place_id]: newPlace,
         },
       }
     default:

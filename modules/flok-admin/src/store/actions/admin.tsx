@@ -759,3 +759,44 @@ export function getLodgingTags() {
     ],
   })
 }
+
+export const ADD_GOOGLE_PLACE = "ADD_GOOGLE_PLACE"
+
+export function addGooglePlace(place: {
+  name: string
+  place_id: string
+  lat?: number
+  lng?: number
+  address?: string
+}) {
+  let action = {...place, type: ADD_GOOGLE_PLACE}
+  return action
+}
+
+export const GET_HOTELS_FOR_DATAGRID_REQUEST = "GET_HOTELS_FOR_DATAGRID_REQUEST"
+export const GET_HOTELS_FOR_DATAGRID_SUCCESS = "GET_HOTELS_FOR_DATAGRID_SUCCESS"
+export const GET_HOTELS_FOR_DATAGRID_FAILURE = "GET_HOTELS_FOR_DATAGRID_FAILURE"
+
+export function getHotelsForDataGrid(
+  offset: number = 0,
+  filters?: {
+    column?: string
+    operator?: string
+    value?: string
+  }
+) {
+  let endpoint = `/v1.0/admin/hotels/datagrid?offset=${offset}${
+    filters?.column && filters?.operator && filters?.value
+      ? `&column=${filters.column}&operator=${filters.operator}&value=${filters.value}`
+      : ""
+  }`
+  return createApiAction({
+    endpoint,
+    method: "GET",
+    types: [
+      GET_HOTELS_FOR_DATAGRID_REQUEST,
+      GET_HOTELS_FOR_DATAGRID_SUCCESS,
+      GET_HOTELS_FOR_DATAGRID_FAILURE,
+    ],
+  })
+}

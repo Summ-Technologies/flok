@@ -54,6 +54,7 @@ function RetreatLinksForm(props: {retreat: AdminRetreatModel}) {
         props.retreat.itinerary_final_draft_link ?? "",
       budget_link: props.retreat.budget_link ?? "",
       rmc_survey_link: props.retreat.rmc_survey_link ?? "",
+      slack_channel: props.retreat.slack_channel ?? "",
     },
     validationSchema: yup.object({
       faq_link: yup.string().url("Please enter a valid URL"),
@@ -123,6 +124,13 @@ function RetreatLinksForm(props: {retreat: AdminRetreatModel}) {
         id="itinerary_final_draft_link"
         value={formik.values.itinerary_final_draft_link}
         label="Itinerary document link"
+      />
+      <TextField
+        {...commonTextFieldProps}
+        {...getTextFieldErrorProps(formik, "slack_channel")}
+        id="slack_channel"
+        value={formik.values.slack_channel}
+        label="Slack Notification Channel"
       />
       <div className={classes.footer}>
         <Button
