@@ -59,6 +59,9 @@ export type AdminRetreatModel = {
   faq_link?: string
   budget_link?: string
   rmc_survey_link?: string
+
+  // Notifications
+  slack_channel?: string
 }
 
 export type AdminRetreatUpdateModel = Pick<
@@ -109,6 +112,7 @@ export type AdminSelectedHotelStateTypes =
   | "PENDING"
   | "NOT_AVAILABLE"
   | "REVIEW"
+  | "REQUESTED"
 
 export type AdminSelectedHotelProposalModel = {
   retreat_id: number
@@ -188,6 +192,14 @@ export type AdminHotelDetailsModel = {
   spotlight_img?: AdminImageModel
   website_url: string
   sub_location: string
+  lodging_tags: LodgingTagModel[]
+  city: string
+  state?: string
+  country: string
+  num_rooms: number
+  google_place_id?: string
+  google_place_name?: string
+  address_coordinates?: [number, number]
 }
 
 export type AdminHotelModel = Pick<
@@ -344,3 +356,9 @@ export const OrderedRetreatItineraryState = [
 ] as const
 export type RetreatItineraryState = typeof OrderedRetreatFlightsState[number]
 /****************** End retreat states types ******************/
+
+// Hotel Tags
+export type LodgingTagModel = {
+  id: number
+  name: string
+}

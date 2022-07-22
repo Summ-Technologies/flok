@@ -1,5 +1,7 @@
 import React from "react"
 import {Route, Switch} from "react-router-dom"
+import HotelSourcingPage from "./components/lodging/HotelSourcingPage"
+import RFPFormPage from "./components/lodging/RFPFormPage"
 import PageContainer from "./components/page/PageContainer"
 import PageSidenav, {PageDemoSidenav} from "./components/page/PageSidenav"
 import AuthResetPage from "./pages/auth/AuthResetPage"
@@ -10,6 +12,7 @@ import AttendeesPage from "./pages/dashboard/AttendeesPage"
 import BudgetEstimatePage from "./pages/dashboard/BudgetEstimatePage"
 import BudgetPage from "./pages/dashboard/BudgetPage"
 import FlightsPage from "./pages/dashboard/FlightsPage"
+import HotelProfilePage from "./pages/dashboard/HotelProfilePage"
 import LodgingContractPage from "./pages/dashboard/LodgingContractPage"
 import LodgingPage from "./pages/dashboard/LodgingPage"
 import LodgingProposalPage from "./pages/dashboard/LodgingProposalPage"
@@ -56,6 +59,8 @@ export class AppRoutes {
     RetreatLodgingProposalPage: "/r/:retreatIdx/lodging/proposals/:hotelGuid", // no sidebar
     RetreatLodgingContractPage: "/r/:retreatIdx/lodging/contract", // no sidebar
 
+    RetreatLodgingHotelProfilePage: "/r/:retreatIdx/lodging/hotels/:hotelGuid", // no sidebar work in progress
+
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatAttendeePage: "/r/:retreatIdx/attendees/:attendeeId",
     RetreatAttendeeFlightsPage: "/r/:retreatIdx/attendees/:attendeeId/flights",
@@ -77,6 +82,8 @@ export class AppRoutes {
       "/r/:retreatIdx/landing/:currentPageId/config/page-settings/:pageId",
     LandingPageGeneratorConfigAddPage:
       "/r/:retreatIdx/landing/:currentPageId/config/add-page",
+    HotelSourcingPage: "/r/:retreatIdx/venue-sourcing",
+    RFPFormPage: "/r/:retreatIdx/rfp-form",
 
     // PRETRIP DEMO
     PretripHomePage: "/r/demo",
@@ -209,8 +216,19 @@ export default function Stack() {
               </Route>
               <Route
                 exact
+                path={AppRoutes.getPath("RetreatLodgingHotelProfilePage")}>
+                <HotelProfilePage />
+              </Route>
+              <Route
+                exact
                 path={AppRoutes.getPath("RetreatLodgingContractPage")}>
                 <LodgingContractPage />
+              </Route>
+              <Route exact path={AppRoutes.getPath("HotelSourcingPage")}>
+                <HotelSourcingPage />
+              </Route>
+              <Route exact path={AppRoutes.getPath("RFPFormPage")}>
+                <RFPFormPage />
               </Route>
 
               {/* Attendees */}

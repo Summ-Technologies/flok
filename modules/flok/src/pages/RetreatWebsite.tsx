@@ -1,7 +1,6 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
-import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
@@ -49,7 +48,6 @@ type RetreatWebsiteProps = RouteComponentProps<{
 
 function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
-  let dispatch = useDispatch()
   let classes = useStyles()
   function replaceDashes(str: string) {
     let strArray = str.split("")
@@ -92,13 +90,12 @@ function RetreatWebsite(props: RetreatWebsiteProps) {
             registrationLink={
               retreat.attendees_registration_form_link
             }></RetreatWebsiteHeader>
-          <img
-            src={
-              website.banner_image?.image_url ??
-              "https://upload.wikimedia.org/wikipedia/commons/b/bb/Table_Rock_scenery_banner.jpg"
-            }
-            className={classes.bannerImg}
-            alt="Banner"></img>
+          {website.banner_image && (
+            <img
+              src={website.banner_image?.image_url}
+              className={classes.bannerImg}
+              alt="Banner"></img>
+          )}
           {page?.block_ids[0] && (
             <WYSIWYGBlockRenderer blockId={page.block_ids[0]} />
           )}
