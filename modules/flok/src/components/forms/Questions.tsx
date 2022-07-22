@@ -20,7 +20,7 @@ import {Add, CalendarToday, Delete} from "@material-ui/icons"
 import clsx from "clsx"
 import {useFormik} from "formik"
 import React, {useEffect, useState} from "react"
-import {useDispatch, useSelector} from "react-redux"
+import {useDispatch} from "react-redux"
 import {
   FormQuestionModel,
   FormQuestionSnapshotModel,
@@ -29,16 +29,15 @@ import {
   FormQuestionTypeName,
   FormQuestionTypeValues,
 } from "../../models/form"
-import {RootState} from "../../store"
 import {
   deleteFormQuestion,
   deleteFormQuestionOption,
-  getFormQuestionOption,
   patchFormQuestion,
   patchFormQuestionOption,
   postFormQuestion,
   postFormQuestionOption,
 } from "../../store/actions/form"
+import {useFormQuestionOption} from "../../utils/formUtils"
 import AppLoadingScreen from "../base/AppLoadingScreen"
 import AppTypography from "../base/AppTypography"
 import {useFormQuestion} from "./FormQuestionProvider"
@@ -569,10 +568,8 @@ function SelectQuestionLabel(props: {
 }) {
   let classes = useSelectOptionStyles()
   let dispatch = useDispatch()
-  let [loadingOption, setLoadingOption] = useState(false)
-  let option = useSelector(
-    (state: RootState) => state.form.questionOptions[props.optionId]
-  )
+
+  let [option, loadingOption] = useFormQuestionOption(props.optionId)
   let formik = useFormik({
     initialValues: {
       option: option?.option || "",
@@ -584,16 +581,6 @@ function SelectQuestionLabel(props: {
     },
     enableReinitialize: true,
   })
-  useEffect(() => {
-    async function loadOption() {
-      setLoadingOption(true)
-      await dispatch(getFormQuestionOption(props.optionId))
-      setLoadingOption(false)
-    }
-    if (!option) {
-      loadOption()
-    }
-  }, [option, props.optionId, dispatch])
   let [deleteLoading, setDeleteLoading] = useState(false)
   let control =
     props.type === FormQuestionTypeEnum.MULTI_SELECT ? (
@@ -655,21 +642,7 @@ function SelectQuestionViewerLabel(props: {
     | typeof FormQuestionTypeEnum.SINGLE_SELECT
 }) {
   let classes = useSelectOptionStyles()
-  let dispatch = useDispatch()
-  let [loadingOption, setLoadingOption] = useState(false)
-  let option = useSelector(
-    (state: RootState) => state.form.questionOptions[props.optionId]
-  )
-  useEffect(() => {
-    async function loadOption() {
-      setLoadingOption(true)
-      await dispatch(getFormQuestionOption(props.optionId))
-      setLoadingOption(false)
-    }
-    if (!option) {
-      loadOption()
-    }
-  }, [option, props.optionId, dispatch])
+  let [option, loadingOption] = useFormQuestionOption(props.optionId)
 
   return option ? (
     <FormControlLabel
