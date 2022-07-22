@@ -473,7 +473,6 @@ export function PageDemoSidenav(props: {}) {
     theme.breakpoints.down("sm")
   )
   let {path} = useRouteMatch()
-  console.log(path)
 
   return (
     <Drawer

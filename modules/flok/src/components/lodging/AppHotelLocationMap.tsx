@@ -19,19 +19,10 @@ let useStyles = makeStyles((props) => ({
   },
 }))
 
-const MAP_OPTIONS: google.maps.MapOptions = {
-  mapTypeControl: false,
-  fullscreenControl: false,
-  zoomControl: false,
-  panControl: false,
-  streetViewControl: false,
-  zoom: 15,
-  mapId: config.get(GOOGLE_MAPS_ID_HOTEL_PAGE_KEY),
-} as google.maps.MapOptions
-
 type AppHotelLocationMapProps = PropsWithChildren<{
   lat: number
   long: number
+  zoom?: number
 }>
 
 function AppHotelLocationMap(props: AppHotelLocationMapProps) {
@@ -46,6 +37,16 @@ function AppHotelLocationMap(props: AppHotelLocationMapProps) {
   )
 
   useEffect(() => {
+    const MAP_OPTIONS: google.maps.MapOptions = {
+      mapTypeControl: false,
+      fullscreenControl: false,
+      zoomControl: false,
+      panControl: false,
+      streetViewControl: false,
+      zoom: props.zoom ?? 15,
+      mapId: config.get(GOOGLE_MAPS_ID_HOTEL_PAGE_KEY),
+    } as google.maps.MapOptions
+
     if (googleMapScriptLoaded) {
       if (googleMapScriptLoaded && mapRef.current && !map) {
         let map = new google.maps.Map(mapRef.current, {
@@ -189,10 +190,12 @@ function HotelMapMarker(props: {
     if (props.map && popup) {
       props.map.addListener("zoom_changed", () => {
         if (props.map && popup) {
+          // @ts-ignore
           if (props.map.getZoom() <= 4) {
             ;(popup.containerDiv as HTMLElement).classList.remove("large")
             ;(popup.containerDiv as HTMLElement).classList.remove("medium")
             ;(popup.containerDiv as HTMLElement).classList.add("small")
+            // @ts-ignore
           } else if (props.map.getZoom() <= 7) {
             ;(popup.containerDiv as HTMLElement).classList.remove("large")
             ;(popup.containerDiv as HTMLElement).classList.add("medium")

@@ -656,6 +656,7 @@ export function patchRetreat(
       | "lodging_final_destination"
       | "lodging_final_contract_url"
       | "retreat_name"
+      | "request_for_proposal_id"
     >
   >
 ) {
@@ -724,18 +725,40 @@ export const POST_SELECTED_HOTEL_FAILURE = "POST_SELECTED_HOTEL_FAILURE"
 export function postSelectedHotel(
   state: RetreatSelectedHotelProposalState,
   retreatId: number,
-  hotelId: number
+  hotelId: number,
+  rfpId: number
 ) {
   let endpoint = `/v1.0/retreats/${retreatId}/hotels/${hotelId}`
   return createApiAction(
     {
       method: "POST",
       endpoint,
-      body: JSON.stringify({state: state}),
+      body: JSON.stringify({state: state, rfp_id: rfpId}),
       types: [
         {type: POST_SELECTED_HOTEL_REQUEST},
         {type: POST_SELECTED_HOTEL_SUCCESS},
         {type: POST_SELECTED_HOTEL_FAILURE},
+      ],
+    },
+    {
+      errorMessage: "Something went wrong",
+    }
+  )
+}
+
+export const GET_RFP_REQUEST = "GET_RFP_REQUEST"
+export const GET_RFP_SUCCESS = "GET_RFP_SUCCESS"
+export const GET_RFP_FAILURE = "GET_RFP_FAILURE"
+export function getRFP(rfpId: number) {
+  let endpoint = `/v1.0/rfps/${rfpId}`
+  return createApiAction(
+    {
+      method: "GET",
+      endpoint,
+      types: [
+        {type: GET_RFP_REQUEST},
+        {type: GET_RFP_SUCCESS},
+        {type: GET_RFP_FAILURE},
       ],
     },
     {

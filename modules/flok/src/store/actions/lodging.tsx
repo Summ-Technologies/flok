@@ -50,19 +50,26 @@ export function getHotelByGuid(guid: string) {
   })
 }
 
-export const GET_SAMPLE_HOTELS_REQUEST = "GET_SAMPLE_HOTELS_REQUEST"
-export const GET_SAMPLE_HOTELS_SUCCESS = "GET_SAMPLE_HOTELS_SUCCESS"
-export const GET_SAMPLE_HOTELS_FAILURE = "GET_SAMPLE_HOTELS_FAILURE"
+export const GET_FILTERED_HOTELS_REQUEST = "GET_FILTERED_HOTELS_REQUEST"
+export const GET_FILTERED_HOTELS_SUCCESS = "GET_FILTERED_HOTELS_SUCCESS"
+export const GET_FILTERED_HOTELS_FAILURE = "GET_FILTERED_HOTELS_FAILURE"
 
-export function getSampleHotels() {
-  let endpoint = `/v1.0/hotels/sample`
+export function getFilteredHotels(filterRequest: {
+  price_range?: string[]
+  max_rooms?: number
+  tags?: number[]
+  min_rooms?: number
+  max_distance_from_airport?: number
+}) {
+  let endpoint = `/v1.0/hotels/venue-sourcing`
   return createApiAction({
     endpoint,
-    method: "GET",
+    method: "POST",
+    body: JSON.stringify(filterRequest),
     types: [
-      GET_SAMPLE_HOTELS_REQUEST,
-      GET_SAMPLE_HOTELS_SUCCESS,
-      GET_SAMPLE_HOTELS_FAILURE,
+      GET_FILTERED_HOTELS_REQUEST,
+      GET_FILTERED_HOTELS_SUCCESS,
+      GET_FILTERED_HOTELS_FAILURE,
     ],
   })
 }
@@ -82,4 +89,16 @@ export function getLodgingTags() {
       GET_LODGING_TAGS_FAILURE,
     ],
   })
+}
+
+export const ADD_GOOGLE_PLACE = "ADD_GOOGLE_PLACE"
+
+export function addGooglePlace(place: {
+  name: string
+  place_id: string
+  lat?: number
+  lng?: number
+}) {
+  let action = {...place, type: ADD_GOOGLE_PLACE}
+  return action
 }

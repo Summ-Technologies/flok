@@ -1,5 +1,6 @@
-import {Button, makeStyles, Paper} from "@material-ui/core"
+import {Button, Link, makeStyles, Paper} from "@material-ui/core"
 import {useDispatch} from "react-redux"
+import {Link as RouterLink} from "react-router-dom"
 import {DestinationModel, HotelModel} from "../../models/lodging"
 import {useRetreat} from "../../pages/misc/RetreatProvider"
 import {postSelectedHotel} from "../../store/actions/retreat"
@@ -118,6 +119,12 @@ let useStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(1),
     backgroundColor: theme.palette.grey[300], // matching chip default background color
   },
+  hotelName: {
+    color: theme.palette.common.black,
+    "&:hover": {
+      textDecoration: "none",
+    },
+  },
 }))
 
 type ProposalListRowProps = {
@@ -125,6 +132,8 @@ type ProposalListRowProps = {
   destination: DestinationModel
   selected?: boolean
   setModalOpen: () => void
+  hotelLinkTo: string
+  outOfRequests: boolean
 }
 function HotelForRFPRow(props: ProposalListRowProps) {
   let {hotel, destination} = {
@@ -138,17 +147,25 @@ function HotelForRFPRow(props: ProposalListRowProps) {
     <Paper elevation={0} className={classes.card}>
       <div className={classes.imgAndBodyContainer}>
         <div className={classes.imgContainer}>
-          <img
-            src={hotel.spotlight_img.image_url}
-            alt={`${hotel.name} spotlight`}
-          />
+          <Link to={props.hotelLinkTo} component={RouterLink}>
+            <img
+              src={hotel.spotlight_img.image_url}
+              alt={`${hotel.name} spotlight`}
+            />
+          </Link>
         </div>
+
         <div className={classes.cardBody}>
           <div className={classes.headerContainer}>
             <AppTypography variant="body2" color="textSecondary" uppercase>
               {DestinationUtils.getLocationName(destination, true, hotel)}
             </AppTypography>
-            <AppTypography variant="h4">{hotel.name}</AppTypography>
+            <Link
+              to={props.hotelLinkTo}
+              className={classes.hotelName}
+              component={RouterLink}>
+              <AppTypography variant="h4">{hotel.name}</AppTypography>
+            </Link>
           </div>
           <div className={classes.attributeTagsContainer}>
             {hotel.airport_travel_time && (
@@ -180,16 +197,6 @@ function HotelForRFPRow(props: ProposalListRowProps) {
                 </AppTypography>
               </div>
             )}
-            {hotel.price && (
-              <div className={classes.attributeTag}>
-                <AppTypography variant="body2" noWrap uppercase>
-                  Price
-                </AppTypography>
-                <AppTypography variant="body1" fontWeight="bold">
-                  {hotel.price}
-                </AppTypography>
-              </div>
-            )}
           </div>
           <div className={classes.lodgingTagsContainer}>
             {hotel.lodging_tags.map((tag) => {
@@ -215,16 +222,27 @@ function HotelForRFPRow(props: ProposalListRowProps) {
         variant={"outlined"}
         size="small"
         color="primary"
-        disabled={props.selected}
+        disabled={props.selected || props.outOfRequests}
         onClick={() => {
-          if (retreat.request_for_proposal) {
-            dispatch(postSelectedHotel("REQUESTED", retreat.id, hotel.id))
+          if (retreat.request_for_proposal_id) {
+            dispatch(
+              postSelectedHotel(
+                "REQUESTED",
+                retreat.id,
+                hotel.id,
+                retreat.request_for_proposal_id
+              )
+            )
           } else {
             props.setModalOpen()
           }
         }}>
         <AppTypography variant="inherit" noWrap>
-          {props.selected ? "Requested" : "Request Proposal"}
+          {props.selected
+            ? "Requested"
+            : props.outOfRequests
+            ? "No Requests Remaining"
+            : "Request Proposal"}
         </AppTypography>
       </Button>
     </Paper>

@@ -1,8 +1,12 @@
 import {
+  Avatar,
   Button,
   Checkbox,
+  Chip,
+  CircularProgress,
   Dialog,
   DialogContent,
+  Divider,
   FormControl,
   FormControlLabel,
   IconButton,
@@ -13,25 +17,41 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core"
-import {Cancel, ExpandLess, ExpandMore} from "@material-ui/icons"
-import {Autocomplete} from "@material-ui/lab"
+import {
+  ArrowBackIos,
+  ArrowForwardIos,
+  Cancel,
+  Close,
+  ExpandLess,
+  ExpandMore,
+  Tune,
+} from "@material-ui/icons"
 import querystring from "querystring"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Link as ReactRouterLink} from "react-router-dom"
-import {HotelModel} from "../../models/lodging"
-import {PriceOption} from "../../models/retreat"
+import {GooglePlace, HotelModel} from "../../models/lodging"
+import {RetreatSelectedHotelProposal} from "../../models/retreat"
 import LoadingPage from "../../pages/misc/LoadingPage"
 import {useRetreat} from "../../pages/misc/RetreatProvider"
 import {AppRoutes} from "../../Stack"
 import {RootState} from "../../store"
 import {ApiAction} from "../../store/actions/api"
-import {getLodgingTags, getSampleHotels} from "../../store/actions/lodging"
-import {useQuery, useQueryAsList} from "../../utils"
-import {useDestinations} from "../../utils/lodgingUtils"
+import {
+  addGooglePlace,
+  getFilteredHotels,
+  getLodgingTags,
+} from "../../store/actions/lodging"
+import {useQuery, useQueryAsList, useScript} from "../../utils"
+import {
+  fetchGooglePlace,
+  useDestinations,
+  useGooglePlaceId,
+} from "../../utils/lodgingUtils"
 import AppTypography from "../base/AppTypography"
 import PageBody from "../page/PageBody"
 import PageHeader from "../page/PageHeader"
+import GooglePlacesAutoComplete from "./GoogleLocationsAutoComplete"
 import HotelForRFPRow from "./HotelForRFPRow"
 
 let useStyles = makeStyles((theme) => ({
@@ -61,6 +81,9 @@ let useStyles = makeStyles((theme) => ({
   },
   filterBody: {
     padding: theme.spacing(2),
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(2),
   },
   filterBodyWrapper: {
     display: "flex",
@@ -80,31 +103,54 @@ let useStyles = makeStyles((theme) => ({
     gap: theme.spacing(12),
   },
   slider: {
-    width: 300,
-    marginTop: theme.spacing(4.5),
-    marginLeft: theme.spacing(4.5),
-    marginRight: theme.spacing(3),
-  },
-  priceRangeFilterWrapper: {
-    display: "flex",
-    marginTop: "8px",
-    flexDirection: "column",
+    marginTop: theme.spacing(5),
+    marginLeft: "auto",
+    marginRight: "auto",
+    width: "80%",
   },
   hotelTagsWrapper: {
     maxWidth: 300,
     overflow: "scroll",
     display: "flex",
     flexDirection: "column",
-    maxHeight: 320,
   },
   RFPRowWrapper: {
     marginTop: theme.spacing(2),
     marginLeft: theme.spacing(3),
     marginRight: theme.spacing(3),
   },
+  filterDivider: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+  filterTitle: {
+    marginBottom: theme.spacing(3),
+  },
+  loadingWheel: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: theme.spacing(5),
+  },
+  loadingWheelContainer: {
+    display: "flex",
+  },
+  avatar: {
+    backgroundColor: theme.palette.primary.main,
+    height: 30,
+    width: 30,
+    marginLeft: theme.spacing(1),
+  },
+  filterChip: {
+    cursor: "pointer",
+    backgroundColor: theme.palette.common.white,
+  },
 }))
 
 function HotelSourcingPage() {
+  const API_KEY = "AIzaSyBNW3s0RPJx7CRFbYWhHJpIAHyN7GrGVgE"
+  let [googleMapScriptLoaded] = useScript(
+    `https://maps.googleapis.com/maps/api/js?libraries=places&key=${API_KEY}`
+  )
   let classes = useStyles()
   const [hotels, setHotels] = useState<HotelModel[]>([])
   let [retreat, retreatIdx] = useRetreat()
@@ -115,8 +161,9 @@ function HotelSourcingPage() {
   let [maxDistanceFromAirportQuery, setMaxDistanceFromAirportQuery] = useQuery(
     "distance-from-airport"
   )
-  let [priceRangeQuery, setPriceRangeQuery] = useQueryAsList("price")
   let [locationListQuery, setLocationListQuery] = useQueryAsList("location")
+  let [pageQuery, setPageQuery] = useQuery("page")
+  let [total, setTotal] = useState(0)
 
   // to pass as a next parameter
   let queryParams: {[param: string]: string | string[]} = {}
@@ -126,14 +173,17 @@ function HotelSourcingPage() {
   if (roomsMinQuery) {
     queryParams["rooms-min"] = roomsMinQuery
   }
-  if (hotelTagsQuery) {
+  if (hotelTagsQuery[0]) {
     queryParams["tags"] = hotelTagsQuery
   }
   if (maxDistanceFromAirportQuery) {
     queryParams["distance-from-airport"] = maxDistanceFromAirportQuery
   }
-  if (priceRangeQuery) {
-    queryParams["price"] = priceRangeQuery
+  if (locationListQuery[0]) {
+    queryParams["location"] = locationListQuery
+  }
+  if (pageQuery) {
+    queryParams["page"] = pageQuery
   }
 
   let dispatch = useDispatch()
@@ -151,62 +201,48 @@ function HotelSourcingPage() {
     maxDistanceFromAirportQuery ? parseInt(maxDistanceFromAirportQuery) : 180
   )
   let lodgingTags = useSelector((state: RootState) => {
-    return Object.values(state.lodging.lodgingTags)
+    return state.lodging.lodgingTags
   })
   let [selectedTags, setSelectedTags] = useState<{[id: number]: boolean}>({})
-  let [priceRange, setPriceRange] = useState<{[price: string]: boolean}>({
-    $: false,
-    $$: false,
-    $$$: false,
-    $$$$: false,
-  })
-
-  let priceOptions = Object.keys(priceRange)
 
   let [fillRFPModalOpen, setFillRFPModalOpen] = useState(false)
 
-  let selectedHotelsMap: {[hotelId: number]: boolean} = {}
+  let selectedHotelsMap: {[hotelId: number]: RetreatSelectedHotelProposal} = {}
   retreat.selected_hotels.forEach((selectedHotel) => {
-    selectedHotelsMap[selectedHotel.hotel_id] = true
+    selectedHotelsMap[selectedHotel.hotel_id] = selectedHotel
   })
   let [locationList, setLocationList] = useState<string[]>([])
+  let numberHotelsRequested = Object.values(selectedHotelsMap).filter(
+    (hotel) => hotel.created_by === "USER"
+  ).length
+
+  let maxNumberOfRequests = 10
 
   useEffect(() => {
     if (maxDistanceFromAirportQuery) {
       setMaxDistanceFromAirport(parseInt(maxDistanceFromAirportQuery))
+      // setPageQuery(null)
     }
   }, [maxDistanceFromAirportQuery])
   useEffect(() => {
     if (roomsMaxQuery) {
       setMaxNumberOfRooms(parseInt(roomsMaxQuery))
+      // setPageQuery(null)
     }
   }, [roomsMaxQuery])
   useEffect(() => {
     if (roomsMinQuery) {
       setMinNumberOfRooms(parseInt(roomsMinQuery))
+      // setPageQuery(null)
     }
   }, [roomsMinQuery])
 
   useEffect(() => {
     if (locationListQuery) {
       setLocationList(locationListQuery)
+      // setPageQuery(null)
     }
   }, [locationListQuery])
-
-  useEffect(() => {
-    if (priceRangeQuery) {
-      let priceRangeMap = {
-        $: false,
-        $$: false,
-        $$$: false,
-        $$$$: false,
-      }
-      priceRangeQuery.forEach((price) => {
-        priceRangeMap[price as PriceOption] = true
-      })
-      setPriceRange(priceRangeMap)
-    }
-  }, [priceRangeQuery])
 
   useEffect(() => {
     if (hotelTagsQuery) {
@@ -219,19 +255,125 @@ function HotelSourcingPage() {
   }, [hotelTagsQuery])
 
   let [testValue, setTestValue] = useState("")
+  let [seeMoreHotelTags, setSeeMoreHotelTags] = useState(false)
+  let googlePlaces = useSelector((state: RootState) => {
+    return state.lodging.googlePlaces
+  })
 
-  async function getHotels() {
-    setLoadingHotels(true)
-    let response = (await dispatch(getSampleHotels())) as unknown as ApiAction
-    if (!response.error) {
-      setHotels(response.payload.hotels)
-    }
-    setLoadingHotels(false)
-  }
   useEffect(() => {
-    !hotels[0] && getHotels()
-    !lodgingTags[0] && dispatch(getLodgingTags())
-  }, [])
+    !Object.values(lodgingTags)[0] && dispatch(getLodgingTags())
+  }, [dispatch, lodgingTags])
+
+  useEffect(() => {
+    async function getHotels(filterRequest: {
+      max_rooms?: number
+      tags?: number[]
+      min_rooms?: number
+      max_distance_from_airport?: number
+      locations?: {lat: number; lng: number; distance: number}[]
+      offset?: number
+    }) {
+      setLoadingHotels(true)
+      let response = (await dispatch(
+        getFilteredHotels(filterRequest)
+      )) as unknown as ApiAction
+      if (!response.error) {
+        setHotels(response.payload.hotels)
+        setTotal(response.payload.total)
+      }
+
+      setLoadingHotels(false)
+    }
+    if (!showFilters) {
+      let filters: {
+        tags?: number[]
+        max_rooms?: number
+        min_rooms?: number
+        max_distance_from_airport?: number
+        locations?: {lat: number; lng: number; distance: number}[]
+        offset?: number
+      } = {}
+      if (hotelTagsQuery[0]) {
+        filters.tags = hotelTagsQuery.map((tag) => parseInt(tag))
+      }
+      if (pageQuery) {
+        filters.offset = (parseInt(pageQuery) - 1) * 30
+      }
+      if (maxDistanceFromAirportQuery) {
+        filters.max_distance_from_airport = parseInt(
+          maxDistanceFromAirportQuery
+        )
+      }
+      if (roomsMaxQuery) {
+        filters.max_rooms = parseInt(roomsMaxQuery)
+      }
+      if (roomsMinQuery) {
+        filters.min_rooms = parseInt(roomsMinQuery)
+      }
+
+      if (isValidLocations(locationListQuery, googlePlaces)) {
+        if (locationListQuery) {
+          locationListQuery.forEach((locationString) => {
+            let placeId = locationString.split(":")[0]
+            let distance = locationString.split(":")[1]
+            let location = {
+              lat: googlePlaces[placeId].lat,
+              lng: googlePlaces[placeId].lng,
+              distance: parseInt(distance),
+            }
+            filters = {
+              ...filters,
+              // @ts-ignore
+              locations: filters.locations
+                ? [...filters.locations, location]
+                : [location],
+            }
+          })
+        }
+        getHotels(filters)
+      }
+    }
+  }, [
+    hotelTagsQuery,
+    maxDistanceFromAirportQuery,
+    roomsMaxQuery,
+    roomsMinQuery,
+    locationListQuery,
+    googlePlaces,
+    showFilters,
+    dispatch,
+    pageQuery,
+  ])
+
+  function isValidLocations(
+    locationListQuery: string[],
+    googlePlaces: {[place_id: string]: GooglePlace}
+  ) {
+    let isValid = true
+    for (let i = 0; i < locationListQuery.length; i++) {
+      let placeId = locationListQuery[i].split(":")[0]
+      if (
+        !googlePlaces[placeId] ||
+        !googlePlaces[placeId].lat ||
+        !googlePlaces[placeId].lng
+      ) {
+        isValid = false
+      }
+    }
+    return isValid
+  }
+
+  useEffect(() => {
+    if (googleMapScriptLoaded) {
+      locationListQuery.forEach((locationString) => {
+        let placeId = locationString.split(":")[0]
+        fetchGooglePlace(placeId, (place) => {
+          dispatch(addGooglePlace(place))
+        })
+      })
+    }
+  }, [locationListQuery, googleMapScriptLoaded, dispatch])
+
   const distanceFromAirportMarks = [
     {
       value: 15,
@@ -260,7 +402,14 @@ function HotelSourcingPage() {
       label: "1000 +",
     },
   ]
-  if (loadingHotels || loadingDestinations) {
+
+  useEffect(() => {
+    if (!showFilters) {
+      setPageQuery(null)
+    }
+  }, [showFilters])
+
+  if (loadingDestinations || (!hotels[0] && loadingHotels)) {
     return <LoadingPage />
   }
   return (
@@ -273,6 +422,15 @@ function HotelSourcingPage() {
             </AppTypography>
           }
           subheader="Find the best venues for your company retreat"
+          postHeader={
+            <AppTypography>
+              {maxNumberOfRequests - numberHotelsRequested > 0
+                ? `${
+                    maxNumberOfRequests - numberHotelsRequested
+                  } requests remaining`
+                : "No requests remaining.  Please contact Flok if you would like to add more."}
+            </AppTypography>
+          }
         />
         <Dialog
           open={fillRFPModalOpen}
@@ -300,7 +458,7 @@ function HotelSourcingPage() {
                     retreatIdx: retreatIdx.toString(),
                   }) +
                     (Object.keys(queryParams).length > 0
-                      ? "?" + querystring.stringify(queryParams)
+                      ? "?" + querystring.stringify(queryParams, "&")
                       : "")
                 )
               }>
@@ -316,291 +474,368 @@ function HotelSourcingPage() {
             onClick={() => {
               setShowFilters((filters) => !filters)
             }}>
-            <Typography>Filters</Typography>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                marginLeft: "16px",
+                marginRight: "auto",
+                gap: "4px",
+              }}>
+              {locationList[0] ? (
+                locationList.length === 1 ? (
+                  <Chip
+                    className={classes.filterChip}
+                    label={
+                      googlePlaces[locationList[0].split(":")[0]]
+                        ? `${googlePlaces[locationList[0].split(":")[0]].name}`
+                        : `${locationList.length} location`
+                    }
+                    variant="outlined"
+                  />
+                ) : (
+                  <Chip
+                    className={classes.filterChip}
+                    label={`${locationList.length} locations`}
+                    variant="outlined"
+                  />
+                )
+              ) : (
+                <Chip
+                  className={classes.filterChip}
+                  label={"Anywhere"}
+                  variant="outlined"
+                />
+              )}
+              <Chip
+                className={classes.filterChip}
+                label={`Rooms: ${minNumberOfRooms} - ${maxNumberOfRooms}`}
+                variant="outlined"
+              />
 
-            {showFilters ? <ExpandLess /> : <ExpandMore />}
-            <Typography className={classes.filterOverviewText}>
-              Rooms: {minNumberOfRooms} - {maxNumberOfRooms} | Max Distance from
-              Airport: {maxDistanceFromAirport} min | Price Range:{" "}
-              {Object.entries(priceRange)
-                .filter((option) => option[1])
-                .map((option) => option[0]).length > 0
-                ? Object.entries(priceRange)
-                    .filter((option) => option[1])
-                    .map((option) => option[0])
-                    .join(", ")
-                : "Any"}{" "}
-              |{" "}
-              {
+              <Chip
+                className={classes.filterChip}
+                label={`Max Distance from Airport: ${maxDistanceFromAirport} min`}
+                variant="outlined"
+              />
+              <Chip
+                className={classes.filterChip}
+                variant="outlined"
+                label={`${
+                  Object.values(selectedTags).filter((tag) => {
+                    return tag === true
+                  }).length
+                }
+              Tag${
                 Object.values(selectedTags).filter((tag) => {
                   return tag === true
-                }).length
-              }{" "}
-              Tag
-              {Object.values(selectedTags).filter((tag) => {
-                return tag === true
-              }).length === 1
-                ? ""
-                : "s"}{" "}
-              Selected{" "}
-              {locationList[0]
-                ? locationList.length === 1
-                  ? `| ${
-                      destinations[parseInt(locationList[0].split(":")[0])]
-                        .location
-                    }`
-                  : `| ${locationList.length} locations`
-                : ""}
-            </Typography>
+                }).length === 1
+                  ? ""
+                  : "s"
+              }
+              Selected`}
+              />
+
+              <Avatar className={classes.avatar}>
+                <Tune fontSize="small" />
+              </Avatar>
+            </div>
           </div>
+
           {showFilters && (
-            <Paper className={classes.filterBody}>
-              <div className={classes.filterBodyWrapper}>
-                <div>
-                  <div className={classes.filterLocations}>
-                    <Typography variant="h4">Locations</Typography>
-                    <div className={classes.filterLocationsFilter}>
-                      <Autocomplete
-                        disableClearable
-                        selectOnFocus
-                        onInputChange={(e, value, reason) => {
-                          if (reason === "reset") {
-                            setTestValue("")
-                          } else {
-                            setTestValue(value)
-                          }
-                        }}
-                        inputValue={testValue}
-                        onChange={(e, value, reason) => {
-                          if (
-                            reason === "select-option" &&
-                            value &&
-                            locationListQuery
-                              .map(
-                                (locationString) => locationString.split(":")[0]
-                              )
-                              .indexOf(value.id.toString()) === -1
-                          ) {
-                            setLocationListQuery([
-                              ...locationListQuery,
-                              value.id.toString() + ":100",
-                            ])
-                          }
-                        }}
-                        renderInput={(params) => (
-                          <TextField {...params} placeholder="Add location" />
-                        )}
-                        clearOnBlur
-                        options={Object.values(destinations)}
-                        getOptionLabel={(option) =>
-                          option.location
-                        }></Autocomplete>
-                      {locationList.map((location, index) => {
-                        let id = location.split(":")[0]
-                        let distance = location.split(":")[1]
-                        return (
-                          <LocationItem
-                            distance={parseInt(distance)}
-                            onChangeDistance={(newDistance) => {
-                              console.log(newDistance)
-                              let locationListCopy = [...locationListQuery]
-                              locationListCopy[index] = `${id}:${newDistance}`
-                              setLocationListQuery([...locationListCopy])
-                            }}
-                            location={destinations[parseInt(id)].location}
-                            onDelete={() => {
-                              let locationsCopy = [...locationListQuery]
-                              let locationsToIds = locationsCopy.map(
-                                (location) => location.split(":")[0]
-                              )
-                              var index = locationsToIds.indexOf(id.toString())
-                              if (index !== -1) {
-                                locationsCopy.splice(index, 1)
-                              }
-                              setLocationListQuery([...locationsCopy])
-                            }}
-                          />
-                        )
-                      })}
-                    </div>
-                  </div>
-                  <div className={classes.sliderFiltersDiv}>
-                    <div>
-                      <Typography variant="h4">Number of Rooms</Typography>
-                      <Slider
-                        className={classes.slider}
-                        step={100}
-                        marks={roomNumberMarks}
-                        min={0}
-                        max={1000}
-                        valueLabelDisplay="on"
-                        value={[minNumberOfRooms, maxNumberOfRooms]}
-                        onChange={(event, newValue: number | number[]) => {
-                          let newValueArray = newValue as number[]
-                          if (roomsMaxQuery !== newValueArray[1].toString()) {
-                            setRoomsMaxQuery(newValueArray[1].toString())
-                          }
-                          if (roomsMinQuery !== newValueArray[0].toString()) {
-                            setRoomsMinQuery(newValueArray[0].toString())
-                          }
-                        }}></Slider>
-                      <Typography variant="h4">
-                        Maximum Distance From the Airport
-                      </Typography>
-                      <Slider
-                        className={classes.slider}
-                        step={15}
-                        marks={distanceFromAirportMarks}
-                        min={15}
-                        max={180}
-                        valueLabelDisplay="on"
-                        value={maxDistanceFromAirport}
-                        onChange={(event, newValue: number | number[]) => {
-                          setMaxDistanceFromAirportQuery(newValue.toString())
-                        }}></Slider>
-                    </div>
-
-                    <div>
-                      <Typography variant="h4">Price Range</Typography>
-
-                      <div className={classes.priceRangeFilterWrapper}>
-                        {priceOptions.map((option) => {
-                          return (
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={
-                                    priceRange[
-                                      option as unknown as keyof typeof priceRange
-                                    ]
-                                  }
-                                  onChange={(e) => {
-                                    if (
-                                      !priceRange[
-                                        option as unknown as keyof typeof priceRange
-                                      ]
-                                    ) {
-                                      setPriceRangeQuery([
-                                        ...priceRangeQuery,
-                                        option,
-                                      ])
-                                    } else {
-                                      let priceRangeQueryCopy = [
-                                        ...priceRangeQuery,
-                                      ]
-                                      var index =
-                                        priceRangeQueryCopy.indexOf(option)
-                                      if (index !== -1) {
-                                        priceRangeQueryCopy.splice(index, 1)
-                                      }
-                                      setPriceRangeQuery([
-                                        ...priceRangeQueryCopy,
-                                      ])
-                                    }
-                                  }}
-                                  name={option}
-                                  color="primary"
-                                />
-                              }
-                              label={option}
-                            />
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className={classes.hotelTagsWrapper}>
-                  <Typography variant="h4">Hotel Tags</Typography>
-                  {lodgingTags.map((tag) => {
-                    return (
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={selectedTags[tag.id]}
-                            onChange={(e) => {
-                              if (!selectedTags[tag.id]) {
-                                setHotelTagsQuery([
-                                  ...hotelTagsQuery,
-                                  tag.id.toString(),
-                                ])
-                              } else {
-                                let hotelTagsCopy = [...hotelTagsQuery]
-                                var index = hotelTagsCopy.indexOf(
-                                  tag.id.toString()
-                                )
-                                if (index !== -1) {
-                                  hotelTagsCopy.splice(index, 1)
-                                }
-                                setHotelTagsQuery([...hotelTagsCopy])
-                              }
-                            }}
-                            name={tag.name}
-                            color="primary"
-                          />
-                        }
-                        label={tag.name}
-                      />
-                    )
-                  })}
-                </div>
+            <Dialog
+              open={showFilters}
+              fullWidth
+              onClose={() => {
+                setShowFilters(false)
+              }}>
+              <div
+                style={{
+                  marginTop: 12,
+                  marginBottom: 12,
+                  display: "flex",
+                  alignItems: "center",
+                }}>
+                <IconButton
+                  onClick={() => {
+                    setShowFilters(false)
+                  }}>
+                  <Close />
+                </IconButton>
+                <Typography
+                  style={{
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    fontSize: "0.9rem",
+                    fontWeight: "bold",
+                  }}>
+                  Filters
+                </Typography>
               </div>
-            </Paper>
+              <Divider />
+              <Paper className={classes.filterBody}>
+                <div className={classes.filterLocations}>
+                  <Typography
+                    variant="h5"
+                    className={classes.filterTitle}
+                    style={{fontSize: "1rem"}}>
+                    Locations
+                  </Typography>
+                  <div className={classes.filterLocationsFilter}>
+                    <GooglePlacesAutoComplete
+                      selectedOptions={locationList.map((location, index) => {
+                        return location.split(":")[0]
+                      })}
+                      types={["(cities)"]}
+                      clearOnBlur
+                      disableClearable
+                      selectOnFocus
+                      onInputChange={(e, value, reason) => {
+                        if (reason === "reset") {
+                          setTestValue("")
+                        } else {
+                          setTestValue(value)
+                        }
+                      }}
+                      inputValue={testValue}
+                      onChange={(e, value, reason) => {
+                        if (reason === "select-option" && value) {
+                          dispatch(
+                            addGooglePlace({
+                              place_id: value.place_id,
+                              name: value.structured_formatting.main_text,
+                            })
+                          )
+                          // await setPageQuery(null)
+                          setLocationListQuery([
+                            ...locationListQuery,
+                            value.place_id + ":100",
+                          ])
+                        }
+                      }}
+                    />
+                    {locationList.map((location, index) => {
+                      let id = location.split(":")[0]
+                      let distance = location.split(":")[1]
+                      return (
+                        <LocationItem
+                          key={id}
+                          distance={parseInt(distance)}
+                          onChangeDistance={(newDistance) => {
+                            let locationListCopy = [...locationListQuery]
+                            locationListCopy[index] = `${id}:${newDistance}`
+                            setLocationListQuery([...locationListCopy])
+                          }}
+                          placeId={id}
+                          onDelete={() => {
+                            let locationsCopy = [...locationListQuery]
+                            let locationsToIds = locationsCopy.map(
+                              (location) => location.split(":")[0]
+                            )
+                            var index = locationsToIds.indexOf(id.toString())
+                            if (index !== -1) {
+                              locationsCopy.splice(index, 1)
+                            }
+                            setLocationListQuery([...locationsCopy])
+                          }}
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+                <Divider className={classes.filterDivider} />
+
+                <div style={{display: "flex", flexDirection: "column"}}>
+                  <Typography
+                    variant="h5"
+                    className={classes.filterTitle}
+                    style={{fontSize: "1rem"}}>
+                    Number of Rooms
+                  </Typography>
+                  <Slider
+                    className={classes.slider}
+                    step={100}
+                    marks={roomNumberMarks}
+                    min={0}
+                    max={1000}
+                    valueLabelDisplay="on"
+                    value={[minNumberOfRooms, maxNumberOfRooms]}
+                    onChange={(event, newValue: number | number[]) => {
+                      let newValueArray = newValue as number[]
+                      if (roomsMaxQuery !== newValueArray[1].toString()) {
+                        setRoomsMaxQuery(newValueArray[1].toString())
+                      }
+                      if (roomsMinQuery !== newValueArray[0].toString()) {
+                        setRoomsMinQuery(newValueArray[0].toString())
+                      }
+                    }}></Slider>
+                </div>
+                <Divider className={classes.filterDivider} />
+                <div style={{display: "flex", flexDirection: "column"}}>
+                  <Typography
+                    variant="h5"
+                    className={classes.filterTitle}
+                    style={{fontSize: "1rem"}}>
+                    Maximum Distance From the Airport
+                  </Typography>
+                  <Slider
+                    className={classes.slider}
+                    step={15}
+                    marks={distanceFromAirportMarks}
+                    min={15}
+                    max={180}
+                    valueLabelDisplay="on"
+                    value={maxDistanceFromAirport}
+                    onChange={(event, newValue: number | number[]) => {
+                      setMaxDistanceFromAirportQuery(newValue.toString())
+                    }}></Slider>
+                </div>
+                <Divider className={classes.filterDivider} />
+                <Divider className={classes.filterDivider} />
+                <div className={classes.hotelTagsWrapper}>
+                  <Typography
+                    variant="h5"
+                    className={classes.filterTitle}
+                    style={{fontSize: "1rem"}}>
+                    Hotel Tags
+                  </Typography>
+                  {Object.values(lodgingTags)
+                    .slice(
+                      0,
+                      seeMoreHotelTags
+                        ? Object.values(lodgingTags).length
+                        : Math.min(4, Object.values(lodgingTags).length)
+                    )
+                    .map((tag) => {
+                      return (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={selectedTags[tag.id]}
+                              onChange={(e) => {
+                                if (!selectedTags[tag.id]) {
+                                  setHotelTagsQuery([
+                                    ...hotelTagsQuery,
+                                    tag.id.toString(),
+                                  ])
+                                } else {
+                                  let hotelTagsCopy = [...hotelTagsQuery]
+                                  var index = hotelTagsCopy.indexOf(
+                                    tag.id.toString()
+                                  )
+                                  if (index !== -1) {
+                                    hotelTagsCopy.splice(index, 1)
+                                  }
+                                  setHotelTagsQuery([...hotelTagsCopy])
+                                }
+                              }}
+                              name={tag.name}
+                              color="primary"
+                            />
+                          }
+                          label={tag.name}
+                        />
+                      )
+                    })}
+                  <Button
+                    style={{width: "50%"}}
+                    onClick={() => {
+                      setSeeMoreHotelTags(
+                        (seeMoreHotelTags) => !seeMoreHotelTags
+                      )
+                    }}>
+                    {seeMoreHotelTags ? <ExpandLess /> : <ExpandMore />}
+                    {seeMoreHotelTags ? "Show Less" : "Show More"}
+                  </Button>
+                </div>
+              </Paper>
+            </Dialog>
           )}
         </div>
-        {hotels
-          .filter((hotel) => {
-            let maxRooms =
-              maxNumberOfRooms === 1000 ? Infinity : maxNumberOfRooms
-            let minRooms = minNumberOfRooms
-            let distanceFromAirport =
-              maxDistanceFromAirport === 180 ? Infinity : maxDistanceFromAirport
-            let tagged = true
-            for (let tag of Object.keys(selectedTags)) {
-              let numberTag = parseInt(tag)
-              if (
-                selectedTags[numberTag] &&
-                !hotel.lodging_tags_filter_dict[numberTag]
-              ) {
-                tagged = false
-              }
-            }
-            let inPriceRange = true
-            if (
-              Object.entries(priceRange)
-                .filter((option) => option[1])
-                .map((option) => option[0]).length > 0
-            ) {
-              inPriceRange = priceRange[hotel.price as keyof typeof priceRange]
-            }
-            return (
-              hotel.num_rooms &&
-              hotel.num_rooms >= minRooms &&
-              hotel.num_rooms <= maxRooms &&
-              hotel.airport_travel_time &&
-              hotel.airport_travel_time <= distanceFromAirport &&
-              tagged &&
-              inPriceRange
-            )
-          })
-          .map((hotel) => {
+        {loadingHotels ? (
+          <div className={classes.loadingWheelContainer}>
+            <CircularProgress size="3rem" className={classes.loadingWheel} />
+          </div>
+        ) : (
+          hotels.map((hotel) => {
             let destination = destinations[hotel.destination_id]
             if (destination) {
               return (
                 <div className={classes.RFPRowWrapper}>
                   <HotelForRFPRow
+                    outOfRequests={
+                      maxNumberOfRequests - numberHotelsRequested === 0
+                    }
+                    hotelLinkTo={
+                      AppRoutes.getPath("RetreatLodgingHotelProfilePage", {
+                        retreatIdx: retreatIdx.toString(),
+                        hotelGuid: hotel.guid,
+                      }) +
+                      "?last=" +
+                      encodeURIComponent(
+                        AppRoutes.getPath("HotelSourcingPage", {
+                          retreatIdx: retreatIdx.toString(),
+                        }) +
+                          (Object.values(queryParams).length > 0
+                            ? "?" + querystring.stringify(queryParams, "&")
+                            : "")
+                      )
+                    }
                     setModalOpen={() => {
                       setFillRFPModalOpen(true)
                     }}
                     hotel={hotel}
                     destination={destination}
-                    selected={selectedHotelsMap[hotel.id]}
+                    selected={!!selectedHotelsMap[hotel.id]}
                   />
                 </div>
               )
             }
-          })}
+          })
+        )}
       </div>
+      {!loadingHotels && (
+        <div
+          style={{
+            marginTop: 8,
+            marginBottom: 8,
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "auto",
+            marginRight: 24,
+            gap: 4,
+          }}>
+          <AppTypography>
+            {(pageQuery ? parseInt(pageQuery) - 1 : 0) * 30 + 1} -{" "}
+            {Math.min(
+              (pageQuery ? parseInt(pageQuery) - 1 : 0) * 30 + 1 + 29,
+              total
+            )}{" "}
+            of {total}
+          </AppTypography>
+          <IconButton
+            onClick={() => {
+              setPageQuery((pageQuery ? parseInt(pageQuery) - 1 : 0).toString())
+            }}
+            size="small"
+            disabled={!pageQuery || pageQuery === "1"}
+            style={{display: "flex"}}>
+            <ArrowBackIos />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              setPageQuery((pageQuery ? parseInt(pageQuery) + 1 : 2).toString())
+            }}
+            size="small"
+            disabled={
+              (pageQuery ? parseInt(pageQuery) - 1 : 0) * 30 + 1 + 29 >= total
+            }
+            style={{display: "flex"}}>
+            <ArrowForwardIos />
+          </IconButton>
+        </div>
+      )}
     </PageBody>
   )
 }
@@ -615,7 +850,7 @@ let useLocationItemStyles = makeStyles((theme) => ({
   },
 }))
 type LocationItemProps = {
-  location: string
+  placeId: string
   onDelete: () => void
   onChangeDistance: (newDistance: string) => void
   distance: number
@@ -623,10 +858,7 @@ type LocationItemProps = {
 
 function LocationItem(props: LocationItemProps) {
   let classes = useLocationItemStyles()
-  let [age, setAge] = useState(10)
-  const handleChange = (event: any) => {
-    setAge(event.target.value)
-  }
+  let location = useGooglePlaceId(props.placeId)
   return (
     <div className={classes.locationItem}>
       <AppTypography>Within</AppTypography>
@@ -647,7 +879,7 @@ function LocationItem(props: LocationItemProps) {
       </FormControl>
       <Typography style={{display: "flex"}}>
         miles of &nbsp;
-        <AppTypography fontWeight="bold">{props.location}</AppTypography>
+        <AppTypography fontWeight="bold">{location}</AppTypography>
       </Typography>
 
       <IconButton onClick={props.onDelete} size="small">

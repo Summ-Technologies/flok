@@ -33,6 +33,7 @@ import {
   GET_RETREAT_BY_GUID_SUCCESS,
   GET_RETREAT_FAILURE,
   GET_RETREAT_SUCCESS,
+  GET_RFP_SUCCESS,
   GET_TRIP_SUCCESS,
   GET_WEBSITE_SUCCESS,
   INSTANTIATE_ATTENDEE_TRIPS_SUCCESS,
@@ -80,6 +81,9 @@ export type RetreatState = {
   presetImages: {
     BANNER: PresetImageModel[]
   }
+  RFPs: {
+    [id: number]: RFPModel | undefined
+  }
 }
 
 const initialState: RetreatState = {
@@ -94,6 +98,7 @@ const initialState: RetreatState = {
   presetImages: {
     BANNER: [],
   },
+  RFPs: {},
 }
 
 export default function retreatReducer(
@@ -340,19 +345,15 @@ export default function retreatReducer(
       }
       return newPresetState
     case POST_RFP_SUCCESS:
+    case GET_RFP_SUCCESS:
       payload = (action as ApiAction).payload as {
         request_for_proposal: RFPModel
       }
-      let newRetreatId = payload.request_for_proposal.retreat_id
       let newRFPState = {...state}
-      let newRetreat = newRFPState.retreats[newRetreatId]
 
-      if (newRetreat !== ResourceNotFound) {
-        newRetreat.request_for_proposal = payload.request_for_proposal
-      }
-      newRFPState.retreats = {
-        ...newRFPState.retreats,
-        [newRetreatId]: newRetreat,
+      newRFPState.RFPs = {
+        ...newRFPState.RFPs,
+        [payload.request_for_proposal.id]: payload.request_for_proposal,
       }
       return newRFPState
     default:

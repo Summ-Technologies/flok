@@ -2,11 +2,13 @@ import {Action} from "redux"
 import {ResourceNotFound, ResourceNotFoundType} from "../../models"
 import {
   DestinationModel,
+  GooglePlace,
   HotelModel,
   LodgingTagModel,
 } from "../../models/lodging"
 import {ApiAction} from "../actions/api"
 import {
+  ADD_GOOGLE_PLACE,
   GET_DESTINATIONS_SUCCESS,
   GET_HOTELS_SUCCESS,
   GET_HOTEL_BY_GUID_FAILURE,
@@ -28,6 +30,8 @@ export type LodgingState = {
     [guid: string]: number | ResourceNotFoundType
   }
   lodgingTags: {[id: string]: LodgingTagModel}
+  // come back and type
+  googlePlaces: {[place_id: string]: GooglePlace}
 }
 
 const initialState: LodgingState = {
@@ -36,6 +40,7 @@ const initialState: LodgingState = {
   hotels: {},
   hotelsGuidMapping: {},
   lodgingTags: {},
+  googlePlaces: {},
 }
 
 export default function lodgingReducer(
@@ -101,6 +106,15 @@ export default function lodgingReducer(
         lodgingTags: {
           ...state.lodgingTags,
           ...newTags,
+        },
+      }
+    case ADD_GOOGLE_PLACE:
+      let newPlace = action as GooglePlace
+      return {
+        ...state,
+        googlePlaces: {
+          ...state.googlePlaces,
+          [newPlace.place_id]: newPlace,
         },
       }
     default:

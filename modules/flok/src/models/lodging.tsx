@@ -26,6 +26,7 @@ export type HotelModel = {
   destination_id: number
   sub_location?: string
   street_address?: string
+  address_coordinates?: [number, number]
 
   website_url: string
   description_short: string
@@ -44,4 +45,12 @@ export type HotelModel = {
 export type LodgingTagModel = {
   id: number
   name: string
+}
+
+export type GooglePlace = {
+  name: string
+  place_id: string
+  lat?: number
+  lng?: number
+  type: "ADD_GOOGLE_PLACE"
 }

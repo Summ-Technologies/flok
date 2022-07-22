@@ -48,6 +48,7 @@ export type RetreatSelectedHotelProposal = {
   hotel_id: number
   state: RetreatSelectedHotelProposalState
   hotel_proposals?: HotelLodgingProposal[]
+  created_by: "USER" | "ADMIN"
 }
 
 export type PresetImageModel = {
@@ -145,7 +146,7 @@ export type RetreatModel = {
   selected_hotels_ids: number[]
   selected_hotels: RetreatSelectedHotelProposal[]
   lodging_site_inspection_url?: string
-  request_for_proposal?: RFPModel
+  request_for_proposal_id?: number
 
   // Retreat data related to attendees
   attendees_state?: RetreatAttendeesState

@@ -12,6 +12,7 @@ import AttendeesPage from "./pages/dashboard/AttendeesPage"
 import BudgetEstimatePage from "./pages/dashboard/BudgetEstimatePage"
 import BudgetPage from "./pages/dashboard/BudgetPage"
 import FlightsPage from "./pages/dashboard/FlightsPage"
+import HotelProfilePage from "./pages/dashboard/HotelProfilePage"
 import LodgingContractPage from "./pages/dashboard/LodgingContractPage"
 import LodgingPage from "./pages/dashboard/LodgingPage"
 import LodgingProposalPage from "./pages/dashboard/LodgingProposalPage"
@@ -57,6 +58,8 @@ export class AppRoutes {
     RetreatLodgingProposalsPage: "/r/:retreatIdx/lodging/proposals",
     RetreatLodgingProposalPage: "/r/:retreatIdx/lodging/proposals/:hotelGuid", // no sidebar
     RetreatLodgingContractPage: "/r/:retreatIdx/lodging/contract", // no sidebar
+
+    RetreatLodgingHotelProfilePage: "/r/:retreatIdx/lodging/hotels/:hotelGuid", // no sidebar work in progress
 
     RetreatAttendeesPage: "/r/:retreatIdx/attendees",
     RetreatAttendeePage: "/r/:retreatIdx/attendees/:attendeeId",
@@ -210,6 +213,11 @@ export default function Stack() {
                 exact
                 path={AppRoutes.getPath("RetreatLodgingProposalPage")}>
                 <LodgingProposalPage />
+              </Route>
+              <Route
+                exact
+                path={AppRoutes.getPath("RetreatLodgingHotelProfilePage")}>
+                <HotelProfilePage />
               </Route>
               <Route
                 exact
