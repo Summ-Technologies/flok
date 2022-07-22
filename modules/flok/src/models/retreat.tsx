@@ -471,5 +471,3 @@ export type RFPModel = {
   agenda_notes?: string
   number_of_rooms: number
 }
-
-export type PriceOption = "$" | "$$" | "$$$" | "$$$$"

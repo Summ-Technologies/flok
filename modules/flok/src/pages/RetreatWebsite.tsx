@@ -1,7 +1,6 @@
 import {makeStyles} from "@material-ui/core"
 import {RawDraftContentState} from "draft-js"
 import draftToHtml from "draftjs-to-html"
-import {useDispatch} from "react-redux"
 import {RouteComponentProps} from "react-router-dom"
 import PageBody from "../components/page/PageBody"
 import PageContainer from "../components/page/PageContainer"
@@ -49,7 +48,6 @@ type RetreatWebsiteProps = RouteComponentProps<{
 
 function RetreatWebsite(props: RetreatWebsiteProps) {
   let {retreatName, pageName} = props.match.params
-  let dispatch = useDispatch()
   let classes = useStyles()
   function replaceDashes(str: string) {
     let strArray = str.split("")

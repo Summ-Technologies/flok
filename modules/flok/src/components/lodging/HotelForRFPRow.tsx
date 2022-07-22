@@ -86,7 +86,6 @@ let useStyles = makeStyles((theme) => ({
   },
   viewProposalButton: {
     alignSelf: "center",
-    // padding: "19px 22px",
     marginTop: "auto",
     marginLeft: "auto",
     marginBottom: theme.spacing(1),
@@ -108,7 +107,7 @@ let useStyles = makeStyles((theme) => ({
   },
   lodgingTag: {
     marginTop: 4,
-    color: "white",
+    color: theme.palette.common.white,
     borderRadius: theme.shape.borderRadius,
     display: "flex",
     flexDirection: "column",

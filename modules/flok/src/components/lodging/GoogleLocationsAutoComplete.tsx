@@ -9,9 +9,9 @@ import {
 import parse from "autosuggest-highlight/parse"
 import throttle from "lodash/throttle"
 import * as React from "react"
+import config, {GOOGLE_API_KEY} from "../../config"
+import {GooglePlace} from "../../models/lodging"
 import {useScript} from "../../utils"
-
-const GOOGLE_MAPS_API_KEY = "AIzaSyBNW3s0RPJx7CRFbYWhHJpIAHyN7GrGVgE"
 
 const autocompleteService = {current: null}
 
@@ -47,6 +47,7 @@ type GooglePlacesAutoCompleteProps = {
     reason: AutocompleteChangeReason,
     details?: AutocompleteChangeDetails<any> | undefined
   ) => void
+  clearOnSelect?: boolean
 }
 export default function GooglePlacesAutoComplete(
   props: GooglePlacesAutoCompleteProps
@@ -56,7 +57,9 @@ export default function GooglePlacesAutoComplete(
   const [options, setOptions] = React.useState<readonly PlaceType[]>([])
 
   let [googleMapScriptLoaded] = useScript(
-    `https://maps.googleapis.com/maps/api/js?libraries=places&key=${GOOGLE_MAPS_API_KEY}`
+    `https://maps.googleapis.com/maps/api/js?libraries=places&key=${config.get(
+      GOOGLE_API_KEY
+    )}`
   )
 
   let demoOptions = [
@@ -245,7 +248,6 @@ export default function GooglePlacesAutoComplete(
     }
 
     fetch(
-      // @ts-ignore
       {input: inputSearchValue, types: props.types},
       (results?: readonly PlaceType[]) => {
         if (active) {
@@ -267,7 +269,7 @@ export default function GooglePlacesAutoComplete(
     return () => {
       active = false
     }
-  }, [value, inputSearchValue, fetch, props.types])
+  }, [value, inputSearchValue, fetch, props.types, googleMapScriptLoaded])
 
   return (
     <Autocomplete
@@ -282,11 +284,12 @@ export default function GooglePlacesAutoComplete(
       options={
         !!inputSearchValue[0]
           ? (options.filter((x) => {
-              // @ts-ignore
-              return props.selectedOptions.indexOf(x.place_id) === -1
+              let place = x as unknown as GooglePlace
+              return props.selectedOptions.indexOf(place.place_id) === -1
             }) as PlaceType[])
           : demoOptions.filter((x) => {
-              return props.selectedOptions.indexOf(x.place_id) === -1
+              let place = x as unknown as GooglePlace
+              return props.selectedOptions.indexOf(place.place_id) === -1
             })
       }
       autoComplete
@@ -299,8 +302,9 @@ export default function GooglePlacesAutoComplete(
         setOptions(newValue ? [newValue, ...options] : options)
         setValue(newValue)
         props.onChange(event, newValue, reason)
-        // here use prop clear on select
-        setInputSearchValue("")
+        if (props.clearOnSelect) {
+          setInputSearchValue("")
+        }
       }}
       onInputChange={(event, newInputValue, reason) => {
         setInputSearchValue(newInputValue)

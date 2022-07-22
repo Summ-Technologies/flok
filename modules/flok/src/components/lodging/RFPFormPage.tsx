@@ -44,7 +44,7 @@ let useStyles = makeStyles((theme) => ({
   },
   datesInputWrapper: {
     marginLeft: "auto",
-    marginRight: "20%",
+    marginRight: "16%",
   },
   roomsTextField: {
     marginLeft: "auto",
@@ -85,7 +85,7 @@ function RFPFormPage() {
       ? dt.toISOString().substring(0, dt.toISOString().indexOf("T"))
       : undefined
 
-  let [retreat, retreatIdx] = useRetreat()
+  let [retreat] = useRetreat()
   let [next] = useQuery("next")
   let minPlanningDate = new Date()
   minPlanningDate.setDate(minPlanningDate.getDate() + 90)
@@ -165,14 +165,7 @@ function RFPFormPage() {
       }
     },
   })
-  // if (retreat.request_for_proposal) {
-  //   return (
-  //     <RedirectPage
-  //       pageName="HotelSourcingPage"
-  //       pathParams={{retreatIdx: retreatIdx.toString()}}
-  //     />
-  //   )
-  // }
+
   return (
     <PageBody appBar>
       <div className={classes.overallBody}>

@@ -59,8 +59,8 @@ let useImageStyles = makeStyles((theme) => ({
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
-    marginTop: "4px",
-    marginLeft: "8px",
+    marginTop: theme.spacing(0.5),
+    marginLeft: theme.spacing(1),
   },
 }))
 type UploadImageWithTemplateProps = {

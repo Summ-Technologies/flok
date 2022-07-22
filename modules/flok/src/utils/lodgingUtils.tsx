@@ -146,7 +146,6 @@ export function useGooglePlaceId(placeId: string) {
   useEffect(() => {
     if (googleMapScriptLoaded && (!place || !place.lat || !place.lng)) {
       fetchGooglePlace(placeId, (place) => {
-        console.log("place:", place)
         setName(place.name)
         dispatch(
           addGooglePlace({
@@ -158,7 +157,7 @@ export function useGooglePlaceId(placeId: string) {
         )
       })
     }
-  }, [setName, googleMapScriptLoaded, placeId, place])
+  }, [setName, googleMapScriptLoaded, placeId, place, dispatch])
 
   return place ? place.name : name
 }

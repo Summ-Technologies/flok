@@ -30,7 +30,6 @@ export type LodgingState = {
     [guid: string]: number | ResourceNotFoundType
   }
   lodgingTags: {[id: string]: LodgingTagModel}
-  // come back and type
   googlePlaces: {[place_id: string]: GooglePlace}
 }
 

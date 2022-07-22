@@ -115,6 +115,17 @@ let useStyles = makeStyles((theme) => ({
       marginLeft: "auto",
     },
   },
+  flexibleDatesNotes: {
+    marginLeft: "auto",
+    maxWidth: "80%",
+    marginRight: "auto",
+    marginTop: theme.spacing(2),
+  },
+  exactDatesNotes: {
+    marginLeft: "auto",
+    maxWidth: "80%",
+    marginRight: "auto",
+  },
 }))
 
 type RFPDatesInputProps = {
@@ -227,11 +238,7 @@ export default function RFPDatesInput(props: RFPDatesInputProps) {
                   rows={4}
                   variant="outlined"
                   fullWidth
-                  style={{
-                    marginLeft: "auto",
-                    maxWidth: "80%",
-                    marginRight: "auto",
-                  }}
+                  className={classes.exactDatesNotes}
                 />
               </>
             ) : (
@@ -254,12 +261,7 @@ export default function RFPDatesInput(props: RFPDatesInputProps) {
                     rows={4}
                     variant="outlined"
                     fullWidth
-                    style={{
-                      marginLeft: "auto",
-                      maxWidth: "80%",
-                      marginRight: "auto",
-                      marginTop: "16px",
-                    }}
+                    className={classes.flexibleDatesNotes}
                   />
                 </div>
               </>

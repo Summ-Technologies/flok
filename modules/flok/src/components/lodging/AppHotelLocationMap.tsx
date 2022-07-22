@@ -59,7 +59,15 @@ function AppHotelLocationMap(props: AppHotelLocationMapProps) {
         setMap(map)
       }
     }
-  }, [googleMapScriptLoaded, mapRef, setMap, map, props.lat, props.long])
+  }, [
+    googleMapScriptLoaded,
+    mapRef,
+    setMap,
+    map,
+    props.lat,
+    props.long,
+    props.zoom,
+  ])
 
   return (
     <div ref={mapRef} className={classes.root}>
@@ -190,13 +198,12 @@ function HotelMapMarker(props: {
     if (props.map && popup) {
       props.map.addListener("zoom_changed", () => {
         if (props.map && popup) {
-          // @ts-ignore
-          if (props.map.getZoom() <= 4) {
+          let zoom = props.map.getZoom()
+          if (zoom && zoom <= 4) {
             ;(popup.containerDiv as HTMLElement).classList.remove("large")
             ;(popup.containerDiv as HTMLElement).classList.remove("medium")
             ;(popup.containerDiv as HTMLElement).classList.add("small")
-            // @ts-ignore
-          } else if (props.map.getZoom() <= 7) {
+          } else if (zoom && zoom <= 7) {
             ;(popup.containerDiv as HTMLElement).classList.remove("large")
             ;(popup.containerDiv as HTMLElement).classList.add("medium")
             ;(popup.containerDiv as HTMLElement).classList.remove("small")

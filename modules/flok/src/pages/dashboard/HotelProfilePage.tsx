@@ -133,6 +133,13 @@ let useStyles = makeStyles((theme) => ({
     gap: theme.spacing(1),
     flexWrap: "wrap",
   },
+  detailsSectionMap: {
+    boxShadow: theme.shadows[0],
+    display: "flex",
+    flexDirection: "column",
+    padding: theme.spacing(1.5),
+    height: 400,
+  },
 }))
 
 export default function HotelProfilePage() {
@@ -240,7 +247,7 @@ export default function HotelProfilePage() {
                 </div>
               </Paper>
               {hotel.address_coordinates && (
-                <Paper className={classes.detailsSection} style={{height: 400}}>
+                <Paper className={classes.detailsSectionMap}>
                   <AppHotelLocationMap
                     lat={hotel.address_coordinates[0]}
                     long={hotel.address_coordinates[1]}

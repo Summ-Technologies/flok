@@ -30,6 +30,7 @@ import querystring from "querystring"
 import {useEffect, useState} from "react"
 import {useDispatch, useSelector} from "react-redux"
 import {Link as ReactRouterLink} from "react-router-dom"
+import config, {GOOGLE_API_KEY} from "../../config"
 import {GooglePlace, HotelModel} from "../../models/lodging"
 import {RetreatSelectedHotelProposal} from "../../models/retreat"
 import LoadingPage from "../../pages/misc/LoadingPage"
@@ -125,6 +126,7 @@ let useStyles = makeStyles((theme) => ({
   },
   filterTitle: {
     marginBottom: theme.spacing(3),
+    fontSize: theme.spacing(2.2),
   },
   loadingWheel: {
     marginLeft: "auto",
@@ -144,12 +146,52 @@ let useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     backgroundColor: theme.palette.common.white,
   },
+  chipContainer: {
+    display: "flex",
+    alignItems: "center",
+    cursor: "pointer",
+    marginLeft: theme.spacing(2),
+    marginRight: "auto",
+    gap: theme.spacing(0.5),
+  },
+  filterHeader: {
+    marginTop: theme.spacing(1.5),
+    marginBottom: theme.spacing(1.5),
+    display: "flex",
+    alignItems: "center",
+  },
+  filterHeaderText: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    fontSize: "0.9rem",
+    fontWeight: "bold",
+  },
+  filterSegment: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  navContainer: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    display: "flex",
+    alignItems: "center",
+    marginLeft: "auto",
+    marginRight: theme.spacing(3),
+    gap: theme.spacing(0.5),
+  },
+  iconButton: {
+    display: "flex",
+  },
+  tagsFilter: {
+    width: "50%",
+  },
 }))
 
 function HotelSourcingPage() {
-  const API_KEY = "AIzaSyBNW3s0RPJx7CRFbYWhHJpIAHyN7GrGVgE"
   let [googleMapScriptLoaded] = useScript(
-    `https://maps.googleapis.com/maps/api/js?libraries=places&key=${API_KEY}`
+    `https://maps.googleapis.com/maps/api/js?libraries=places&key=${config.get(
+      GOOGLE_API_KEY
+    )}`
   )
   let classes = useStyles()
   const [hotels, setHotels] = useState<HotelModel[]>([])
@@ -221,26 +263,22 @@ function HotelSourcingPage() {
   useEffect(() => {
     if (maxDistanceFromAirportQuery) {
       setMaxDistanceFromAirport(parseInt(maxDistanceFromAirportQuery))
-      // setPageQuery(null)
     }
   }, [maxDistanceFromAirportQuery])
   useEffect(() => {
     if (roomsMaxQuery) {
       setMaxNumberOfRooms(parseInt(roomsMaxQuery))
-      // setPageQuery(null)
     }
   }, [roomsMaxQuery])
   useEffect(() => {
     if (roomsMinQuery) {
       setMinNumberOfRooms(parseInt(roomsMinQuery))
-      // setPageQuery(null)
     }
   }, [roomsMinQuery])
 
   useEffect(() => {
     if (locationListQuery) {
       setLocationList(locationListQuery)
-      // setPageQuery(null)
     }
   }, [locationListQuery])
 
@@ -316,17 +354,21 @@ function HotelSourcingPage() {
           locationListQuery.forEach((locationString) => {
             let placeId = locationString.split(":")[0]
             let distance = locationString.split(":")[1]
-            let location = {
-              lat: googlePlaces[placeId].lat,
-              lng: googlePlaces[placeId].lng,
-              distance: parseInt(distance),
-            }
-            filters = {
-              ...filters,
-              // @ts-ignore
-              locations: filters.locations
-                ? [...filters.locations, location]
-                : [location],
+
+            let lat = googlePlaces[placeId].lat
+            let lng = googlePlaces[placeId].lng
+            if (lat && lng) {
+              let location = {
+                lat: lat,
+                lng: lng,
+                distance: parseInt(distance),
+              }
+              filters = {
+                ...filters,
+                locations: filters.locations
+                  ? [...filters.locations, location]
+                  : [location],
+              }
             }
           })
         }
@@ -474,15 +516,7 @@ function HotelSourcingPage() {
             onClick={() => {
               setShowFilters((filters) => !filters)
             }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                cursor: "pointer",
-                marginLeft: "16px",
-                marginRight: "auto",
-                gap: "4px",
-              }}>
+            <div className={classes.chipContainer}>
               {locationList[0] ? (
                 locationList.length === 1 ? (
                   <Chip
@@ -550,40 +584,26 @@ function HotelSourcingPage() {
               onClose={() => {
                 setShowFilters(false)
               }}>
-              <div
-                style={{
-                  marginTop: 12,
-                  marginBottom: 12,
-                  display: "flex",
-                  alignItems: "center",
-                }}>
+              <div className={classes.filterHeader}>
                 <IconButton
                   onClick={() => {
                     setShowFilters(false)
                   }}>
                   <Close />
                 </IconButton>
-                <Typography
-                  style={{
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    fontSize: "0.9rem",
-                    fontWeight: "bold",
-                  }}>
+                <Typography className={classes.filterHeaderText}>
                   Filters
                 </Typography>
               </div>
               <Divider />
               <Paper className={classes.filterBody}>
                 <div className={classes.filterLocations}>
-                  <Typography
-                    variant="h5"
-                    className={classes.filterTitle}
-                    style={{fontSize: "1rem"}}>
+                  <Typography variant="h5" className={classes.filterTitle}>
                     Locations
                   </Typography>
                   <div className={classes.filterLocationsFilter}>
                     <GooglePlacesAutoComplete
+                      clearOnSelect
                       selectedOptions={locationList.map((location, index) => {
                         return location.split(":")[0]
                       })}
@@ -607,7 +627,6 @@ function HotelSourcingPage() {
                               name: value.structured_formatting.main_text,
                             })
                           )
-                          // await setPageQuery(null)
                           setLocationListQuery([
                             ...locationListQuery,
                             value.place_id + ":100",
@@ -646,11 +665,8 @@ function HotelSourcingPage() {
                 </div>
                 <Divider className={classes.filterDivider} />
 
-                <div style={{display: "flex", flexDirection: "column"}}>
-                  <Typography
-                    variant="h5"
-                    className={classes.filterTitle}
-                    style={{fontSize: "1rem"}}>
+                <div className={classes.filterSegment}>
+                  <Typography variant="h5" className={classes.filterTitle}>
                     Number of Rooms
                   </Typography>
                   <Slider
@@ -672,11 +688,8 @@ function HotelSourcingPage() {
                     }}></Slider>
                 </div>
                 <Divider className={classes.filterDivider} />
-                <div style={{display: "flex", flexDirection: "column"}}>
-                  <Typography
-                    variant="h5"
-                    className={classes.filterTitle}
-                    style={{fontSize: "1rem"}}>
+                <div className={classes.filterSegment}>
+                  <Typography variant="h5" className={classes.filterTitle}>
                     Maximum Distance From the Airport
                   </Typography>
                   <Slider
@@ -694,10 +707,7 @@ function HotelSourcingPage() {
                 <Divider className={classes.filterDivider} />
                 <Divider className={classes.filterDivider} />
                 <div className={classes.hotelTagsWrapper}>
-                  <Typography
-                    variant="h5"
-                    className={classes.filterTitle}
-                    style={{fontSize: "1rem"}}>
+                  <Typography variant="h5" className={classes.filterTitle}>
                     Hotel Tags
                   </Typography>
                   {Object.values(lodgingTags)
@@ -739,7 +749,7 @@ function HotelSourcingPage() {
                       )
                     })}
                   <Button
-                    style={{width: "50%"}}
+                    className={classes.tagsFilter}
                     onClick={() => {
                       setSeeMoreHotelTags(
                         (seeMoreHotelTags) => !seeMoreHotelTags
@@ -791,21 +801,12 @@ function HotelSourcingPage() {
                   />
                 </div>
               )
-            }
+            } else return undefined
           })
         )}
       </div>
       {!loadingHotels && (
-        <div
-          style={{
-            marginTop: 8,
-            marginBottom: 8,
-            display: "flex",
-            alignItems: "center",
-            marginLeft: "auto",
-            marginRight: 24,
-            gap: 4,
-          }}>
+        <div className={classes.navContainer}>
           <AppTypography>
             {(pageQuery ? parseInt(pageQuery) - 1 : 0) * 30 + 1} -{" "}
             {Math.min(
@@ -820,7 +821,7 @@ function HotelSourcingPage() {
             }}
             size="small"
             disabled={!pageQuery || pageQuery === "1"}
-            style={{display: "flex"}}>
+            className={classes.iconButton}>
             <ArrowBackIos />
           </IconButton>
           <IconButton
@@ -831,7 +832,7 @@ function HotelSourcingPage() {
             disabled={
               (pageQuery ? parseInt(pageQuery) - 1 : 0) * 30 + 1 + 29 >= total
             }
-            style={{display: "flex"}}>
+            className={classes.iconButton}>
             <ArrowForwardIos />
           </IconButton>
         </div>
@@ -847,6 +848,9 @@ let useLocationItemStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginTop: "8px",
     gap: "8px",
+  },
+  locationText: {
+    display: "flex",
   },
 }))
 type LocationItemProps = {
@@ -877,7 +881,7 @@ function LocationItem(props: LocationItemProps) {
           <option value={100}>100</option>
         </TextField>
       </FormControl>
-      <Typography style={{display: "flex"}}>
+      <Typography className={classes.locationText}>
         miles of &nbsp;
         <AppTypography fontWeight="bold">{location}</AppTypography>
       </Typography>
