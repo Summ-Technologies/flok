@@ -9,8 +9,8 @@ import {
 import parse from "autosuggest-highlight/parse"
 import throttle from "lodash/throttle"
 import * as React from "react"
+import config, {GOOGLE_API_KEY} from "../../config"
 import {useScript} from "../../notistack-lib/utils"
-const GOOGLE_MAPS_API_KEY = "AIzaSyBNW3s0RPJx7CRFbYWhHJpIAHyN7GrGVgE"
 
 const autocompleteService = {current: null}
 
@@ -56,7 +56,9 @@ export default function GooglePlacesAutoComplete(
   const [options, setOptions] = React.useState<readonly PlaceType[]>([])
 
   let [googleMapScriptLoaded] = useScript(
-    `https://maps.googleapis.com/maps/api/js?libraries=places&key=${GOOGLE_MAPS_API_KEY}`
+    `https://maps.googleapis.com/maps/api/js?libraries=places&key=${config.get(
+      GOOGLE_API_KEY
+    )}`
   )
 
   let demoOptions = [
@@ -210,7 +212,11 @@ export default function GooglePlacesAutoComplete(
     () =>
       throttle(
         (
-          request: {input: string; types: string[]},
+          request: {
+            input: string
+            location: {lat: () => number; lng: () => number}
+            radius: number
+          },
           callback: (results?: readonly PlaceType[]) => void
         ) => {
           ;(autocompleteService.current as any).getPlacePredictions(
@@ -246,11 +252,8 @@ export default function GooglePlacesAutoComplete(
     let latLng = {lat: () => 0, lng: () => 0}
 
     fetch(
-      // @ts-ignore
       {
         input: inputSearchValue,
-        // types: ["lodging"],
-        //@ts-ignore
         location: latLng,
         radius: 1,
       },

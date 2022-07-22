@@ -35,6 +35,12 @@ let useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
   },
+  dataGridPaper: {
+    height: "550px",
+    width: "90%",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
 }))
 
 export default function HotelsListPage() {
@@ -108,13 +114,7 @@ export default function HotelsListPage() {
         </Typography>
 
         <div>
-          <Paper
-            style={{
-              height: "550px",
-              width: "90%",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}>
+          <Paper className={classes.dataGridPaper}>
             <DataGrid
               components={{
                 Toolbar: HotelDataGridToolbar,
@@ -183,8 +183,6 @@ export default function HotelsListPage() {
                   )
                 )
               }}
-              // sortModel={sortModel}
-              // onSortModelChange={() => setSortModel(undefined)}
               disableSelectionOnClick
               disableColumnMenu
               density="compact"
@@ -229,9 +227,6 @@ export default function HotelsListPage() {
                     dispatch(getHotelsForDataGrid((page + 1) * 50, filters))
                   }
                 }
-              }}
-              onSortModelChange={(model) => {
-                console.log("sort model:", model)
               }}
             />
           </Paper>

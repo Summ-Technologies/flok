@@ -88,7 +88,6 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
     !lodgingTags[0] && dispatch(getLodgingTags())
   }, [])
   async function updateHotelProfile(values: Partial<AdminHotelDetailsModel>) {
-    console.log(values)
     setLoadingUpdate(true)
     let response = (await dispatch(
       patchHotel(props.hotel.id, values)
@@ -102,16 +101,29 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
   let [autoCompleteInput, setAutoCompleteInput] = useState(
     props.hotel.google_place_name ?? ""
   )
+  function returnLatLng(): [number, number] | undefined {
+    let lat = !googlePlaces[selectedGooglePlaceId]
+      ? props.hotel.address_coordinates
+        ? props.hotel.address_coordinates[1]
+        : undefined
+      : googlePlaces[selectedGooglePlaceId].lng
+    let lng = !googlePlaces[selectedGooglePlaceId]
+      ? props.hotel.address_coordinates
+        ? props.hotel.address_coordinates[0]
+        : undefined
+      : googlePlaces[selectedGooglePlaceId].lat
+    if (lat && lng) {
+      return [lat, lng]
+    }
+  }
 
   useEffect(() => {
     if (props.hotel.google_place_name) {
       setAutoCompleteInput(props.hotel.google_place_name)
     }
   }, [props.hotel.google_place_name])
-  console.log(props.hotel.google_place_name)
   let formik = useFormik({
     enableReinitialize: true,
-    // @ts-ignore
     initialValues: nullifyEmptyString({
       name: props.hotel.name,
       destination_id: props.hotel.destination_id,
@@ -131,18 +143,7 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
         ? props.hotel.country
         : googlePlaces[selectedGooglePlaceId].country,
       num_rooms: props.hotel.num_rooms,
-      address_coordinates: [
-        !googlePlaces[selectedGooglePlaceId]
-          ? props.hotel.address_coordinates
-            ? props.hotel.address_coordinates[1]
-            : undefined
-          : googlePlaces[selectedGooglePlaceId].lng,
-        !googlePlaces[selectedGooglePlaceId]
-          ? props.hotel.address_coordinates
-            ? props.hotel.address_coordinates[0]
-            : undefined
-          : googlePlaces[selectedGooglePlaceId].lat,
-      ],
+      address_coordinates: returnLatLng(),
       google_place_name: !googlePlaces[selectedGooglePlaceId]
         ? props.hotel.google_place_name
         : googlePlaces[selectedGooglePlaceId].name,
@@ -206,7 +207,6 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
                       }}
                     />
                     <AppTypography style={{fontSize: "1.3rem"}}>
-                      {" "}
                       {tag.name}
                     </AppTypography>
                   </div>
@@ -242,7 +242,6 @@ export default function HotelProfileForm(props: HotelProfileFormProps) {
           value={formik.values.num_rooms ?? ""}
           fullWidth
           onChange={(e) => {
-            console.log(e)
             formik.setFieldValue("num_rooms", e.target.value)
           }}
         />

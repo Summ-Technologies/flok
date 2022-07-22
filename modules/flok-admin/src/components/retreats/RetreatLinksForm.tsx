@@ -1,5 +1,6 @@
 import {
   Button,
+  InputAdornment,
   makeStyles,
   TextField,
   TextFieldProps,
@@ -131,6 +132,9 @@ function RetreatLinksForm(props: {retreat: AdminRetreatModel}) {
         id="slack_channel"
         value={formik.values.slack_channel}
         label="Slack Notification Channel"
+        InputProps={{
+          startAdornment: <InputAdornment position="start">#</InputAdornment>,
+        }}
       />
       <div className={classes.footer}>
         <Button

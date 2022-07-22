@@ -141,7 +141,6 @@ export function fetchGooglePlace(
     (place, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         if (place && place.name && place.geometry?.location) {
-          console.log("components:", place.address_components)
           let city = ""
           let country = ""
           let state = ""

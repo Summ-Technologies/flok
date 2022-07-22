@@ -116,10 +116,7 @@ function HotelsPage(props: LodgingContentPageProps) {
               className={classes.link}
               component={ReactRouterLink}
               to={AppRoutes.getPath("HotelsListPage")}>
-              <Button
-                color="primary"
-                variant="outlined"
-                onClick={() => setNewHotelOpen(true)}>
+              <Button color="primary" variant="outlined">
                 View Hotels List
               </Button>
             </Link>
